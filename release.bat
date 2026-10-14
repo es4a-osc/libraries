@@ -54,6 +54,7 @@ FOR %%F IN (classes.jar library.json LICENSE LICENSE.txt) DO (
 		)
 	)
 )
+ECHO - 复制类库包及清单文件等成功！
 
 REM --------------------------------------------------
 
@@ -68,7 +69,7 @@ FOR %%D IN (libs res assets jni icons) DO (
 		)
 	)
 )
-ECHO - 类库文件发布完成: "%RELEASE_DIR%"
+ECHO - 复制目录及包含文件成功！
 
 REM --------------------------------------------------
 
@@ -87,7 +88,7 @@ IF ERRORLEVEL 1 (
 	ECHO - 类库注册失败！
 	GOTO 失败退出
 )
-ECHO - 类库注册完成！
+ECHO - 类库注册成功！
 
 
 REM --------------------------------------------------

@@ -37,7 +37,7 @@ import simple.runtime.components.组件;
 		" android:name=\"simple.library.wsd.blebluetooth.BluetoothLeService\"" +
 		" android:enabled=\"true\"" +
 		" android:exported=\"false\"" +
-	"/>"
+	" />"
 )
 public interface 低功耗蓝牙 extends 组件 {
 
