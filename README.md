@@ -2,6 +2,7 @@
 
 维护 Simple 扩展类库的 Java 源码、清单、依赖、图标和样例，各类库按包名组织为独立目录。
 
+
 ## 类库列表
 
 | 类库 | 用途 |
@@ -15,12 +16,14 @@
 | [应用更新库](simple.library.wsd.update/) | 版本检查、更新提示和安装包下载。 |
 | [滑动页面框库](simple.library.wsd.viewpager/) | 可左右滑动切换页面的可视容器。 |
 
+
 ## 目录
 
 - `build.bat`：编译指定类库，生成该类库目录下的 `classes.jar`。
 - `release.bat`：将指定类库的已有交付文件复制到同级 `sdk/libraries/`。
 - 各类库目录：`src/` 为 Java 源码，`library.json` 为清单，`sample/` 为使用样例；依赖和资源按需放在 `libs/`、`res/`、`assets/`、`jni/`、`icons/`。
 - 各类库的 `build/`：编译生成目录。
+
 
 ## 构建
 
@@ -43,16 +46,24 @@
 
 也可以将类库文件夹拖到对应 BAT 上。
 
+
 ## 接入 SDK
 
 `release.bat` 将已有交付文件安装到 `sdk/libraries/<类库目录>/` 并自动注册；优先更新 `sdk.local.json`，不存在时更新 `sdk.json`。
 
 本地开发可先将 `sdk.json` 复制为 `sdk.local.json`，再在 ES4A 中选择该本地清单。使用已编译类库开发项目，无需携带 Java 源码或重新构建类库。
 
+
 ## 文档
 
 通用开发和清单文档统一随 SDK 维护：
 
-- [SDK 文档入口](https://gitee.com/es4a/sdk/blob/main/docs/README.md)
+- [文档入口](https://gitee.com/es4a/sdk/blob/main/docs/README.md)
 - [Simple 类库开发](https://gitee.com/es4a/sdk/blob/main/docs/Simple%20类库开发.md)
 - [类库清单定义](https://gitee.com/es4a/sdk/blob/main/docs/类库清单定义.md)
+
+
+## 相关链接
+
+- [开源仓库](https://gitee.com/es4a)
+- [留言反馈](https://dwz.wsd.cx/wsd-ly)
