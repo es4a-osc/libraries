@@ -55,6 +55,14 @@ public final class HTTP服务套接字 {
 	}
 
 	/**
+	 * 向客户端发送不带文本负载的探测帧。
+	 */
+	@SimpleFunction
+	public void 探测() {
+		探测("");
+	}
+
+	/**
 	 * 向客户端发送探测
 	 *
 	 * @param message 消息
@@ -62,6 +70,14 @@ public final class HTTP服务套接字 {
 	@SimpleFunction
 	public void 探测(String message) {
 		socket.ping(message);
+	}
+
+	/**
+	 * 向客户端发送不带文本负载的探测答复帧。
+	 */
+	@SimpleFunction
+	public void 答复() {
+		答复("");
 	}
 
 	/**

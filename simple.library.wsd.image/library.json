@@ -1,0 +1,296 @@
+{
+	"name": "图像操作库",
+	"description": "图片旋转、倾斜、缩放、镜像、裁剪、分割、圆角、倒影和压缩，无第三方 JAR 依赖。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "图像操作",
+					"kind": "object",
+					"type": "simple.library.wsd.image.图像操作",
+					"description": "以图片文件字节集处理图像，像素尺寸不随设备密度缩放；大图建议在后台线程处理。",
+					"icon": "icons/photo.svg",
+					"functions": [
+						{
+							"name": "旋转图片",
+							"description": "按角度旋转图片，自动扩展画布，返回 PNG。",
+							"static": true,
+							"return": "字节型()",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "PNG、JPEG 等图片文件字节集，不是原始像素。"
+								},
+								{
+									"name": "角度",
+									"type": "单精度小数型",
+									"description": "单位为度，正数顺时针；必须为有限数值。"
+								}
+							]
+						},
+						{
+							"name": "倾斜图片",
+							"description": "按水平和垂直错切系数倾斜图片，返回 PNG。",
+							"static": true,
+							"return": "字节型()",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "原始图片文件字节集。"
+								},
+								{
+									"name": "水平系数",
+									"type": "单精度小数型",
+									"description": "水平错切系数，不是角度。"
+								},
+								{
+									"name": "垂直系数",
+									"type": "单精度小数型",
+									"description": "垂直错切系数，不是角度。"
+								}
+							]
+						},
+						{
+							"name": "缩放图片",
+							"description": "缩放到指定像素宽高，不保持比例，返回 PNG。",
+							"static": true,
+							"return": "字节型()",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "原始图片文件字节集。"
+								},
+								{
+									"name": "宽度",
+									"type": "整数型",
+									"description": "目标像素宽度，必须大于零。"
+								},
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "目标像素高度，必须大于零。"
+								}
+							]
+						},
+						{
+							"name": "反转图片",
+							"description": "执行镜像，返回 PNG；方向不是 0 或 1 时原样返回输入数组。",
+							"static": true,
+							"return": "字节型()",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "原始图片文件字节集。"
+								},
+								{
+									"name": "方向",
+									"type": "整数型",
+									"description": "0 为左右反转，1 为上下反转，其他值不处理。"
+								}
+							]
+						},
+						{
+							"name": "取图片宽度",
+							"description": "仅解析图片头取得像素宽度；打开失败为 0，无法识别的图片为 -1。",
+							"static": true,
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "资产文件名，或以 / 开头的绝对文件路径；不支持网址和 content://。"
+								}
+							]
+						},
+						{
+							"name": "取图片高度",
+							"description": "仅解析图片头取得像素高度；打开失败为 0，无法识别的图片为 -1。",
+							"static": true,
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "资产文件名，或以 / 开头的绝对文件路径；不支持网址和 content://。"
+								}
+							]
+						},
+						{
+							"name": "取图片宽度2",
+							"description": "读取图片文件字节集的像素宽度；非图片返回 -1，空字节集抛出异常。",
+							"static": true,
+							"return": "整数型",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "图片文件字节集，不是原始像素数组。"
+								}
+							]
+						},
+						{
+							"name": "取图片高度2",
+							"description": "读取图片文件字节集的像素高度；非图片返回 -1，空字节集抛出异常。",
+							"static": true,
+							"return": "整数型",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "图片文件字节集，不是原始像素数组。"
+								}
+							]
+						},
+						{
+							"name": "压缩图片",
+							"description": "尝试将中间 JPEG 降至约 100 KiB，最低质量为 0，最终仍返回 PNG；不缩放，透明度会丢失，最终大小不保证减小。",
+							"static": true,
+							"return": "字节型()",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "原始图片文件字节集。"
+								}
+							]
+						},
+						{
+							"name": "压缩图片2",
+							"description": "按原高与目标高之比估算采样率，写出质量 100 的 JPEG；不保证精确目标高度，不保留透明度，不创建父目录，写入失败抛出异常。",
+							"static": true,
+							"params": [
+								{
+									"name": "源路径",
+									"type": "文本型",
+									"description": "原始图片的绝对文件路径。"
+								},
+								{
+									"name": "目标路径",
+									"type": "文本型",
+									"description": "目标 JPEG 绝对文件路径，会覆盖原文件。"
+								},
+								{
+									"name": "目标高度",
+									"type": "整数型",
+									"description": "估算采样率的像素高度，必须大于零。"
+								}
+							]
+						},
+						{
+							"name": "切割图片",
+							"description": "均分为列数×行数个 PNG 字节集，按从左到右、从上到下的顺序放入集合；右侧及底部不能整除的剩余像素丢弃。",
+							"static": true,
+							"return": "simple.runtime.collections.集合",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "原始图片文件字节集。"
+								},
+								{
+									"name": "列数",
+									"type": "整数型",
+									"description": "大于零且不超过原图宽度。"
+								},
+								{
+									"name": "行数",
+									"type": "整数型",
+									"description": "大于零且不超过原图高度。"
+								}
+							]
+						},
+						{
+							"name": "设置图片圆角",
+							"description": "添加透明圆角并返回 PNG；半径达到 100 时改为居中圆形，圆形直径为较短边除以 2 向下取整后乘以 2。",
+							"static": true,
+							"return": "字节型()",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "原始图片文件字节集。"
+								},
+								{
+									"name": "半径",
+									"type": "整数型",
+									"description": "0–99 为像素圆角半径；达到 100 时转为圆形，不得为负。"
+								}
+							]
+						},
+						{
+							"name": "设置图片倒影",
+							"description": "原图下方添加下半图的垂直镜像及渐变；总高度为原高加原高的一半，保留 4 像素间隔及底部裁切。",
+							"static": true,
+							"return": "字节型()",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "原始图片文件字节集，高度至少为 2 像素。"
+								}
+							]
+						},
+						{
+							"name": "取图片部分",
+							"description": "按原图像素坐标截取矩形区域，返回 PNG，越界或非正尺寸抛出异常。",
+							"static": true,
+							"return": "字节型()",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "原始图片文件字节集。"
+								},
+								{
+									"name": "横坐标",
+									"type": "整数型",
+									"description": "左上角横坐标，从 0 开始。"
+								},
+								{
+									"name": "纵坐标",
+									"type": "整数型",
+									"description": "左上角纵坐标，从 0 开始。"
+								},
+								{
+									"name": "宽度",
+									"type": "整数型",
+									"description": "截取像素宽度，必须大于零。"
+								},
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "截取像素高度，必须大于零。"
+								}
+							]
+						},
+						{
+							"name": "更新系统相册",
+							"description": "异步请求系统扫描已有的可访问图片文件；不移动或发布文件，也不保证私有目录图片出现在相册。",
+							"static": true,
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "系统允许扫描位置中的绝对文件路径，不是 content:// URI。"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

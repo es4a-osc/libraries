@@ -257,6 +257,7 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 		// 页面尚未挂载到 ViewPager，布局参数可能为空。
 		// 必须提前建立参数，否则 Simple 初始化宽高时会发生空指针异常。
 		ViewGroup.LayoutParams current = view.getLayoutParams();
+
 		// 已有 ViewPager 参数直接沿用，避免丢失其状态。
 		if (!(current instanceof ViewPager.LayoutParams)) {
 			// 使用 ViewPager 专用参数，默认宽高均为匹配父级。
@@ -270,6 +271,7 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 
 			view.setLayoutParams(params);
 		}
+
 		// 先准备布局参数，再登记页面并通知适配器。
 		pageViews.add(view);
 		adapter.notifyDataSetChanged();

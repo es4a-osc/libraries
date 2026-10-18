@@ -30,19 +30,33 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	private static final String ALERT_CHANNEL_ID = "es4a.notification.alert";
 	private static final String SILENT_CHANNEL_ID = "es4a.notification.silent";
 
-	/** 持有广播接收器的窗口，供组件销毁时释放注册。 */
+	/**
+	 * 持有广播接收器的窗口，供组件销毁时释放注册。
+	 */
 	private final MainActivity activity;
-	/** 发布和删除通知所用的系统服务。 */
+	/**
+	 * 发布和删除通知所用的系统服务。
+	 */
 	private final NotificationManager notificationManager;
-	/** 每个组件实例使用独立的点击动作，避免多个实例串收事件。 */
+	/**
+	 * 每个组件实例使用独立的点击动作，避免多个实例串收事件。
+	 */
 	private final String clickAction;
-	/** 操作按钮和内联回复共用另一广播动作，与通知正文点击区分。 */
+	/**
+	 * 操作按钮和内联回复共用另一广播动作，与通知正文点击区分。
+	 */
 	private final String operationAction;
-	/** 接收此组件创建的通知正文点击、按钮和回复。 */
+	/**
+	 * 接收此组件创建的通知正文点击、按钮和回复。
+	 */
 	private final BroadcastReceiver clickReceiver;
-	/** 窗口销毁时注销动态广播接收器。 */
+	/**
+	 * 窗口销毁时注销动态广播接收器。
+	 */
 	private final MainActivity.OnDestroyListener destroyListener;
-	/** 防止组件销毁和窗口销毁时重复注销接收器。 */
+	/**
+	 * 防止组件销毁和窗口销毁时重复注销接收器。
+	 */
 	private boolean receiverRegistered;
 
 	/**
@@ -332,6 +346,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			return builder.build();
 		}
+
 		// API 14 至 15 没有 build，使用旧版完成方法。
 		return builder.getNotification();
 	}

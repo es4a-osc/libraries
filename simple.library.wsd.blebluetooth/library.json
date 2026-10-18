@@ -16,7 +16,7 @@
 				{
 					"name": "低功耗蓝牙",
 					"description": "BLE 低功耗蓝牙 GATT 客户端，支持 Android 4.3（API 18）及以上。使用前需开启蓝牙并取得相应权限；一个应用共享一条 GATT 连接。",
-					"icon": "icons/bluetooth.svg",
+					"icon": "icons/bluetooth-connected.svg",
 					"kind": "component",
 					"type": "simple.library.wsd.blebluetooth.低功耗蓝牙",
 					"inherits": [

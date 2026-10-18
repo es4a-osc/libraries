@@ -1,0 +1,148 @@
+{
+	"name": "OTG通讯库",
+	"description": "USB Host 下的 CH34x 串口通讯；支持 1a86:7523 和 1a86:5523。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "OTG通讯",
+					"description": "USB Host 下的 CH34x 串口通讯；支持 1a86:7523 和 1a86:5523。",
+					"kind": "component",
+					"type": "simple.library.wsd.otg.OTG通讯",
+					"icon": "icons/otg.svg",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"functions": [
+						{
+							"name": "是否支持OTG",
+							"description": "判断设备是否提供 USB Host；不表示已经连接串口。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "打开设备",
+							"description": "打开第一台匹配的 CH34x 设备；未授权时发起系统授权并返回假，授权后请再次调用。已打开时返回假。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "关闭设备",
+							"description": "关闭串口并停止当前接收会话，可重复调用。"
+						},
+						{
+							"name": "设置参数",
+							"description": "设置波特率，使用 8 数据位、1 停止位、无校验且无流控的串口配置。",
+							"params": [
+								{
+									"name": "波特率",
+									"type": "整数型",
+									"description": "波特率，须为 CH34x 驱动支持的值。"
+								}
+							]
+						},
+						{
+							"name": "设置参数",
+							"description": "设置波特率、数据位 5-8、停止位 1-2、校验位 0-4（无、奇、偶、标记、空格），不启用流控；失败抛出异常。",
+							"params": [
+								{
+									"name": "波特率",
+									"type": "整数型",
+									"description": "波特率，须为 CH34x 驱动支持的值。"
+								},
+								{
+									"name": "数据位",
+									"type": "整数型",
+									"description": "数据位，范围 5 至 8。"
+								},
+								{
+									"name": "停止位",
+									"type": "整数型",
+									"description": "停止位，范围 1 至 2。"
+								},
+								{
+									"name": "校验位",
+									"type": "整数型",
+									"description": "校验位：0 无、1 奇、2 偶、3 标记、4 空格。"
+								}
+							]
+						},
+						{
+							"name": "发送数据",
+							"description": "发送字节集并返回驱动报告的写入长度；未打开或空数据返回 0，返回值不代表对端已收到。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "要发送的原始字节数据。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "到十六进制",
+							"description": "将全部字节转换为小写十六进制文本，每字节后保留一个空格。 转换后的文本；空引用或空数组返回空文本。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "待转换的字节数据。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "到十六进制",
+							"description": "转换为小写十六进制文本，每字节后保留空格；长度须在字节集范围内。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "待转换的字节数据。"
+								},
+								{
+									"name": "长度",
+									"type": "整数型",
+									"description": "参与转换的字节数，范围 0 至数组长度。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "到字节集",
+							"description": "忽略空白，奇数位末尾补零；空文本返回空字节集，无效字符抛出异常。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "文本型",
+									"description": "待解析的十六进制文本，可包含空白字符。"
+								}
+							],
+							"return": "字节型()"
+						}
+					],
+					"events": [
+						{
+							"name": "收到数据",
+							"description": "收到串口字节片段时在主线程触发，不保证一次事件对应完整协议帧。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "本次收到的原始字节片段。"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

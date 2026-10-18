@@ -35,23 +35,35 @@ import android.view.accessibility.AccessibilityNodeInfo;
  */
 public final class 跨程序辅助Impl extends 组件Impl implements 跨程序辅助, AccessibilityListener.Listener, MainActivity.OnDestroyListener {
 
-	/** 日志标识与节点附加信息中使用的私有键。 */
+	/**
+	 * 日志标识与节点附加信息中使用的私有键。
+	 */
 	private static final String TAG = "ES4AAccessibility";
 	private static final String MARK_KEY = "标记";
 
-	/** 组件所属窗口，用于打开设置页和注销生命周期回调。 */
+	/**
+	 * 组件所属窗口，用于打开设置页和注销生命周期回调。
+	 */
 	private final MainActivity activity;
 
-	/** 调用者按名称暂存的节点引用；窗口变化后可能失效。 */
+	/**
+	 * 调用者按名称暂存的节点引用；窗口变化后可能失效。
+	 */
 	private final Map<String, AccessibilityNodeInfo> savedNodes = new HashMap<String, AccessibilityNodeInfo>();
 
-	/** 最近一次窗口切换事件的类名。 */
+	/**
+	 * 最近一次窗口切换事件的类名。
+	 */
 	private volatile String currentClassName = "";
 
-	/** 最近一次通知事件中可执行的内容操作。 */
+	/**
+	 * 最近一次通知事件中可执行的内容操作。
+	 */
 	private volatile PendingIntent notificationIntent;
 
-	/** 本组件是否已注册为无障碍服务订阅者。 */
+	/**
+	 * 本组件是否已注册为无障碍服务订阅者。
+	 */
 	private boolean listening;
 
 	/**
@@ -646,6 +658,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 		ArrayDeque<AccessibilityNodeInfo> stack = new ArrayDeque<AccessibilityNodeInfo>();
 
 		stack.push(start);
+
 		while (!stack.isEmpty()) {
 			AccessibilityNodeInfo node = stack.pop();
 
@@ -733,7 +746,9 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 		return result;
 	}
 
-	/** 仅在遍历过程中使用的节点访问操作。 */
+	/**
+	 * 仅在遍历过程中使用的节点访问操作。
+	 */
 	private interface NodeVisitor {
 		/**
 		 * 处理当前节点；异常由遍历器隔离。

@@ -1,0 +1,146 @@
+{
+	"name": "下载器库",
+	"description": "支持断点续传和任务记录的 HTTP/HTTPS 异步文件下载。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "下载器",
+					"description": "HTTP/HTTPS 异步下载组件，实例共享任务和事件；最后一个实例销毁时保存并暂停活动任务，不提供后台驻留服务。",
+					"kind": "component",
+					"type": "simple.library.wsd.downloader.下载器",
+					"icon": "icons/downloader.svg",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"permissions": [
+						"android.permission.INTERNET"
+					],
+					"functions": [
+						{
+							"name": "开始下载",
+							"description": "异步下载 HTTP/HTTPS 文件；目标存在时拒绝覆盖，相同网址和目标的未完成任务复用编号。相对路径基于应用内部文件目录。",
+							"params": [
+								{
+									"name": "网址",
+									"type": "文本型",
+									"description": "HTTP/HTTPS 完整网址。"
+								},
+								{
+									"name": "保存路径",
+									"type": "文本型",
+									"description": "目标文件路径，可使用应用私有相对路径。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "暂停下载",
+							"description": "暂停并保存断点，不触发下载完毕事件。",
+							"params": [
+								{
+									"name": "任务编号",
+									"type": "整数型",
+									"description": "稳定任务编号，从 1 开始。"
+								}
+							]
+						},
+						{
+							"name": "继续下载",
+							"description": "继续暂停或失败的任务；服务器不支持续传时重新下载。",
+							"params": [
+								{
+									"name": "任务编号",
+									"type": "整数型",
+									"description": "稳定任务编号，从 1 开始。"
+								}
+							]
+						},
+						{
+							"name": "取消下载",
+							"description": "取消未完成任务，任务收尾后清理临时文件；保留已经完成的目标文件。",
+							"params": [
+								{
+									"name": "任务编号",
+									"type": "整数型",
+									"description": "稳定任务编号，从 1 开始。"
+								}
+							]
+						},
+						{
+							"name": "取未完成记录",
+							"description": "按编号返回未完成任务的网址集合，包含等待、下载、暂停、失败任务；同网址不同目标可能重复。",
+							"params": [],
+							"return": "集合"
+						},
+						{
+							"name": "取任务信息",
+							"description": "返回六项文本数组：网址、保存绝对路径、状态、总字节数、已下载字节数、错误说明。未知总大小为 -1。状态为等待、下载、暂停、完成、失败、取消。",
+							"params": [
+								{
+									"name": "任务编号",
+									"type": "整数型",
+									"description": "已存在的稳定任务编号。"
+								}
+							],
+							"return": "文本型()"
+						}
+					],
+					"events": [
+						{
+							"name": "进度改变",
+							"description": "主线程进度事件，完成时通知最终进度；总长度或百分比未知时为 -1。",
+							"params": [
+								{
+									"name": "任务编号",
+									"type": "整数型",
+									"description": "稳定任务编号。"
+								},
+								{
+									"name": "文件总大小",
+									"type": "长整数型",
+									"description": "总字节数，未知为 -1。"
+								},
+								{
+									"name": "已下载大小",
+									"type": "长整数型",
+									"description": "已写入字节数。"
+								},
+								{
+									"name": "下载进度",
+									"type": "整数型",
+									"description": "整数百分比，未知为 -1。"
+								}
+							]
+						},
+						{
+							"name": "下载完毕",
+							"description": "主线程完成或失败事件；暂停、取消不触发。失败原因可读取取任务信息的第六项。",
+							"params": [
+								{
+									"name": "任务编号",
+									"type": "整数型",
+									"description": "稳定任务编号。"
+								},
+								{
+									"name": "下载结果",
+									"type": "逻辑型",
+									"description": "完整保存目标文件后为真。"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

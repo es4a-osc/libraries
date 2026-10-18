@@ -445,6 +445,31 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 		adapter.notifyDataSetChanged();
 	}
 
+	/**
+	 * 添加含标题和信息的子项，图片、按钮内容和业务标记均为空文本。
+	 *
+	 * @param groupId 分组索引，从 0 开始。
+	 * @param title 子项标题。
+	 * @param info 附加信息；空文本不显示信息。
+	 */
+	@Override
+	public void 添加子项(int groupId, String title, String info) {
+		添加子项(groupId, "", title, info, "", "");
+	}
+
+	/**
+	 * 添加含图片、标题和信息的子项，按钮内容和业务标记均为空文本。
+	 *
+	 * @param groupId 分组索引，从 0 开始。
+	 * @param image 子项图片的资产路径或绝对路径；空文本不显示图片。
+	 * @param title 子项标题。
+	 * @param info 附加信息；空文本不显示信息。
+	 */
+	@Override
+	public void 添加子项(int groupId, String image, String title, String info) {
+		添加子项(groupId, image, title, info, "", "");
+	}
+
 	@Override
 	public void 添加子项(int groupId, String image, String title, String info, String buttonImage, String buttonTitle) {
 		Map<String, String> map = new HashMap<>();
@@ -589,6 +614,17 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 
 		childItems.clear();
 		adapter.notifyDataSetChanged();
+	}
+
+	/**
+	 * 选中子项，必要时自动展开所在分组。
+	 *
+	 * @param groupPosition 分组索引，从 0 开始。
+	 * @param childPosition 组内子项索引，从 0 开始。
+	 */
+	@Override
+	public void 选中子项(int groupPosition, int childPosition) {
+		选中子项(groupPosition, childPosition, true);
 	}
 
 	@Override

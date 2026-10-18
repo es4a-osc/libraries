@@ -1,0 +1,112 @@
+{
+	"name": "WS客户端库",
+	"description": "提供支持 ws 和 wss 的 WebSocket 文本客户端组件。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "WS客户端",
+					"description": "不可视 WebSocket 文本客户端，每个组件维护一条连接，事件在主线程触发。",
+					"kind": "component",
+					"type": "simple.library.wsd.wsclient.WS客户端",
+					"icon": "icons/messages.svg",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"permissions": [
+						"android.permission.INTERNET"
+					],
+					"events": [
+						{
+							"name": "连接成功",
+							"description": "WebSocket 握手成功后触发，此时可以发送文本。"
+						},
+						{
+							"name": "出现错误",
+							"description": "连接失败、网络故障、无有效连接或发送被拒绝时触发。"
+						},
+						{
+							"name": "收到数据",
+							"description": "收到服务器的文本消息时触发，二进制消息不派发此事件。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "文本型",
+									"description": "收到的完整文本消息。"
+								}
+							]
+						},
+						{
+							"name": "连接断开",
+							"description": "正常关闭握手完成后触发；网络故障通过出现错误事件通知。"
+						}
+					],
+					"functions": [
+						{
+							"name": "添加协议头",
+							"description": "为之后发起的连接添加请求头，同名请求头可以重复添加。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "请求头名称，如 Authorization。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "请求头对应的文本值。"
+								}
+							]
+						},
+						{
+							"name": "删除协议头",
+							"description": "删除之后发起的连接中指定名称的全部请求头，不影响已经建立的连接。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "请求头名称，如 Authorization。"
+								}
+							]
+						},
+						{
+							"name": "打开连接",
+							"description": "异步连接服务器，成功后触发连接成功事件。 再次调用会取消旧连接，旧连接的迟到回调不再派发。",
+							"params": [
+								{
+									"name": "地址",
+									"type": "文本型",
+									"description": "以 ws:// 或 wss:// 开头的服务器地址。"
+								}
+							]
+						},
+						{
+							"name": "发送数据",
+							"description": "将文本加入发送队列；应在连接成功事件后调用。 返回不表示服务器已经收到消息；发送被拒绝时触发出现错误事件。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "文本型",
+									"description": "要发送的完整文本消息。"
+								}
+							]
+						},
+						{
+							"name": "关闭连接",
+							"description": "发起正常关闭握手；连接尚在建立时同样有效，无连接时不执行操作。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

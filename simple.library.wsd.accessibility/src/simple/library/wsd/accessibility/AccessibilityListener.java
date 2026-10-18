@@ -19,16 +19,24 @@ import android.view.accessibility.AccessibilityNodeInfo;
  */
 public final class AccessibilityListener extends AccessibilityService {
 
-	/** 服务诊断日志标识。 */
+	/**
+	 * 服务诊断日志标识。
+	 */
 	private static final String TAG = "ES4AAccessibility";
 
-	/** 可在回调期间安全增删订阅者的集合。 */
+	/**
+	 * 可在回调期间安全增删订阅者的集合。
+	 */
 	private static final Set<Listener> LISTENERS = new CopyOnWriteArraySet<Listener>();
 
-	/** 最近连接且尚未解绑的服务实例。 */
+	/**
+	 * 最近连接且尚未解绑的服务实例。
+	 */
 	private static volatile AccessibilityListener activeService;
 
-	/** 服务事件订阅者；回调由无障碍服务分发。 */
+	/**
+	 * 服务事件订阅者；回调由无障碍服务分发。
+	 */
 	interface Listener {
 		/**
 		 * 转发 Android 无障碍事件。

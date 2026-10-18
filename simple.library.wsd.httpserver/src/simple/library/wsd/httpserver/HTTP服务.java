@@ -56,7 +56,7 @@ public final class HTTP服务 {
 	 * @param action 请求方式，如：GET、POST、PATCH、DELETE等
 	 * @param regex 匹配请求规则
 	 * @param unit 响应单元实例
-	 * @param name 响应方法名，过程结构{@code 过程名(收到请求 为 Web请求, 响应客户 为 Web响应, 附加标记 为 变体型)}
+	 * @param name 响应方法名，过程结构{@code 过程名(收到请求 为 HTTP服务请求, 响应客户 为 HTTP服务响应, 附加标记 为 变体型)}
 	 */
 	@SimpleFunction
 	public void 注册路由(String action, String regex, Object unit, String name) {
@@ -69,7 +69,7 @@ public final class HTTP服务 {
 	 * @param action 请求方式，如：GET、POST、PATCH、DELETE等
 	 * @param regex 匹配请求规则
 	 * @param unit 响应单元实例
-	 * @param name 响应方法名，过程结构{@code 过程名(收到请求 为 Web请求, 响应客户 为 Web响应, 附加标记 为 变体型)}
+	 * @param name 响应方法名，过程结构{@code 过程名(收到请求 为 HTTP服务请求, 响应客户 为 HTTP服务响应, 附加标记 为 变体型)}
 	 * @param mark 附加标记
 	 */
 	@SimpleFunction
@@ -107,15 +107,16 @@ public final class HTTP服务 {
 		server.stop();
 	}
 
-	/* 内部接口与平台回调 */
+	/* WebSocket方法 */
 
 	/**
 	 * 注册套接字
 	 *
 	 * @param regex 匹配请求规则
 	 * @param unit 响应单元实例
-	 * @param name 响应方法名，过程结构{@code 过程名(套接字 为 Web套接字, 事件类型 为 文本型, 事件数据 为 变体型, 附加标记 为 变体型)}
+	 * @param name 响应方法名，过程结构{@code 过程名(套接字 为 HTTP服务套接字, 事件类型 为 文本型, 事件数据 为 变体型, 附加标记 为 变体型)}
 	 */
+	@SimpleFunction
 	public void 注册套接字(String regex, Object unit, String name) {
 		注册套接字(regex, unit, name, null);
 	}
@@ -125,9 +126,10 @@ public final class HTTP服务 {
 	 *
 	 * @param regex 匹配请求规则
 	 * @param unit 响应单元实例
-	 * @param name 响应方法名，过程结构{@code 过程名(套接字 为 Web套接字, 事件类型 为 文本型, 事件数据 为 变体型, 附加标记 为 变体型)}
+	 * @param name 响应方法名，过程结构{@code 过程名(套接字 为 HTTP服务套接字, 事件类型 为 文本型, 事件数据 为 变体型, 附加标记 为 变体型)}
 	 * @param mark 附加标记
 	 */
+	@SimpleFunction
 	public void 注册套接字(String regex, Object unit, String name, Variant mark) {
 		Variant object = ObjectVariant.getObjectVariant(unit);
 
@@ -137,17 +139,14 @@ public final class HTTP服务 {
 				Variant[] args = new Variant[4];
 
 				args[0] = ObjectVariant.getObjectVariant(new HTTP服务套接字(webSocket));
-				args[1] = StringVariant.getStringVariant("connected");
-				args[2] = ObjectVariant.getObjectVariant(new HTTP服务请求(request));
 				args[3] = mark;
-				object.function(name, args);
 
 				// 设置关闭回调
 				webSocket.setClosedCallback(new CompletedCallback() {
 					@Override
 					public void onCompleted(Exception ex) {
 						args[1] = StringVariant.getStringVariant("closed");
-						args[2] = StringVariant.getStringVariant(ex.getMessage());
+						args[2] = StringVariant.getStringVariant(ex == null ? "" : ex.toString());
 						object.function(name, args);
 					}
 				});
@@ -160,6 +159,11 @@ public final class HTTP服务 {
 						object.function(name, args);
 					}
 				});
+
+				// 先安装回调，允许连接处理过程立即发送欢迎消息。
+				args[1] = StringVariant.getStringVariant("connected");
+				args[2] = ObjectVariant.getObjectVariant(new HTTP服务请求(request));
+				object.function(name, args);
 			}
 		});
 	}

@@ -27,6 +27,8 @@ public interface 演示按钮 extends 可视组件 {
 
 	/**
 	 * 读取按钮显示的文本。
+	 *
+	 * @return 按钮显示的文本。
 	 */
 	@SimpleProperty
 	String 标题();

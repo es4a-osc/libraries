@@ -60,7 +60,7 @@ public class HTTP服务响应 {
 	/**
 	 * 向客户端发送数据
 	 *
-	 * @param contentType 内容类型，如“application/json”、“ext/plain”、“text/html”等
+	 * @param contentType 内容类型，如“application/json”、“text/plain”、“text/html”等
 	 * @param data 数据，支持文本型和字节数组。
 	 */
 	@SimpleFunction
@@ -77,7 +77,9 @@ public class HTTP服务响应 {
 	}
 
 	/**
-	 * 取响应代码
+	 * 读取 HTTP 响应状态码。
+	 *
+	 * @return HTTP 响应状态码，如 200。
 	 */
 	@SimpleFunction
 	public int 取代码() {
@@ -95,9 +97,10 @@ public class HTTP服务响应 {
 	}
 
 	/**
-	 * 有无协议头
+	 * 判断响应中是否包含指定协议头。
 	 *
-	 * @return 有无
+	 * @param header 协议头名称，匹配时忽略大小写。
+	 * @return 存在该协议头时返回真。
 	 */
 	@SimpleFunction
 	public boolean 有无协议头(String header) {
@@ -172,7 +175,7 @@ public class HTTP服务响应 {
 	/**
 	 * 置内容类型
 	 *
-	 * @param contentType 内容类型，如“application/json”、“ext/plain”、“text/html”等
+	 * @param contentType 内容类型，如“application/json”、“text/plain”、“text/html”等
 	 */
 	@SimpleFunction
 	public void 置内容类型(String contentType) {

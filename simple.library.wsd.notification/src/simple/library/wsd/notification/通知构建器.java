@@ -26,7 +26,9 @@ import android.os.Build;
 @SimpleObject
 public final class 通知构建器 {
 
-	/** 未自定义小图标时使用 Android 内置通知图标。 */
+	/**
+	 * 未自定义小图标时使用 Android 内置通知图标。
+	 */
 	private static final int DEFAULT_NOTIFICATION_ICON = android.R.drawable.stat_notify_more;
 
 	/* 未指定操作按钮图标时，按按钮类型使用对应的 Android 内置图标。 */
@@ -42,7 +44,9 @@ public final class 通知构建器 {
 	private static final int ANDROID_12_API_LEVEL = 31;
 	private static final int FLAG_MUTABLE = 0x02000000;
 
-	/** 以下广播数据键和操作类型供通知管理器Impl读取。 */
+	/**
+	 * 以下广播数据键和操作类型供通知管理器Impl读取。
+	 */
 	public static final String EXTRA_NOTIFICATION_ID = "notificationId";
 	public static final String EXTRA_ACTION_KIND = "actionKind";
 	public static final String EXTRA_ACTION_MARK = "actionMark";
@@ -423,6 +427,7 @@ public final class 通知构建器 {
 		// 只追加本次新增的按钮，避免更新通知时重复添加旧按钮。
 		boundNotificationId = notificationId;
 		boundBroadcastAction = broadcastAction;
+
 		for (int i = addedActionCount; i < actions.size(); i++) {
 			ActionSpec action = actions.get(i);
 
@@ -608,6 +613,7 @@ public final class 通知构建器 {
 		private final String title;
 		private final String mark;
 		private final String hint;
+
 		// 请求码区分普通按钮和回复按钮的 PendingIntent。
 		private final int requestCode = NEXT_ACTION_REQUEST_CODE.getAndIncrement();
 

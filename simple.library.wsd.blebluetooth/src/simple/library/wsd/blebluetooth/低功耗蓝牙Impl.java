@@ -136,6 +136,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 
 			final int[] beaconIds = parseBeaconIds(scanRecord);
 			final int generation = scanGeneration;
+
 			activity.runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -146,6 +147,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 					try {
 						String address = device.getAddress();
 						String name = device.getName();
+
 						if (name == null) {
 							name = "";
 						}
@@ -157,6 +159,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 							} else if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
 								bondState = 3;
 							}
+
 							发现设备(name, address, beaconIds[0], beaconIds[1], bondState);
 						} else {
 							信号强度改变(name, address, rssi);
@@ -311,6 +314,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 			if (!destroyed) {
 				连接状态改变(2);
 			}
+
 			return;
 		}
 
@@ -348,6 +352,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 
 		if (receiverRegistered) {
 			receiverRegistered = false;
+
 			try {
 				activity.unregisterReceiver(gattReceiver);
 			} catch (IllegalArgumentException exception) {
@@ -357,6 +362,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 
 		if (bound) {
 			bound = false;
+
 			try {
 				activity.unbindService(serviceConnection);
 			} catch (IllegalArgumentException exception) {
@@ -420,6 +426,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 			destroyed = true;
 			释放资源();
 		}
+
 		activity.removeOnDestroyListener(destroyListener);
 	}
 
@@ -467,6 +474,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 		for (BluetoothGattService gattService : services) {
 			List<BluetoothGattCharacteristic> characteristics = gattService.getCharacteristics();
 			String[] uuids = new String[characteristics.size() + 1];
+
 			uuids[0] = gattService.getUuid().toString();
 
 			// 首项保留服务 UUID，后续项目按设备提供的顺序存放特征 UUID。
@@ -493,6 +501,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 			for (int offset = 0; offset < record.length;) {
 				int length = record[offset] & 0xff;
 				int end = offset + length + 1;
+
 				if (length == 0 || end > record.length) {
 					break;
 				}

@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "分组列表框",
-					"icon": "icons/filter-2-share.svg",
+					"icon": "icons/list-tree.svg",
 					"kind": "component",
 					"type": "simple.library.wsd.grouplist.分组列表框",
 					"inherits": [
@@ -25,505 +25,678 @@
 						{
 							"name": "分组标题字体大小",
 							"type": "整数型",
-							"initializer": "14"
+							"initializer": "14",
+							"description": "分组标题的字体大小，单位 SP。"
 						},
 						{
 							"name": "分组标题字体颜色",
 							"type": "整数型",
 							"initializer": "-16777216",
-							"editor": "simple.color"
+							"editor": "simple.color",
+							"description": "分组标题的字体颜色，使用 ARGB 整数值。"
 						},
 						{
 							"name": "分组信息字体大小",
 							"type": "整数型",
-							"initializer": "12"
+							"initializer": "12",
+							"description": "分组信息的字体大小，单位 SP。"
 						},
 						{
 							"name": "分组信息字体颜色",
 							"type": "整数型",
 							"initializer": "-7829368",
-							"editor": "simple.color"
+							"editor": "simple.color",
+							"description": "分组信息的字体颜色，使用 ARGB 整数值。"
 						},
 						{
 							"name": "子项标题字体大小",
 							"type": "整数型",
-							"initializer": "14"
+							"initializer": "14",
+							"description": "子项标题的字体大小，单位 SP。"
 						},
 						{
 							"name": "子项标题字体颜色",
 							"type": "整数型",
 							"initializer": "-16777216",
-							"editor": "simple.color"
+							"editor": "simple.color",
+							"description": "子项标题的字体颜色，使用 ARGB 整数值。"
 						},
 						{
 							"name": "子项信息字体大小",
 							"type": "整数型",
-							"initializer": "12"
+							"initializer": "12",
+							"description": "子项信息的字体大小，单位 SP。"
 						},
 						{
 							"name": "子项信息字体颜色",
 							"type": "整数型",
 							"initializer": "-7829368",
-							"editor": "simple.color"
+							"editor": "simple.color",
+							"description": "子项信息的字体颜色，使用 ARGB 整数值。"
 						},
 						{
 							"name": "子项按钮字体大小",
 							"type": "整数型",
-							"initializer": "12"
+							"initializer": "12",
+							"description": "子项按钮的字体大小，单位 SP。"
 						},
 						{
 							"name": "子项按钮字体颜色",
 							"type": "整数型",
 							"initializer": "-16777216",
-							"editor": "simple.color"
+							"editor": "simple.color",
+							"description": "子项按钮的字体颜色，使用 ARGB 整数值。"
 						},
 						{
 							"name": "背景图片",
 							"type": "文本型",
 							"initializer": "\"\"",
 							"editor": "simple.asset",
-							"projection": "backgroundImage"
+							"projection": "backgroundImage",
+							"description": "列表背景图片的资产路径或绝对文件路径；空文本不加载新图片。"
 						},
 						{
 							"name": "背景图片2",
-							"type": "整数型"
+							"type": "整数型",
+							"description": "列表背景图片的 Android 可绘制资源 ID；初始读取值为 -1。"
 						},
 						{
 							"name": "显示子项按钮",
 							"type": "逻辑型",
-							"initializer": "真"
+							"initializer": "真",
+							"description": "是否显示子项内的按钮。"
 						}
 					],
 					"functions": [
 						{
 							"name": "获取焦点",
-							"return": "逻辑型"
+							"return": "逻辑型",
+							"description": "请求让列表获得输入焦点。"
 						},
 						{
-							"name": "清除焦点"
+							"name": "清除焦点",
+							"description": "清除列表的输入焦点。"
 						},
 						{
 							"name": "添加分组",
 							"params": [
 								{
 									"name": "标题",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "要显示的标题。"
 								},
 								{
 									"name": "信息",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "附加信息文本；空文本表示不显示信息。"
 								}
 							],
-							"return": "整数型"
+							"return": "整数型",
+							"description": "在列表末尾添加分组并返回其索引；新分组的业务标记为空文本。"
 						},
 						{
 							"name": "添加分组",
 							"params": [
 								{
 									"name": "标题",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "要显示的标题。"
 								}
 							],
-							"return": "整数型"
+							"return": "整数型",
+							"description": "在列表末尾添加仅含标题的分组，信息和业务标记均为空文本。"
 						},
 						{
 							"name": "取分组标记",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取分组的业务标记。"
 						},
 						{
 							"name": "置分组标记",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "标记",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "业务标记文本，不作为列表索引。"
 								}
-							]
+							],
+							"description": "设置分组的业务标记，不改变列表显示内容。"
 						},
 						{
 							"name": "取分组标题",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取分组标题。"
 						},
 						{
 							"name": "置分组标题",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "标题",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "要显示的标题。"
 								}
-							]
+							],
+							"description": "更新分组标题并刷新列表。"
 						},
 						{
 							"name": "取分组信息",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取分组的附加信息。"
 						},
 						{
 							"name": "置分组信息",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "信息",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "附加信息文本；空文本表示不显示信息。"
 								}
-							]
+							],
+							"description": "更新分组附加信息并刷新列表。"
 						},
 						{
 							"name": "取分组总数",
-							"return": "整数型"
+							"return": "整数型",
+							"description": "取得当前分组数量。"
 						},
 						{
 							"name": "展开分组",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "展开指定分组，显示其中的子项。"
 						},
 						{
 							"name": "收起分组",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "收起指定分组，隐藏其中的子项。"
 						},
 						{
 							"name": "取分组状态",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
 							],
-							"return": "逻辑型"
+							"return": "逻辑型",
+							"description": "判断指定分组是否已展开。"
 						},
 						{
 							"name": "选中分组",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "将列表选择定位到指定分组。"
 						},
 						{
 							"name": "删除分组",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "删除指定分组及其全部子项，后续分组索引随之改变。"
 						},
 						{
-							"name": "清空所有数据"
+							"name": "清空所有数据",
+							"description": "删除全部分组及子项。"
 						},
 						{
 							"name": "添加子项",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
-								},
-								{
-									"name": "图片",
-									"type": "文本型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "标题",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "要显示的标题。"
 								},
 								{
 									"name": "信息",
-									"type": "文本型"
-								},
-								{
-									"name": "按钮图片",
-									"type": "文本型"
-								},
-								{
-									"name": "按钮标题",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "附加信息文本；空文本表示不显示信息。"
 								}
-							]
+							],
+							"description": "添加含标题和信息的子项，图片、按钮内容和业务标记均为空文本。"
 						},
 						{
 							"name": "添加子项",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
+								},
+								{
+									"name": "图片",
+									"type": "文本型",
+									"description": "子项图片的资产路径或绝对文件路径；空文本表示不显示图片。"
 								},
 								{
 									"name": "标题",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "要显示的标题。"
+								},
+								{
+									"name": "信息",
+									"type": "文本型",
+									"description": "附加信息文本；空文本表示不显示信息。"
 								}
-							]
+							],
+							"description": "添加含图片、标题和信息的子项，按钮内容和业务标记均为空文本。"
+						},
+						{
+							"name": "添加子项",
+							"params": [
+								{
+									"name": "分组索引",
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
+								},
+								{
+									"name": "图片",
+									"type": "文本型",
+									"description": "子项图片的资产路径或绝对文件路径；空文本表示不显示图片。"
+								},
+								{
+									"name": "标题",
+									"type": "文本型",
+									"description": "要显示的标题。"
+								},
+								{
+									"name": "信息",
+									"type": "文本型",
+									"description": "附加信息文本；空文本表示不显示信息。"
+								},
+								{
+									"name": "按钮图片",
+									"type": "文本型",
+									"description": "按钮背景图片的资产路径或绝对文件路径；空文本不设置图片背景。"
+								},
+								{
+									"name": "按钮标题",
+									"type": "文本型",
+									"description": "子项按钮显示的文字。"
+								}
+							],
+							"description": "在指定分组末尾添加子项，新子项的业务标记为空文本。"
+						},
+						{
+							"name": "添加子项",
+							"params": [
+								{
+									"name": "分组索引",
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
+								},
+								{
+									"name": "标题",
+									"type": "文本型",
+									"description": "要显示的标题。"
+								}
+							],
+							"description": "在指定分组末尾添加仅含标题的子项，其余文字、图片和业务标记均为空文本。"
 						},
 						{
 							"name": "取子项标记",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取子项的业务标记。"
 						},
 						{
 							"name": "置子项标记",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								},
 								{
 									"name": "标记",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "业务标记文本，不作为列表索引。"
 								}
-							]
+							],
+							"description": "设置子项的业务标记，不改变列表显示内容。"
 						},
 						{
 							"name": "取子项图片",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取子项的图片。"
 						},
 						{
 							"name": "置子项图片",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								},
 								{
 									"name": "图片",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "子项图片的资产路径或绝对文件路径；空文本表示不显示图片。"
 								}
-							]
+							],
+							"description": "更新子项图片并刷新列表。"
 						},
 						{
 							"name": "取子项标题",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取子项的标题。"
 						},
 						{
 							"name": "置子项标题",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								},
 								{
 									"name": "标题",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "要显示的标题。"
 								}
-							]
+							],
+							"description": "更新子项标题并刷新列表。"
 						},
 						{
 							"name": "取子项信息",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取子项的信息。"
 						},
 						{
 							"name": "置子项信息",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								},
 								{
 									"name": "信息",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "附加信息文本；空文本表示不显示信息。"
 								}
-							]
+							],
+							"description": "更新子项信息并刷新列表。"
 						},
 						{
 							"name": "取子项按钮图片",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取子项的按钮图片。"
 						},
 						{
 							"name": "置子项按钮图片",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								},
 								{
 									"name": "按钮图片",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "按钮背景图片的资产路径或绝对文件路径；空文本不设置图片背景。"
 								}
-							]
+							],
+							"description": "更新子项按钮图片并刷新列表。"
 						},
 						{
 							"name": "取子项按钮标题",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
 							],
-							"return": "文本型"
+							"return": "文本型",
+							"description": "读取子项的按钮标题。"
 						},
 						{
 							"name": "置子项按钮标题",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								},
 								{
 									"name": "按钮标题",
-									"type": "文本型"
+									"type": "文本型",
+									"description": "子项按钮显示的文字。"
 								}
-							]
+							],
+							"description": "更新子项按钮标题并刷新列表。"
 						},
 						{
 							"name": "取子项总数",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
 							],
-							"return": "整数型"
+							"return": "整数型",
+							"description": "取得指定分组中的子项数量。"
 						},
 						{
 							"name": "删除子项",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "删除指定子项，组内后续子项索引随之改变。"
 						},
 						{
 							"name": "清空子项",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "删除指定分组的全部子项，保留分组。"
 						},
 						{
 							"name": "选中子项",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
+								}
+							],
+							"description": "选中子项，必要时自动展开所在分组。"
+						},
+						{
+							"name": "选中子项",
+							"params": [
+								{
+									"name": "分组索引",
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
+								},
+								{
+									"name": "子项索引",
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								},
 								{
 									"name": "展开分组",
-									"type": "逻辑型"
+									"type": "逻辑型",
+									"description": "目标分组收起时，是否先将其展开。"
 								}
-							]
+							],
+							"description": "将列表选择定位到指定子项，可按需展开目标分组。"
 						}
 					],
 					"events": [
@@ -532,68 +705,84 @@
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "用户单击子项时触发。"
 						},
 						{
 							"name": "子项被长按",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "用户长按子项时触发。"
 						},
 						{
 							"name": "子项按钮被单击",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								},
 								{
 									"name": "子项索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "组内子项索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "用户单击子项内的按钮时触发。"
 						},
 						{
 							"name": "分组被展开",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "分组展开后触发。"
 						},
 						{
 							"name": "分组被收起",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "分组收起后触发。"
 						},
 						{
 							"name": "分组被单击",
 							"params": [
 								{
 									"name": "分组索引",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "分组索引，从 0 开始。"
 								}
-							]
+							],
+							"description": "用户单击分组标题时触发。"
 						}
-					]
+					],
+					"description": "支持分组展开、收起及子项交互；分组索引和组内子项索引从 0 开始，删除后后续索引会改变。"
 				}
 			]
 		}

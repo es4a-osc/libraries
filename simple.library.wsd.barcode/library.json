@@ -1,0 +1,222 @@
+{
+	"name": "条码库",
+	"description": "二维码、CODE_128 条形码生成，图片识别及相机扫描。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "条码",
+					"kind": "component",
+					"type": "simple.library.wsd.barcode.条码",
+					"description": "支持两种扫描界面；ZBar 图片识别与样式 1 依赖原始 armeabi 原生库，需在兼容设备上验证。",
+					"icon": "icons/qrcode.svg",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"permissions": [
+						"android.permission.CAMERA",
+						"android.permission.FLASHLIGHT"
+					],
+					"events": [
+						{
+							"name": "扫描完毕",
+							"description": "扫描到内容时在主线程触发。",
+							"params": [
+								{
+									"name": "结果",
+									"type": "文本型",
+									"description": "二维码或条码内容。"
+								}
+							]
+						}
+					],
+					"functions": [
+						{
+							"name": "生成条形码",
+							"description": "生成 CODE_128 条形码，返回 PNG 数据；内容为空时返回空引用。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "条形码内容，应使用 CODE_128 支持的字符"
+								},
+								{
+									"name": "宽度",
+									"type": "整数型",
+									"description": "目标宽度，像素"
+								},
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "目标高度，像素"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "生成二维码",
+							"description": "生成指定正方形尺寸的二维码图片，沿用完整方法的格式和失败约定。 二维码图片的字节集。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "要编码的文本。"
+								},
+								{
+									"name": "尺寸",
+									"type": "整数型",
+									"description": "正方形图片的边长，单位像素。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "生成二维码",
+							"description": "使用 UTF-8 内容生成二维码，返回 PNG 数据。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "二维码内容"
+								},
+								{
+									"name": "宽度",
+									"type": "整数型",
+									"description": "目标宽度，像素"
+								},
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "目标高度，像素"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "生成二维码2",
+							"description": "生成带中心图标的正方形二维码图片，沿用完整方法的格式和失败约定。 二维码图片的字节集。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "要编码的文本。"
+								},
+								{
+									"name": "图标路径",
+									"type": "文本型",
+									"description": "中心图标路径，与完整方法一致。"
+								},
+								{
+									"name": "尺寸",
+									"type": "整数型",
+									"description": "正方形图片的边长，单位像素。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "生成二维码2",
+							"description": "生成带中心图标的二维码，保留原组件的图标缩放方式。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "二维码内容"
+								},
+								{
+									"name": "图标路径",
+									"type": "文本型",
+									"description": "图标文件路径，或应用资产名称"
+								},
+								{
+									"name": "宽度",
+									"type": "整数型",
+									"description": "目标宽度，像素"
+								},
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "目标高度，像素"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "识别二维码",
+							"description": "使用 ZBar 识别图片中的二维码或条码，需要匹配的原生库。",
+							"params": [
+								{
+									"name": "图片路径",
+									"type": "文本型",
+									"description": "绝对路径、应用私有文件相对路径或资产名称"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "置扫描框样式",
+							"description": "设置随后打开的扫描界面；沿用原组件的应用内共享设置。",
+							"params": [
+								{
+									"name": "样式",
+									"type": "整数型",
+									"description": "1 为 ZBar 界面，2 为 ZXing 界面，其它值按 1 处理"
+								}
+							]
+						},
+						{
+							"name": "置连续扫描",
+							"description": "设置扫描成功后是否继续扫描，默认关闭。",
+							"params": [
+								{
+									"name": "开启",
+									"type": "逻辑型",
+									"description": "是否连续扫描"
+								}
+							]
+						},
+						{
+							"name": "置闪光灯开启",
+							"description": "设置扫描界面启动后是否开启闪光灯，默认关闭。",
+							"params": [
+								{
+									"name": "开启",
+									"type": "逻辑型",
+									"description": "是否开启闪光灯，设备需具备相应能力"
+								}
+							]
+						},
+						{
+							"name": "置播放音效",
+							"description": "设置扫描成功后是否播放提示音，默认关闭。",
+							"params": [
+								{
+									"name": "开启",
+									"type": "逻辑型",
+									"description": "是否播放提示音"
+								}
+							]
+						},
+						{
+							"name": "开始扫描",
+							"description": "打开扫描界面；调用前应取得相机权限。"
+						},
+						{
+							"name": "停止扫描",
+							"description": "通知本应用的扫描界面停止并关闭。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

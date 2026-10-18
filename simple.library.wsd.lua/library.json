@@ -1,0 +1,699 @@
+{
+	"name": "Lua脚本库",
+	"description": "基于 LuaJava 和 Lua 5.1.5 的实例、堆栈、值、表、函数及宿主回调对象封装；附带 32 位 ARM 原生库。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "Lua堆栈",
+					"description": "Lua 实例或同步回调的堆栈操作视图。",
+					"kind": "object",
+					"type": "simple.library.wsd.lua.Lua堆栈",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "取数量",
+							"description": "取得当前视图可访问的栈值数量。",
+							"return": "整数型"
+						},
+						{
+							"name": "置数量",
+							"description": "调整栈顶，缩小时弹出值，扩展时填充 nil。",
+							"params": [
+								{
+									"name": "数量",
+									"type": "整数型",
+									"description": "非负数量；扩展部分填充 nil。"
+								}
+							]
+						},
+						{
+							"name": "压入空值",
+							"description": "将空值压入栈顶，栈值数量增加 1。"
+						},
+						{
+							"name": "压入整数",
+							"description": "将整数压入栈顶，栈值数量增加 1。",
+							"params": [
+								{
+									"name": "整数",
+									"type": "整数型",
+									"description": "32 位整数，作为 Lua number 传入。"
+								}
+							]
+						},
+						{
+							"name": "压入小数",
+							"description": "将小数压入栈顶，栈值数量增加 1。",
+							"params": [
+								{
+									"name": "小数",
+									"type": "双精度小数型",
+									"description": "双精度数值，遵循 Lua 5.1 的 number 规则。"
+								}
+							]
+						},
+						{
+							"name": "压入文本",
+							"description": "将文本压入栈顶，栈值数量增加 1。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本内容，不得为空引用。"
+								}
+							]
+						},
+						{
+							"name": "压入逻辑",
+							"description": "将逻辑压入栈顶，栈值数量增加 1。",
+							"params": [
+								{
+									"name": "逻辑",
+									"type": "逻辑型",
+									"description": "待压入的逻辑值。"
+								}
+							]
+						},
+						{
+							"name": "压入字节集",
+							"description": "将字节集压入栈顶，栈值数量增加 1。",
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型()",
+									"description": "原始字节数组；空引用压入 nil。"
+								}
+							]
+						},
+						{
+							"name": "压入对象",
+							"description": "将对象压入栈顶，栈值数量增加 1。",
+							"params": [
+								{
+									"name": "对象",
+									"type": "对象",
+									"description": "通过 Java 对象桥接传入；空引用压入 nil。"
+								}
+							]
+						},
+						{
+							"name": "压入值",
+							"description": "将值压入栈顶，栈值数量增加 1。",
+							"params": [
+								{
+									"name": "值",
+									"type": "simple.library.wsd.lua.Lua值",
+									"description": "同一实例的值引用，空引用压入 nil。"
+								}
+							]
+						},
+						{
+							"name": "压入变体",
+							"description": "将变体压入栈顶，栈值数量增加 1。",
+							"params": [
+								{
+									"name": "变体",
+									"type": "变体型",
+									"description": "基本值、字节集、Java 对象或同一实例的 Lua值。"
+								}
+							]
+						},
+						{
+							"name": "取类型",
+							"description": "取得栈值的 Lua 类型，不改变栈。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "取值",
+							"description": "取得独立值引用，不改变栈；引用使用后应释放。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua值"
+						},
+						{
+							"name": "取整数",
+							"description": "按 Lua 5.1 规则读取整数，不弹出栈值。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "取小数",
+							"description": "按 Lua 5.1 规则读取小数，不弹出栈值。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							],
+							"return": "双精度小数型"
+						},
+						{
+							"name": "取文本",
+							"description": "按 Lua 5.1 规则读取文本，不弹出栈值。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取逻辑",
+							"description": "按 Lua 5.1 规则读取逻辑，不弹出栈值。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取对象",
+							"description": "按 Lua 5.1 规则读取对象，不弹出栈值。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							],
+							"return": "对象"
+						},
+						{
+							"name": "取字节集",
+							"description": "按 Lua 5.1 规则读取字节集，不弹出栈值。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "复制",
+							"description": "栈值数量增加 1。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							]
+						},
+						{
+							"name": "移除",
+							"description": "栈值数量减少 1。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							]
+						},
+						{
+							"name": "插入",
+							"description": "把栈顶值移动到指定位置，数量不变。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							]
+						},
+						{
+							"name": "替换",
+							"description": "用栈顶值替换指定位置并弹出栈顶。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "正索引从 1 开始，负索引从 -1 开始。"
+								}
+							]
+						},
+						{
+							"name": "弹出",
+							"description": "弹出一个栈值，沿用完整方法的边界检查。"
+						},
+						{
+							"name": "弹出",
+							"description": "弹出栈顶指定数量的值。",
+							"params": [
+								{
+									"name": "数量",
+									"type": "整数型",
+									"description": "要弹出的非负栈值数量。"
+								}
+							]
+						},
+						{
+							"name": "调用",
+							"description": "调用栈上的函数并保留全部返回值，结果数量参数为 -1。 这是低层堆栈调用，会用返回值替换函数及参数；不恢复调用前的栈。",
+							"params": [
+								{
+									"name": "参数数量",
+									"type": "整数型",
+									"description": "栈顶函数后面的参数个数。"
+								}
+							]
+						},
+						{
+							"name": "调用",
+							"description": "受保护调用栈中的函数；成功消费函数和参数，失败清理本次函数及参数。",
+							"params": [
+								{
+									"name": "参数数量",
+									"type": "整数型",
+									"description": "函数后已压入的参数数量，必须非负。"
+								},
+								{
+									"name": "返回值数量",
+									"type": "整数型",
+									"description": "非负数；-1 表示保留全部结果。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Lua值",
+					"description": "属于单个 Lua 实例的稳定值引用，使用完毕须释放。",
+					"kind": "object",
+					"type": "simple.library.wsd.lua.Lua值",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "是否有效",
+							"description": "检查引用及其所属实例是否仍然有效，不访问原生状态。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "释放",
+							"description": "显式释放注册表引用，重复释放或实例关闭后释放均无副作用。"
+						},
+						{
+							"name": "取类型",
+							"description": "取得 Lua 类型代码，不改变调用者的栈。",
+							"return": "整数型"
+						},
+						{
+							"name": "是否空值",
+							"description": "判断值是否为 Lua nil。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "到整数",
+							"description": "读取整数，结束后恢复原栈顶。",
+							"return": "整数型"
+						},
+						{
+							"name": "到小数",
+							"description": "读取小数，结束后恢复原栈顶。",
+							"return": "双精度小数型"
+						},
+						{
+							"name": "到文本",
+							"description": "读取文本，结束后恢复原栈顶。",
+							"return": "文本型"
+						},
+						{
+							"name": "到逻辑",
+							"description": "读取逻辑，结束后恢复原栈顶。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "到对象",
+							"description": "读取对象，结束后恢复原栈顶。",
+							"return": "对象"
+						},
+						{
+							"name": "到字节集",
+							"description": "读取字节集，结束后恢复原栈顶。",
+							"return": "字节型()"
+						},
+						{
+							"name": "到表",
+							"description": "复制为表引用，原引用仍有效；新旧引用分别释放。",
+							"return": "simple.library.wsd.lua.Lua表"
+						},
+						{
+							"name": "到函数",
+							"description": "复制为函数引用，原引用仍有效；新旧引用分别释放。",
+							"return": "simple.library.wsd.lua.Lua函数"
+						}
+					],
+					"constants": [
+						{
+							"name": "类型_空值",
+							"type": "整数型",
+							"value": "0",
+							"description": "Lua 5.1 的空值类型代码。"
+						},
+						{
+							"name": "类型_逻辑",
+							"type": "整数型",
+							"value": "1",
+							"description": "Lua 5.1 的逻辑类型代码。"
+						},
+						{
+							"name": "类型_轻量对象",
+							"type": "整数型",
+							"value": "2",
+							"description": "Lua 5.1 的轻量对象类型代码。"
+						},
+						{
+							"name": "类型_数值",
+							"type": "整数型",
+							"value": "3",
+							"description": "Lua 5.1 的数值类型代码。"
+						},
+						{
+							"name": "类型_文本",
+							"type": "整数型",
+							"value": "4",
+							"description": "Lua 5.1 的文本类型代码。"
+						},
+						{
+							"name": "类型_表",
+							"type": "整数型",
+							"value": "5",
+							"description": "Lua 5.1 的表类型代码。"
+						},
+						{
+							"name": "类型_函数",
+							"type": "整数型",
+							"value": "6",
+							"description": "Lua 5.1 的函数类型代码。"
+						},
+						{
+							"name": "类型_对象",
+							"type": "整数型",
+							"value": "7",
+							"description": "Lua 5.1 的对象类型代码。"
+						},
+						{
+							"name": "类型_线程",
+							"type": "整数型",
+							"value": "8",
+							"description": "Lua 5.1 的线程类型代码。"
+						}
+					]
+				},
+				{
+					"name": "Lua实例",
+					"description": "拥有独立 Lua 5.1.5 解释器的普通对象，继承完整堆栈操作。",
+					"kind": "object",
+					"type": "simple.library.wsd.lua.Lua实例",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "是否关闭",
+							"description": "查询解释器是否已经关闭。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "关闭",
+							"description": "释放解释器，所有值引用同时失效；不允许在脚本或回调执行期间关闭。"
+						},
+						{
+							"name": "执行代码",
+							"description": "执行代码并按顺序取得全部返回值，包含 nil；失败抛出可捕获错误。",
+							"params": [
+								{
+									"name": "代码",
+									"type": "文本型",
+									"description": "Lua 5.1 代码；加载后立即执行。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua值()"
+						},
+						{
+							"name": "执行文件",
+							"description": "加载并执行脚本文件，结束后恢复原栈。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "可读取的本地 Lua 脚本路径；文件访问仍受 Android 权限限制。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua值()"
+						},
+						{
+							"name": "取全局",
+							"description": "读取全局值，不残留临时栈值；不存在时返回 nil 引用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "单个全局名称，不解析点号路径。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua值"
+						},
+						{
+							"name": "置全局",
+							"description": "设置全局值并恢复原栈。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "单个全局名称。"
+								},
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "基本值、字节集、Java 对象或同一实例的 Lua值；空值删除全局。"
+								}
+							]
+						},
+						{
+							"name": "创建表",
+							"description": "创建空表并返回稳定引用，不残留栈值。",
+							"return": "simple.library.wsd.lua.Lua表"
+						},
+						{
+							"name": "取函数",
+							"description": "取得全局函数引用；不存在或不是函数时报告错误。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "全局函数名称。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua函数"
+						},
+						{
+							"name": "调用函数",
+							"description": "不传参数调用全局函数，返回全部结果并恢复原栈。 结果引用数组，保留所有 nil，逐项释放。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "全局函数名称。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua值()"
+						},
+						{
+							"name": "调用函数",
+							"description": "直接调用全局函数，返回全部结果并恢复原栈。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "全局函数名称。"
+								},
+								{
+									"name": "参数",
+									"type": "变体型()",
+									"description": "按顺序传入的参数；空引用或空数组表示无参数。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua值()"
+						},
+						{
+							"name": "注册函数",
+							"description": "注册同步宿主回调，隐藏 JavaFunction 自身参数；回调不得跨线程保存堆栈。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "Lua 全局函数名称；同名全局值被替换。"
+								},
+								{
+									"name": "回调",
+									"type": "simple.library.wsd.lua.Lua回调",
+									"description": "继承 Lua回调 并覆写 处理调用 方法的对象。"
+								}
+							]
+						},
+						{
+							"name": "注销函数",
+							"description": "将指定全局名称置为 nil；已经取得的函数引用仍按其生命期有效。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "要移除的全局函数名称。"
+								}
+							]
+						}
+					],
+					"inherits": [
+						"simple.library.wsd.lua.Lua堆栈"
+					]
+				},
+				{
+					"name": "Lua函数",
+					"description": "Lua 函数的稳定引用，支持直接传参及多个返回值。",
+					"kind": "object",
+					"type": "simple.library.wsd.lua.Lua函数",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "调用",
+							"description": "不传参数调用函数，成功或失败后均恢复原栈。 结果引用数组，保留所有 nil，逐项释放。",
+							"return": "simple.library.wsd.lua.Lua值()"
+						},
+						{
+							"name": "调用",
+							"description": "受保护调用函数，成功或失败后均恢复原栈；不使用全局变量中转结果。",
+							"params": [
+								{
+									"name": "参数",
+									"type": "变体型()",
+									"description": "按顺序转换的参数，空引用或空数组表示无参数；Lua值只能来自同一实例。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua值()"
+						}
+					],
+					"inherits": [
+						"simple.library.wsd.lua.Lua值"
+					]
+				},
+				{
+					"name": "Lua表",
+					"description": "Lua 表的稳定引用，支持原始字段读写及键快照遍历。",
+					"kind": "object",
+					"type": "simple.library.wsd.lua.Lua表",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "取成员",
+							"description": "按键读取原始成员，不存在时返回 nil 引用，不改变原栈。",
+							"params": [
+								{
+									"name": "键",
+									"type": "变体型",
+									"description": "文本、数值或其它合法 Lua 键；不能为 nil 或 NaN。"
+								}
+							],
+							"return": "simple.library.wsd.lua.Lua值"
+						},
+						{
+							"name": "置成员",
+							"description": "按键设置原始成员，结束后恢复原栈。",
+							"params": [
+								{
+									"name": "键",
+									"type": "变体型",
+									"description": "不能为 nil 或 NaN；Lua值键必须来自同一实例。"
+								},
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "基本值、字节集、对象或同一实例的 Lua值；nil 表示删除成员。"
+								}
+							]
+						},
+						{
+							"name": "移除成员",
+							"description": "移除指定键，不触发元方法。",
+							"params": [
+								{
+									"name": "键",
+									"type": "变体型",
+									"description": "要删除的成员键。"
+								}
+							]
+						},
+						{
+							"name": "取长度",
+							"description": "取得 Lua 5.1 原始数组边界；有空洞的表不保证返回成员总数。",
+							"return": "整数型"
+						},
+						{
+							"name": "取键",
+							"description": "取得当前全部键的独立引用快照，顺序由 Lua 决定，结果逐项释放。",
+							"return": "simple.library.wsd.lua.Lua值()"
+						}
+					],
+					"inherits": [
+						"simple.library.wsd.lua.Lua值"
+					]
+				},
+				{
+					"name": "Lua回调",
+					"description": "供 Simple 对象继承并覆写的同步宿主函数。",
+					"kind": "object",
+					"type": "simple.library.wsd.lua.Lua回调",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "处理调用",
+							"description": "覆写此方法处理 Lua 调用；先读取参数，再压入结果并返回结果数量。",
+							"params": [
+								{
+									"name": "堆栈",
+									"type": "simple.library.wsd.lua.Lua堆栈",
+									"description": "仅在本次回调线程和期间有效；不包含 LuaJava 自身参数。"
+								}
+							],
+							"return": "整数型"
+						}
+					]
+				}
+			]
+		}
+	]
+}

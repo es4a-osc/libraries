@@ -294,6 +294,7 @@ public final class BluetoothLeService extends Service {
 			reportResult(activeOperation, 2, null);
 			activeOperation = null;
 		}
+
 		while (!operations.isEmpty()) {
 			reportResult(operations.remove(), 2, null);
 		}

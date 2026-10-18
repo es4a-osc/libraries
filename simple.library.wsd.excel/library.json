@@ -1,0 +1,141 @@
+{
+	"name": "EXCEL操作库",
+	"description": "基于 JExcelAPI 读写 Excel 97-2003 .xls 的第一张工作表，不支持 .xlsx。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "EXCEL操作",
+					"description": "基于 JExcelAPI 读写 Excel 97-2003 .xls 的第一张工作表，不支持 .xlsx。",
+					"kind": "component",
+					"type": "simple.library.wsd.excel.EXCEL操作",
+					"icon": "icons/excel.svg",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"functions": [
+						{
+							"name": "添加工作表",
+							"description": "新建并覆盖目标 .xls 文件，创建第一张工作表；已有未写出会话时拒绝。成功后添加单元格并调用写出工作表。",
+							"params": [
+								{
+									"name": "工作表名",
+									"type": "文本型",
+									"description": "新建的第一张工作表名称。"
+								},
+								{
+									"name": "文件路径",
+									"type": "文本型",
+									"description": "工作簿文件路径；相对路径以应用私有文件目录为基准。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "添加单元格",
+							"description": "向当前写入工作表添加文本单元格，参数顺序为行、列，索引从 0 开始。",
+							"params": [
+								{
+									"name": "行",
+									"type": "整数型",
+									"description": "零基行索引，XLS 有效范围为 0 至 65535。"
+								},
+								{
+									"name": "列",
+									"type": "整数型",
+									"description": "零基列索引，XLS 有效范围为 0 至 255。"
+								},
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "要写入单元格的文本，空引用按空文本处理。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "合并单元格",
+							"description": "按起始行、起始列、结束行、结束列合并区域，索引从 0 开始。",
+							"params": [
+								{
+									"name": "起始行",
+									"type": "整数型",
+									"description": "合并区域的起始行，零基索引。"
+								},
+								{
+									"name": "起始列",
+									"type": "整数型",
+									"description": "合并区域的起始列，零基索引。"
+								},
+								{
+									"name": "结束行",
+									"type": "整数型",
+									"description": "合并区域的结束行，不能小于起始行。"
+								},
+								{
+									"name": "结束列",
+									"type": "整数型",
+									"description": "合并区域的结束列，不能小于起始列。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "写出工作表",
+							"description": "写出并关闭当前工作簿，成功返回真；失败返回假并释放写入资源。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "读取工作表",
+							"description": "打开 .xls 文件的第一张工作表；失败返回假并清除之前的读取状态。",
+							"params": [
+								{
+									"name": "文件路径",
+									"type": "文本型",
+									"description": "工作簿文件路径；相对路径以应用私有文件目录为基准。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "读取总行数",
+							"description": "返回当前读取工作表行数，未打开返回 0。",
+							"return": "整数型"
+						},
+						{
+							"name": "读取总列数",
+							"description": "返回当前读取工作表列数，未打开返回 0。",
+							"return": "整数型"
+						},
+						{
+							"name": "读取单元格",
+							"description": "按行、列读取格式化文本，索引从 0 开始；未打开或越界返回空文本。",
+							"params": [
+								{
+									"name": "行",
+									"type": "整数型",
+									"description": "零基行索引，XLS 有效范围为 0 至 65535。"
+								},
+								{
+									"name": "列",
+									"type": "整数型",
+									"description": "零基列索引，XLS 有效范围为 0 至 255。"
+								}
+							],
+							"return": "文本型"
+						}
+					]
+				}
+			]
+		}
+	]
+}

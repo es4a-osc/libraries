@@ -113,6 +113,16 @@ public final class HTTP服务请求 {
 	}
 
 	/**
+	 * 取得路由正则表达式的完整匹配文本，分组索引为 0。
+	 *
+	 * @return 完整匹配文本，沿用原有匹配器的状态及失败约定。
+	 */
+	@SimpleFunction
+	public String 取匹配文本() {
+		return 取匹配文本(0);
+	}
+
+	/**
 	 * 取注册路由的正则表达式匹配结果
 	 *
 	 * @param group 捕获组索引，0为整个匹配结果，后续为子匹配文本

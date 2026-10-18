@@ -1,0 +1,281 @@
+{
+	"name": "蓝牙打印机库",
+	"description": "经典蓝牙打印机连接和原库 ESC/POS 指令；非 BLE 打印协议。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "蓝牙打印机",
+					"description": "经典蓝牙打印机连接和原库 ESC/POS 指令；非 BLE 打印协议。",
+					"kind": "component",
+					"type": "simple.library.wsd.bluetoothprinter.蓝牙打印机",
+					"icon": "icons/bluetoothprinter.svg",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"permissions": [
+						"android.permission.BLUETOOTH",
+						"android.permission.BLUETOOTH_ADMIN",
+						"android.permission.ACCESS_FINE_LOCATION",
+						"android.permission.BLUETOOTH_SCAN",
+						"android.permission.BLUETOOTH_CONNECT"
+					],
+					"functions": [
+						{
+							"name": "开启蓝牙",
+							"description": "请求系统开启经典蓝牙，由用户在系统界面确认。"
+						},
+						{
+							"name": "关闭蓝牙",
+							"description": "停止当前通讯并打开系统蓝牙设置，由用户关闭蓝牙。"
+						},
+						{
+							"name": "是否已开启蓝牙",
+							"description": "判断本机是否支持且已开启蓝牙；权限不足时返回假。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否已连接",
+							"description": "返回当前是否已建立连接。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "搜索设备",
+							"description": "搜索附近经典蓝牙设备；应先授予当前系统要求的蓝牙及定位权限并开启蓝牙。"
+						},
+						{
+							"name": "停止搜索",
+							"description": "停止当前设备搜索。"
+						},
+						{
+							"name": "取已配对设备",
+							"description": "返回二维文本数组，每行为名称、MAC 地址；没有设备时为空数组。",
+							"return": "文本型(,)"
+						},
+						{
+							"name": "连接设备",
+							"description": "异步连接指定 MAC 地址的蓝牙打印机；失败通过连接失败通知。",
+							"params": [
+								{
+									"name": "设备地址",
+									"type": "文本型",
+									"description": "目标蓝牙设备的 MAC 地址。"
+								}
+							]
+						},
+						{
+							"name": "断开连接",
+							"description": "断开当前打印连接，不关闭手机蓝牙。"
+						},
+						{
+							"name": "文本",
+							"description": "以 GBK 编码发送文本，打印机需支持相应字符集；未连接或写入失败抛出异常。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "要打印的文本，须符合本方法声明的编码及长度约束。"
+								}
+							]
+						},
+						{
+							"name": "条码",
+							"description": "发送原库 Code128 指令，内容须为 ASCII 且不超过 255 字节；型号与代码集支持由打印机决定。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "要打印的文本，须符合本方法声明的编码及长度约束。"
+								}
+							]
+						},
+						{
+							"name": "图片",
+							"description": "解码图片字节集并缩放至指定像素尺寸，转换为 24 点 ESC/POS 位图；尺寸须大于 0，纸宽由打印机决定。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "图片编码数据。"
+								},
+								{
+									"name": "宽度",
+									"type": "整数型",
+									"description": "目标图片宽度，单位像素，范围 1 至 4096。"
+								},
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "目标图片高度，单位像素，范围 1 至 4096。"
+								}
+							]
+						},
+						{
+							"name": "指令",
+							"description": "原样发送打印机指令字节集；仅使用目标型号支持的指令。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "要原样发送的打印指令字节数据。"
+								}
+							]
+						},
+						{
+							"name": "重置设置",
+							"description": "发送 ESC @ 重置设置。"
+						},
+						{
+							"name": "打印当前内容",
+							"description": "发送回车指令 0D，具体走纸及打印行为由型号决定。"
+						},
+						{
+							"name": "换行",
+							"description": "发送换行指令 0A。"
+						},
+						{
+							"name": "下划线",
+							"description": "切换原库中文下划线指令。",
+							"params": [
+								{
+									"name": "是否开启",
+									"type": "逻辑型",
+									"description": "是否启用此打印效果。"
+								}
+							]
+						},
+						{
+							"name": "反白",
+							"description": "切换反白打印。",
+							"params": [
+								{
+									"name": "是否开启",
+									"type": "逻辑型",
+									"description": "是否启用此打印效果。"
+								}
+							]
+						},
+						{
+							"name": "粗体",
+							"description": "切换粗体打印。",
+							"params": [
+								{
+									"name": "是否开启",
+									"type": "逻辑型",
+									"description": "是否启用此打印效果。"
+								}
+							]
+						},
+						{
+							"name": "行距",
+							"description": "设置行距，范围 0-255。",
+							"params": [
+								{
+									"name": "值",
+									"type": "整数型",
+									"description": "行距指令参数，范围 0 至 255。"
+								}
+							]
+						},
+						{
+							"name": "字体大小",
+							"description": "1 为正常大小，2 为双倍宽高。",
+							"params": [
+								{
+									"name": "值",
+									"type": "整数型",
+									"description": "字号模式：1 为正常，2 为双倍宽高。"
+								}
+							]
+						},
+						{
+							"name": "字体大小2",
+							"description": "发送 GS ! 字号参数；范围 0-255，具体合法位由打印机决定。",
+							"params": [
+								{
+									"name": "值",
+									"type": "整数型",
+									"description": "GS ! 指令参数，范围 0 至 255；合法位由打印机决定。"
+								}
+							]
+						},
+						{
+							"name": "对齐方式",
+							"description": "设置对齐方式：1 左对齐、2 居中、3 右对齐。",
+							"params": [
+								{
+									"name": "值",
+									"type": "整数型",
+									"description": "对齐模式：1 左对齐、2 居中、3 右对齐。"
+								}
+							]
+						},
+						{
+							"name": "水平制表",
+							"description": "发送水平制表符 09。"
+						},
+						{
+							"name": "水平制表值",
+							"description": "设置一个水平制表位置，0 结束设置；字节参数按无符号值发送。",
+							"params": [
+								{
+									"name": "值",
+									"type": "字节型",
+									"description": "制表位置，按无符号字节发送；0 表示结束设置。"
+								}
+							]
+						}
+					],
+					"events": [
+						{
+							"name": "搜索完毕",
+							"description": "搜索自然结束或停止时在主线程触发。"
+						},
+						{
+							"name": "发现设备",
+							"description": "搜索发现设备时返回名称、地址和配对状态；发现设备不表示其支持打印协议。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "设备名称，设备未提供名称时可能为空。"
+								},
+								{
+									"name": "地址",
+									"type": "文本型",
+									"description": "目标蓝牙设备的 MAC 地址。"
+								},
+								{
+									"name": "是否已配对",
+									"type": "逻辑型",
+									"description": "设备是否已经与本机配对。"
+								}
+							]
+						},
+						{
+							"name": "连接成功",
+							"description": "连接成功时在主线程触发。"
+						},
+						{
+							"name": "连接失败",
+							"description": "连接地址无效、权限不足或连接失败时在主线程触发。"
+						},
+						{
+							"name": "丢失连接",
+							"description": "蓝牙打印连接意外丢失时在主线程触发。"
+						}
+					]
+				}
+			]
+		}
+	]
+}
