@@ -28,6 +28,7 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 	private volatile boolean destroyed;
 	private boolean transferring;
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			dispose(false);
@@ -42,8 +43,16 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 			hostConfirmation = new SftpHostConfirmation(activity);
 			final SharedPreferences trustedHosts = activity.getSharedPreferences("simple.library.wsd.ftpclient.hosts", Context.MODE_PRIVATE);
 			hostTrust = new SftpHostTrust(new SftpHostTrust.Store() {
-				@Override public String read(String key) { return trustedHosts.getString(key, ""); }
-				@Override public boolean write(String key, String value) { return trustedHosts.edit().putString(key, value).commit(); }
+
+				@Override
+				public String read(String key) {
+					return trustedHosts.getString(key, "");
+				}
+
+				@Override
+				public boolean write(String key, String value) {
+					return trustedHosts.edit().putString(key, value).commit();
+				}
 			}, hostConfirmation);
 		} else {
 			hostConfirmation = null;
@@ -91,16 +100,39 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 		}
 	}
 
-	@Override public int 协议() { return protocol; }
-	@Override public void 协议(int value) {
+	@Override
+	public int 协议() {
+		return protocol;
+	}
+
+	@Override
+	public void 协议(int value) {
 		if (value != 协议_FTP && value != 协议_SFTP) throw new IllegalArgumentException("未知传输协议。");
 
 		protocol = value;
 	}
-	@Override public String 服务器公钥指纹() { return fingerprint; }
-	@Override public void 服务器公钥指纹(String value) { fingerprint = value == null ? "" : value.trim(); }
-	@Override public String 错误信息() { return lastError; }
 
+	@Override
+	public String 服务器公钥指纹() {
+		return fingerprint;
+	}
+
+	@Override
+	public void 服务器公钥指纹(String value) {
+		fingerprint = value == null ? "" : value.trim();
+	}
+
+	@Override
+	public String 错误信息() {
+		return lastError;
+	}
+
+	/**
+	 * 按操作结果更新组件错误状态。
+	 *
+	 * @param success 本次操作是否成功
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 */
 	private boolean result(boolean success) {
 		lastError = success ? "" : session.error();
 		if (!success && lastError.length() == 0) lastError = "操作失败，请检查连接、路径和访问权限。";
@@ -161,12 +193,27 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 		return mutate(remoteDirectory, name, null, 3);
 	}
 
+	/**
+	 * 按指定模式修改远程文件或目录。
+	 *
+	 * @param directory 远程目录
+	 * @param name 要操作的名称
+	 * @param newName 修改后的名称
+	 * @param mode 操作模式
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 */
 	private boolean mutate(String directory, String name, String newName, int mode) {
 		synchronized (operations) {
 			return !destroyed && result(session.mutate(directory, name, newName, mode));
 		}
 	}
 
+	/**
+	 * 校验并取得本地传输目录。
+	 *
+	 * @param path 文件或目录路径
+	 * @return 校验通过的本地目录
+	 */
 	private File localDirectory(String path) {
 		if (path == null) {
 			return null;
@@ -215,6 +262,15 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 		return transfer(false, localDirectory, remoteName, remoteDirectory);
 	}
 
+	/**
+	 * 安排上传或下载任务并分发传输结果。
+	 *
+	 * @param upload 是否执行上传
+	 * @param localDirectory 本地传输目录
+	 * @param name 要操作的名称
+	 * @param remoteDirectory 远程传输目录
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 */
 	private synchronized boolean transfer(final boolean upload, final String localDirectory,
 			final String name, final String remoteDirectory) {
 		if (destroyed || transferring) {
@@ -223,6 +279,7 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 
 		transferring = true;
 		Thread worker = new Thread(new Runnable() {
+
 			@Override
 			public void run() {
 				boolean result = false;
@@ -237,6 +294,7 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 
 				final boolean succeeded = result;
 				handler.post(new Runnable() {
+
 					@Override
 					public void run() {
 						synchronized (FTP客户端Impl.this) {
@@ -281,6 +339,11 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 		super.销毁();
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 *
+	 * @param removeListener 是否移除生命周期监听器
+	 */
 	private synchronized void dispose(boolean removeListener) {
 		if (destroyed) {
 			return;
@@ -294,6 +357,7 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 
 		handler.removeCallbacksAndMessages(null);
 		new Thread(new Runnable() {
+
 			@Override
 			public void run() {
 				synchronized (operations) {

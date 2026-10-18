@@ -14,12 +14,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 
+	/**
+	 * 保存服务器身份确认弹窗及等待结果的状态。
+	 */
 	private static final class Request {
 		final CountDownLatch signal = new CountDownLatch(1);
 		final AtomicBoolean completed = new AtomicBoolean();
 		volatile boolean accepted;
 		volatile AlertDialog dialog;
 
+		/**
+		 * 记录本次确认结果并唤醒等待方。
+		 *
+		 * @param value 用户是否接受本次服务器身份确认。
+		 */
 		void finish(boolean value) {
 			if (completed.compareAndSet(false, true)) {
 				accepted = value;
@@ -33,7 +41,9 @@ final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 	private volatile boolean closed;
 	private Request pending;
 
-	SftpHostConfirmation(Activity activity) { this.activity = activity; }
+	SftpHostConfirmation(Activity activity) {
+		this.activity = activity;
+	}
 
 	@Override
 	public boolean confirm(final String host, final int port, final String algorithm,
@@ -50,7 +60,9 @@ final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 
 		try {
 			if (!handler.post(new Runnable() {
-				@Override public void run() {
+
+				@Override
+				public void run() {
 					if (closed || request.completed.get() || activity.isFinishing()) {
 						request.finish(false);
 						return;
@@ -70,13 +82,25 @@ final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 							.setTitle(changed ? "服务器公钥已变化" : "首次连接 SFTP 服务器")
 							.setMessage(message)
 							.setPositiveButton(changed ? "更新信任并连接" : "信任并连接", new DialogInterface.OnClickListener() {
-								@Override public void onClick(DialogInterface dialog, int which) { request.finish(true); }
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									request.finish(true);
+								}
 							})
 							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-								@Override public void onClick(DialogInterface dialog, int which) { request.finish(false); }
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									request.finish(false);
+								}
 							})
 							.setOnCancelListener(new DialogInterface.OnCancelListener() {
-								@Override public void onCancel(DialogInterface dialog) { request.finish(false); }
+
+								@Override
+								public void onCancel(DialogInterface dialog) {
+									request.finish(false);
+								}
 							})
 							.create();
 						request.dialog.setCanceledOnTouchOutside(false);
@@ -99,14 +123,24 @@ final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 		}
 	}
 
+	/**
+	 * 关闭指定的服务器信任确认弹窗。
+	 *
+	 * @param request 当前请求对象
+	 */
 	private void dismiss(final Request request) {
 		handler.post(new Runnable() {
-			@Override public void run() {
+
+			@Override
+			public void run() {
 				if (request.dialog != null) request.dialog.dismiss();
 			}
 		});
 	}
 
+	/**
+	 * 关闭当前对象持有的资源。
+	 */
 	synchronized void close() {
 		closed = true;
 		if (pending != null) {

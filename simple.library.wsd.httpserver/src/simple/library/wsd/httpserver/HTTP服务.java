@@ -20,9 +20,10 @@ import com.koushikdutta.async.callback.CompletedCallback;
  * @author 树先生 xhwsd@qq.com
  */
 @SimpleObject
-@UsesPermissions(permissionNames =
-	// 允许应用程序打开网络套接字。
-	"android.permission.INTERNET"
+@UsesPermissions(
+	permissionNames =
+		// 允许应用程序打开网络套接字。
+		"android.permission.INTERNET"
 )
 public final class HTTP服务 {
 
@@ -77,6 +78,7 @@ public final class HTTP服务 {
 		Variant object = ObjectVariant.getObjectVariant(unit);
 
 		server.addAction(action, regex, new HttpServerRequestCallback() {
+
 			@Override
 			public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
 				Variant[] args = new Variant[3];
@@ -134,6 +136,7 @@ public final class HTTP服务 {
 		Variant object = ObjectVariant.getObjectVariant(unit);
 
 		server.websocket(regex, new AsyncHttpServer.WebSocketRequestCallback() {
+
 			@Override
 			public void onConnected(final WebSocket webSocket, AsyncHttpServerRequest request) {
 				Variant[] args = new Variant[4];
@@ -143,6 +146,7 @@ public final class HTTP服务 {
 
 				// 设置关闭回调
 				webSocket.setClosedCallback(new CompletedCallback() {
+
 					@Override
 					public void onCompleted(Exception ex) {
 						args[1] = StringVariant.getStringVariant("closed");
@@ -152,6 +156,7 @@ public final class HTTP服务 {
 				});
 
 				webSocket.setStringCallback(new WebSocket.StringCallback() {
+
 					@Override
 					public void onStringAvailable(String s) {
 						args[1] = StringVariant.getStringVariant("string");

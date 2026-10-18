@@ -21,6 +21,12 @@ final class DecodeFormatManager {
 	private DecodeFormatManager() {
 	}
 
+	/**
+	 * 解析扫描请求中的解码格式配置。
+	 *
+	 * @param intent 系统意图
+	 * @return 需要识别的条码格式集合
+	 */
 	static Vector<BarcodeFormat> parseDecodeFormats(Intent intent) {
 		List<String> scanFormats = null;
 		String scanFormatsString = intent.getStringExtra("SCAN_FORMATS");
@@ -32,6 +38,12 @@ final class DecodeFormatManager {
 		return DecodeFormatManager.parseDecodeFormats(scanFormats, intent.getStringExtra("SCAN_MODE"));
 	}
 
+	/**
+	 * 解析扫描请求中的解码格式配置。
+	 *
+	 * @param inputUri 包含扫描参数的 URI
+	 * @return 需要识别的条码格式集合
+	 */
 	static Vector<BarcodeFormat> parseDecodeFormats(Uri inputUri) {
 		List<String> formats = inputUri.getQueryParameters("SCAN_FORMATS");
 		if (formats != null && formats.size() == 1 && formats.get(0) != null) {
@@ -41,6 +53,13 @@ final class DecodeFormatManager {
 		return DecodeFormatManager.parseDecodeFormats(formats, inputUri.getQueryParameter("SCAN_MODE"));
 	}
 
+	/**
+	 * 解析扫描请求中的解码格式配置。
+	 *
+	 * @param scanFormats 扫描格式名称列表
+	 * @param decodeMode 扫描模式
+	 * @return 需要识别的条码格式集合
+	 */
 	private static Vector<BarcodeFormat> parseDecodeFormats(Iterable<String> scanFormats, String decodeMode) {
 		if (scanFormats != null) {
 			Vector<BarcodeFormat> formats = new Vector<BarcodeFormat>();

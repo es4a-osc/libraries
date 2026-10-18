@@ -16,6 +16,7 @@ public final class EXCEL操作Impl extends 组件Impl implements EXCEL操作 {
 	private boolean destroyed;
 
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			dispose(false);
@@ -75,6 +76,9 @@ public final class EXCEL操作Impl extends 组件Impl implements EXCEL操作 {
 
 	/**
 	 * 相对路径使用应用私有目录，示例无需申请共享存储权限。
+	 *
+	 * @param path 文件或目录路径
+	 * @return 解析后的文件对象
 	 */
 	private String resolve(String path) {
 		if (path == null) return null;
@@ -83,6 +87,11 @@ public final class EXCEL操作Impl extends 组件Impl implements EXCEL操作 {
 		return file.isAbsolute() ? path : new File(activity.getFilesDir(), path).getPath();
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 *
+	 * @param unregister 是否注销生命周期监听器
+	 */
 	private void dispose(boolean unregister) {
 		destroyed = true;
 		session.close();

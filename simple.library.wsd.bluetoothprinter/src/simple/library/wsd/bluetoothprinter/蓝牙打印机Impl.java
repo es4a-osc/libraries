@@ -42,6 +42,7 @@ public final class 蓝牙打印机Impl extends 组件Impl implements 蓝牙打�
 	private int generation;
 
 	private final BroadcastReceiver receiver = new BroadcastReceiver() {
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (destroyed || !scanning) return;
@@ -63,6 +64,7 @@ public final class 蓝牙打印机Impl extends 组件Impl implements 蓝牙打�
 	};
 
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			dispose(false);
@@ -165,6 +167,7 @@ public final class 蓝牙打印机Impl extends 组件Impl implements 蓝牙打�
 		permission(false);
 		ArrayList<BluetoothDevice> devices = new ArrayList<BluetoothDevice>(adapter.getBondedDevices());
 		Collections.sort(devices, new Comparator<BluetoothDevice>() {
+
 			@Override
 			public int compare(BluetoothDevice left, BluetoothDevice right) {
 				return left.getAddress().compareTo(right.getAddress());
@@ -197,6 +200,7 @@ public final class 蓝牙打印机Impl extends 组件Impl implements 蓝牙打�
 				owner = this;
 				final int id = ++generation;
 				messages = new Handler(Looper.getMainLooper()) {
+
 					@Override
 					public void handleMessage(Message message) {
 						if (destroyed || generation != id) return;
@@ -262,6 +266,7 @@ public final class 蓝牙打印机Impl extends 组件Impl implements 蓝牙打�
 		if (text == null || text.length() == 0 || text.length() > 255) throw new IllegalArgumentException("条码长度须为 1-255");
 
 		for (int index = 0; index < text.length(); index++) if (text.charAt(index) > 127) throw new IllegalArgumentException("条码须为 ASCII");
+
 		byte[] value = text.getBytes(Charset.forName("US-ASCII"));
 		send(new byte[] {29, 69, 67, 1, 29, 104, 100, 29, 72, 2, 29, 119, 2, 27, 97, 1});
 
@@ -368,6 +373,11 @@ public final class 蓝牙打印机Impl extends 组件Impl implements 蓝牙打�
 
 	/* 生命周期与内部辅助 */
 
+	/**
+	 * 检查本次蓝牙操作所需的系统权限。
+	 *
+	 * @param scan 是否需要扫描权限
+	 */
 	private void permission(boolean scan) {
 		if (destroyed || adapter == null) throw new IllegalStateException("组件已销毁或设备不支持蓝牙");
 		if (Build.VERSION.SDK_INT >= 23) {
@@ -380,17 +390,33 @@ public final class 蓝牙打印机Impl extends 组件Impl implements 蓝牙打�
 		}
 	}
 
+	/**
+	 * 向当前连接发送数据。
+	 *
+	 * @param command 需要发送的命令
+	 */
 	private void send(byte[] command) {
 		if (!是否已连接()) throw new IllegalStateException("请先连接打印机");
 		if (command == null || !printer.write(command)) throw new IllegalStateException("打印指令写入失败");
 	}
 
+	/**
+	 * 验证无符号字节参数范围，返回原值。
+	 *
+	 * @param value 待验证的无符号字节值，范围为 0 至 255。
+	 * @return 通过范围检查的原值。
+	 */
 	private static int unsigned(int value) {
 		if (value < 0 || value > 255) throw new IllegalArgumentException("参数范围为 0-255");
 
 		return value;
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 *
+	 * @param unregister 是否注销生命周期监听器
+	 */
 	private void dispose(boolean unregister) {
 		if (!destroyed) {
 			destroyed = true;

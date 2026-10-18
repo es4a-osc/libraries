@@ -48,6 +48,7 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 	}
 
 	private final BroadcastReceiver receiver = new BroadcastReceiver() {
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (permissionAction.equals(intent.getAction())) {
@@ -63,6 +64,7 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 	};
 
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			dispose(false);
@@ -72,6 +74,8 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 
 	/**
 	 * 使用独立授权广播，避免旧驱动在授权尚未完成时初始化空连接。
+	 *
+	 * @param container 所属组件容器
 	 */
 	public OTG通讯Impl(组件容器 container) {
 		super(container);
@@ -105,6 +109,7 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 		// 固定设备遍历顺序，只处理声明支持的 CH34x 设备。
 		ArrayList<UsbDevice> devices = new ArrayList<UsbDevice>(manager.getDeviceList().values());
 		Collections.sort(devices, new Comparator<UsbDevice>() {
+
 			@Override
 			public int compare(UsbDevice left, UsbDevice right) {
 				return left.getDeviceName().compareTo(right.getDeviceName());
@@ -140,6 +145,7 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 				final Session session = new Session(driver, device.getDeviceId());
 				current = session;
 				session.reader = new Thread(new Runnable() {
+
 					@Override
 					public void run() {
 						read(session);
@@ -193,6 +199,7 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 	public void 设置参数(int baudRate, int dataBits, int stopBits, int parity) {
 		if (baudRate <= 0 || dataBits < 5 || dataBits > 8 || stopBits < 1 || stopBits > 2 || parity < 0 || parity > 4)
 			throw new IllegalArgumentException("串口参数超出支持范围");
+
 		Session session = current;
 		if (session == null) return;
 
@@ -237,6 +244,8 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 
 	/**
 	 * 驱动读缓冲区不阻塞，无数据时让出 CPU；所有事件回到主线程。
+	 *
+	 * @param session 当前连接会话
 	 */
 	private void read(final Session session) {
 		byte[] buffer = new byte[512];
@@ -255,6 +264,7 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 					final byte[] received = new byte[length];
 					System.arraycopy(buffer, 0, received, 0, length);
 					handler.post(new Runnable() {
+
 						@Override
 						public void run() {
 							if (current == session) 收到数据(received);
@@ -275,6 +285,11 @@ public final class OTG通讯Impl extends 组件Impl implements OTG通讯 {
 		}
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 *
+	 * @param unregister 是否注销生命周期监听器
+	 */
 	private synchronized void dispose(boolean unregister) {
 		if (!destroyed) {
 			destroyed = true;

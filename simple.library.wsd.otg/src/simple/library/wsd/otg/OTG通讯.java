@@ -16,21 +16,21 @@ import simple.runtime.components.组件;
 @SimpleComponent
 @ManifestNodes(
 	// 声明 USB Host 能力，不强制要求设备支持。
-	rootXml =
+		rootXml =
 		"<uses-feature" +
-			" android:name=\"android.hardware.usb.host\"" +
-			" android:required=\"false\"" +
+		" android:name=\"android.hardware.usb.host\"" +
+		" android:required=\"false\"" +
 		" />",
 	// 注册 USB 设备接入广播及支持的设备过滤器。
-	activityXml =
+		activityXml =
 		"<intent-filter> " +
 		"<action" +
-			" android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"" +
+		" android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"" +
 		" />" +
 		"</intent-filter>" +
 		"<meta-data" +
-			" android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"" +
-			" android:resource=\"@xml/es4a_otg_device_filter\"" +
+		" android:name=\"android.hardware.usb.action.USB_DEVICE_ATTACHED\"" +
+		" android:resource=\"@xml/es4a_otg_device_filter\"" +
 		" />"
 )
 public interface OTG通讯 extends 组件 {

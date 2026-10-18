@@ -13,9 +13,10 @@ import simple.runtime.components.组件;
  */
 @SimpleObject
 @SimpleComponent
-@UsesPermissions(permissionNames =
-	// 访问网络套接字。
-	"android.permission.INTERNET"
+@UsesPermissions(
+	permissionNames =
+		// 访问网络套接字。
+		"android.permission.INTERNET"
 )
 public interface WS客户端 extends 组件 {
 

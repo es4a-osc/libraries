@@ -21,6 +21,12 @@ final class PreviewCallback implements Camera.PreviewCallback {
 		this.useOneShotPreviewCallback = useOneShotPreviewCallback;
 	}
 
+	/**
+	 * 设置异步回调要投递的消息处理器和消息编号。
+	 *
+	 * @param previewHandler 接收预览帧消息的处理器
+	 * @param previewMessage 预览帧消息编号
+	 */
 	void setHandler(Handler previewHandler, int previewMessage) {
 		this.previewHandler = previewHandler;
 		this.previewMessage = previewMessage;

@@ -385,6 +385,7 @@ public class Lua值 {
 		if (target != context) {
 			throw LuaContext.error("Lua 值不能跨实例使用");
 		}
+
 		context.reserve(1);
 		if (reference == -1) {
 			context.state.pushNil();

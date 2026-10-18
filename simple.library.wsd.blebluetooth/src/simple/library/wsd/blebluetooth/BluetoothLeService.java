@@ -73,6 +73,7 @@ public final class BluetoothLeService extends Service {
 	private GattOperation activeOperation;
 
 	private final Runnable operationTimeout = new Runnable() {
+
 		@Override
 		public void run() {
 			if (activeOperation != null) {
@@ -85,9 +86,11 @@ public final class BluetoothLeService extends Service {
 
 	// Android 回调转交主线程后再检查连接身份，避免旧连接修改新会话。
 	private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
+
 		@Override
 		public void onConnectionStateChange(final BluetoothGatt source, final int status, final int newState) {
 			handler.post(new Runnable() {
+
 				@Override
 				public void run() {
 					if (source != gatt) {
@@ -119,6 +122,7 @@ public final class BluetoothLeService extends Service {
 		@Override
 		public void onServicesDiscovered(final BluetoothGatt source, final int status) {
 			handler.post(new Runnable() {
+
 				@Override
 				public void run() {
 					if (source == gatt && status == BluetoothGatt.GATT_SUCCESS) {
@@ -135,6 +139,7 @@ public final class BluetoothLeService extends Service {
 			final byte[] data = copyValue(characteristic);
 
 			handler.post(new Runnable() {
+
 				@Override
 				public void run() {
 					completeOperation(source, READ, characteristic, status, data);
@@ -146,6 +151,7 @@ public final class BluetoothLeService extends Service {
 		public void onCharacteristicWrite(final BluetoothGatt source,
 			final BluetoothGattCharacteristic characteristic, final int status) {
 			handler.post(new Runnable() {
+
 				@Override
 				public void run() {
 					completeOperation(source, WRITE, characteristic, status, null);
@@ -157,6 +163,7 @@ public final class BluetoothLeService extends Service {
 		public void onDescriptorWrite(final BluetoothGatt source,
 			final BluetoothGattDescriptor descriptor, final int status) {
 			handler.post(new Runnable() {
+
 				@Override
 				public void run() {
 					if (CLIENT_CONFIGURATION.equals(descriptor.getUuid())) {
@@ -173,6 +180,7 @@ public final class BluetoothLeService extends Service {
 			final byte[] data = copyValue(characteristic);
 
 			handler.post(new Runnable() {
+
 				@Override
 				public void run() {
 					if (source == gatt && connected) {
@@ -189,6 +197,7 @@ public final class BluetoothLeService extends Service {
 	 * 向本应用中的组件提供服务实例。
 	 */
 	public final class LocalBinder extends Binder {
+
 		/**
 		 * 返回当前绑定的服务。
 		 *

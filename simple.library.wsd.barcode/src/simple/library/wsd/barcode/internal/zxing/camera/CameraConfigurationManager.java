@@ -27,6 +27,11 @@ final class CameraConfigurationManager {
 		this.context = context;
 	}
 
+	/**
+	 * 读取相机支持的预览参数并计算匹配尺寸。
+	 *
+	 * @param camera 本次使用的相机
+	 */
 	void initFromCameraParameters(Camera camera) {
 		Camera.Parameters parameters = camera.getParameters();
 		this.previewFormat = parameters.getPreviewFormat();
@@ -49,6 +54,11 @@ final class CameraConfigurationManager {
 		Log.d(TAG, "Camera resolution: " + this.cameraResolution);
 	}
 
+	/**
+	 * 将选定的预览参数应用到相机。
+	 *
+	 * @param camera 本次使用的相机
+	 */
 	void setDesiredCameraParameters(Camera camera) {
 		Camera.Parameters parameters = camera.getParameters();
 		Log.d(TAG, "Setting preview size: " + this.cameraResolution);
@@ -59,6 +69,12 @@ final class CameraConfigurationManager {
 		this.setDisplayOrientation(camera, 90);
 	}
 
+	/**
+	 * 设置相机预览的显示方向。
+	 *
+	 * @param camera 本次使用的相机
+	 * @param angle 旋转角度
+	 */
 	private void setDisplayOrientation(Camera camera, int angle) {
 		try {
 			Method downPolymorphic = camera.getClass().getMethod("setDisplayOrientation", Integer.TYPE);
@@ -70,22 +86,49 @@ final class CameraConfigurationManager {
 		}
 	}
 
+	/**
+	 * 返回相机使用的预览分辨率。
+	 *
+	 * @return 相机预览分辨率
+	 */
 	Point getCameraResolution() {
 		return this.cameraResolution;
 	}
 
+	/**
+	 * 返回预览界面使用的屏幕分辨率。
+	 *
+	 * @return 屏幕分辨率
+	 */
 	Point getScreenResolution() {
 		return this.screenResolution;
 	}
 
+	/**
+	 * 返回相机预览图像格式编号。
+	 *
+	 * @return 预览图像格式编号
+	 */
 	int getPreviewFormat() {
 		return this.previewFormat;
 	}
 
+	/**
+	 * 返回相机预览图像格式名称。
+	 *
+	 * @return 预览图像格式名称
+	 */
 	String getPreviewFormatString() {
 		return this.previewFormatString;
 	}
 
+	/**
+	 * 返回相机使用的预览分辨率。
+	 *
+	 * @param parameters 相机参数
+	 * @param screenResolution 屏幕分辨率
+	 * @return 相机预览分辨率
+	 */
 	private static Point getCameraResolution(Camera.Parameters parameters, Point screenResolution) {
 		String previewSizeValueString = parameters.get("preview-size-values");
 		if (previewSizeValueString == null) {
@@ -105,6 +148,13 @@ final class CameraConfigurationManager {
 		return cameraResolution;
 	}
 
+	/**
+	 * 从相机支持的尺寸中选择最匹配屏幕的预览尺寸。
+	 *
+	 * @param previewSizeValueString 相机支持的预览尺寸文本
+	 * @param screenResolution 屏幕分辨率
+	 * @return 与屏幕最匹配的预览分辨率
+	 */
 	private static Point findBestPreviewSizeValue(CharSequence previewSizeValueString, Point screenResolution) {
 		int bestX = 0;
 		int bestY = 0;
@@ -149,6 +199,13 @@ final class CameraConfigurationManager {
 		return null;
 	}
 
+	/**
+	 * 从相机支持的缩放值中选择最接近目标的值。
+	 *
+	 * @param stringValues 相机支持的缩放值文本
+	 * @param tenDesiredZoom 目标缩放倍数的十倍值
+	 * @return 最接近目标的缩放值
+	 */
 	private static int findBestMotZoomValue(CharSequence stringValues, int tenDesiredZoom) {
 		int tenBestValue = 0;
 
@@ -171,6 +228,11 @@ final class CameraConfigurationManager {
 		return tenBestValue;
 	}
 
+	/**
+	 * 配置相机闪光灯参数。
+	 *
+	 * @param parameters 相机参数
+	 */
 	private void setFlash(Camera.Parameters parameters) {
 		if (Build.MODEL.contains("Behold II") && CameraManager.SDK_INT == 3) {
 			parameters.set("flash-value", 1);
@@ -181,6 +243,11 @@ final class CameraConfigurationManager {
 		parameters.set("flash-mode", "off");
 	}
 
+	/**
+	 * 配置相机缩放参数。
+	 *
+	 * @param parameters 相机参数
+	 */
 	private void setZoom(Camera.Parameters parameters) {
 		String motZoomStepString;
 		String motZoomValuesString;

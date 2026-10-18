@@ -95,6 +95,7 @@ public final class 图像操作 {
 		requireSize(width, height);
 		Bitmap source = decode(data);
 		Bitmap result = null;
+
 		try {
 			Matrix matrix = new Matrix();
 			matrix.postScale((float) width / source.getWidth(), (float) height / source.getHeight());
@@ -189,9 +190,11 @@ public final class 图像操作 {
 	public static byte[] 压缩图片(byte[] data) {
 		Bitmap source = decode(data);
 		Bitmap compressed = null;
+
 		try {
 			// 仅降低中间 JPEG 的质量，质量降到零后停止，避免无终止重试。
 			byte[] jpeg = encode(source, Bitmap.CompressFormat.JPEG, 100);
+
 			for (int quality = 90; jpeg.length / 1024 > 100 && quality >= 0; quality -= 10) {
 				jpeg = encode(source, Bitmap.CompressFormat.JPEG, quality);
 			}
@@ -269,6 +272,7 @@ public final class 图像操作 {
 			requireSize(width, height);
 
 			集合 result = new 集合();
+
 			for (int row = 0; row < rows; row++) {
 				for (int column = 0; column < columns; column++) {
 					Bitmap tile = Bitmap.createBitmap(source, column * width, row * height, width, height);
@@ -308,6 +312,7 @@ public final class 图像操作 {
 		Bitmap source = decode(data);
 		Bitmap rounded = null;
 		Bitmap circle = null;
+
 		try {
 			rounded = roundedBitmap(source, radius);
 			if (radius < 100) {
@@ -336,6 +341,7 @@ public final class 图像操作 {
 		Bitmap source = decode(data);
 		Bitmap reflection = null;
 		Bitmap result = null;
+
 		try {
 			int width = source.getWidth();
 			int height = source.getHeight();
@@ -381,6 +387,7 @@ public final class 图像操作 {
 		requireSize(width, height);
 		Bitmap source = decode(data);
 		Bitmap result = null;
+
 		try {
 			if (x < 0 || y < 0 || x > source.getWidth() - width || y > source.getHeight() - height) {
 				throw new IllegalArgumentException("截取区域超出图片范围。");
@@ -453,6 +460,7 @@ public final class 图像操作 {
 	private static byte[] transform(byte[] data, Matrix matrix) {
 		Bitmap source = decode(data);
 		Bitmap result = null;
+
 		try {
 			result = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
 			return encode(result, Bitmap.CompressFormat.PNG, 100);
@@ -530,6 +538,7 @@ public final class 图像操作 {
 		Bitmap square = Bitmap.createBitmap(source, (source.getWidth() - side) / 2,
 			(source.getHeight() - side) / 2, side, side);
 		Bitmap scaled = null;
+
 		try {
 			int diameter = radius * 2;
 			scaled = Bitmap.createScaledBitmap(square, diameter, diameter, true);

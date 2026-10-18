@@ -10,6 +10,13 @@ final class HexCodec {
 
 	/* 十六进制转换 */
 
+	/**
+	 * 将指定长度的字节数据转换为十六进制文本。
+	 *
+	 * @param data 本次传入的数据
+	 * @param length 处理的数据长度
+	 * @return 编码后的字节数据或文本
+	 */
 	static String encode(byte[] data, int length) {
 		if (data == null) return "";
 		if (length < 0 || length > data.length) throw new IllegalArgumentException("转换长度超出字节集范围");
@@ -27,6 +34,12 @@ final class HexCodec {
 		return result.toString();
 	}
 
+	/**
+	 * 将十六进制文本转换为字节数组。
+	 *
+	 * @param source 输入数据或来源
+	 * @return 转换后的字节数组
+	 */
 	static byte[] decode(String source) {
 		if (source == null) return new byte[0];
 

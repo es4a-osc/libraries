@@ -35,6 +35,7 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 	}
 
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			// Activity 正在遍历监听器，不能在这里修改同一监听器列表。
@@ -155,6 +156,8 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 
 	/**
 	 * 清理网络任务；自动销毁和显式销毁可重复到达，资源只释放一次。
+	 *
+	 * @param unregister 是否注销生命周期监听器
 	 */
 	private void dispose(boolean unregister) {
 		synchronized (stateLock) {
@@ -173,9 +176,13 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 
 	/**
 	 * 在投递和执行之间再次确认连接身份，过滤重连或销毁后的迟到事件。
+	 *
+	 * @param session 当前连接会话
+	 * @param callback 需要投递的回调
 	 */
 	private void post(final Session session, final Runnable callback) {
 		activity.runOnUiThread(new Runnable() {
+
 			@Override
 			public void run() {
 				synchronized (stateLock) {
@@ -187,8 +194,14 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 		});
 	}
 
+	/**
+	 * 仅向仍有效的连接会话分发错误通知。
+	 *
+	 * @param session 当前连接会话
+	 */
 	private void notifyError(Session session) {
 		post(session, new Runnable() {
+
 			@Override
 			public void run() {
 				出现错误();
@@ -198,9 +211,13 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 
 	/**
 	 * OkHttp 回调运行于网络线程，所有 Simple 事件统一切回主线程。
+	 *
+	 * @param session 当前连接会话
+	 * @return 用于转发当前连接事件的监听器
 	 */
 	private WebSocketListener createListener(final Session session) {
 		return new WebSocketListener() {
+
 			@Override
 			public void onOpen(WebSocket socket, Response response) {
 				synchronized (stateLock) {
@@ -215,6 +232,7 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 				}
 
 				post(session, new Runnable() {
+
 					@Override
 					public void run() {
 						连接成功();
@@ -229,6 +247,7 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 				}
 
 				post(session, new Runnable() {
+
 					@Override
 					public void run() {
 						收到数据(message);
@@ -262,6 +281,7 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 				}
 
 				post(session, new Runnable() {
+
 					@Override
 					public void run() {
 						连接断开();

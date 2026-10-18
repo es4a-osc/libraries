@@ -53,6 +53,7 @@ public final class Lua实例 extends Lua堆栈 {
 			if (context.activeCalls != 0) {
 				throw LuaContext.error("不能在 Lua 执行或回调期间关闭实例");
 			}
+
 			context.state.close();
 			context.closed = true;
 		}
@@ -241,6 +242,7 @@ public final class Lua实例 extends Lua堆栈 {
 
 				// 回调视图只暴露业务参数；嵌套调用保留上一帧的有效身份。
 				JavaFunction function = new JavaFunction(context.state) {
+
 					@Override
 					public int execute() throws LuaException {
 						synchronized (context) {
@@ -320,6 +322,7 @@ public final class Lua实例 extends Lua堆栈 {
 				if (status != 0) {
 					throw LuaContext.error("Lua 加载失败：" + context.state.toString(-1));
 				}
+
 				context.protectedCall(0, -1);
 				return context.captureResults(top);
 			} finally {

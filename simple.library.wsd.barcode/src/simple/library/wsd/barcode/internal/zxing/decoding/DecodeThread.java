@@ -39,6 +39,11 @@ final class DecodeThread extends Thread {
 		this.hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, resultPointCallback);
 	}
 
+	/**
+	 * 取得接收扫描或解码消息的处理器。
+	 *
+	 * @return 当前线程的消息处理器
+	 */
 	Handler getHandler() {
 		try {
 			this.handlerInitLatch.await();

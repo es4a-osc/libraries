@@ -24,11 +24,21 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 	private final MainActivity activity;
 	private volatile boolean destroyed;
 
+	/**
+	 * 交由组件串行执行的数据库操作。
+	 */
 	private interface Task {
+
+		/**
+		 * 执行串行数据库任务并返回结果。
+		 *
+		 * @return 串行数据库任务并返回结果
+		 */
 		Object run();
 	}
 
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			dispose(false);
@@ -84,6 +94,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 	@Override
 	public void 连接数据库(final String address, final String username, final String password, final String database) {
 		submit("连接数据库完毕", new Task() {
+
 			@Override
 			public Object run() {
 				return !destroyed && session.connect(address, username, password, database);
@@ -119,6 +130,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 	@Override
 	public void 查询记录(final String table, final String columns, final String condition) {
 		submit("查询记录完毕", new Task() {
+
 			@Override
 			public Object run() {
 				return 查询记录_同步(table, columns, condition);
@@ -162,6 +174,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 	@Override
 	public void 修改记录(final String table, final String assignments, final String condition) {
 		submit("修改记录完毕", new Task() {
+
 			@Override
 			public Object run() {
 				return 修改记录_同步(table, assignments, condition);
@@ -177,6 +190,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 	@Override
 	public void 添加记录(final String table, final String columns, final String values) {
 		submit("添加记录完毕", new Task() {
+
 			@Override
 			public Object run() {
 				return 添加记录_同步(table, columns, values);
@@ -192,6 +206,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 	@Override
 	public void 删除记录(final String table, final String condition) {
 		submit("删除记录完毕", new Task() {
+
 			@Override
 			public Object run() {
 				return 删除记录_同步(table, condition);
@@ -207,6 +222,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 	@Override
 	public void 执行语句(final String sql) {
 		submit("执行语句完毕", new Task() {
+
 			@Override
 			public Object run() {
 				return 执行语句_同步(sql);
@@ -234,6 +250,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 	@Override
 	public void 查询语句(final String sql, final String columns) {
 		submit("查询语句完毕", new Task() {
+
 			@Override
 			public Object run() {
 				return 查询语句_同步(sql, columns);
@@ -268,6 +285,12 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 
 	/* 生命周期与内部辅助 */
 
+	/**
+	 * 提交串行数据库任务并安排结果通知。
+	 *
+	 * @param event 本次事件对象
+	 * @param task 要执行的后台任务
+	 */
 	private void submit(final String event, final Task task) {
 		if (destroyed) return;
 
@@ -275,6 +298,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 
 			// 串行执行数据库请求，防止同一连接上的语句互相覆盖结果。
 			executor.execute(new Runnable() {
+
 				@Override
 				public void run() {
 					if (destroyed) return;
@@ -283,6 +307,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 
 					// 结果在主线程分派；销毁后丢弃已排队的回调。
 					handler.post(new Runnable() {
+
 						@Override
 						public void run() {
 							if (!destroyed) EventDispatcher.dispatchEvent(MsSQL数据库Impl.this, event, result);
@@ -295,13 +320,25 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 		}
 	}
 
+	/**
+	 * 将查询结果逐行包装为 Simple 集合。
+	 *
+	 * @param values 输入值数组
+	 * @return 各成员为一行文本数组的 Simple 集合。
+	 */
 	private 集合 rows(List<String[]> values) {
 		集合 result = new 集合();
 
 		for (String[] value : values) result.加入(ArrayVariant.getArrayVariant(value));
+
 		return result;
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 *
+	 * @param unregister 是否注销生命周期监听器
+	 */
 	private void dispose(boolean unregister) {
 		if (!destroyed) {
 			destroyed = true;
@@ -310,6 +347,7 @@ public final class MsSQL数据库Impl extends 组件Impl implements MsSQL数据�
 
 			// 等待现有网络操作仅发生在清理线程，不阻塞 Activity 销毁。
 			new Thread(new Runnable() {
+
 				@Override
 				public void run() {
 					session.dispose();

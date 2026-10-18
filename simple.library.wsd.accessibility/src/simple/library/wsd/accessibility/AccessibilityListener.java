@@ -38,6 +38,7 @@ public final class AccessibilityListener extends AccessibilityService {
 	 * 服务事件订阅者；回调由无障碍服务分发。
 	 */
 	interface Listener {
+
 		/**
 		 * 转发 Android 无障碍事件。
 		 *
@@ -76,9 +77,7 @@ public final class AccessibilityListener extends AccessibilityService {
 	 *
 	 * @return 根节点；服务或 API 不可用时为空值
 	 */
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	static AccessibilityNodeInfo getActiveRoot() {
 		AccessibilityListener service = activeService;
 
@@ -92,9 +91,7 @@ public final class AccessibilityListener extends AccessibilityService {
 	 * @param action Android 无障碍全局操作编号
 	 * @return 操作已被服务接受时为真；服务或 API 不可用时为假
 	 */
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	static boolean performAction(int action) {
 		AccessibilityListener service = activeService;
 
@@ -103,9 +100,7 @@ public final class AccessibilityListener extends AccessibilityService {
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN_MR2
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	protected void onServiceConnected() {
 		super.onServiceConnected();
 

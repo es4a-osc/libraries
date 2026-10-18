@@ -50,6 +50,7 @@ public class Lua函数 extends Lua值 {
 			if (count == Integer.MAX_VALUE) {
 				throw LuaContext.error("Lua 参数过多");
 			}
+
 			context.reserve(count + 1);
 			try {
 				push(context);

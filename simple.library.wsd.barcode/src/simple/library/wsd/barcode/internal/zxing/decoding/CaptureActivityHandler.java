@@ -96,6 +96,9 @@ public final class CaptureActivityHandler extends Handler {
 		this.removeMessages(2131099650);
 	}
 
+	/**
+	 * 恢复相机预览并继续下一轮解码。
+	 */
 	private void restartPreviewAndDecode() {
 		if (this.state == State.SUCCESS) {
 			this.state = State.PREVIEW;
@@ -105,6 +108,9 @@ public final class CaptureActivityHandler extends Handler {
 		}
 	}
 
+	/**
+	 * 扫描预览与解码流程的内部状态。
+	 */
 	private static enum State {
 		PREVIEW,
 		SUCCESS,

@@ -31,6 +31,7 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 	private final Manager manager;
 	private boolean destroyed;
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			// Activity 正在遍历销毁监听器，不能在回调内移除当前监听器。
@@ -150,6 +151,11 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 		super.销毁();
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 *
+	 * @param removeListener 是否移除生命周期监听器
+	 */
 	private void dispose(boolean removeListener) {
 		synchronized (下载器Impl.class) {
 			if (destroyed) {
@@ -175,12 +181,22 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 		}
 	}
 
+	/**
+	 * 校验输入是否满足本操作的约束。
+	 */
 	private void check() {
 		if (destroyed) {
 			throw new IllegalStateException("下载器已经销毁。");
 		}
 	}
 
+	/**
+	 * 解析下载目标文件并准备所需的应用外部目录。
+	 *
+	 * @param path 文件或目录路径
+	 * @return 解析后的文件对象
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	private File resolve(String path) throws IOException {
 		if (path == null || path.trim().length() == 0) {
 			throw new IOException("保存路径不能为空。");
@@ -243,8 +259,16 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 			dispatch(record, true, success);
 		}
 
+		/**
+		 * 将下载进度或完成状态分发给对应组件。
+		 *
+		 * @param record 当前下载记录
+		 * @param finished 任务是否已经结束
+		 * @param success 本次操作是否成功
+		 */
 		private void dispatch(final DownloadEngine.Record record, final boolean finished, final boolean success) {
 			handler.post(new Runnable() {
+
 				@Override
 				public void run() {
 					if (!engine.current(record)) {

@@ -8,8 +8,10 @@
 | 类库 | 用途 |
 | --- | --- |
 | [演示扩展库](com.example.demo/) | 可视组件和普通对象的入门演示。 |
+| [APK信息库](simple.library.wsd.apk/) | 独立 APK 名称、包名、版本和 PNG 图标读取。 |
 | [跨程序辅助库](simple.library.wsd.accessibility/) | 无障碍节点读取、操作和事件监听。 |
 | [低功耗蓝牙库](simple.library.wsd.blebluetooth/) | BLE 扫描、连接、特征读写和通知订阅。 |
+| [GIF图片框库](simple.library.wsd.gif/) | GIF 载入、播放控制、循环、缩放和资源清理。 |
 | [分组列表框库](simple.library.wsd.grouplist/) | 分组展开、收起及子项展示和交互。 |
 | [HTTP服务库](simple.library.wsd.httpserver/) | HTTP 和 WebSocket 服务。 |
 | [图像操作库](simple.library.wsd.image/) | 图片变换、尺寸读取、裁剪、分割、圆角、倒影和压缩。 |

@@ -96,16 +96,29 @@ public final class ViewfinderView extends View {
 		}
 	}
 
+	/**
+	 * 刷新扫描取景视图。
+	 */
 	public void drawViewfinder() {
 		this.resultBitmap = null;
 		this.invalidate();
 	}
 
+	/**
+	 * 在取景区域显示识别结果图片。
+	 *
+	 * @param barcode 识别结果图片
+	 */
 	public void drawResultBitmap(Bitmap barcode) {
 		this.resultBitmap = barcode;
 		this.invalidate();
 	}
 
+	/**
+	 * 记录候选定位点供下一帧绘制。
+	 *
+	 * @param point 解码发现的候选定位点
+	 */
 	public void addPossibleResultPoint(ResultPoint point) {
 		this.possibleResultPoints.add(point);
 	}

@@ -388,6 +388,12 @@ public final class DownloadEngine {
 		}
 	}
 
+	/**
+	 * 将下载记录加入调度队列。
+	 *
+	 * @param record 当前下载记录
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	private void queue(Record record) throws IOException {
 		record.state = WAITING;
 		record.generation++;
@@ -397,6 +403,11 @@ public final class DownloadEngine {
 		executor.execute(transfer);
 	}
 
+	/**
+	 * 停止指定下载任务。
+	 *
+	 * @param record 当前下载记录
+	 */
 	private void stop(Record record) {
 		// 网络请求由超时或下一次分块读返回收尾，避免在界面线程关闭阻塞中的流。
 		Transfer transfer = transfers.get(record.id);
@@ -405,12 +416,23 @@ public final class DownloadEngine {
 		}
 	}
 
+	/**
+	 * 确保下载引擎尚未关闭。
+	 *
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	private void ensureOpen() throws IOException {
 		if (closed) {
 			throw new IOException("下载器已经关闭。");
 		}
 	}
 
+	/**
+	 * 查找下载任务，不存在时拒绝操作。
+	 *
+	 * @param id 操作或任务标识
+	 * @return 已登记的下载任务
+	 */
 	private Record required(int id) {
 		Record record = records.get(id);
 		if (record == null) {
@@ -420,6 +442,13 @@ public final class DownloadEngine {
 		return record;
 	}
 
+	/**
+	 * 校验下载地址使用受支持的 HTTP 协议。
+	 *
+	 * @param address 资源或服务器地址
+	 * @return 校验通过的下载地址
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	private static URL validateUrl(String address) throws IOException {
 		URL url = new URL(address);
 		if (!url.getProtocol().equals("http") && !url.getProtocol().equals("https")) {
@@ -429,11 +458,23 @@ public final class DownloadEngine {
 		return url;
 	}
 
+	/**
+	 * 取得下载记录对应的分段临时文件。
+	 *
+	 * @param record 当前下载记录
+	 * @return 下载记录对应的分段临时文件
+	 */
 	private static File part(Record record) {
 		File target = new File(record.path);
 		return new File(target.getParentFile(), "." + target.getName() + ".es4a-" + record.id + ".part");
 	}
 
+	/**
+	 * 将空引用规范为空文本。
+	 *
+	 * @param value 需要将空引用规范为空文本的输入。
+	 * @return 校验或规范化后的文本
+	 */
 	private static String text(String value) {
 		return value == null ? "" : value;
 	}
@@ -448,11 +489,22 @@ public final class DownloadEngine {
 		private final long generation;
 		private volatile boolean stopped;
 
+		/**
+		 * 绑定本次下载记录和任务代次，防止旧任务更新新状态。
+		 *
+		 * @param record 当前下载记录
+		 * @param generation 本轮任务代次，用于排除过期结果
+		 */
 		Transfer(Record record, long generation) {
 			this.record = record;
 			this.generation = generation;
 		}
 
+		/**
+		 * 判断当前下载代次是否仍有效且未停止。
+		 *
+		 * @return 当前下载代次仍有效且未停止时为 {@code true}，否则为 {@code false}
+		 */
 		private boolean active() {
 			return !closed && !stopped && record.generation == generation;
 		}
@@ -515,6 +567,11 @@ public final class DownloadEngine {
 			}
 		}
 
+		/**
+		 * 按续传记录接收响应并写入分段文件。
+		 *
+		 * @throws IOException 访问文件、流或网络资源失败时
+		 */
 		private void download() throws IOException {
 			// 目标文件与临时文件分开管理；已有最终文件不能被本次下载覆盖。
 			File target = new File(record.path);
@@ -702,6 +759,15 @@ public final class DownloadEngine {
 			}
 		}
 
+		/**
+		 * 创建 HTTP 连接并设置续传请求头。
+		 *
+		 * @param address 资源或服务器地址
+		 * @param offset 起始偏移量
+		 * @param validator 续传校验标识
+		 * @return 创建 HTTP 连接并设置续传请求头
+		 * @throws IOException 访问文件、流或网络资源失败时
+		 */
 		private HttpURLConnection connect(String address, long offset, String validator) throws IOException {
 			URL url = validateUrl(address);
 

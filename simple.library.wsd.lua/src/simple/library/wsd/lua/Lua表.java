@@ -129,6 +129,7 @@ public class Lua表 extends Lua值 {
 
 			int top = context.state.getTop();
 			List<Lua值> keys = new ArrayList<Lua值>();
+
 			try {
 				context.reserve(3);
 				push(context);

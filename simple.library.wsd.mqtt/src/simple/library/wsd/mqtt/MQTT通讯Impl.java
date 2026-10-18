@@ -37,6 +37,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 	private boolean destroyed;
 
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			dispose(false);
@@ -121,6 +122,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 		if (closed || destroyed) return;
 		if (current != null || releasing) {
 			post(generation, new Runnable() {
+
 				@Override
 				public void run() {
 					连接失败();
@@ -149,9 +151,11 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 			final MqttAndroidClient client = new MqttAndroidClient(activity.getApplicationContext(), address, clientId);
 			current = client;
 			client.setCallback(new MqttCallbackExtended() {
+
 				@Override
 				public void connectComplete(boolean reconnecting, String serverURI) {
 					post(id, new Runnable() {
+
 						@Override
 						public void run() {
 							连接成功();
@@ -162,6 +166,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 				@Override
 				public void connectionLost(Throwable cause) {
 					post(id, new Runnable() {
+
 						@Override
 						public void run() {
 							连接断开();
@@ -175,6 +180,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 					final int qos = message.getQos();
 
 					post(id, new Runnable() {
+
 						@Override
 						public void run() {
 							收到消息(topic, payload, qos);
@@ -185,6 +191,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 				@Override
 				public void deliveryComplete(IMqttDeliveryToken token) {
 					post(id, new Runnable() {
+
 						@Override
 						public void run() {
 							发送完毕();
@@ -195,6 +202,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 
 			// 提交异步连接；成功事件统一由 connectComplete 分派。
 			connectToken = client.connect(options, null, new IMqttActionListener() {
+
 				@Override
 				public void onSuccess(IMqttToken token) {
 					// 成功事件由 connectComplete 统一分派；清理线程等待令牌完成后关闭。
@@ -211,6 +219,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 					}
 
 					post(id, new Runnable() {
+
 						@Override
 						public void run() {
 							连接失败();
@@ -224,6 +233,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 			release(failed, connectToken, null);
 			connectToken = null;
 			post(id, new Runnable() {
+
 				@Override
 				public void run() {
 					连接失败();
@@ -255,9 +265,11 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 			if (!是否已连接()) throw new IllegalStateException("尚未连接 MQTT 代理");
 
 			current.subscribe(topic, qos, null, new IMqttActionListener() {
+
 				@Override
 				public void onSuccess(IMqttToken token) {
 					post(id, new Runnable() {
+
 						@Override
 						public void run() {
 							订阅成功();
@@ -268,6 +280,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 				@Override
 				public void onFailure(IMqttToken token, Throwable cause) {
 					post(id, new Runnable() {
+
 						@Override
 						public void run() {
 							订阅失败();
@@ -277,6 +290,7 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 			});
 		} catch (MqttException | RuntimeException exception) {
 			post(id, new Runnable() {
+
 				@Override
 				public void run() {
 					订阅失败();
@@ -343,9 +357,11 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 
 		current = null;
 		if (previous != null) release(previous, connectToken, new Runnable() {
+
 			@Override
 			public void run() {
 				post(id, new Runnable() {
+
 					@Override
 					public void run() {
 						连接断开();
@@ -400,12 +416,17 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 
 	/**
 	 * 清理期间拒绝新连接，避免旧 Android 服务句柄关闭同 ID 的后续连接。
+	 *
+	 * @param client 底层 FTP 客户端
+	 * @param connecting 是否正在连接
+	 * @param completed 本次操作是否完成
 	 */
 	private void release(final MqttAndroidClient client, final IMqttToken connecting, final Runnable completed) {
 		if (client == null) return;
 
 		releasing = true;
 		cleanup.execute(new Runnable() {
+
 			@Override
 			public void run() {
 				try {
@@ -448,8 +469,15 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 		});
 	}
 
+	/**
+	 * 将当前会话的回调投递到主线程，丢弃过期结果。
+	 *
+	 * @param id 操作或任务标识
+	 * @param callback 需要投递的回调
+	 */
 	private void post(final long id, final Runnable callback) {
 		activity.runOnUiThread(new Runnable() {
+
 			@Override
 			public void run() {
 				synchronized (MQTT通讯Impl.this) {
@@ -461,6 +489,11 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 		});
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 *
+	 * @param unregister 是否注销生命周期监听器
+	 */
 	private synchronized void dispose(boolean unregister) {
 		关闭服务();
 		destroyed = true;

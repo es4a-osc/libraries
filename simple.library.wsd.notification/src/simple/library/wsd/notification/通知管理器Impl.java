@@ -34,26 +34,32 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 * 持有广播接收器的窗口，供组件销毁时释放注册。
 	 */
 	private final MainActivity activity;
+
 	/**
 	 * 发布和删除通知所用的系统服务。
 	 */
 	private final NotificationManager notificationManager;
+
 	/**
 	 * 每个组件实例使用独立的点击动作，避免多个实例串收事件。
 	 */
 	private final String clickAction;
+
 	/**
 	 * 操作按钮和内联回复共用另一广播动作，与通知正文点击区分。
 	 */
 	private final String operationAction;
+
 	/**
 	 * 接收此组件创建的通知正文点击、按钮和回复。
 	 */
 	private final BroadcastReceiver clickReceiver;
+
 	/**
 	 * 窗口销毁时注销动态广播接收器。
 	 */
 	private final MainActivity.OnDestroyListener destroyListener;
+
 	/**
 	 * 防止组件销毁和窗口销毁时重复注销接收器。
 	 */
@@ -75,6 +81,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 
 		// 两种广播均不携带 data URI，由同一个接收器处理并在窗口销毁时注销。
 		clickReceiver = new BroadcastReceiver() {
+
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				handleNotificationBroadcast(intent);
@@ -87,6 +94,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 		receiverRegistered = true;
 
 		destroyListener = new MainActivity.OnDestroyListener() {
+
 			@Override
 			public void onDestroy() {
 				unregisterClickReceiver();
@@ -234,9 +242,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 *
 	 * @return 尚未设置小图标的 Android 构建器
 	 */
-	@SuppressWarnings(
-		"deprecation"
-	)
+	@SuppressWarnings("deprecation")
 	private Notification.Builder createNotificationBuilder() {
 		Notification.Builder builder;
 
@@ -258,9 +264,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 * @param priority 通知优先级
 	 * @return 当前通知使用的渠道编号
 	 */
-	@TargetApi(
-		Build.VERSION_CODES.O
-	)
+	@TargetApi(Build.VERSION_CODES.O)
 	private String ensureNotificationChannel(boolean playSound, int priority) {
 		// 声音和优先级决定渠道身份；已创建渠道的设置不能直接改写。
 		String baseId = playSound ? ALERT_CHANNEL_ID : SILENT_CHANNEL_ID;
@@ -292,9 +296,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 * @param priority 通知优先级
 	 * @return Android 渠道重要程度
 	 */
-	@TargetApi(
-		Build.VERSION_CODES.O
-	)
+	@TargetApi(Build.VERSION_CODES.O)
 	private static int channelImportance(int priority) {
 		switch (priority) {
 			case 通知构建器.优先级_最低:
@@ -339,9 +341,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 * @param builder 已设置内容的通知构建器
 	 * @return 可交给 NotificationManager 发布的通知
 	 */
-	@SuppressWarnings(
-		"deprecation"
-	)
+	@SuppressWarnings("deprecation")
 	private Notification buildNotification(Notification.Builder builder) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			return builder.build();

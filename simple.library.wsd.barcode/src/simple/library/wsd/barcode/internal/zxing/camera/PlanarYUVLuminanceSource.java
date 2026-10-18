@@ -76,14 +76,29 @@ public final class PlanarYUVLuminanceSource extends LuminanceSource {
 		return true;
 	}
 
+	/**
+	 * 返回原始图像数据的宽度。
+	 *
+	 * @return 原始图像宽度
+	 */
 	public int getDataWidth() {
 		return this.dataWidth;
 	}
 
+	/**
+	 * 返回原始图像数据的高度。
+	 *
+	 * @return 原始图像高度
+	 */
 	public int getDataHeight() {
 		return this.dataHeight;
 	}
 
+	/**
+	 * 把裁剪区域的亮度数据渲染为灰度位图。
+	 *
+	 * @return 取景区域的灰度位图
+	 */
 	public Bitmap renderCroppedGreyscaleBitmap() {
 		int width = this.getWidth();
 		int height = this.getHeight();

@@ -57,6 +57,11 @@ final class FtpSession implements TransferSession {
 		return connect();
 	}
 
+	/**
+	 * 建立底层连接。
+	 *
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 */
 	private boolean connect() {
 		if (disposed || host == null) {
 			return false;
@@ -100,12 +105,27 @@ final class FtpSession implements TransferSession {
 		}
 	}
 
+	/**
+	 * 需要在指定远程工作目录下执行的操作。
+	 */
 	private interface DirectoryAction {
+
+		/**
+		 * 执行需要临时切换远程目录的操作。
+		 *
+		 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+		 * @throws IOException 访问文件、流或网络资源失败时
+		 */
 		boolean run() throws IOException;
 	}
 
 	/**
 	 * 工作目录未知时拒绝操作；恢复失败也不得报告成功。
+	 *
+	 * @param path 文件或目录路径
+	 * @param action 广播或操作名称
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 * @throws IOException 访问文件、流或网络资源失败时
 	 */
 	private boolean inDirectory(String path, DirectoryAction action) throws IOException {
 		if (!command(path)) {
@@ -140,6 +160,7 @@ final class FtpSession implements TransferSession {
 
 		try {
 			boolean success = inDirectory(directory, new DirectoryAction() {
+
 				@Override
 				public boolean run() throws IOException {
 					FTPFile[] files = client.listFiles();
@@ -171,6 +192,12 @@ final class FtpSession implements TransferSession {
 
 	/**
 	 * mode: 0 创建目录，1 重命名，2 删除空目录，3 删除文件。
+	 *
+	 * @param directory 远程目录
+	 * @param name 要操作的名称
+	 * @param newName 修改后的名称
+	 * @param mode 操作模式
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
 	 */
 	public synchronized boolean mutate(String directory, final String name, final String newName, final int mode) {
 		if (!connected() || !basename(name) || (mode == 1 && !basename(newName))) {
@@ -179,6 +206,7 @@ final class FtpSession implements TransferSession {
 
 		try {
 			return inDirectory(directory, new DirectoryAction() {
+
 				@Override
 				public boolean run() throws IOException {
 					switch (mode) {
@@ -205,6 +233,7 @@ final class FtpSession implements TransferSession {
 
 		try {
 			return inDirectory(remoteDirectory, new DirectoryAction() {
+
 				@Override
 				public boolean run() throws IOException {
 					return uploadEntry(source, name, new HashSet<String>());
@@ -215,6 +244,15 @@ final class FtpSession implements TransferSession {
 		}
 	}
 
+	/**
+	 * 递归上传文件或目录，并防止重复进入同一目录。
+	 *
+	 * @param source 输入数据或来源
+	 * @param name 要操作的名称
+	 * @param ancestors 当前递归链已访问的目录集合
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	private boolean uploadEntry(final File source, final String name, final Set<String> ancestors) throws IOException {
 		if (disposed || !basename(name)) {
 			return false;
@@ -238,6 +276,7 @@ final class FtpSession implements TransferSession {
 			// 已存在的目录允许继续，但仍必须由 CWD 成功确认。
 			client.makeDirectory(name);
 			return inDirectory(name, new DirectoryAction() {
+
 				@Override
 				public boolean run() throws IOException {
 					File[] children = source.listFiles();
@@ -267,6 +306,7 @@ final class FtpSession implements TransferSession {
 
 		try {
 			return inDirectory(remoteDirectory, new DirectoryAction() {
+
 				@Override
 				public boolean run() throws IOException {
 					FTPFile[] files = client.listFiles();
@@ -288,6 +328,15 @@ final class FtpSession implements TransferSession {
 		}
 	}
 
+	/**
+	 * 递归下载远程条目，并限制不安全路径和递归深度。
+	 *
+	 * @param file 本次操作的文件
+	 * @param parent 父目录或父容器
+	 * @param depth 当前递归深度
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	private boolean downloadEntry(final FTPFile file, File parent, final int depth) throws IOException {
 		if (disposed || depth > 128 || !basename(file.getName()) || file.isSymbolicLink()) {
 			return false;
@@ -319,6 +368,7 @@ final class FtpSession implements TransferSession {
 		}
 
 		return inDirectory(file.getName(), new DirectoryAction() {
+
 			@Override
 			public boolean run() throws IOException {
 				FTPFile[] children = client.listFiles();
@@ -354,9 +404,13 @@ final class FtpSession implements TransferSession {
 		password = null;
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 */
 	void dispose() {
 		disposed = true;
 		new Thread(new Runnable() {
+
 			@Override
 			public void run() {
 				disconnect();
@@ -369,6 +423,9 @@ final class FtpSession implements TransferSession {
 		return "";
 	}
 
+	/**
+	 * 关闭底层通道及会话。
+	 */
 	private void closeConnection() {
 		if (client.isConnected()) {
 			try {
@@ -379,10 +436,22 @@ final class FtpSession implements TransferSession {
 		}
 	}
 
+	/**
+	 * 检查 FTP 命令参数是否非空引用且不含换行符。
+	 *
+	 * @param value 待检查的 FTP 命令参数。
+	 * @return 参数非空引用且不含回车、换行时为真。
+	 */
 	private static boolean command(String value) {
 		return value != null && value.indexOf('\r') < 0 && value.indexOf('\n') < 0;
 	}
 
+	/**
+	 * 检查名称是否为不含路径分隔符的有效单级文件名。
+	 *
+	 * @param value 待检查的单级文件名。
+	 * @return 名称非空、不是点目录且不含路径分隔符时为真。
+	 */
 	private static boolean basename(String value) {
 		return command(value) && value.length() > 0 && !".".equals(value) && !"..".equals(value)
 			&& value.indexOf('/') < 0 && value.indexOf('\\') < 0;

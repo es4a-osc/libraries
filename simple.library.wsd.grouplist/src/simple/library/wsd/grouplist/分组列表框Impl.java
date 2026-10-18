@@ -96,6 +96,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 
 		expandableListView.setAdapter(adapter);
 		expandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 				子项被单击(groupPosition, childPosition);
@@ -104,6 +105,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 		});
 
 		expandableListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View childView, int flatPos, long id) {
 				if (ExpandableListView.getPackedPositionType(id) == 1) {
@@ -120,6 +122,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 		});
 
 		expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+
 			@Override
 			public void onGroupExpand(int groupPosition) {
 			   分组被展开(groupPosition);
@@ -127,6 +130,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 		});
 
 		expandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+
 			@Override
 			public void onGroupCollapse(int groupPosition) {
 				分组被收起(groupPosition);
@@ -134,6 +138,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 		});
 
 		expandableListView.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+
 			@Override
 			public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
 				分组被单击(groupPosition);
@@ -632,14 +637,23 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 		expandableListView.setSelectedChild(groupPosition, childPosition, shouldExpandGroup);
 	}
 
+	/**
+	 * 将分组数据绑定到展开列表原生视图的适配器。
+	 */
 	class ExpandableAdapter extends BaseExpandableListAdapter {
 		private Context context;
 
+		/**
+		 * 缓存分组标题视图的子控件引用。
+		 */
 		public final class groupview {
 			public TextView title;
 			public TextView info;
 		}
 
+		/**
+		 * 缓存分组子项视图的子控件引用。
+		 */
 		public final class childItemview {
 			public ImageView image;
 			public LinearLayout content;
@@ -822,6 +836,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 			civ.button.setGravity(17);
 			civ.button.setText(map.get("buttonTitle"));
 			civ.button.setOnClickListener(new View.OnClickListener() {
+
 				@Override
 				public void onClick(View v) {
 					子项按钮被单击(groupPosition, childPosition);
@@ -842,6 +857,12 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 			return true;
 		}
 
+		/**
+		 * 按资源路径载入列表图片。
+		 *
+		 * @param imagePath 图片路径
+		 * @return 图片路径对应的 Drawable
+		 */
 		private Drawable getDrawable(String imagePath) {
 			Drawable drawable = null;
 

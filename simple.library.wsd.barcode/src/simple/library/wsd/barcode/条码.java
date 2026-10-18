@@ -14,10 +14,12 @@ import simple.runtime.components.组件;
  */
 @SimpleComponent
 @SimpleObject
-@UsesPermissions(permissionNames =
-	// 扫描相机与闪光灯。
-	"android.permission.CAMERA," +
-	"android.permission.FLASHLIGHT"
+@UsesPermissions(
+	permissionNames =
+		// 扫描相机与闪光灯。
+		"android.permission.CAMERA," +
+		// 保留闪光灯访问声明，实际访问仍受相机和系统策略限制。
+		"android.permission.FLASHLIGHT"
 )
 @ManifestNodes(
 	rootXml =
@@ -27,9 +29,9 @@ import simple.runtime.components.组件;
 	applicationXml =
 		// 扫描界面只由本应用显式启动。
 		"<activity android:name=\"simple.library.wsd.barcode.internal.zbar.scan.ScanCaptureAct\" " +
-			"android:screenOrientation=\"portrait\" android:exported=\"false\" />" +
+		"android:screenOrientation=\"portrait\" android:exported=\"false\" />" +
 		"<activity android:name=\"simple.library.wsd.barcode.internal.zxing.CaptureActivity\" " +
-			"android:screenOrientation=\"portrait\" android:exported=\"false\" />"
+		"android:screenOrientation=\"portrait\" android:exported=\"false\" />"
 )
 public interface 条码 extends 组件 {
 

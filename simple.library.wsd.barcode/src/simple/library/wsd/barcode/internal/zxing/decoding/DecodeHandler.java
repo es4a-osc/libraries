@@ -44,6 +44,10 @@ final class DecodeHandler extends Handler {
 
 	/**
 	 * 无论识别成功与否都重置读取器，下一帧使用相同提示重新识别。
+	 *
+	 * @param data 本次传入的数据
+	 * @param width 宽度
+	 * @param height 高度
 	 */
 	private void decode(byte[] data, int width, int height) {
 		long start = System.currentTimeMillis();

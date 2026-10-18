@@ -28,6 +28,11 @@ public final class CameraConfigurationManager {
 		this.context = context;
 	}
 
+	/**
+	 * 读取相机支持的预览参数并计算匹配尺寸。
+	 *
+	 * @param camera 本次使用的相机
+	 */
 	public void initFromCameraParameters(Camera camera) {
 		Camera.Parameters parameters = camera.getParameters();
 		WindowManager manager = (WindowManager)this.context.getSystemService("window");
@@ -49,7 +54,13 @@ public final class CameraConfigurationManager {
 		Log.i(TAG, "Camera resolution y: " + this.cameraResolution.y);
 	}
 
-	@SuppressLint(value={"NewApi"})
+	/**
+	 * 读取显示设备的尺寸。
+	 *
+	 * @param display 显示设备
+	 * @return 显示设备尺寸
+	 */
+	@SuppressLint("NewApi")
 	private Point getDisplaySize(Display display) {
 		Point point = new Point();
 
@@ -63,6 +74,12 @@ public final class CameraConfigurationManager {
 		return point;
 	}
 
+	/**
+	 * 将选定的预览参数应用到相机。
+	 *
+	 * @param camera 本次使用的相机
+	 * @param safeMode 是否仅应用安全的相机参数
+	 */
 	public void setDesiredCameraParameters(Camera camera, boolean safeMode) {
 		Camera.Parameters parameters = camera.getParameters();
 		if (parameters == null) {
@@ -89,14 +106,31 @@ public final class CameraConfigurationManager {
 		camera.setDisplayOrientation(90);
 	}
 
+	/**
+	 * 返回相机使用的预览分辨率。
+	 *
+	 * @return 相机预览分辨率
+	 */
 	public Point getCameraResolution() {
 		return this.cameraResolution;
 	}
 
+	/**
+	 * 返回预览界面使用的屏幕分辨率。
+	 *
+	 * @return 屏幕分辨率
+	 */
 	public Point getScreenResolution() {
 		return this.screenResolution;
 	}
 
+	/**
+	 * 从相机支持的尺寸中选择最匹配屏幕的预览尺寸。
+	 *
+	 * @param parameters 相机参数
+	 * @param screenResolution 屏幕分辨率
+	 * @return 与屏幕最匹配的预览分辨率
+	 */
 	private Point findBestPreviewSizeValue(Camera.Parameters parameters, Point screenResolution) {
 		List<Camera.Size> rawSupportedSizes = parameters.getSupportedPreviewSizes();
 		if (rawSupportedSizes == null) {

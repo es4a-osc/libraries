@@ -17,11 +17,12 @@ import simple.runtime.components.组件;
  */
 @SimpleObject
 @SimpleComponent
-@UsesPermissions(permissionNames =
-	// 允许连接FTP服务器并传输数据。
-	"android.permission.INTERNET," +
-	// 允许向外部存储写入下载文件。
-	"android.permission.WRITE_EXTERNAL_STORAGE"
+@UsesPermissions(
+	permissionNames =
+		// 允许连接FTP服务器并传输数据。
+		"android.permission.INTERNET," +
+		// 允许向外部存储写入下载文件。
+		"android.permission.WRITE_EXTERNAL_STORAGE"
 )
 public interface FTP客户端 extends 组件 {
 
@@ -40,7 +41,10 @@ public interface FTP客户端 extends 组件 {
 	/**
 	 * @return 下次登录使用的协议，默认协议_FTP。
 	 */
-	@SimpleProperty(type = SimpleProperty.PROPERTY_TYPE_INTEGER, initializer = "0")
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
+		initializer = "0"
+	)
 	int 协议();
 
 	/**
@@ -52,7 +56,10 @@ public interface FTP客户端 extends 组件 {
 	/**
 	 * @return 下次 SFTP 登录使用的 SHA256 公钥指纹；默认空文本，由应用确认并记住服务器。
 	 */
-	@SimpleProperty(type = SimpleProperty.PROPERTY_TYPE_STRING, initializer = "\"\"")
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_STRING,
+		initializer = "\"\""
+	)
 	String 服务器公钥指纹();
 
 	/**
@@ -184,7 +191,6 @@ public interface FTP客户端 extends 组件 {
 
 	/**
 	 * 断开连接并清除重连凭据；等待当前会话操作结束，不是取消传输。 同步方法会阻塞调用线程，请在后台线程调用。
-	 *
 	 */
 	@SimpleFunction
 	void 断开连接();

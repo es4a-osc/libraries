@@ -15,24 +15,26 @@ import simple.runtime.components.组件;
  */
 @SimpleObject
 @SimpleComponent
-@UsesPermissions(permissionNames =
-	// 访问经典蓝牙设备。
-	"android.permission.BLUETOOTH," +
-	// 搜索设备及管理经典蓝牙连接。
-	"android.permission.BLUETOOTH_ADMIN," +
-	// 旧目标版本扫描蓝牙设备所需的定位权限。
-	"android.permission.ACCESS_FINE_LOCATION," +
-	// Android 12 及以上的设备扫描权限。
-	"android.permission.BLUETOOTH_SCAN," +
-	// Android 12 及以上的设备连接权限。
-	"android.permission.BLUETOOTH_CONNECT"
+@UsesPermissions(
+	permissionNames =
+		// 访问经典蓝牙设备。
+		"android.permission.BLUETOOTH," +
+		// 搜索设备及管理经典蓝牙连接。
+		"android.permission.BLUETOOTH_ADMIN," +
+		// 旧目标版本扫描蓝牙设备所需的定位权限。
+		"android.permission.ACCESS_FINE_LOCATION," +
+		// Android 12 及以上的设备扫描权限。
+		"android.permission.BLUETOOTH_SCAN," +
+		// Android 12 及以上的设备连接权限。
+		"android.permission.BLUETOOTH_CONNECT"
 )
-@ManifestNodes(rootXml =
-	// 声明经典蓝牙能力，不强制要求设备支持。
-	"<uses-feature" +
+@ManifestNodes(
+	rootXml =
+		// 声明经典蓝牙能力，不强制要求设备支持。
+		"<uses-feature" +
 		" android:name=\"android.hardware.bluetooth\"" +
 		" android:required=\"false\"" +
-	" />"
+		" />"
 )
 public interface 蓝牙打印机 extends 组件 {
 

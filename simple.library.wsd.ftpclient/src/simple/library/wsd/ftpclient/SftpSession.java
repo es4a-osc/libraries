@@ -56,10 +56,23 @@ final class SftpSession implements TransferSession {
 		boolean rejected;
 		String rejectionReason = "";
 
+		/**
+		 * 建立固定指纹或显式信任策略的服务器公钥验证器。
+		 *
+		 * @param fingerprint 服务器公钥指纹
+		 */
 		PinnedHostKey(String fingerprint) {
 			this(fingerprint, null, "", 0);
 		}
 
+		/**
+		 * 建立固定指纹或显式信任策略的服务器公钥验证器。
+		 *
+		 * @param fingerprint 服务器公钥指纹
+		 * @param trust 服务器公钥信任策略
+		 * @param host 服务器地址
+		 * @param port 端口号
+		 */
 		PinnedHostKey(String fingerprint, SftpHostTrust trust, String host, int port) {
 			this.trust = trust;
 			this.host = host;
@@ -100,12 +113,32 @@ final class SftpSession implements TransferSession {
 			}
 		}
 
-		@Override public void add(HostKey key, UserInfo userInfo) { }
-		@Override public void remove(String host, String type) { }
-		@Override public void remove(String host, String type, byte[] key) { }
-		@Override public String getKnownHostsRepositoryID() { return "SHA256 pinned host key"; }
-		@Override public HostKey[] getHostKey() { return new HostKey[0]; }
-		@Override public HostKey[] getHostKey(String host, String type) { return new HostKey[0]; }
+		@Override
+		public void add(HostKey key, UserInfo userInfo) {
+		}
+
+		@Override
+		public void remove(String host, String type) {
+		}
+
+		@Override
+		public void remove(String host, String type, byte[] key) {
+		}
+
+		@Override
+		public String getKnownHostsRepositoryID() {
+			return "SHA256 pinned host key";
+		}
+
+		@Override
+		public HostKey[] getHostKey() {
+			return new HostKey[0];
+		}
+
+		@Override
+		public HostKey[] getHostKey(String host, String type) {
+			return new HostKey[0];
+		}
 	}
 
 	@Override
@@ -125,6 +158,11 @@ final class SftpSession implements TransferSession {
 		return connect();
 	}
 
+	/**
+	 * 建立底层连接。
+	 *
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 */
 	private boolean connect() {
 		if (host == null) {
 			lastError = "请先登录服务器。";
@@ -165,6 +203,11 @@ final class SftpSession implements TransferSession {
 		return connection != null && connection.isConnected() && channel != null && channel.isConnected();
 	}
 
+	/**
+	 * 要求底层会话已经连接，否则拒绝操作。
+	 *
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	private void requireConnection() throws IOException {
 		if (!connected()) {
 			throw new IOException("请先登录服务器。");
@@ -189,6 +232,11 @@ final class SftpSession implements TransferSession {
 
 	/**
 	 * 先验证目录；不调用 cd，避免递归和失败分支遗留远程 CWD。
+	 *
+	 * @param path 文件或目录路径
+	 * @return 校验通过的远程目录
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 * @throws SftpException 服务器拒绝 SFTP 操作或远程路径无效时
 	 */
 	private String directory(String path) throws IOException, SftpException {
 		requireConnection();
@@ -223,12 +271,22 @@ final class SftpSession implements TransferSession {
 		return absolute;
 	}
 
+	/**
+	 * 组合远程父目录和单个文件名。
+	 *
+	 * @param parent 父目录或父容器
+	 * @param name 要操作的名称
+	 * @return 组合后的远程路径
+	 */
 	private static String join(String parent, String name) {
 		return ("/".equals(parent) ? "" : parent) + "/" + name;
 	}
 
 	/**
 	 * JSch 的路径 API 解析通配符；调用者名称按字面值处理。
+	 *
+	 * @param path 文件或目录路径
+	 * @return 已引用或转义的文本
 	 */
 	private static String quote(String path) {
 		return path.replace("\\", "\\\\").replace("*", "\\*").replace("?", "\\?");
@@ -256,6 +314,13 @@ final class SftpSession implements TransferSession {
 		}
 	}
 
+	/**
+	 * 读取远程目录的 SFTP 条目。
+	 *
+	 * @param path 文件或目录路径
+	 * @return 远程目录条目
+	 * @throws SftpException 服务器拒绝 SFTP 操作或远程路径无效时
+	 */
 	@SuppressWarnings("unchecked")
 	private Vector<ChannelSftp.LsEntry> channelEntries(String path) throws SftpException {
 		return channel.ls(quote(path));
@@ -303,6 +368,15 @@ final class SftpSession implements TransferSession {
 		}
 	}
 
+	/**
+	 * 递归上传文件或目录，并防止重复进入同一目录。
+	 *
+	 * @param local 本地文件
+	 * @param remote 远程文件路径
+	 * @param ancestors 当前递归链已访问的目录集合
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 * @throws SftpException 服务器拒绝 SFTP 操作或远程路径无效时
+	 */
 	private void uploadEntry(File local, String remote, Set<String> ancestors) throws IOException, SftpException {
 		checkName(local.getName());
 		if (local.isFile()) {
@@ -364,6 +438,16 @@ final class SftpSession implements TransferSession {
 		}
 	}
 
+	/**
+	 * 递归下载远程条目，并限制不安全路径和递归深度。
+	 *
+	 * @param remote 远程文件路径
+	 * @param name 要操作的名称
+	 * @param parent 父目录或父容器
+	 * @param depth 当前递归深度
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 * @throws SftpException 服务器拒绝 SFTP 操作或远程路径无效时
+	 */
 	private void downloadEntry(String remote, String name, File parent, int depth) throws IOException, SftpException {
 		checkName(name);
 		if (depth > 128) throw new IOException("远程目录超过递归深度限制。");
@@ -409,6 +493,9 @@ final class SftpSession implements TransferSession {
 		password = null;
 	}
 
+	/**
+	 * 关闭底层通道及会话。
+	 */
 	private void closeConnection() {
 		if (channel != null) channel.disconnect();
 		if (connection != null) connection.disconnect();
@@ -421,14 +508,32 @@ final class SftpSession implements TransferSession {
 		return lastError == null ? "SFTP 操作失败。" : lastError;
 	}
 
+	/**
+	 * 判断文本是否非空引用且不包含协议换行符。
+	 *
+	 * @param value 待检查的协议参数文本。
+	 * @return 文本非空引用且不包含协议换行符时为 {@code true}，否则为 {@code false}
+	 */
 	private static boolean text(String value) {
 		return value != null && value.indexOf('\r') < 0 && value.indexOf('\n') < 0;
 	}
 
+	/**
+	 * 判断名称是否为当前目录或父目录标记。
+	 *
+	 * @param value 待检查的目录条目名称。
+	 * @return 名称为当前目录或父目录标记时为 {@code true}，否则为 {@code false}
+	 */
 	private static boolean dot(String value) {
 		return ".".equals(value) || "..".equals(value);
 	}
 
+	/**
+	 * 拒绝不安全或不合法的单个文件名。
+	 *
+	 * @param value 待检查的单级文件名。
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	private static void checkName(String value) throws IOException {
 		if (!text(value) || value.length() == 0 || dot(value) || value.indexOf('/') >= 0 || value.indexOf('\\') >= 0) {
 			throw new IOException("文件或目录名称无效。");

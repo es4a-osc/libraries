@@ -54,6 +54,7 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 
 		// PagerAdapter https://developer.android.google.cn/reference/android/support/v4/view/PagerAdapter
 		adapter = new PagerAdapter() {
+
 			@Override
 			public int getCount() {
 				return pageViews.size();
@@ -88,6 +89,7 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 
 		// ViewPager https://developer.android.google.cn/reference/android/support/v4/view/ViewPager
 		ViewPager view = new ViewPager(MainActivity.getContext()) {
+
 			@Override
 			public boolean onTouchEvent(MotionEvent ev) {
 				if (noScroll) {
@@ -109,6 +111,7 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 
 		// 页面改变监听器
 		view.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
 			@Override
 			public void onPageScrollStateChanged(int state) {
 				滑动状态改变(state);
@@ -252,6 +255,8 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 
 	/**
 	 * 页面由适配器延迟挂载，须先建立布局参数，供 Simple 初始化宽高属性使用。
+	 *
+	 * @param view 目标原生视图
 	 */
 	private void addPageView(View view) {
 		// 页面尚未挂载到 ViewPager，布局参数可能为空。

@@ -48,6 +48,13 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
 	private MediaPlayer player;
 	private String flashButtonTitle = "开闪光灯";
 
+	/**
+	 * 按名称和资源类型查找本应用资源编号。
+	 *
+	 * @param resourceName 资源名称
+	 * @param resourceType 资源类型
+	 * @return 资源编号，未找到时为 0
+	 */
 	private int getResourceId(String resourceName, String resourceType) {
 		Resources res = this.getResources();
 		return res.getIdentifier(resourceName, resourceType, this.getPackageName());
@@ -204,6 +211,11 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
 		super.onDestroy();
 	}
 
+	/**
+	 * 为扫描页面打开相机和解码流程。
+	 *
+	 * @param surfaceHolder 相机预览表面
+	 */
 	private void initCamera(SurfaceHolder surfaceHolder) {
 		try {
 			CameraManager.get().openDriver(surfaceHolder);
@@ -235,20 +247,36 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
 		this.hasSurface = false;
 	}
 
+	/**
+	 * 返回扫描取景视图。
+	 *
+	 * @return 扫描取景视图
+	 */
 	public ViewfinderView getViewfinderView() {
 		return this.viewfinderView;
 	}
 
+	/**
+	 * 取得接收扫描或解码消息的处理器。
+	 *
+	 * @return 当前线程的消息处理器
+	 */
 	public Handler getHandler() {
 		return this.handler;
 	}
 
+	/**
+	 * 刷新扫描取景视图。
+	 */
 	public void drawViewfinder() {
 		this.viewfinderView.drawViewfinder();
 	}
 
 	/**
 	 * 通知当前应用并按连续扫描设置决定是否重新启动预览。
+	 *
+	 * @param obj 待处理的对象
+	 * @param barcode 识别结果图片
 	 */
 	public void handleDecode(Result obj, Bitmap barcode) {
 		this.inactivityTimer.onActivity();
@@ -289,6 +317,9 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
 
 	/**
 	 * 保留原组件对 UTF-8 和 GB2312 扫描结果的判定方式。
+	 *
+	 * @param resultStr 识别或操作结果文本
+	 * @return 按检测结果转换字符编码后的文本
 	 */
 	private String recode(String resultStr) {
 		String utfText = "";
@@ -315,6 +346,12 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
 		}
 	}
 
+	/**
+	 * 判断文本是否包含所检查的中文字符。
+	 *
+	 * @param chineseStr 待检查的文本
+	 * @return 文本包含所检查的中文字符时为 {@code true}，否则为 {@code false}
+	 */
 	public boolean isChineseCharacter(String chineseStr) {
 		char[] charArray = chineseStr.toCharArray();
 
@@ -327,10 +364,19 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
 		return true;
 	}
 
+	/**
+	 * 判断文本是否包含所检查的特殊字符。
+	 *
+	 * @param str 待处理文本
+	 * @return 文本包含所检查的特殊字符时为 {@code true}，否则为 {@code false}
+	 */
 	public boolean isSpecialCharacter(String str) {
 		return str.contains("???");
 	}
 
+	/**
+	 * 结束本次扫码并关闭扫描页面。
+	 */
 	public void stopscan() {
 		this.unregisterStopReceiver();
 		this.finish();

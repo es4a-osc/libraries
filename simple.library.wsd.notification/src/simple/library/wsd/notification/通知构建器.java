@@ -56,22 +56,54 @@ public final class 通知构建器 {
 	public static final int ACTION_REPLY = 2;
 
 	/* 以下是一组通知优先级常量；API 26 起映射为通知渠道重要程度。 */
+
+	/**
+	 * 通知优先级：最低。
+	 */
 	@SimpleDataElement
 	public static final int 优先级_最低 = -2;
+
+	/**
+	 * 通知优先级：低。
+	 */
 	@SimpleDataElement
 	public static final int 优先级_低 = -1;
+
+	/**
+	 * 通知优先级：默认。
+	 */
 	@SimpleDataElement
 	public static final int 优先级_默认 = 0;
+
+	/**
+	 * 通知优先级：高。
+	 */
 	@SimpleDataElement
 	public static final int 优先级_高 = 1;
+
+	/**
+	 * 通知优先级：最高。
+	 */
 	@SimpleDataElement
 	public static final int 优先级_最高 = 2;
 
 	/* 以下是一组锁屏内容可见性常量，仅 API 21 及以上有效。 */
+
+	/**
+	 * 通知在锁定屏幕上的公开范围：公开。
+	 */
 	@SimpleDataElement
 	public static final int 公开范围_公开 = Notification.VISIBILITY_PUBLIC;
+
+	/**
+	 * 通知在锁定屏幕上的公开范围：私密。
+	 */
 	@SimpleDataElement
 	public static final int 公开范围_私密 = Notification.VISIBILITY_PRIVATE;
+
+	/**
+	 * 通知在锁定屏幕上的公开范围：保密。
+	 */
 	@SimpleDataElement
 	public static final int 公开范围_保密 = Notification.VISIBILITY_SECRET;
 
@@ -174,9 +206,7 @@ public final class 通知构建器 {
 	 * @param priority 使用本对象的优先级常量
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void 置优先级(int priority) {
 		if (priority < 优先级_最低 || priority > 优先级_最高) {
 			throw new IllegalArgumentException("无效的通知优先级");
@@ -196,9 +226,7 @@ public final class 通知构建器 {
 	 * @param visibility 使用本对象的公开范围常量
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.LOLLIPOP
-	)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public void 置公开范围(int visibility) {
 		if (visibility != 公开范围_公开 && visibility != 公开范围_私密 && visibility != 公开范围_保密) {
 			throw new IllegalArgumentException("无效的通知公开范围");
@@ -225,9 +253,7 @@ public final class 通知构建器 {
 	 * @param longText 展开后显示的正文
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void 置长文本样式(String longText) {
 		requireStyleSupport();
 		builder.setStyle(new Notification.BigTextStyle().bigText(longText));
@@ -239,9 +265,7 @@ public final class 通知构建器 {
 	 * @param lines 各行内容，不能为 null
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void 置多行样式(String[] lines) {
 		requireStyleSupport();
 		if (lines == null) {
@@ -264,9 +288,7 @@ public final class 通知构建器 {
 	 * @param imageResource 可解码为位图的图片资源编号
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void 置大图片样式(int imageResource) {
 		requireStyleSupport();
 
@@ -287,9 +309,7 @@ public final class 通知构建器 {
 	 * @param mark 区分不同按钮的自定义标记
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void 添加按钮(String title, String mark) {
 		添加按钮(0, title, mark);
 	}
@@ -302,9 +322,7 @@ public final class 通知构建器 {
 	 * @param mark 区分不同按钮的自定义标记
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public void 添加按钮(int iconResource, String title, String mark) {
 		addAction(ACTION_BUTTON, iconResource, title, mark, null);
 	}
@@ -317,9 +335,7 @@ public final class 通知构建器 {
 	 * @param inputHint 回复输入框的提示文字
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.N
-	)
+	@TargetApi(Build.VERSION_CODES.N)
 	public void 添加回复(String title, String mark, String inputHint) {
 		添加回复(0, title, mark, inputHint);
 	}
@@ -333,9 +349,7 @@ public final class 通知构建器 {
 	 * @param inputHint 回复输入框的提示文字
 	 */
 	@SimpleFunction
-	@TargetApi(
-		Build.VERSION_CODES.N
-	)
+	@TargetApi(Build.VERSION_CODES.N)
 	public void 添加回复(int iconResource, String title, String mark, String inputHint) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
 			throw new UnsupportedOperationException("通知内联回复需要 Android API 24");
@@ -492,9 +506,7 @@ public final class 通知构建器 {
 	 * @param action 回复按钮定义
 	 * @param pendingIntent 提交回复时发送的意图
 	 */
-	@TargetApi(
-		Build.VERSION_CODES.N
-	)
+	@TargetApi(Build.VERSION_CODES.N)
 	private void appendReplyAction(ActionSpec action, PendingIntent pendingIntent) {
 		RemoteInput input = new RemoteInput.Builder(REPLY_RESULT_KEY).setLabel(action.hint).build();
 
@@ -509,9 +521,7 @@ public final class 通知构建器 {
 	 * @param pendingIntent 点击按钮时发送的意图
 	 * @return 可继续添加内联输入的操作构建器
 	 */
-	@TargetApi(
-		Build.VERSION_CODES.M
-	)
+	@TargetApi(Build.VERSION_CODES.M)
 	private Notification.Action.Builder createModernActionBuilder(ActionSpec action, PendingIntent pendingIntent) {
 		String resourcePackage = context.getResources().getResourcePackageName(action.icon);
 		Icon icon = Icon.createWithResource(resourcePackage, action.icon);
@@ -525,12 +535,8 @@ public final class 通知构建器 {
 	 * @param action 要添加的按钮定义
 	 * @param pendingIntent 点击按钮时发送的意图
 	 */
-	@SuppressWarnings(
-		"deprecation"
-	)
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@SuppressWarnings("deprecation")
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void appendLegacyAction(ActionSpec action, PendingIntent pendingIntent) {
 		builder.addAction(action.icon, action.title, pendingIntent);
 	}
@@ -540,9 +546,7 @@ public final class 通知构建器 {
 	 *
 	 * @param playSound 是否播放系统默认通知提示音
 	 */
-	@SuppressWarnings(
-		"deprecation"
-	)
+	@SuppressWarnings("deprecation")
 	private void applyLegacySound(boolean playSound) {
 		builder.setDefaults(playSound ? Notification.DEFAULT_SOUND : 0);
 		if (!playSound) {
@@ -555,12 +559,8 @@ public final class 通知构建器 {
 	 *
 	 * @param value 通知优先级常量
 	 */
-	@SuppressWarnings(
-		"deprecation"
-	)
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN
-	)
+	@SuppressWarnings("deprecation")
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void applyLegacyPriority(int value) {
 		builder.setPriority(value);
 	}

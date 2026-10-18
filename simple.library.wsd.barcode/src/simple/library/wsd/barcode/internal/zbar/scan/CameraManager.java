@@ -19,6 +19,11 @@ public final class CameraManager {
 		this.configManager = new CameraConfigurationManager(context);
 	}
 
+	/**
+	 * 打开相机并准备预览参数。
+	 *
+	 * @throws IOException 访问文件、流或网络资源失败时
+	 */
 	public synchronized void openDriver() throws IOException {
 		block7: {
 			Camera.Parameters parameters;
@@ -60,14 +65,27 @@ public final class CameraManager {
 		}
 	}
 
+	/**
+	 * 判断相机或连接是否已经打开。
+	 *
+	 * @return 相机或连接已经打开时为 {@code true}，否则为 {@code false}
+	 */
 	public synchronized boolean isOpen() {
 		return this.camera != null;
 	}
 
+	/**
+	 * 返回当前打开的相机对象。
+	 *
+	 * @return 当前打开的相机
+	 */
 	public Camera getCamera() {
 		return this.camera;
 	}
 
+	/**
+	 * 关闭并释放当前相机。
+	 */
 	public synchronized void closeDriver() {
 		if (this.camera != null) {
 			this.camera.release();
@@ -75,6 +93,11 @@ public final class CameraManager {
 		}
 	}
 
+	/**
+	 * 返回相机使用的预览分辨率。
+	 *
+	 * @return 相机预览分辨率
+	 */
 	public Point getCameraResolution() {
 		return this.configManager.getCameraResolution();
 	}

@@ -1,0 +1,88 @@
+{
+	"name": "APK信息库",
+	"description": "读取本地独立 APK 的名称、包名、版本和 PNG 图标。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "APK信息",
+					"description": "一次解析本地独立 APK，保存名称、包名、版本和 PNG 图标；属性读取不再访问原文件。",
+					"kind": "object",
+					"type": "simple.library.wsd.apk.APK信息",
+					"icon": "icons/file-info.svg",
+					"properties": [
+						{
+							"name": "已解析",
+							"type": "逻辑型",
+							"description": "最近一次解析成功且尚未清空时为真。",
+							"writable": false
+						},
+						{
+							"name": "应用名称",
+							"type": "文本型",
+							"description": "解析时系统提供的应用显示名称；无结果时为空文本。",
+							"writable": false
+						},
+						{
+							"name": "包名",
+							"type": "文本型",
+							"description": "安装包声明的完整包名；无结果时为空文本。",
+							"writable": false
+						},
+						{
+							"name": "版本名",
+							"type": "文本型",
+							"description": "安装包版本名称；未声明或无结果时为空文本。",
+							"writable": false
+						},
+						{
+							"name": "版本号",
+							"type": "长整数型",
+							"description": "Android 9.0 起保留 versionCodeMajor 高位；无结果时为 0。",
+							"writable": false
+						},
+						{
+							"name": "图标字节集",
+							"type": "字节型()",
+							"description": "最长边不超过 256 像素的 PNG 字节副本；未声明图标时使用平台默认图标，无结果时为空数组。",
+							"writable": false
+						},
+						{
+							"name": "错误信息",
+							"type": "文本型",
+							"description": "最近解析失败的原因；新建、解析成功或清空后为空文本。",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "解析",
+							"description": "同步解析一次独立 APK，成功保存完整快照，失败清空旧结果并设置错误信息。相对路径以本应用 files 目录为基准；content URI 请先复制到私有文件，大文件应在后台线程处理。 每次解析使用独立私有临时副本隔离平台资源缓存，完成后清理，需要额外复制时间和临时空间。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "已有且可读的 APK 文件路径，不支持网址、资产名、APKS 或 XAPK 容器。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "清空",
+							"description": "清空结果、PNG 快照和错误说明；不删除原 APK 或调用者保存的图标文件。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

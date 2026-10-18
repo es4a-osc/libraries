@@ -1,0 +1,199 @@
+{
+	"name": "GIF图片框库",
+	"description": "本地 GIF 动画显示与播放控制，无第三方 JAR 或原生库依赖。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展可视组件",
+			"definitions": [
+				{
+					"name": "GIF图片框",
+					"description": "异步载入资产、资源、可访问文件或字节集；支持播放、暂停、停止与循环。界面线程调用，最新请求生效，失败保留原图。",
+					"icon": "icons/gif.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.gif.GIF图片框",
+					"inherits": [
+						"simple.runtime.components.可视组件"
+					],
+					"constants": [
+						{
+							"name": "缩放_等比适应",
+							"type": "整数型",
+							"value": "0",
+							"description": "保持宽高比，在组件内部完整显示。"
+						},
+						{
+							"name": "缩放_拉伸填满",
+							"type": "整数型",
+							"value": "1",
+							"description": "拉伸至组件可用尺寸。"
+						},
+						{
+							"name": "缩放_原始居中",
+							"type": "整数型",
+							"value": "2",
+							"description": "使用原始像素尺寸居中，超出部分裁剪。"
+						}
+					],
+					"properties": [
+						{
+							"name": "图片",
+							"type": "文本型",
+							"description": "已成功载入的资产名、资源标识或绝对路径；字节载入及清空后为空文本。",
+							"initializer": "\"\"",
+							"editor": "simple.asset"
+						},
+						{
+							"name": "自动播放",
+							"type": "逻辑型",
+							"description": "新图片载入成功后是否从头播放；不改变当前播放状态。",
+							"initializer": "真"
+						},
+						{
+							"name": "循环播放",
+							"type": "逻辑型",
+							"description": "是否持续循环；假为只播放一次，忽略 GIF 文件内的循环次数。",
+							"initializer": "真"
+						},
+						{
+							"name": "显示方式",
+							"type": "整数型",
+							"description": "0 等比适应、1 拉伸填满、2 原始像素居中。",
+							"initializer": "0"
+						},
+						{
+							"name": "正在载入",
+							"type": "逻辑型",
+							"description": "当前是否正在读取、检查或解码最新请求。",
+							"writable": false
+						},
+						{
+							"name": "正在播放",
+							"type": "逻辑型",
+							"description": "当前已开始播放并且组件和应用可见。",
+							"writable": false
+						},
+						{
+							"name": "图片宽度",
+							"type": "整数型",
+							"description": "当前 GIF 的原始像素宽度；没有图片时为 0。",
+							"writable": false
+						},
+						{
+							"name": "图片高度",
+							"type": "整数型",
+							"description": "当前 GIF 的原始像素高度；没有图片时为 0。",
+							"writable": false
+						},
+						{
+							"name": "帧数",
+							"type": "整数型",
+							"description": "当前 GIF 图像帧数量；没有图片时为 0。",
+							"writable": false
+						},
+						{
+							"name": "动画时长",
+							"type": "整数型",
+							"description": "当前 GIF 一轮播放时长，单位毫秒；没有图片时为 0。",
+							"writable": false
+						},
+						{
+							"name": "播放位置",
+							"type": "整数型",
+							"description": "最近一次刷新后的播放时间，单位毫秒；停止和清空后为 0。",
+							"writable": false
+						},
+						{
+							"name": "最后错误",
+							"type": "文本型",
+							"description": "最近一次载入失败的说明；新请求、成功或清空后为空文本。",
+							"writable": false
+						}
+					],
+					"events": [
+						{
+							"name": "被单击",
+							"description": "用户单击图片框时触发。"
+						},
+						{
+							"name": "载入成功",
+							"description": "最新请求载入成功后在界面线程触发。",
+							"params": [
+								{
+									"name": "宽度",
+									"type": "整数型",
+									"description": "原始宽度，单位像素。"
+								},
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "原始高度，单位像素。"
+								},
+								{
+									"name": "帧数",
+									"type": "整数型",
+									"description": "GIF 图像帧数量。"
+								}
+							]
+						},
+						{
+							"name": "载入失败",
+							"description": "最新请求载入失败后在界面线程触发，保留原来的图片和播放状态。",
+							"params": [
+								{
+									"name": "错误信息",
+									"type": "文本型",
+									"description": "读取、格式、大小限制或平台解码失败的说明。"
+								}
+							]
+						},
+						{
+							"name": "播放完毕",
+							"description": "非循环播放自然结束时触发一次，停留在最后一帧。"
+						}
+					],
+					"functions": [
+						{
+							"name": "载入字节图片",
+							"description": "从字节集异步载入 GIF，成功后图片属性为空文本。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "完整 GIF 文件字节集，复制后异步载入；空数据按失败事件反馈。"
+								}
+							]
+						},
+						{
+							"name": "开始播放",
+							"description": "从第一帧开始播放；尚未载入图片时不执行。"
+						},
+						{
+							"name": "暂停播放",
+							"description": "暂停并保留当前播放位置。"
+						},
+						{
+							"name": "继续播放",
+							"description": "从暂停位置继续；一次播放结束后从头继续。"
+						},
+						{
+							"name": "停止播放",
+							"description": "停止并回到第一帧，保留已载入的图片。"
+						},
+						{
+							"name": "清空图片",
+							"description": "取消待处理请求，停止刷新并释放组件持有的图片引用。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

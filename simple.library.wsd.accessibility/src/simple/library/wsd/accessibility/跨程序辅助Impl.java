@@ -220,9 +220,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.KITKAT
-	)
+	@TargetApi(Build.VERSION_CODES.KITKAT)
 	public void 设置标记(String mark, AccessibilityNodeInfo node) {
 		if (node != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			node.getExtras().putString(MARK_KEY, mark);
@@ -230,9 +228,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.KITKAT
-	)
+	@TargetApi(Build.VERSION_CODES.KITKAT)
 	public String 取标记(AccessibilityNodeInfo node) {
 		if (node == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
 			return "";
@@ -294,9 +290,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.LOLLIPOP
-	)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public boolean 置控件内容(AccessibilityNodeInfo node, String content) {
 		if (node == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return false;
@@ -316,27 +310,21 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN_MR2
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	public boolean 粘贴(AccessibilityNodeInfo node) {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
 				&& performAction(node, AccessibilityNodeInfo.ACTION_PASTE);
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN_MR2
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	public boolean 复制(AccessibilityNodeInfo node) {
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2
 				&& performAction(node, AccessibilityNodeInfo.ACTION_COPY);
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.LOLLIPOP
-	)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	public void 清空所有编辑框() {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 			return;
@@ -344,6 +332,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 
 		// 从活动窗口的后代中筛选可编辑节点，保持根节点本身不被清空。
 		visitTree(取根控件(), false, new NodeVisitor() {
+
 			@Override
 			public void visit(AccessibilityNodeInfo node) {
 				CharSequence className = node.getClassName();
@@ -380,6 +369,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 		}
 
 		visitTree(start, false, new NodeVisitor() {
+
 			@Override
 			public void visit(AccessibilityNodeInfo node) {
 				CharSequence description = node.getContentDescription();
@@ -406,9 +396,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN_MR2
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	public List<AccessibilityNodeInfo> 在控件内按资源ID查找控件(String viewId,
 			AccessibilityNodeInfo node) {
 		return node == null || viewId == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2
@@ -427,9 +415,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	}
 
 	@Override
-	@TargetApi(
-		Build.VERSION_CODES.JELLY_BEAN_MR2
-	)
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	public String 取控件资源ID(AccessibilityNodeInfo node) {
 		return node == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2
 				? "" : asString(node.getViewIdResourceName());
@@ -504,6 +490,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 		final JSONArray result = new JSONArray();
 
 		visitTree(root, false, new NodeVisitor() {
+
 			@Override
 			public void visit(AccessibilityNodeInfo node) {
 				try {
@@ -569,9 +556,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	 *
 	 * @param event 通知状态变化事件
 	 */
-	@TargetApi(
-		Build.VERSION_CODES.KITKAT
-	)
+	@TargetApi(Build.VERSION_CODES.KITKAT)
 	private void onNotificationChanged(AccessibilityEvent event) {
 		Parcelable data = event.getParcelableData();
 		Notification notification = data instanceof Notification ? (Notification) data : null;
@@ -701,9 +686,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	 * @return 节点信息对象
 	 * @throws JSONException 写入 JSON 字段失败时抛出
 	 */
-	@TargetApi(
-		Build.VERSION_CODES.LOLLIPOP
-	)
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 	private static JSONObject describeNode(AccessibilityNodeInfo node) throws JSONException {
 		Rect bounds = new Rect();
 
@@ -750,6 +733,7 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	 * 仅在遍历过程中使用的节点访问操作。
 	 */
 	private interface NodeVisitor {
+
 		/**
 		 * 处理当前节点；异常由遍历器隔离。
 		 *

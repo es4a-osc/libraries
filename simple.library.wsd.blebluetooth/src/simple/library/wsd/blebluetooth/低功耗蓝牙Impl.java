@@ -54,6 +54,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 
 	// Activity 销毁时停止回调与资源使用，保留监听器列表的遍历稳定性。
 	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
+
 		@Override
 		public void onDestroy() {
 			// MainActivity 正在遍历销毁监听器，不能在回调内修改其列表。
@@ -64,6 +65,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 
 	// 绑定成功后处理等待连接的地址，服务异常断开时清空会话引用。
 	private final ServiceConnection serviceConnection = new ServiceConnection() {
+
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder binder) {
 			if (!bound || destroyed) {
@@ -96,6 +98,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 
 	// 将服务发出的应用内广播转换为组件事件。
 	private final BroadcastReceiver gattReceiver = new BroadcastReceiver() {
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (!receiverRegistered || destroyed || intent == null) {
@@ -128,6 +131,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 
 	// 扫描结果切回主线程，只有当前轮次才能更新设备集合并触发事件。
 	private final BluetoothAdapter.LeScanCallback scanCallback = new BluetoothAdapter.LeScanCallback() {
+
 		@Override
 		public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
 			if (device == null) {
@@ -138,6 +142,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 			final int generation = scanGeneration;
 
 			activity.runOnUiThread(new Runnable() {
+
 				@Override
 				public void run() {
 					if (!scanning || destroyed || generation != scanGeneration) {

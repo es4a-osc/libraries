@@ -188,6 +188,7 @@ final class LuaContext {
 			if (array != null && !(array instanceof byte[])) {
 				throw error("Lua 自动参数转换仅支持字节数组");
 			}
+
 			pushObject(array);
 		} else {
 			throw error("此变体类型不能自动转换为 Lua 值");
@@ -322,9 +323,11 @@ final class LuaContext {
 		if (state.type(index) != LuaState.LUA_TSTRING) {
 			throw error("Lua 值不是字节字符串");
 		}
+
 		int top = state.getTop();
 		reserve(3);
 		int absolute = index > 0 ? index : top + index + 1;
+
 		try {
 			state.rawGetI(LuaState.LUA_REGISTRYINDEX, bytesReader);
 			state.pushValue(absolute);
@@ -333,6 +336,7 @@ final class LuaContext {
 			// 辅助表中的整数逐字节复制，不通过 JNI 字符串编码。
 			int length = state.objLen(-1);
 			byte[] data = new byte[length];
+
 			for (int i = 0; i < length; i++) {
 				state.rawGetI(-1, i + 1);
 				data[i] = (byte) state.toInteger(-1);
@@ -373,9 +377,7 @@ final class LuaContext {
 	/**
 	 * 把库内失败交给 Simple 错误处理，不作为类库对象导出。
 	 */
-	@SuppressWarnings(
-		"serial"
-	)
+	@SuppressWarnings("serial")
 	private static final class LuaFailure extends 运行错误 {
 
 		/**

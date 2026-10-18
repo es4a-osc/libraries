@@ -33,6 +33,7 @@ public final class 演示按钮Impl extends 视图组件 implements 演示按钮
 		button.setAllCaps(false);
 
 		button.setOnClickListener(new View.OnClickListener() {
+
 			@Override
 			public void onClick(View view) {
 				被单击();

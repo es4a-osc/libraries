@@ -19,6 +19,15 @@ final class JdbcSession {
 
 	/* 会话操作 */
 
+	/**
+	 * 建立底层连接。
+	 *
+	 * @param host 服务器地址
+	 * @param user 认证用户名
+	 * @param password 认证密码
+	 * @param database 数据库名称
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 */
 	synchronized boolean connect(String host, String user, String password, String database) {
 		if (disposed || !disconnect() || host == null || host.trim().isEmpty() || database == null || database.isEmpty()) return false;
 
@@ -41,6 +50,13 @@ final class JdbcSession {
 		}
 	}
 
+	/**
+	 * 执行 SQL 查询并返回结果数据。
+	 *
+	 * @param sql 要执行的 SQL 语句
+	 * @param labels 要读取的列名数组；为空引用时按结果集中全部列的顺序读取。
+	 * @return 按行保存的文本数组列表；未连接或查询失败时返回空列表。
+	 */
 	synchronized List<String[]> query(String sql, String[] labels) {
 		List<String[]> rows = new ArrayList<String[]>();
 		if (disposed || connection == null) return rows;
@@ -70,6 +86,12 @@ final class JdbcSession {
 		return rows;
 	}
 
+	/**
+	 * 执行 SQL 更新语句并按受影响行数判断结果。
+	 *
+	 * @param sql 要执行的 SQL 语句
+	 * @return 受影响行数不小于 0 时为真；连接不可用或执行异常时为假。
+	 */
 	synchronized boolean execute(String sql) {
 		if (disposed || connection == null) return false;
 
@@ -81,11 +103,19 @@ final class JdbcSession {
 		}
 	}
 
+	/**
+	 * 释放连接、线程及按要求移除生命周期监听器。
+	 */
 	synchronized void dispose() {
 		disposed = true;
 		disconnect();
 	}
 
+	/**
+	 * 关闭当前连接并清理连接状态。
+	 *
+	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+	 */
 	synchronized boolean disconnect() {
 		if (connection == null) return true;
 

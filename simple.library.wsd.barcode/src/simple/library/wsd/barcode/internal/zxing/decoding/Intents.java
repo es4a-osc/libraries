@@ -4,9 +4,13 @@ package simple.library.wsd.barcode.internal.zxing.decoding;
  * 保留原扫描实现使用的 Intent 参数名称。
  */
 public final class Intents {
+
 	private Intents() {
 	}
 
+	/**
+	 * 分享意图使用的参数名称。
+	 */
 	public static final class Share {
 		public static final String ACTION = "com.google.zxing.client.android.SHARE";
 
@@ -14,6 +18,9 @@ public final class Intents {
 		}
 	}
 
+	/**
+	 * 无线网络连接意图使用的参数名称。
+	 */
 	public static final class WifiConnect {
 		public static final String ACTION = "com.google.zxing.client.android.WIFI_CONNECT";
 		public static final String SSID = "SSID";
@@ -24,6 +31,9 @@ public final class Intents {
 		}
 	}
 
+	/**
+	 * 图书内容搜索意图使用的参数名称。
+	 */
 	public static final class SearchBookContents {
 		public static final String ACTION = "com.google.zxing.client.android.SEARCH_BOOK_CONTENTS";
 		public static final String ISBN = "ISBN";
@@ -33,6 +43,9 @@ public final class Intents {
 		}
 	}
 
+	/**
+	 * 条码编码意图使用的参数名称。
+	 */
 	public static final class Encode {
 		public static final String ACTION = "com.google.zxing.client.android.ENCODE";
 		public static final String DATA = "ENCODE_DATA";
@@ -43,6 +56,9 @@ public final class Intents {
 		}
 	}
 
+	/**
+	 * 条码扫描意图使用的参数名称。
+	 */
 	public static final class Scan {
 		public static final String ACTION = "com.google.zxing.client.android.SCAN";
 		public static final String MODE = "SCAN_MODE";

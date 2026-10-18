@@ -18,26 +18,28 @@ import simple.runtime.components.组件;
  */
 @SimpleObject
 @SimpleComponent
-@UsesPermissions(permissionNames =
-	// 访问蓝牙设备。
-	"android.permission.BLUETOOTH," +
-	// 扫描设备及设置可发现状态。
-	"android.permission.BLUETOOTH_ADMIN," +
-	// Android 6 至 11 的 BLE 扫描需要定位授权。
-	"android.permission.ACCESS_FINE_LOCATION," +
-	// Android 12 及以上的扫描权限。
-	"android.permission.BLUETOOTH_SCAN," +
-	// Android 12 及以上的连接权限。
-	"android.permission.BLUETOOTH_CONNECT," +
-	// Android 12 及以上设置可发现状态所需权限。
-	"android.permission.BLUETOOTH_ADVERTISE"
+@UsesPermissions(
+	permissionNames =
+		// 访问蓝牙设备。
+		"android.permission.BLUETOOTH," +
+		// 扫描设备及设置可发现状态。
+		"android.permission.BLUETOOTH_ADMIN," +
+		// Android 6 至 11 的 BLE 扫描需要定位授权。
+		"android.permission.ACCESS_FINE_LOCATION," +
+		// Android 12 及以上的扫描权限。
+		"android.permission.BLUETOOTH_SCAN," +
+		// Android 12 及以上的连接权限。
+		"android.permission.BLUETOOTH_CONNECT," +
+		// Android 12 及以上设置可发现状态所需权限。
+		"android.permission.BLUETOOTH_ADVERTISE"
 )
-@ManifestNodes(applicationXml =
-	"<service" +
+@ManifestNodes(
+	applicationXml =
+		"<service" +
 		" android:name=\"simple.library.wsd.blebluetooth.BluetoothLeService\"" +
 		" android:enabled=\"true\"" +
 		" android:exported=\"false\"" +
-	" />"
+		" />"
 )
 public interface 低功耗蓝牙 extends 组件 {
 

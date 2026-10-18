@@ -12,9 +12,18 @@ final class EscPosImage {
 
 	/* 位图编码 */
 
+	/**
+	 * 将 ARGB 像素转换为 ESC/POS 打印栅格数据。
+	 *
+	 * @param pixels ARGB 像素数组
+	 * @param width 宽度
+	 * @param height 高度
+	 * @return 编码后的字节数据或文本
+	 */
 	static byte[] encode(int[] pixels, int width, int height) {
 		if (width <= 0 || width > 4096 || height <= 0 || height > 4096 || pixels == null || pixels.length != width * height)
 			throw new IllegalArgumentException("图片尺寸或像素数据无效");
+
 		ByteArrayOutputStream output = new ByteArrayOutputStream();
 		output.write(27);
 		output.write(51);

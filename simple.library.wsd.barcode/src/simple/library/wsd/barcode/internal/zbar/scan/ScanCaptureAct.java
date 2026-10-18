@@ -124,6 +124,13 @@ public class ScanCaptureAct extends Activity {
 		}
 	};
 
+	/**
+	 * 按名称和资源类型查找本应用资源编号。
+	 *
+	 * @param resourceName 资源名称
+	 * @param resourceType 资源类型
+	 * @return 资源编号，未找到时为 0
+	 */
 	private int getResourceId(String resourceName, String resourceType) {
 		Resources res = this.getResources();
 		return res.getIdentifier(resourceName, resourceType, this.getPackageName());
@@ -183,6 +190,9 @@ public class ScanCaptureAct extends Activity {
 		}
 	}
 
+	/**
+	 * 查找扫描页面使用的控件。
+	 */
 	private void findViewById() {
 		this.scanPreview = (FrameLayout)this.findViewById(this.getResourceId("capture_preview", "id"));
 		this.scanResult = (TextView)this.findViewById(this.getResourceId("capture_scan_result", "id"));
@@ -192,6 +202,9 @@ public class ScanCaptureAct extends Activity {
 		this.scanLine = (ImageView)this.findViewById(this.getResourceId("capture_scan_line", "id"));
 	}
 
+	/**
+	 * 为扫描页面控件注册事件监听器。
+	 */
 	private void addEvents() {
 		this.scanFlash.setOnClickListener(new View.OnClickListener() {
 
@@ -214,6 +227,9 @@ public class ScanCaptureAct extends Activity {
 		});
 	}
 
+	/**
+	 * 初始化扫描页面控件与显示状态。
+	 */
 	private void initViews() {
 		this.mImageScanner = new ImageScanner();
 		this.mImageScanner.setConfig(0, 256, 3);
@@ -272,6 +288,9 @@ public class ScanCaptureAct extends Activity {
 		super.onDestroy();
 	}
 
+	/**
+	 * 停止预览并释放相机资源。
+	 */
 	private void releaseCamera() {
 		if (this.mCamera != null) {
 			this.previewing = false;
@@ -304,6 +323,11 @@ public class ScanCaptureAct extends Activity {
 		this.mCropRect = new Rect(x, y, width + x, height + y);
 	}
 
+	/**
+	 * 读取系统状态栏高度，单位为像素。
+	 *
+	 * @return 状态栏高度，单位为像素
+	 */
 	private int getStatusBarHeight() {
 		try {
 			Class<?> c = Class.forName("com.android.internal.R$dimen");

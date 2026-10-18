@@ -64,6 +64,7 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 		super(container);
 		activity = MainActivity.getContext();
 		destroyListener = new MainActivity.OnDestroyListener() {
+
 			@Override
 			public void onDestroy() {
 				releaseResources();
@@ -309,6 +310,7 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 	 */
 	private void registerResultReceiver() {
 		receiver = new BroadcastReceiver() {
+
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				if (receiverRegistered && (activity.getPackageName() + ".barcode.RESULT").equals(intent.getAction())) {
@@ -331,6 +333,9 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 		}
 	}
 
+	/**
+	 * 释放扫描过程中持有的资源。
+	 */
 	private void releaseResources() {
 		if (receiverRegistered) {
 			停止扫描();
@@ -368,6 +373,11 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 
 	/**
 	 * 先按目标尺寸解码，再沿用原组件的固定图标缩放。
+	 *
+	 * @param path 文件或目录路径
+	 * @param w 当前宽度
+	 * @param h 当前高度
+	 * @return 转换得到的位图
 	 */
 	private static Bitmap convertToBitmap(String path, int w, int h) {
 		BitmapFactory.Options opts = new BitmapFactory.Options();
@@ -391,6 +401,14 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 		return Bitmap.createScaledBitmap((Bitmap)weak.get(), w, h, true);
 	}
 
+	/**
+	 * 将位图缩放到指定尺寸。
+	 *
+	 * @param src 原始图片
+	 * @param destWidth 目标宽度
+	 * @param destHeight 目标高度
+	 * @return 缩放后的位图
+	 */
 	private static Bitmap zoomBitmap(Bitmap src, int destWidth, int destHeight) {
 		if (src == null) {
 			return null;
@@ -409,6 +427,10 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 
 	/**
 	 * 把图标叠加到二维码中心，不改变原编码的容错级别。
+	 *
+	 * @param src 原始图片
+	 * @param watermark 水印图像
+	 * @return 生成的条码位图
 	 */
 	private static Bitmap createBitmap(Bitmap src, Bitmap watermark) {
 		if (src == null) {
@@ -431,6 +453,9 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 
 	/**
 	 * 按原算法缩小待识别图片，避免把完整大图交给 ZBar。
+	 *
+	 * @param path 文件或目录路径
+	 * @return 按目标尺寸采样的位图
 	 */
 	private static Bitmap getCompressedBitmap(String path) {
 		BitmapFactory.Options options = new BitmapFactory.Options();
@@ -441,6 +466,14 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 		return decodeBitmap(path, options);
 	}
 
+	/**
+	 * 根据目标尺寸计算位图采样比例。
+	 *
+	 * @param options 原始位图解码参数
+	 * @param reqWidth 请求的目标宽度
+	 * @param reqHeight 请求的目标高度
+	 * @return 用于位图解码的采样比例
+	 */
 	private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
 		int height = options.outHeight;
 		int width = options.outWidth;

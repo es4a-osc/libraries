@@ -17,6 +17,12 @@ final class AutoFocusCallback implements Camera.AutoFocusCallback {
 	AutoFocusCallback() {
 	}
 
+	/**
+	 * 设置异步回调要投递的消息处理器和消息编号。
+	 *
+	 * @param autoFocusHandler 接收对焦完成消息的处理器
+	 * @param autoFocusMessage 对焦完成消息编号
+	 */
 	void setHandler(Handler autoFocusHandler, int autoFocusMessage) {
 		this.autoFocusHandler = autoFocusHandler;
 		this.autoFocusMessage = autoFocusMessage;

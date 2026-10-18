@@ -21,11 +21,17 @@ public final class InactivityTimer {
 		this.onActivity();
 	}
 
+	/**
+	 * 更新最近活动时间并重设空闲关闭任务。
+	 */
 	public void onActivity() {
 		this.cancel();
 		this.inactivityFuture = this.inactivityTimer.schedule(new FinishListener(this.activity), 300L, TimeUnit.SECONDS);
 	}
 
+	/**
+	 * 取消当前任务并释放相应资源。
+	 */
 	private void cancel() {
 		if (this.inactivityFuture != null) {
 			this.inactivityFuture.cancel(true);
@@ -33,12 +39,19 @@ public final class InactivityTimer {
 		}
 	}
 
+	/**
+	 * 关闭空闲计时器及其调度线程。
+	 */
 	public void shutdown() {
 		this.cancel();
 		this.inactivityTimer.shutdown();
 	}
 
+	/**
+	 * 为空闲关闭任务创建守护线程。
+	 */
 	private static final class DaemonThreadFactory implements ThreadFactory {
+
 		private DaemonThreadFactory() {
 		}
 

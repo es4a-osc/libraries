@@ -78,6 +78,7 @@ public class Lua堆栈 {
 			if (count < 0 || count > Integer.MAX_VALUE - base) {
 				throw LuaContext.error("Lua 堆栈数量无效");
 			}
+
 			context.reserve(Math.max(0, count - (context.state.getTop() - base)));
 			context.state.setTop(base + count);
 		}
@@ -327,6 +328,7 @@ public class Lua堆栈 {
 			if (!context.state.isObject(actual)) {
 				throw LuaContext.error("Lua 值不能转换为对象");
 			}
+
 			try {
 				return context.state.getObjectFromUserdata(actual);
 			} catch (LuaException failure) {
@@ -424,6 +426,7 @@ public class Lua堆栈 {
 			if (count < 0 || count > context.state.getTop() - base) {
 				throw LuaContext.error("Lua 弹栈数量无效");
 			}
+
 			context.state.pop(count);
 		}
 	}
@@ -457,10 +460,12 @@ public class Lua堆栈 {
 			if (argumentCount < 0 || resultCount < -1 || (long) argumentCount + 1 > top - base) {
 				throw LuaContext.error("Lua 调用数量无效");
 			}
+
 			int start = top - argumentCount - 1;
 			if (!context.state.isFunction(start + 1)) {
 				throw LuaContext.error("Lua 栈中目标不是函数");
 			}
+
 			context.reserve(resultCount < 0 ? 1 : resultCount);
 			try {
 				context.protectedCall(argumentCount, resultCount);

@@ -11,12 +11,44 @@ import java.util.Locale;
  */
 final class SftpHostTrust {
 
+	/**
+	 * 服务器公钥指纹的持久化访问接口。
+	 */
 	interface Store {
+
+		/**
+		 * 读取指定主机已保存的公钥指纹。
+		 *
+		 * @param key 主机公钥或记录键
+		 * @return 读取到的数据
+		 */
 		String read(String key);
+
+		/**
+		 * 保存指定主机已经确认的公钥指纹。
+		 *
+		 * @param key 主机公钥或记录键
+		 * @param fingerprint 服务器公钥指纹
+		 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+		 */
 		boolean write(String key, String fingerprint);
 	}
 
+	/**
+	 * 向用户请求确认服务器公钥的接口。
+	 */
 	interface Confirmation {
+
+		/**
+		 * 请求用户确认服务器身份。
+		 *
+		 * @param host 服务器地址
+		 * @param port 端口号
+		 * @param algorithm 公钥算法名称
+		 * @param fingerprint 服务器公钥指纹
+		 * @param previous 之前保存的服务器指纹
+		 * @return 操作成功时为 {@code true}，失败时为 {@code false}
+		 */
 		boolean confirm(String host, int port, String algorithm, String fingerprint, String previous);
 	}
 
@@ -30,10 +62,22 @@ final class SftpHostTrust {
 		this.confirmation = confirmation;
 	}
 
+	/**
+	 * 计算服务器公钥的 SHA-256 指纹。
+	 *
+	 * @param publicKey 服务器公钥字节
+	 * @return 带 SHA256 前缀的服务器公钥指纹
+	 */
 	static String fingerprint(byte[] publicKey) {
 		return "SHA256:" + digest(publicKey);
 	}
 
+	/**
+	 * 计算 SHA-256 摘要并编码为不带填充的 Base64 文本。
+	 *
+	 * @param value 计算摘要的原始字节数据。
+	 * @return SHA-256 摘要的无填充 Base64 文本
+	 */
 	private static String digest(byte[] value) {
 		try {
 			return Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA-256").digest(value));
@@ -42,6 +86,15 @@ final class SftpHostTrust {
 		}
 	}
 
+	/**
+	 * 校验服务器公钥与已保存或已确认的信任记录。
+	 *
+	 * @param host 服务器地址
+	 * @param port 端口号
+	 * @param algorithm 公钥算法名称
+	 * @param publicKey 服务器公钥字节
+	 * @return 校验通过时为 {@code true}，否则为 {@code false}
+	 */
 	boolean verify(String host, int port, String algorithm, byte[] publicKey) {
 		lastError = "";
 		String key = digest((host.trim().toLowerCase(Locale.ROOT) + ":" + port).getBytes(StandardCharsets.UTF_8));
@@ -77,5 +130,12 @@ final class SftpHostTrust {
 		return false;
 	}
 
-	String error() { return lastError; }
+	/**
+	 * 读取最近一次操作的错误信息。
+	 *
+	 * @return 最近一次操作的错误信息
+	 */
+	String error() {
+		return lastError;
+	}
 }
