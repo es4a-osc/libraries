@@ -36,7 +36,6 @@
 - `release.bat`：将指定类库的已有交付文件复制到同级 `sdk/libraries/`。
 - 各类库目录：`src/` 为 Java 源码，`library.json` 为清单，`sample/` 为使用样例；依赖和资源按需放在 `libs/`、`res/`、`assets/`、`jni/`、`icons/`。
 - 各类库的 `build/`：编译生成目录。
-- `_extras/`：暂存资料；暂不可用的应用更新库保存在此目录，不随仓库提供。
 
 
 ## 构建
