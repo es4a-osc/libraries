@@ -20,10 +20,9 @@ import com.koushikdutta.async.callback.CompletedCallback;
  * @author 树先生 xhwsd@qq.com
  */
 @SimpleObject
-@UsesPermissions(
-	permissionNames =
-		// 允许应用程序打开网络套接字。
-		"android.permission.INTERNET"
+@UsesPermissions(permissionNames =
+	// 允许应用程序打开网络套接字。
+	"android.permission.INTERNET"
 )
 public final class HTTP服务 {
 

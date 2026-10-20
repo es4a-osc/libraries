@@ -13,10 +13,9 @@ import simple.runtime.components.组件;
  */
 @SimpleObject
 @SimpleComponent
-@UsesPermissions(
-	permissionNames =
-		// 允许应用程序发布通知。
-		"android.permission.POST_NOTIFICATIONS"
+@UsesPermissions(permissionNames =
+	// 允许应用程序发布通知。
+	"android.permission.POST_NOTIFICATIONS"
 )
 public interface 通知管理器 extends 组件 {
 

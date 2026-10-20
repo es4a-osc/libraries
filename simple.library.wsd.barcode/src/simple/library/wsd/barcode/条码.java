@@ -14,12 +14,11 @@ import simple.runtime.components.组件;
  */
 @SimpleComponent
 @SimpleObject
-@UsesPermissions(
-	permissionNames =
-		// 扫描相机与闪光灯。
-		"android.permission.CAMERA," +
-		// 保留闪光灯访问声明，实际访问仍受相机和系统策略限制。
-		"android.permission.FLASHLIGHT"
+@UsesPermissions(permissionNames =
+	// 扫描相机与闪光灯。
+	"android.permission.CAMERA," +
+	// 保留闪光灯访问声明，实际访问仍受相机和系统策略限制。
+	"android.permission.FLASHLIGHT"
 )
 @ManifestNodes(
 	rootXml =

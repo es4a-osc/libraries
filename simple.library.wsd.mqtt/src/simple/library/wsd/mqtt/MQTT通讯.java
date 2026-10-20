@@ -15,24 +15,22 @@ import simple.runtime.components.组件;
  */
 @SimpleObject
 @SimpleComponent
-@UsesPermissions(
-	permissionNames =
-		// 访问网络套接字。
-		"android.permission.INTERNET," +
-		// 查询当前网络连接状态。
-		"android.permission.ACCESS_NETWORK_STATE," +
-		// 维持 MQTT 服务运行所需的唤醒锁。
-		"android.permission.WAKE_LOCK," +
-		// 兼容旧系统设备标识读取；拒绝授权时使用替代标识。
-		"android.permission.READ_PHONE_STATE"
+@UsesPermissions(permissionNames =
+	// 访问网络套接字。
+	"android.permission.INTERNET," +
+	// 查询当前网络连接状态。
+	"android.permission.ACCESS_NETWORK_STATE," +
+	// 维持 MQTT 服务运行所需的唤醒锁。
+	"android.permission.WAKE_LOCK," +
+	// 兼容旧系统设备标识读取；拒绝授权时使用替代标识。
+	"android.permission.READ_PHONE_STATE"
 )
-@ManifestNodes(
-	applicationXml =
-		// 注册 Paho 后台通讯服务，禁止外部应用访问。
-		"<service" +
-		" android:name=\"org.eclipse.paho.android.service.MqttService\"" +
-		" android:exported=\"false\"" +
-		" />"
+@ManifestNodes(applicationXml =
+	// 注册 Paho 后台通讯服务，禁止外部应用访问。
+	"<service" +
+	" android:name=\"org.eclipse.paho.android.service.MqttService\"" +
+	" android:exported=\"false\"" +
+	" />"
 )
 public interface MQTT通讯 extends 组件 {
 

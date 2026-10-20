@@ -17,12 +17,11 @@ import simple.runtime.components.组件;
  */
 @SimpleObject
 @SimpleComponent
-@UsesPermissions(
-	permissionNames =
-		// 允许连接FTP服务器并传输数据。
-		"android.permission.INTERNET," +
-		// 允许向外部存储写入下载文件。
-		"android.permission.WRITE_EXTERNAL_STORAGE"
+@UsesPermissions(permissionNames =
+	// 允许连接FTP服务器并传输数据。
+	"android.permission.INTERNET," +
+	// 允许向外部存储写入下载文件。
+	"android.permission.WRITE_EXTERNAL_STORAGE"
 )
 public interface FTP客户端 extends 组件 {
 

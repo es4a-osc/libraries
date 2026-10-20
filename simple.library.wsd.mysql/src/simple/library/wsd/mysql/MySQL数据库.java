@@ -16,10 +16,9 @@ import simple.runtime.collections.集合;
  */
 @SimpleObject
 @SimpleComponent
-@UsesPermissions(
-	permissionNames =
-		// 访问网络套接字。
-		"android.permission.INTERNET"
+@UsesPermissions(permissionNames =
+	// 访问网络套接字。
+	"android.permission.INTERNET"
 )
 public interface MySQL数据库 extends 组件 {
 

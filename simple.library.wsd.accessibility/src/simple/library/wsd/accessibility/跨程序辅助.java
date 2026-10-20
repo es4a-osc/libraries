@@ -19,21 +19,20 @@ import android.view.accessibility.AccessibilityNodeInfo;
  */
 @SimpleComponent
 @SimpleObject
-@ManifestNodes(
-	applicationXml =
-		"<service" +
-		" android:enabled=\"true\"" +
-		" android:exported=\"true\"" +
-		" android:label=\"@string/app_name\"" +
-		" android:name=\"simple.library.wsd.accessibility.AccessibilityListener\"" +
-		" android:permission=\"android.permission.BIND_ACCESSIBILITY_SERVICE\">" +
-		"<intent-filter>" +
-		"<action android:name=\"android.accessibilityservice.AccessibilityService\" />" +
-		"</intent-filter>" +
-		"<meta-data" +
-		" android:name=\"android.accessibilityservice\"" +
-		" android:resource=\"@xml/config\" />" +
-		"</service>"
+@ManifestNodes(applicationXml =
+	"<service" +
+	" android:enabled=\"true\"" +
+	" android:exported=\"true\"" +
+	" android:label=\"@string/app_name\"" +
+	" android:name=\"simple.library.wsd.accessibility.AccessibilityListener\"" +
+	" android:permission=\"android.permission.BIND_ACCESSIBILITY_SERVICE\">" +
+	"<intent-filter>" +
+	"<action android:name=\"android.accessibilityservice.AccessibilityService\" />" +
+	"</intent-filter>" +
+	"<meta-data" +
+	" android:name=\"android.accessibilityservice\"" +
+	" android:resource=\"@xml/config\" />" +
+	"</service>"
 )
 public interface 跨程序辅助 extends 组件 {
 
