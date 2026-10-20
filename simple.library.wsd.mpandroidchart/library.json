@@ -1,0 +1,683 @@
+{
+	"name": "MPAndroidChart图表库",
+	"description": "折线、柱状、横向柱状、饼状、散点、气泡、雷达、蜡烛和组合图；MPAndroidChart 2.1.5。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "图表公共接口",
+			"hidden": true,
+			"definitions": [
+				{
+					"name": "图表",
+					"kind": "interface",
+					"type": "simple.library.wsd.mpandroidchart.图表",
+					"inherits": [
+						"simple.runtime.components.可视组件"
+					],
+					"description": "MPAndroidChart 图表公共接口。",
+					"functions": [
+						{
+							"name": "初始化图表",
+							"description": "在界面线程初始化样式，清空数据和自定义轴范围；后续数据操作必须先初始化。",
+							"params": [
+								{
+									"name": "标题",
+									"type": "文本型",
+									"description": "图表标题，允许空文本。"
+								},
+								{
+									"name": "字体大小",
+									"type": "单精度小数型",
+									"description": "单位 SP，范围 6 至 24。"
+								},
+								{
+									"name": "背景颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "清空数据",
+							"description": "清空名称、数据和图形，保留样式及自定义轴范围。"
+						},
+						{
+							"name": "构建图表",
+							"description": "按当前数据重新绘制；无数据时清空，饼图不能全部为零。"
+						}
+					],
+					"properties": [
+						{
+							"name": "动画时间",
+							"description": "构建动画时长，0 至 60000 毫秒，0 表示关闭。",
+							"type": "整数型",
+							"writable": true,
+							"editor": "simple.integer",
+							"initializer": "0"
+						},
+						{
+							"name": "显示图例",
+							"description": "是否显示数据组图例。",
+							"type": "逻辑型",
+							"writable": true,
+							"editor": "simple.boolean",
+							"initializer": "真"
+						},
+						{
+							"name": "显示数值",
+							"description": "是否显示图上数值；气泡标注大小，蜡烛标注最高值，过密时底层图表会减少标注。",
+							"type": "逻辑型",
+							"writable": true,
+							"editor": "simple.boolean",
+							"initializer": "真"
+						}
+					],
+					"events": [
+						{
+							"name": "项目被选中",
+							"description": "编号从零开始；饼图组号为 0，蜡烛图数值为收盘值。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型"
+								},
+								{
+									"name": "项目",
+									"type": "整数型"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型"
+								}
+							]
+						},
+						{
+							"name": "选择被取消",
+							"description": "用户取消高亮选择。"
+						}
+					]
+				},
+				{
+					"name": "坐标图表",
+					"kind": "interface",
+					"type": "simple.library.wsd.mpandroidchart.坐标图表",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.图表"
+					],
+					"description": "具有分类轴和左右数值轴的图表。",
+					"functions": [
+						{
+							"name": "设置项目名称",
+							"description": "设置分类项目名称；横坐标按数组索引排列。",
+							"params": [
+								{
+									"name": "项目名称",
+									"type": "文本型()",
+									"description": "按数据顺序排列的项目名称；添加数据前设置，更换前先清空。"
+								}
+							]
+						},
+						{
+							"name": "设置纵轴范围",
+							"description": "设置指定数值轴范围，重新构建后生效；初始化图表可恢复自动范围。",
+							"params": [
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								},
+								{
+									"name": "最小值",
+									"type": "单精度小数型",
+									"description": "有限数值，必须小于最大值。"
+								},
+								{
+									"name": "最大值",
+									"type": "单精度小数型",
+									"description": "有限数值。"
+								}
+							]
+						}
+					],
+					"properties": [
+						{
+							"name": "可否拖动",
+							"description": "是否允许拖动坐标图。",
+							"type": "逻辑型",
+							"writable": true,
+							"editor": "simple.boolean",
+							"initializer": "真"
+						},
+						{
+							"name": "可否缩放",
+							"description": "是否允许手势缩放和双击缩放。",
+							"type": "逻辑型",
+							"writable": true,
+							"editor": "simple.boolean",
+							"initializer": "真"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "扩展可视组件",
+			"definitions": [
+				{
+					"name": "折线图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.折线图",
+					"description": "多组折线，支持左右轴及平滑曲线。",
+					"icon": "icons/chart-dots.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.坐标图表"
+					],
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						}
+					],
+					"properties": [
+						{
+							"name": "平滑曲线",
+							"description": "是否绘制平滑折线，重新构建后生效。",
+							"type": "逻辑型",
+							"writable": true,
+							"editor": "simple.boolean",
+							"initializer": "假"
+						}
+					]
+				},
+				{
+					"name": "柱状图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.柱状图",
+					"description": "按分类展示多组并列柱状数据。",
+					"icon": "icons/chart-bar-popular.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.坐标图表"
+					],
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "横向柱状图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.横向柱状图",
+					"description": "横向展示多组柱状数据；数值轴沿水平方向。",
+					"icon": "icons/chart-bar-horizontal.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.坐标图表"
+					],
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "饼状图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.饼状图",
+					"description": "展示非负数据占比，非空图表至少有一个正数。",
+					"icon": "icons/chart-pie-2.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.图表"
+					],
+					"functions": [
+						{
+							"name": "添加数据",
+							"description": "添加一个非负扇区，数值总和必须为正；构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "扇区名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型",
+									"description": "有限非负数。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "散点图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.散点图",
+					"description": "按分类索引展示离散点；横轴不是任意连续数值。",
+					"icon": "icons/chart-scatter.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.坐标图表"
+					],
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "气泡图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.气泡图",
+					"description": "按分类索引展示数值和非负气泡大小。",
+					"icon": "icons/chart-bubble.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.坐标图表"
+					],
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "大小",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长的非负气泡大小数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "雷达图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.雷达图",
+					"description": "至少三个分类项目，展示多组非负指标。",
+					"icon": "icons/chart-radar.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.图表"
+					],
+					"functions": [
+						{
+							"name": "设置项目名称",
+							"description": "设置分类项目名称；横坐标按数组索引排列。",
+							"params": [
+								{
+									"name": "项目名称",
+									"type": "文本型()",
+									"description": "按数据顺序排列的项目名称；添加数据前设置，更换前先清空。"
+								}
+							]
+						},
+						{
+							"name": "添加数据组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "蜡烛图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.蜡烛图",
+					"description": "按分类展示开盘、最高、最低和收盘；上涨空心、下跌实心。",
+					"icon": "icons/chart-candle.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.坐标图表"
+					],
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加一组开高低收数据，各数组长度须与项目名称相同。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "开盘",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
+								},
+								{
+									"name": "最高",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
+								},
+								{
+									"name": "最低",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
+								},
+								{
+									"name": "收盘",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "组合图",
+					"kind": "component",
+					"type": "simple.library.wsd.mpandroidchart.组合图",
+					"description": "组合折线、柱状、散点、气泡和蜡烛数据，按添加顺序编号。",
+					"icon": "icons/chart-covariate.svg",
+					"inherits": [
+						"simple.library.wsd.mpandroidchart.坐标图表"
+					],
+					"functions": [
+						{
+							"name": "添加折线组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						},
+						{
+							"name": "添加柱状组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						},
+						{
+							"name": "添加散点组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						},
+						{
+							"name": "添加气泡组",
+							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "数值",
+									"type": "单精度小数型()",
+									"description": "与项目名称数量相同的有限数值数组。"
+								},
+								{
+									"name": "大小",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长的非负气泡大小数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						},
+						{
+							"name": "添加蜡烛组",
+							"description": "添加一组开高低收数据。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "数据组名称。"
+								},
+								{
+									"name": "开盘",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
+								},
+								{
+									"name": "最高",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
+								},
+								{
+									"name": "最低",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
+								},
+								{
+									"name": "收盘",
+									"type": "单精度小数型()",
+									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "数据组的 ARGB 颜色。"
+								},
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
+								}
+							]
+						}
+					],
+					"properties": [
+						{
+							"name": "平滑曲线",
+							"description": "是否绘制平滑折线，重新构建后生效。",
+							"type": "逻辑型",
+							"writable": true,
+							"editor": "simple.boolean",
+							"initializer": "假"
+						}
+					]
+				}
+			]
+		}
+	]
+}

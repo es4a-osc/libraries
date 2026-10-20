@@ -3,7 +3,7 @@
 提供非可视组件 **FTP客户端**，通过协议属性选择 FTP 或 SFTP，共用登录、文件管理、同步传输及后台完成事件。保留原有 13 个方法和 2 个事件，默认仍为 FTP；类库标识为 `simple.library.wsd.ftpclient`。
 
 - `src/`：注解接口、协议会话与组件实现；`library.json`：清单；`classes.jar`：构建产物。
-- `libs/`：运行依赖及授权文件；`tools/`：[SSH 依赖的可重建字节码转换](tools/README.md)。
+- `libs/`：运行依赖及授权文件。
 - `sample/`：[默认应用图标的 Simple 示例](sample/README.md)，已加入调试工作区。
 - `tests/`：FTP 回归及临时本机 SFTP 服务的真实通信测试。
 
@@ -26,7 +26,7 @@ SFTP 通过维护版 JSch 2.28.8 实现，算法可用性取决于 Android 密�
 
 依赖授权：Commons Net 3.0.1 使用 [Apache License 2.0](libs/LICENSE-commons-net.txt)，附带 [NOTICE](libs/NOTICE-commons-net.txt)；JSch 及其内含代码的授权见 [JSch](libs/LICENSE-jsch-LICENSE.txt)、[JZlib](libs/LICENSE-jsch-LICENSE.JZlib.txt) 和 [jBCrypt](libs/LICENSE-jsch-LICENSE.jBCrypt.txt)。
 
-`libs/jsch-2.28.8-android.jar` 是 JSch 2.28.8 的 Android 字节码适配产物，未修改上游 Java 源码或算法配置。上游二进制原包保存在 `tools/jsch-2.28.8.jar`，仅用于核验与重建，不是源码 JAR，也不作为运行依赖；来源、哈希及重建步骤见 [适配工具说明](tools/README.md)。未附加 Bouncy Castle、JNA 等可选依赖，不保证所有 SSH 算法或私钥格式。
+`libs/jsch-2.28.8-android.jar` 是 JSch 2.28.8 的 Android 字节码适配产物，未修改上游 Java 源码或算法配置。未附加 Bouncy Castle、JNA 等可选依赖，不保证所有 SSH 算法或私钥格式。
 
 在类库仓库运行 `build.bat "simple.library.wsd.ftpclient" --no-pause` 构建；在工作区根目录运行 `libraries/simple.library.wsd.ftpclient/tests/run.ps1` 执行 FTP 回归并编译测试，再运行 `python -X utf8 libraries/simple.library.wsd.ftpclient/tests/test_sftp.py` 执行真实 SFTP 测试（需本机已有 Paramiko）。
 

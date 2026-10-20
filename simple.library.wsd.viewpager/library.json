@@ -11,7 +11,7 @@
 	"kind": "library",
 	"categories": [
 		{
-			"name": "扩展可视组件",
+			"name": "扩展组件容器",
 			"definitions": [
 				{
 					"name": "滑动页面框",

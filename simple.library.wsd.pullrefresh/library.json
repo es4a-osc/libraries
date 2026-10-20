@@ -1,0 +1,148 @@
+{
+	"name": "拉动刷新框库",
+	"description": "支持上下拉手势、自定义状态提示及辅助文本的可滚动容器。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件容器",
+			"definitions": [
+				{
+					"name": "拉动刷新框",
+					"kind": "component",
+					"type": "simple.library.wsd.pullrefresh.拉动刷新框",
+					"icon": "icons/refresh.svg",
+					"description": "在内容顶部下拉或底部上拉达到阈值并松手后通知应用；具体业务和辅助文本由应用维护。",
+					"inherits": [
+						"simple.runtime.components.面板"
+					],
+					"projection": {
+						"scroll": "vertical"
+					},
+					"properties": [
+						{
+							"name": "允许下拉",
+							"type": "逻辑型",
+							"initializer": "真",
+							"editor": "simple.boolean",
+							"description": "是否允许顶部下拉操作；关闭时结束当前下拉操作，不取消应用的业务任务。"
+						},
+						{
+							"name": "允许上拉",
+							"type": "逻辑型",
+							"initializer": "真",
+							"editor": "simple.boolean",
+							"description": "是否允许底部上拉操作；关闭时结束当前上拉操作，不取消应用的业务任务。"
+						},
+						{
+							"name": "正在下拉刷新",
+							"type": "逻辑型",
+							"writable": false,
+							"description": "是否正在等待应用完成下拉操作，与正在上拉刷新互斥；不限定具体业务。"
+						},
+						{
+							"name": "正在上拉刷新",
+							"type": "逻辑型",
+							"writable": false,
+							"description": "是否正在等待应用完成上拉操作，与正在下拉刷新互斥；不限定具体业务。"
+						},
+						{
+							"name": "下拉提示文本",
+							"type": "文本型",
+							"initializer": "\"下拉刷新\"",
+							"description": "下拉未达到触发阈值时的提示。空文本不显示对应文字。"
+						},
+						{
+							"name": "下拉释放文本",
+							"type": "文本型",
+							"initializer": "\"松开刷新\"",
+							"description": "下拉达到阈值、等待松手时的提示。空文本不显示对应文字。"
+						},
+						{
+							"name": "下拉处理文本",
+							"type": "文本型",
+							"initializer": "\"正在刷新\"",
+							"description": "下拉松手后等待业务完成时的提示。空文本不显示对应文字。"
+						},
+						{
+							"name": "下拉辅助文本",
+							"type": "文本型",
+							"initializer": "\"\"",
+							"description": "下拉辅助说明，由应用维护，不自动生成时间或操作结果。空文本不显示对应文字。"
+						},
+						{
+							"name": "上拉提示文本",
+							"type": "文本型",
+							"initializer": "\"上拉加载更多\"",
+							"description": "上拉未达到触发阈值时的提示。空文本不显示对应文字。"
+						},
+						{
+							"name": "上拉释放文本",
+							"type": "文本型",
+							"initializer": "\"松开加载\"",
+							"description": "上拉达到阈值、等待松手时的提示。空文本不显示对应文字。"
+						},
+						{
+							"name": "上拉处理文本",
+							"type": "文本型",
+							"initializer": "\"正在加载\"",
+							"description": "上拉松手后等待业务完成时的提示。空文本不显示对应文字。"
+						},
+						{
+							"name": "上拉辅助文本",
+							"type": "文本型",
+							"initializer": "\"\"",
+							"description": "上拉辅助说明，由应用维护，不自动生成时间或操作结果。空文本不显示对应文字。"
+						}
+					],
+					"events": [
+						{
+							"name": "下拉刷新开始",
+							"description": "顶部下拉达到阈值并松手、进入刷新等待状态时触发；拉动过程中不触发，与上拉刷新互斥。"
+						},
+						{
+							"name": "上拉刷新开始",
+							"description": "底部上拉达到阈值并松手、进入刷新等待状态时触发；拉动过程中不触发，与下拉刷新互斥。"
+						},
+						{
+							"name": "被滚动",
+							"description": "内容滚动时触发，包括程序调用滚动方法。",
+							"params": [
+								{
+									"name": "纵向滚动位置",
+									"type": "整数型",
+									"description": "单位像素，顶部为 0。"
+								},
+								{
+									"name": "位于边界",
+									"type": "逻辑型",
+									"description": "是否到达顶部或底部；短内容的两端可以重合。"
+								}
+							]
+						}
+					],
+					"functions": [
+						{
+							"name": "停止刷新",
+							"description": "结束当前上下拉操作并收回提示；可重复调用，不取消业务任务，不自动修改辅助文本或记录时间。"
+						},
+						{
+							"name": "滚动到顶部",
+							"description": "等待本轮布局完成后滚动到顶部，不触发刷新。"
+						},
+						{
+							"name": "滚动到底部",
+							"description": "等待本轮布局完成后滚动到底部，不触发加载。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

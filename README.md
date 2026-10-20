@@ -17,6 +17,9 @@
 | [图像操作库](simple.library.wsd.image/) | 图片变换、尺寸读取、裁剪、分割、圆角、倒影和压缩。 |
 | [Lua脚本库](simple.library.wsd.lua/) | Lua 5.1.5 代码执行、参数传入和返回值读取，附带 32 位 ARM 原生库。 |
 | [条码库](simple.library.wsd.barcode/) | 二维码和条形码生成、图片识别及相机扫描。 |
+| [AChartEngine图表库](simple.library.wsd.achartengine/) | 饼状图、柱状图与折线图。 |
+| [MPAndroidChart图表库](simple.library.wsd.mpandroidchart/) | 折线、柱状、横向柱状、饼状、散点、气泡、雷达、蜡烛与组合图。 |
+| [拉动刷新框库](simple.library.wsd.pullrefresh/) | 上下拉手势、自定义提示及可滚动内容容器。 |
 | [状态条通知库](simple.library.wsd.notification/) | 应用通知的构建、发送、更新和删除。 |
 | [滑动页面框库](simple.library.wsd.viewpager/) | 可左右滑动切换页面的可视容器。 |
 | [WebSocket客户端库](simple.library.wsd.wsclient/) | WebSocket 连接、文本收发和连接状态事件。 |

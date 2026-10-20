@@ -1,0 +1,228 @@
+{
+	"name": "AChartEngine图表库",
+	"description": "饼状图、柱状图和折线图，使用 AChartEngine 1.0.0。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展可视组件",
+			"definitions": [
+				{
+					"name": "饼状图",
+					"description": "展示非负数值占比；非空图表至少包含一个正数。",
+					"icon": "icons/chart-pie.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.achartengine.饼状图",
+					"inherits": [
+						"simple.runtime.components.可视组件"
+					],
+					"functions": [
+						{
+							"name": "初始化图表",
+							"description": "在界面线程设置样式，清空原数据和图形；必须先初始化再添加数据。",
+							"params": [
+								{
+									"name": "图表标题",
+									"type": "文本型",
+									"description": "图表顶部显示的标题。"
+								},
+								{
+									"name": "字体大小",
+									"type": "单精度小数型",
+									"description": "单位 SP，必须为有限正数。"
+								},
+								{
+									"name": "背景颜色",
+									"type": "整数型",
+									"description": "图表背景的 ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "添加数据",
+							"description": "添加一个项目；数值校验失败时不改变原数据，调用构建图表后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "项目名称，按添加顺序显示。"
+								},
+								{
+									"name": "数据",
+									"type": "文本型",
+									"description": "有限非负数的数值文本。"
+								},
+								{
+									"name": "单位",
+									"type": "文本型",
+									"description": "随项目显示的数值单位，可以为空文本。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "当前扇区的 ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "构建图表",
+							"description": "在界面线程按当前数据重建图表；无数据时清空图形，重复调用不累计数据或坐标边距。"
+						}
+					]
+				},
+				{
+					"name": "柱状图",
+					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。",
+					"icon": "icons/chart-bar.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.achartengine.柱状图",
+					"inherits": [
+						"simple.runtime.components.可视组件"
+					],
+					"functions": [
+						{
+							"name": "初始化图表",
+							"description": "在界面线程设置样式，清空原数据和图形；必须先初始化再添加数据。",
+							"params": [
+								{
+									"name": "图表标题",
+									"type": "文本型",
+									"description": "图表顶部显示的标题。"
+								},
+								{
+									"name": "横轴标题",
+									"type": "文本型",
+									"description": "项目名称轴的标题。"
+								},
+								{
+									"name": "纵轴标题",
+									"type": "文本型",
+									"description": "数值轴的标题。"
+								},
+								{
+									"name": "字体大小",
+									"type": "单精度小数型",
+									"description": "单位 SP，必须为有限正数。"
+								},
+								{
+									"name": "背景颜色",
+									"type": "整数型",
+									"description": "图表背景的 ARGB 颜色。"
+								},
+								{
+									"name": "项目颜色",
+									"type": "整数型",
+									"description": "柱条或折线的 ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "添加数据",
+							"description": "添加一个项目；数值校验失败时不改变原数据，调用构建图表后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "项目名称，按添加顺序显示。"
+								},
+								{
+									"name": "数据",
+									"type": "文本型",
+									"description": "有限数值的文本，允许零和负数。"
+								},
+								{
+									"name": "单位",
+									"type": "文本型",
+									"description": "随项目显示的数值单位，可以为空文本。"
+								}
+							]
+						},
+						{
+							"name": "构建图表",
+							"description": "在界面线程按当前数据重建图表；无数据时清空图形，重复调用不累计数据或坐标边距。"
+						}
+					]
+				},
+				{
+					"name": "折线图",
+					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。",
+					"icon": "icons/chart-line.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.achartengine.折线图",
+					"inherits": [
+						"simple.runtime.components.可视组件"
+					],
+					"functions": [
+						{
+							"name": "初始化图表",
+							"description": "在界面线程设置样式，清空原数据和图形；必须先初始化再添加数据。",
+							"params": [
+								{
+									"name": "图表标题",
+									"type": "文本型",
+									"description": "图表顶部显示的标题。"
+								},
+								{
+									"name": "横轴标题",
+									"type": "文本型",
+									"description": "项目名称轴的标题。"
+								},
+								{
+									"name": "纵轴标题",
+									"type": "文本型",
+									"description": "数值轴的标题。"
+								},
+								{
+									"name": "字体大小",
+									"type": "单精度小数型",
+									"description": "单位 SP，必须为有限正数。"
+								},
+								{
+									"name": "背景颜色",
+									"type": "整数型",
+									"description": "图表背景的 ARGB 颜色。"
+								},
+								{
+									"name": "项目颜色",
+									"type": "整数型",
+									"description": "柱条或折线的 ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "添加数据",
+							"description": "添加一个项目；数值校验失败时不改变原数据，调用构建图表后显示。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "项目名称，按添加顺序显示。"
+								},
+								{
+									"name": "数据",
+									"type": "文本型",
+									"description": "有限数值的文本，允许零和负数。"
+								},
+								{
+									"name": "单位",
+									"type": "文本型",
+									"description": "随项目显示的数值单位，可以为空文本。"
+								}
+							]
+						},
+						{
+							"name": "构建图表",
+							"description": "在界面线程按当前数据重建图表；无数据时清空图形，重复调用不累计数据或坐标边距。"
+						}
+					]
+				}
+			]
+		}
+	]
+}
