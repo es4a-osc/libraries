@@ -8,6 +8,8 @@
 
 支持 `tcp://`、`ssl://`；一个组件维护一条连接。连接中、已连接或正在清理时再次连接会通知连接失败；先断开，收到断开事件后再连接。`关闭服务` 永久关闭本组件；销毁时释放连接和服务绑定。保留原 Paho Android 后台服务，其后台保活及新系统行为需真机验证。`取IMEI码` 是兼容名称，受限时返回 ANDROID_ID 或本应用安装标识，不保证为 IMEI；多个客户端必须使用不同 ID。
 
+依赖源码位于 [libs/sources/](libs/sources/)，用于 IDE 源码关联和 JavaDoc 提示。Paho 两个源码包采用 Maven Central 的对应版本原版制品；Support v4 源码包由 Google Maven 的 Support v4 与 Support Annotations 23.2.1 源码合并，保留原始源码和许可证，以对应现有合并运行 JAR。
+
 在类库仓库运行 `build.bat "simple.library.wsd.mqtt"` 构建；需要安装时自行运行 `release.bat "simple.library.wsd.mqtt"`，再在 ES4A 选择相应 SDK 入口并刷新类库。本次未安装或注册到 SDK。
 
 核对日期：2026-10-15。已验证 Java 构建、公开注解与清单、扩展元数据消费和样例 APK 编译；尚未完成真实扩展宿主可见交互和 Android 真机验证，编译成功不代表硬件、网络、后台或数据库兼容性已经通过。

@@ -14,4 +14,6 @@
 依赖原始文件 SHA-256：`04bc96d10c70884dee8c4dcf76ec3aa068083949a51e920efa8fece3f51379db`。
 MPAndroidChart Copyright 2015 Philipp Jahoda，Apache-2.0，见 [许可证](libs/LICENSE-MPAndroidChart.txt)和[上游 v2.1.5 源码](https://github.com/PhilJay/MPAndroidChart/tree/v2.1.5)。
 
+对应源码包为 [mpandroidchartlibrary-2-1-5-sources.jar](libs/sources/mpandroidchartlibrary-2-1-5-sources.jar)，由 ES4A 根据官方 v2.1.5 标签[源码](https://github.com/PhilJay/MPAndroidChart/tree/e3a7b0969b97f4014122a6dce275c20928f14088/MPChartLib/src)打包，保留原始 JavaDoc 和许可证，供 IDE 关联源码使用。
+
 图标使用 Tabler Icons 描边 SVG，MIT [许可证](icons/LICENSE)。折线使用 chart-dots，与 AChartEngine 的 chart-line 区分；柱图使用 chart-bar-popular，横向柱图旋转此图形；组合图使用 chart-covariate，其余按图表类型使用对应图标。

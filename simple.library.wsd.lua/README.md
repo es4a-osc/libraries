@@ -22,4 +22,6 @@
 
 随库提供 `libs/luajava-1.1.0.jar` 和 `jni/armeabi/libluajava.so`。JAR 沿用当前 Android 适配包，文件名按项目约定标记版本；原生库仅支持 **32 位 ARM**，不提供 arm64、x86 或 x86_64 构建。执行文件仍受 Android 文件访问限制；脚本与应用共享进程、权限和 Java 对象，不是安全沙箱。
 
+对应源码包为 [luajava-1.1.0-sources.jar](libs/sources/luajava-1.1.0-sources.jar)，由 ES4A 根据与当前 JAR 全部成员签名核对一致的 [AndroLua 历史 LuaJava 绑定](https://github.com/mkottman/AndroLua/tree/5fc281797e02418c5a924b6263eb410a5af45749/src/org/keplerproject/luajava)打包，保留原始 JavaDoc 和许可证，供 IDE 源码关联使用。
+
 LuaJava 与 Lua 的 MIT 许可分别见 `libs/LICENSE-luajava.txt`、`libs/LICENSE-lua.txt`；语法见 [Lua 5.1 手册](https://www.lua.org/manual/5.1/)。图标来自 [Tabler Icons](https://github.com/tabler/tabler-icons)，许可见 `icons/LICENSE.txt`。

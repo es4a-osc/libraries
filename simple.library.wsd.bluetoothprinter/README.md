@@ -8,6 +8,8 @@
 
 底层依赖属于深圳群索（Qunsuo/QS）打印 SDK 系列，内部包名为 `com.qs.helper.printer`；本地旧版 JAR 的具体版本和再分发许可尚未确认。厂商资料见[群索官方下载](https://www.qsprinter.com/download.html)。
 
+截至 2026-10-20，已检查原始分发包，以及群索官方的 `QS-8001-PrinterTools_SDK.zip`、`PrinterTools_5802_eclipse.zip` 和 `PrinterTools_5802_studio.rar`。这些 SDK 提供调用示例和底层 JAR，未找到与当前 `printer-api.jar` 对应的 `com.qs.helper.printer` 原始源码及 JavaDoc，因此暂未提供源码 JAR，也未配置源码关联。现有运行依赖保持不变。
+
 配套设备需支持经典蓝牙 SPP 连接及本库使用的 ESC/POS 打印指令，不提供 BLE 打印协议。手机需支持经典蓝牙，并完成权限授权、蓝牙开启及系统配对。具体打印机型号尚未实测，厂商提供 SDK 的型号列表不代表本库的兼容列表；图片、条码、纸宽和切纸能力需按型号确认。
 
 底层 PrinterAPI 使用全局连接，组件层限制同一时刻只有一个组件占用；另一个组件连接会失败。文本按 GBK 编码，打印机需支持相应字符集。图像末行不足 24 点时补白，并恢复缺省行距。

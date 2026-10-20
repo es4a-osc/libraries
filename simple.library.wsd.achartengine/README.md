@@ -14,4 +14,6 @@
 依赖 JAR 的 SHA-256：`815e880f885330f85e88ae43845123e9327d7a1ecc6603f46e69ca383e9a0fb9`。
 AChartEngine 使用 Apache-2.0，许可文本见 [libs/LICENSE-achartengine.txt](libs/LICENSE-achartengine.txt)，上游源码见 [AChartEngine](https://github.com/ddanny/achartengine)。
 
+对应源码包为 [achartengine-1.0.0-sources.jar](libs/sources/achartengine-1.0.0-sources.jar)，由 ES4A 根据与官方 1.0.0 二进制核对一致的[历史源码](https://github.com/ddanny/achartengine/tree/3f53e8c8a00c310e0cf4386f4d6a21d157a17e82/achartengine/src)打包，保留原始 JavaDoc 和许可证，供 IDE 关联源码使用。
+
 组件图标使用 Tabler Icons 的 chart-pie、chart-bar、chart-line；MIT 许可文本见 [icons/LICENSE](icons/LICENSE)。

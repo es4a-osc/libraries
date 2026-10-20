@@ -27,6 +27,8 @@ SFTP 通过维护版 JSch 2.28.8 实现，算法可用性取决于 Android 密�
 
 `libs/jsch-2.28.8-android.jar` 是 JSch 2.28.8 的 Android 字节码适配产物，未修改上游 Java 源码或算法配置。未附加 Bouncy Castle、JNA 等可选依赖，不保证所有 SSH 算法或私钥格式。
 
+依赖源码包为 [commons-net-3.0.1-sources.jar](libs/sources/commons-net-3.0.1-sources.jar) 和 [jsch-2.28.8-sources.jar](libs/sources/jsch-2.28.8-sources.jar)，均使用 Maven Central 发布的同版本原始源码包，供 IDE 源码关联和 JavaDoc 提示使用。JSch 源码对应上述 Android 字节码适配前的 2.28.8；适配生成的 Lambda 和接口辅助类不属于手写源码。
+
 在类库仓库运行 `build.bat "simple.library.wsd.ftpclient" --no-pause` 构建。
 
 核对日期：2026-10-16。已通过类库构建、23 项 FTP 回归、25 项公钥信任检查、49 项本机 SFTP 集成检查、清单校验及示例 APK 编译。通过 Escrcpy 在 Android 14 验证首次取消、确认、目录读取、重启后自动校验、公钥变化拒绝与确认更新，以及手动错误指纹拒绝。Android 8.0–13、真机及外部存储尚未实测。

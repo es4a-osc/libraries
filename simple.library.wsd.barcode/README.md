@@ -13,6 +13,8 @@
 
 `libs/zbar-decoder.jar` 和两个原生库保留原始二进制，版本尚未确认。[ZBar](https://github.com/mchehab/zbar) 上游采用 LGPL-2.1，许可文本见 `libs/LICENSE-zbar.txt`；该文本不代表已核实原始分发包的具体版本、全部修改和完整授权来源，`libiconv.so` 的具体构建来源同样待核实。
 
+Java 源码对照包见 [zbar-decoder-sources.jar](libs/sources/zbar-decoder-sources.jar)：以 [ZBar 历史 Java 绑定](https://github.com/ZBar/ZBar/tree/6ed227f4d59fb6e0f5be173997c46941e93a1e7d/java/net/sourceforge/zbar)为基础，保留原始 JavaDoc，并按现有 JAR 补齐库名常量及 `ZBarDecoder` 加载名称。此包由 ES4A 整理用于 IDE 源码关联，不是原始分发方的源码发布包，也不包含原生 SO 源码。
+
 图标来自 [Tabler Icons](https://github.com/tabler/tabler-icons)，MIT 许可文本见 `icons/LICENSE.txt`。
 
 本次验证覆盖 Java 构建、示例 APK 编译、清单和原生库打包；相机、闪光灯、提示音和 ZBar 原生库加载仍需在兼容的 Android 真机上验证。
