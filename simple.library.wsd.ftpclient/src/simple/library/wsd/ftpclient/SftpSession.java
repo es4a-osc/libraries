@@ -321,7 +321,6 @@ final class SftpSession implements TransferSession {
 	 * @return 远程目录条目
 	 * @throws SftpException 服务器拒绝 SFTP 操作或远程路径无效时
 	 */
-	@SuppressWarnings("unchecked")
 	private Vector<ChannelSftp.LsEntry> channelEntries(String path) throws SftpException {
 		return channel.ls(quote(path));
 	}

@@ -1,0 +1,424 @@
+{
+	"name": "JSONPath库",
+	"description": "JSON路径查询及新增、修改、删除、重命名。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "JSONPath操作",
+					"description": "创建可读写JSONPath文档和标准JSON值的静态入口。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsonpath.JSONPath操作",
+					"icon": "icons/filter-code.svg",
+					"functions": [
+						{
+							"name": "解析文本",
+							"description": "严格解析 JSON 文本并创建可读写文档。",
+							"return": "simple.library.wsd.jsonpath.JSONPath文档",
+							"static": true,
+							"params": [
+								{
+									"name": "JSON文本",
+									"type": "文本型",
+									"description": "完整 JSON 文本，可为对象、数组或标准标量。"
+								}
+							]
+						},
+						{
+							"name": "载入JSON值",
+							"description": "从运行库 JSON值 复制数据，之后双方修改互不影响。",
+							"return": "simple.library.wsd.jsonpath.JSONPath文档",
+							"static": true,
+							"params": [
+								{
+									"name": "新值",
+									"type": "simple.runtime.collections.JSON值",
+									"description": "运行库 JSON 值，不得为空引用。"
+								}
+							]
+						},
+						{
+							"name": "解析值",
+							"description": "将 JSON 字面量解析为可用于修改或添加的值。",
+							"return": "simple.library.wsd.jsonpath.JSONPath结果",
+							"static": true,
+							"params": [
+								{
+									"name": "JSON文本",
+									"type": "文本型",
+									"description": "完整 JSON 字面量，例如 10、true、null、引号包围的文本或对象数组。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "JSONPath文档",
+					"description": "通过JSONPath查询、新增、修改、删除和重命名；同一文档串行使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsonpath.JSONPath文档",
+					"icon": "icons/json.svg",
+					"functions": [
+						{
+							"name": "查询",
+							"description": "按路径查询，结果为独立快照。",
+							"return": "simple.library.wsd.jsonpath.JSONPath结果",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								}
+							]
+						},
+						{
+							"name": "是否存在",
+							"description": "判断路径是否存在；匹配到 JSON null 或确定路径空数组仍为真。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式。"
+								}
+							]
+						},
+						{
+							"name": "查询路径",
+							"description": "取得匹配节点的具体路径，便于定位或逐项处理。",
+							"return": "文本型[]",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "节点选择表达式，不支持 length 等聚合函数。"
+								}
+							]
+						},
+						{
+							"name": "到JSON文本",
+							"description": "序列化当前完整文档，包括修改结果。",
+							"return": "文本型"
+						},
+						{
+							"name": "复制",
+							"description": "复制当前文档，之后修改互不影响。",
+							"return": "simple.library.wsd.jsonpath.JSONPath文档"
+						},
+						{
+							"name": "到JSON值",
+							"description": "取得整个文档对应的运行库 JSON值 副本。",
+							"return": "simple.runtime.collections.JSON值"
+						},
+						{
+							"name": "修改",
+							"description": "用指定 JSON 值替换匹配节点，支持通配符和过滤器批量选择。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "节点选择表达式。"
+								},
+								{
+									"name": "新值",
+									"type": "simple.library.wsd.jsonpath.JSONPath结果",
+									"description": "本库解析值或查询取得的存在结果；按值深复制。"
+								}
+							]
+						},
+						{
+							"name": "修改JSON值",
+							"description": "用运行库 JSON值 的副本替换匹配节点。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "节点选择表达式。"
+								},
+								{
+									"name": "新值",
+									"type": "simple.runtime.collections.JSON值",
+									"description": "运行库 JSON 值，不得为空引用。"
+								}
+							]
+						},
+						{
+							"name": "修改文本",
+							"description": "用文本替换所有匹配节点。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "节点选择表达式。"
+								},
+								{
+									"name": "新值",
+									"type": "文本型",
+									"description": "新文本值。"
+								}
+							]
+						},
+						{
+							"name": "修改整数",
+							"description": "用长整数替换所有匹配节点。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "节点选择表达式。"
+								},
+								{
+									"name": "新值",
+									"type": "长整数型",
+									"description": "新长整数值。"
+								}
+							]
+						},
+						{
+							"name": "修改小数",
+							"description": "用双精度小数替换所有匹配节点。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "节点选择表达式。"
+								},
+								{
+									"name": "新值",
+									"type": "双精度小数型",
+									"description": "有限的双精度小数值，不接受 NaN 或无穷大。"
+								}
+							]
+						},
+						{
+							"name": "修改逻辑",
+							"description": "用逻辑替换所有匹配节点。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "节点选择表达式。"
+								},
+								{
+									"name": "新值",
+									"type": "逻辑型",
+									"description": "新逻辑值。"
+								}
+							]
+						},
+						{
+							"name": "修改空",
+							"description": "将匹配节点设为 JSON null；不会删除节点。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "节点选择表达式。"
+								}
+							]
+						},
+						{
+							"name": "新增属性",
+							"description": "在匹配对象内新增或覆盖属性，不自动生成父对象。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "选择一个或多个对象的表达式。"
+								},
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "不得为空引用或全为空白的属性名。"
+								},
+								{
+									"name": "新值",
+									"type": "simple.library.wsd.jsonpath.JSONPath结果",
+									"description": "存在的结果值，按值复制。"
+								}
+							]
+						},
+						{
+							"name": "添加成员",
+							"description": "在每个匹配数组末尾添加一个值；数组参数作为单个成员添加。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "选择一个或多个数组的表达式。"
+								},
+								{
+									"name": "新值",
+									"type": "simple.library.wsd.jsonpath.JSONPath结果",
+									"description": "存在的结果值，按值复制。"
+								}
+							]
+						},
+						{
+							"name": "删除",
+							"description": "删除匹配的属性或数组成员；数组后续索引会前移。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "要删除的节点，不允许选择整个文档根。"
+								}
+							]
+						},
+						{
+							"name": "重命名属性",
+							"description": "在匹配对象内重命名已有属性，不覆盖另一个已存在属性。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "对象选择表达式。"
+								},
+								{
+									"name": "原属性名",
+									"type": "文本型",
+									"description": "已有属性名称，不得为空引用或全为空白。"
+								},
+								{
+									"name": "新属性名",
+									"type": "文本型",
+									"description": "新属性名称，不得为空引用或全为空白。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "JSONPath结果",
+					"description": "独立查询快照，保留JSON类型并区分未匹配与null。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsonpath.JSONPath结果",
+					"icon": "icons/list-search.svg",
+					"functions": [
+						{
+							"name": "是否存在",
+							"description": "查询是否实际匹配；确定路径中的空数组仍算匹配。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "取类型",
+							"description": "返回结果类型。",
+							"return": "整数型"
+						},
+						{
+							"name": "到JSON文本",
+							"description": "输出包含引号和转义的 JSON 文本，可再次解析。",
+							"return": "文本型"
+						},
+						{
+							"name": "取文本",
+							"description": "读取文本标量，不把数字或 null 隐式转成文本。",
+							"return": "文本型"
+						},
+						{
+							"name": "取长整数",
+							"description": "读取整数值，拒绝截断小数和超出长整数范围的值。",
+							"return": "长整数型"
+						},
+						{
+							"name": "取小数",
+							"description": "读取双精度小数，精度以 IEEE 754 双精度为限。",
+							"return": "双精度小数型"
+						},
+						{
+							"name": "取逻辑",
+							"description": "读取逻辑标量，不执行文本或数值转换。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "取成员数",
+							"description": "取得数组结果的成员数。",
+							"return": "整数型"
+						},
+						{
+							"name": "取成员",
+							"description": "取得数组成员的独立快照。",
+							"return": "simple.library.wsd.jsonpath.JSONPath结果",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从 0 开始的成员索引。"
+								}
+							]
+						},
+						{
+							"name": "到JSON值",
+							"description": "将对象或数组转换为运行库 JSON值 的独立副本。",
+							"return": "simple.runtime.collections.JSON值"
+						}
+					],
+					"constants": [
+						{
+							"name": "类型_未匹配",
+							"type": "整数型",
+							"value": "-1",
+							"description": "结果类型：未匹配"
+						},
+						{
+							"name": "类型_空",
+							"type": "整数型",
+							"value": "0",
+							"description": "结果类型：空"
+						},
+						{
+							"name": "类型_对象",
+							"type": "整数型",
+							"value": "1",
+							"description": "结果类型：对象"
+						},
+						{
+							"name": "类型_数组",
+							"type": "整数型",
+							"value": "2",
+							"description": "结果类型：数组"
+						},
+						{
+							"name": "类型_文本",
+							"type": "整数型",
+							"value": "3",
+							"description": "结果类型：文本"
+						},
+						{
+							"name": "类型_数值",
+							"type": "整数型",
+							"value": "4",
+							"description": "结果类型：数值"
+						},
+						{
+							"name": "类型_逻辑",
+							"type": "整数型",
+							"value": "5",
+							"description": "结果类型：逻辑"
+						}
+					]
+				}
+			]
+		}
+	]
+}

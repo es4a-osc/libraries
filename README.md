@@ -15,6 +15,10 @@
 | [分组列表框库](simple.library.wsd.grouplist/) | 分组展开、收起及子项展示和交互。 |
 | [HTTP服务库](simple.library.wsd.httpserver/) | HTTP 和 WebSocket 服务。 |
 | [图像操作库](simple.library.wsd.image/) | 图片变换、尺寸读取、裁剪、分割、圆角、倒影和压缩。 |
+| [图片浏览器库](simple.library.wsd.imagebrowser/) | 静态图片浏览、翻页、手势缩放和异步载入。 |
+| [JSONPath库](simple.library.wsd.jsonpath/) | JSON路径查询、批量修改、新增、删除和属性重命名。 |
+| [HTML解析库](simple.library.wsd.jsoup/) | HTML 文档解析、CSS 查询、文本属性提取及文档修改。 |
+| [颜色选择框库](simple.library.wsd.colorpicker/) | 色环与明暗渐变选色、ARGB 预览及确认取消事件。 |
 | [Lua脚本库](simple.library.wsd.lua/) | Lua 5.1.5 代码执行、参数传入和返回值读取，附带 32 位 ARM 原生库。 |
 | [条码库](simple.library.wsd.barcode/) | 二维码和条形码生成、图片识别及相机扫描。 |
 | [AChartEngine图表库](simple.library.wsd.achartengine/) | 饼状图、柱状图与折线图。 |

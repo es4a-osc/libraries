@@ -1,0 +1,6 @@
+stax-api 1.0-2
+Source: https://repo.maven.apache.org/maven2/javax/xml/stream/stax-api/1.0-2/
+License declarations from the official POM:
+- GNU General Public Library: http://www.gnu.org/licenses/gpl.txt
+- COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0: http://www.sun.com/cddl/cddl.html
+The official binary and source archives contain no separate license file. Both archives are distributed unmodified.

@@ -1,0 +1,148 @@
+{
+	"name": "图片浏览器库",
+	"description": "静态图片浏览、滑动翻页和手势缩放。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展非可视组件",
+			"definitions": [
+				{
+					"name": "图片浏览器",
+					"description": "在独立界面浏览静态图片，支持翻页、双击和双指缩放；主线程调用，异步读取，索引从 0 开始。单图输入上限 20 MiB，宽高采样至 2048 像素以内。",
+					"icon": "icons/photo-search.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.imagebrowser.图片浏览器",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"properties": [
+						{
+							"name": "正在浏览",
+							"type": "逻辑型",
+							"description": "浏览界面是否已打开。",
+							"writable": false
+						},
+						{
+							"name": "当前索引",
+							"type": "整数型",
+							"description": "当前图片索引，从 0 开始；未打开时为 -1。",
+							"writable": false
+						},
+						{
+							"name": "错误信息",
+							"type": "文本型",
+							"description": "最近失败的说明；有效请求开始或当前页成功后清空。",
+							"writable": false
+						}
+					],
+					"events": [
+						{
+							"name": "图片改变",
+							"description": "当前页改变时触发，首次打开也触发，图片可能仍在载入。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "图片索引，从 0 开始。"
+								}
+							]
+						},
+						{
+							"name": "载入成功",
+							"description": "当前页载入成功后触发，过期请求不触发。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "图片索引，从 0 开始。"
+								}
+							]
+						},
+						{
+							"name": "载入失败",
+							"description": "参数、界面创建或当前页载入失败时触发。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "图片索引，无法确定时为 -1。"
+								},
+								{
+									"name": "原因",
+									"type": "文本型",
+									"description": "失败原因。"
+								}
+							]
+						},
+						{
+							"name": "浏览关闭",
+							"description": "按钮、系统返回或关闭方法结束浏览时触发；替换列表和销毁不触发。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "图片索引，从 0 开始。"
+								}
+							]
+						}
+					],
+					"functions": [
+						{
+							"name": "浏览图片",
+							"description": "打开单张图片；已打开时替换原列表。",
+							"params": [
+								{
+									"name": "图片",
+									"type": "文本型",
+									"description": "资产名、资源标识、绝对路径、file/content URI 或 HTTP/HTTPS 地址。"
+								}
+							]
+						},
+						{
+							"name": "浏览图片",
+							"description": "复制图片数组后打开并定位到指定页；无效参数通过失败事件反馈。",
+							"params": [
+								{
+									"name": "图片列表",
+									"type": "文本型()",
+									"description": "最多 1000 项，每项不能为空文本。"
+								},
+								{
+									"name": "起始索引",
+									"type": "整数型",
+									"description": "从 0 开始，不得越界。"
+								}
+							]
+						},
+						{
+							"name": "切换图片",
+							"description": "切换当前页，未打开或索引越界时反馈失败。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "图片索引，从 0 开始。"
+								}
+							]
+						},
+						{
+							"name": "重新载入",
+							"description": "重新读取当前页图片。"
+						},
+						{
+							"name": "关闭",
+							"description": "关闭界面并取消载入；未打开时不执行。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

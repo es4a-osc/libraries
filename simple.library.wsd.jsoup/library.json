@@ -1,0 +1,599 @@
+{
+	"name": "HTML解析库",
+	"description": "基于 jsoup 1.15.4 的 HTML 文档、元素查询、提取和修改。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "HTML解析器",
+					"description": "同步解析 HTML 文本、字节和普通文件；静态函数集，不请求网络。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsoup.HTML解析器",
+					"icon": "icons/code-circle.svg",
+					"functions": [
+						{
+							"name": "解析文本",
+							"description": "解析 HTML 文本，不设置基本 URL。",
+							"static": true,
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"params": [
+								{
+									"name": "HTML文本",
+									"type": "文本型",
+									"description": "HTML 文本，不得为空引用；允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "解析文本",
+							"description": "解析 HTML 文本，按 HTML 规则补全省略或不完整的结构。",
+							"static": true,
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"params": [
+								{
+									"name": "HTML文本",
+									"type": "文本型",
+									"description": "HTML 文本，不得为空引用；允许空文本。"
+								},
+								{
+									"name": "基本URL",
+									"type": "文本型",
+									"description": "用于补全相对链接的基本 URL，空文本表示未指定。"
+								}
+							]
+						},
+						{
+							"name": "解析片段",
+							"description": "把 HTML 片段解析为新文档的正文内容。",
+							"static": true,
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"params": [
+								{
+									"name": "HTML文本",
+									"type": "文本型",
+									"description": "HTML 文本，不得为空引用；允许空文本。"
+								},
+								{
+									"name": "基本URL",
+									"type": "文本型",
+									"description": "用于补全相对链接的基本 URL，空文本表示未指定。"
+								}
+							]
+						},
+						{
+							"name": "解析字节集",
+							"description": "从原始字节解析 HTML，支持显式编码和自动编码识别。",
+							"static": true,
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型()",
+									"description": "完整 HTML 字节，不得为空引用。"
+								},
+								{
+									"name": "编码",
+									"type": "文本型",
+									"description": "字符集名称；空文本按 BOM 或 HTML 编码声明识别，未识别时使用 UTF-8。"
+								},
+								{
+									"name": "基本URL",
+									"type": "文本型",
+									"description": "用于补全相对链接的基本 URL，空文本表示未指定。"
+								}
+							]
+						},
+						{
+							"name": "解析文件",
+							"description": "读取整个普通 HTML 文件并解析；沿用运行库文件访问规则。",
+							"static": true,
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "普通文件路径；相对路径以应用私有 files 目录为基准。"
+								},
+								{
+									"name": "编码",
+									"type": "文本型",
+									"description": "字符集名称；空文本按 BOM 或 HTML 编码声明识别，未识别时使用 UTF-8。"
+								},
+								{
+									"name": "基本URL",
+									"type": "文本型",
+									"description": "用于补全相对链接的基本 URL，空文本表示未指定。"
+								}
+							]
+						},
+						{
+							"name": "解析资产",
+							"description": "同步解析 APK 内 HTML 资产，结束前关闭输入流，无需存储权限。",
+							"static": true,
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"params": [
+								{
+									"name": "资产名",
+									"type": "文本型",
+									"description": "assets 下的相对文件名。"
+								},
+								{
+									"name": "编码",
+									"type": "文本型",
+									"description": "字符集名称，空文本表示自动识别。"
+								},
+								{
+									"name": "基本URL",
+									"type": "文本型",
+									"description": "用于补全相对链接的 URL，空文本表示未指定。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "HTML文档",
+					"description": "HTML 文档的标题、头部和正文；继承元素查询与修改能力。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsoup.HTML文档",
+					"icon": "icons/file-type-html.svg",
+					"inherits": [
+						"simple.library.wsd.jsoup.HTML元素"
+					],
+					"functions": [
+						{
+							"name": "取标题",
+							"description": "取得文档标题，合并其中的多余空白。",
+							"return": "文本型"
+						},
+						{
+							"name": "取主体元素",
+							"description": "取得 HTML 正文元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "取头元素",
+							"description": "取得 HTML 头部元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "取文档URL",
+							"description": "取得文档的位置标识，不请求网络。",
+							"return": "文本型"
+						},
+						{
+							"name": "置标题",
+							"description": "设置文档标题，需要时创建 title 元素。",
+							"params": [
+								{
+									"name": "标题",
+									"type": "文本型",
+									"description": "新标题文本，不得为空引用。"
+								}
+							]
+						},
+						{
+							"name": "创建元素",
+							"description": "创建独立空元素，不自动插入文档树。",
+							"return": "simple.library.wsd.jsoup.HTML元素",
+							"params": [
+								{
+									"name": "标签",
+									"type": "文本型",
+									"description": "新元素的标签名称。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "HTML元素",
+					"description": "CSS 查询、节点遍历、文本和属性读写；与所属文档共享元素。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsoup.HTML元素",
+					"icon": "icons/brackets-angle.svg",
+					"functions": [
+						{
+							"name": "查询元素",
+							"description": "以当前元素为查询上下文，按 CSS 选择器查找元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表",
+							"params": [
+								{
+									"name": "选择器",
+									"type": "文本型",
+									"description": "jsoup 1.15.4 支持的 CSS 选择器，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "查询首个",
+							"description": "以当前元素为查询上下文，按 CSS 选择器查找元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素",
+							"params": [
+								{
+									"name": "选择器",
+									"type": "文本型",
+									"description": "jsoup 1.15.4 支持的 CSS 选择器，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "是否匹配",
+							"description": "以当前元素为查询上下文，按 CSS 选择器判断当前元素。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "选择器",
+									"type": "文本型",
+									"description": "jsoup 1.15.4 支持的 CSS 选择器，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "取节点自ID",
+							"description": "查找当前元素及后代中具有指定 ID 的首个元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素",
+							"params": [
+								{
+									"name": "ID",
+									"type": "文本型",
+									"description": "要查找的 ID。"
+								}
+							]
+						},
+						{
+							"name": "取节点自TAG",
+							"description": "查找当前元素及后代中具有指定标签的元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表",
+							"params": [
+								{
+									"name": "标签",
+									"type": "文本型",
+									"description": "标签名称，例如 a、li。"
+								}
+							]
+						},
+						{
+							"name": "取元素自类名",
+							"description": "查找当前元素及后代中具有指定类名的元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表",
+							"params": [
+								{
+									"name": "类名",
+									"type": "文本型",
+									"description": "单个 CSS 类名，不含前导句点。"
+								}
+							]
+						},
+						{
+							"name": "取标签名称",
+							"description": "取得当前元素的标签名。",
+							"return": "文本型"
+						},
+						{
+							"name": "取ID",
+							"description": "取得当前元素的 id 属性。",
+							"return": "文本型"
+						},
+						{
+							"name": "取内容",
+							"description": "取得当前元素直接包含的文本，不包含子元素文本。",
+							"return": "文本型"
+						},
+						{
+							"name": "取所有文本",
+							"description": "取得当前元素及后代的可见文本，合并多余空白。",
+							"return": "文本型"
+						},
+						{
+							"name": "取原始文本",
+							"description": "取得当前元素及后代文本，保留文本节点中的空白。",
+							"return": "文本型"
+						},
+						{
+							"name": "取内部HTML",
+							"description": "序列化当前元素内部的 HTML，不包含外层标签。",
+							"return": "文本型"
+						},
+						{
+							"name": "取HTML文本",
+							"description": "序列化当前元素及后代，包括外层标签。",
+							"return": "文本型"
+						},
+						{
+							"name": "取基本URL",
+							"description": "取得当前元素用于补全相对链接的基本 URL。",
+							"return": "文本型"
+						},
+						{
+							"name": "置标签名称",
+							"description": "修改当前元素的标签名。",
+							"params": [
+								{
+									"name": "标签",
+									"type": "文本型",
+									"description": "新的标签名称。"
+								}
+							]
+						},
+						{
+							"name": "置ID",
+							"description": "设置当前元素的 id 属性。",
+							"params": [
+								{
+									"name": "ID",
+									"type": "文本型",
+									"description": "新的 id 属性，空文本允许。"
+								}
+							]
+						},
+						{
+							"name": "置文本",
+							"description": "用纯文本替换当前元素的全部子节点。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "新的纯文本，HTML 特殊字符会被转义。"
+								}
+							]
+						},
+						{
+							"name": "置内部HTML",
+							"description": "解析 HTML 并替换当前元素的全部子节点。",
+							"params": [
+								{
+									"name": "HTML文本",
+									"type": "文本型",
+									"description": "HTML 文本，不得为空引用；允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "取属性值",
+							"description": "读取当前元素的属性值。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "属性名称，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "是否有属性",
+							"description": "判断属性是否存在，包括值为空文本的属性。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "属性名称，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "取URL",
+							"description": "将指定链接属性解析为绝对 URL，不读取目标资源。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "属性名称，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "置属性值",
+							"description": "新增或覆盖当前元素属性，不进行网络操作。",
+							"params": [
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "属性名称，不得为空引用或空文本。"
+								},
+								{
+									"name": "属性值",
+									"type": "文本型",
+									"description": "新的属性值，允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "移除属性",
+							"description": "移除指定属性，不存在时不处理。",
+							"params": [
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "属性名称，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "取属性名列表",
+							"description": "按当前属性顺序取得名称快照。",
+							"return": "文本型()"
+						},
+						{
+							"name": "取父元素",
+							"description": "取得父元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "取子元素",
+							"description": "取得直接子元素的成员快照。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表"
+						},
+						{
+							"name": "取上一元素",
+							"description": "取得同级上一个元素，跳过文本和注释节点。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "取下一元素",
+							"description": "取得同级下一个元素，跳过文本和注释节点。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "取指定子元素",
+							"description": "按索引取得直接子元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从 0 开始的直接子元素索引。"
+								}
+							]
+						},
+						{
+							"name": "追加HTML",
+							"description": "把 HTML 片段解析后追加到当前元素内部末尾。",
+							"params": [
+								{
+									"name": "HTML文本",
+									"type": "文本型",
+									"description": "HTML 文本，不得为空引用；允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "插入HTML到首部",
+							"description": "把 HTML 片段解析后插入当前元素内部首部。",
+							"params": [
+								{
+									"name": "HTML文本",
+									"type": "文本型",
+									"description": "HTML 文本，不得为空引用；允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "创建子元素",
+							"description": "在当前元素内部末尾添加一个空元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素",
+							"params": [
+								{
+									"name": "标签",
+									"type": "文本型",
+									"description": "新子元素的标签名称。"
+								}
+							]
+						},
+						{
+							"name": "移除",
+							"description": "将当前元素从父节点移除；已有包装引用仍可使用。"
+						},
+						{
+							"name": "复制",
+							"description": "深复制当前元素及后代，修改副本不会改变原元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						}
+					]
+				},
+				{
+					"name": "HTML元素列表",
+					"description": "查询结果的成员快照；索引从 0 开始，成员修改会反映到文档。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsoup.HTML元素列表",
+					"icon": "icons/list-details.svg",
+					"functions": [
+						{
+							"name": "取成员数",
+							"description": "取得列表固定保存的成员数量。",
+							"return": "整数型"
+						},
+						{
+							"name": "取成员",
+							"description": "按索引取得元素，修改该元素会影响所属文档。",
+							"return": "simple.library.wsd.jsoup.HTML元素",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "成员索引，从 0 开始。"
+								}
+							]
+						},
+						{
+							"name": "首元素",
+							"description": "取得首个成员，空列表返回空引用。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "尾元素",
+							"description": "取得最后一个成员，空列表返回空引用。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "取所有文本",
+							"description": "按成员顺序合并文本，不同成员之间用空格分隔。",
+							"return": "文本型"
+						},
+						{
+							"name": "取文本列表",
+							"description": "逐个提取成员文本，保留成员顺序。",
+							"return": "文本型()"
+						},
+						{
+							"name": "取属性值",
+							"description": "读取首个具有指定属性的成员值。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "属性名称，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "取属性值列表",
+							"description": "逐个读取指定属性，缺少属性的成员保留为空文本。",
+							"return": "文本型()",
+							"params": [
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "属性名称，不得为空引用或空文本。"
+								}
+							]
+						},
+						{
+							"name": "置属性值",
+							"description": "为所有成员新增或覆盖属性。",
+							"params": [
+								{
+									"name": "属性名",
+									"type": "文本型",
+									"description": "属性名称，不得为空引用或空文本。"
+								},
+								{
+									"name": "属性值",
+									"type": "文本型",
+									"description": "新的属性值，允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "移除",
+							"description": "从各自父节点中移除所有成员，不清空此快照列表。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

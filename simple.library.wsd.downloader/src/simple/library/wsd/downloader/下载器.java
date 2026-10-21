@@ -19,7 +19,7 @@ import simple.runtime.components.组件;
 @SimpleObject
 @SimpleComponent
 @UsesPermissions(permissionNames =
-	// 允许建立网络连接和监听网络端口。
+	// 允许建立网络连接并下载文件。
 	"android.permission.INTERNET"
 )
 public interface 下载器 extends 组件 {

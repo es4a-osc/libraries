@@ -194,7 +194,7 @@ public final class 通知构建器 {
 	@SimpleFunction
 	public void 置提示音(boolean playSound) {
 		// 保存设置供发送时选渠道；旧系统直接配置构建器。
-		playSound = playSound;
+		this.playSound = playSound;
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
 			applyLegacySound(playSound);
 		}
@@ -213,7 +213,7 @@ public final class 通知构建器 {
 		}
 
 		// 新系统在发送时按此值选渠道，旧系统直接设置通知优先级。
-		priority = priority;
+		this.priority = priority;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
 				&& Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
 			applyLegacyPriority(priority);

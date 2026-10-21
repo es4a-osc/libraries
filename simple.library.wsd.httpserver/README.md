@@ -1,5 +1,9 @@
 # HTTP服务库
 
-提供 HTTP 请求响应和 WebSocket 服务，可与 WS 客户端库交互。
+在应用中提供 HTTP 请求响应和 WebSocket 服务，可与 WebSocket 客户端配合使用。
 
-用法见[示例及操作步骤](sample/README.md)；先构建并发布本库到所选 SDK，再运行示例。
+客户端须能够访问设备的服务地址和端口；跨设备连接时使用服务设备的实际网络地址。
+
+## 依赖来源
+
+- [AndroidAsync 2.2.1](https://github.com/koush/AndroidAsync)

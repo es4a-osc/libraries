@@ -1,0 +1,84 @@
+{
+	"name": "颜色选择框库",
+	"description": "色环及明暗渐变选色、ARGB 颜色预览和确认取消事件，无第三方依赖。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展非可视组件",
+			"definitions": [
+				{
+					"name": "颜色选择框",
+					"description": "通过色环和明暗渐变条选择颜色；显示立即返回，确定后才提交结果，取消保留原色。透明度沿用初始颜色。",
+					"kind": "component",
+					"type": "simple.library.wsd.colorpicker.颜色选择框",
+					"icon": "icons/color-swatch.svg",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"properties": [
+						{
+							"name": "标题",
+							"type": "文本型",
+							"description": "下次显示的标题，空文本不显示标题；不影响已经打开的对话框。",
+							"initializer": "\"选择颜色\""
+						},
+						{
+							"name": "初始颜色",
+							"type": "整数型",
+							"description": "下次显示时采用的 ARGB 初值，透明度在本次选色过程中保持不变。",
+							"initializer": "&HFFFF0000",
+							"editor": "simple.color"
+						},
+						{
+							"name": "选中颜色",
+							"type": "整数型",
+							"description": "最近一次确认的 ARGB 颜色；从未确认时为红色。",
+							"writable": false,
+							"editor": "simple.color"
+						},
+						{
+							"name": "正在显示",
+							"type": "逻辑型",
+							"description": "当前是否有尚未结束的选色对话框。",
+							"writable": false
+						}
+					],
+					"events": [
+						{
+							"name": "颜色选择完毕",
+							"description": "用户确定后触发，此时已关闭对话框并更新选中颜色。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "确认的 ARGB 颜色，可以直接赋给组件颜色属性。"
+								}
+							]
+						},
+						{
+							"name": "取消选择",
+							"description": "取消、返回、框外点击或关闭方法结束选择时触发一次；替换旧框及销毁不触发。"
+						}
+					],
+					"functions": [
+						{
+							"name": "显示",
+							"description": "使用标题和初始颜色打开对话框，立即返回；再次调用替换旧框，不触发旧框取消事件。"
+						},
+						{
+							"name": "关闭",
+							"description": "关闭当前对话框并触发取消选择；未显示时不执行。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

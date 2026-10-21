@@ -1,19 +1,11 @@
 # AChartEngine图表库
 
-提供饼状图、柱状图和折线图三个可视组件。先执行 `初始化图表`，逐项 `添加数据`，最后 `构建图表`；追加数据后再次构建，重新初始化会清空数据和图形。
+提供饼状图、柱状图和折线图三个可视组件，适合展示单组数据。
 
-- 使用 AChartEngine 1.0.0，提供单组系列图表。
-- 在界面线程操作，字体大小按 SP，颜色使用 ARGB 整数。不请求权限、不联网，不依赖原生 SO，不提高当前 SDK 的最低 Android 版本。
-- 柱状图和折线图为单组系列，横轴按项目添加顺序显示，允许零和负数；数值和坐标范围必须有限。
-- 饼状图数值必须非负，非空数据中至少有一个正数；每个项目单独设置颜色。
-- 没有数据时构建会清空图形；反复构建不改变数据或扩大坐标。初始化前、销毁后、非界面线程调用，以及无效参数都会抛出异常。
-- 背景颜色等图表样式在构建时应用；外部改变背景颜色后重新构建即可同步图形。
+先初始化图表、添加数据，再构建显示；追加数据后可重新构建，重新初始化会清空原数据。图表在界面线程操作。
 
-用法和验证操作见[示例项目](sample/)。使用现有公共 `build.bat`、`release.bat` 构建和安装本库，不需要独立构建脚本。
+柱状图和折线图按项目添加顺序排列横轴；饼图数值须非负，非空数据的总和须大于零。
 
-依赖 JAR 的 SHA-256：`815e880f885330f85e88ae43845123e9327d7a1ecc6603f46e69ca383e9a0fb9`。
-AChartEngine 使用 Apache-2.0，许可文本见 [libs/LICENSE-achartengine.txt](libs/LICENSE-achartengine.txt)，上游源码见 [AChartEngine](https://github.com/ddanny/achartengine)。
+## 依赖来源
 
-对应源码包为 [achartengine-1.0.0-sources.jar](libs/sources/achartengine-1.0.0-sources.jar)，由 ES4A 根据与官方 1.0.0 二进制核对一致的[历史源码](https://github.com/ddanny/achartengine/tree/3f53e8c8a00c310e0cf4386f4d6a21d157a17e82/achartengine/src)打包，保留原始 JavaDoc 和许可证，供 IDE 关联源码使用。
-
-组件图标使用 Tabler Icons 的 chart-pie、chart-bar、chart-line；MIT 许可文本见 [icons/LICENSE](icons/LICENSE)。
+- [AChartEngine 1.0.0](https://github.com/ddanny/achartengine)

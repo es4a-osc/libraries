@@ -2,4 +2,6 @@
 
 将可视组件作为页面添加到容器，支持触摸滑动、程序切换和页面事件。
 
-用法见[示例项目](sample/)；先构建并发布本库到所选 SDK，再运行示例。
+## 依赖来源
+
+- [Android Support v4 23.2.1](https://developer.android.com/topic/libraries/support-library)：来自 Google。
