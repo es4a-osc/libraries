@@ -29,9 +29,11 @@ public interface WS客户端 extends 组件 {
 
 	/**
 	 * 连接失败、网络故障、无有效连接或发送被拒绝时触发。
+	 *
+	 * @param message 失败原因，包括系统网络策略或服务端握手错误。
 	 */
 	@SimpleEvent
-	void 出现错误();
+	void 出现错误(String message);
 
 	/**
 	 * 收到服务器的文本消息时触发，二进制消息不派发此事件。

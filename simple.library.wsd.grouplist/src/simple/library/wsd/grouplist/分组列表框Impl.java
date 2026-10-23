@@ -317,7 +317,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 				}
 			}
 
-			expandableListView.setBackgroundDrawable(drawable);
+			expandableListView.setBackground(drawable);
 			expandableListView.invalidate();
 		}
 	}
@@ -815,7 +815,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 			boolean hasImage = !TextUtils.isEmpty(image);
 
 			civ.image.setVisibility(hasImage ? View.VISIBLE : View.GONE);
-			civ.image.setBackgroundDrawable(hasImage ? getDrawable(image) : null);
+			civ.image.setBackground(hasImage ? getDrawable(image) : null);
 			civ.content.setPadding(hasImage ? 0 : toPixels(10), 0, 0, 0);
 
 			civ.title.setText(map.get("title"));
@@ -829,7 +829,7 @@ public class 分组列表框Impl extends 视图组件 implements 分组列表框
 			civ.info.setTextSize(childInfotextSize);
 			civ.info.setTextColor(childInfotextColor);
 
-			civ.button.setBackgroundDrawable(getDrawable(map.get("buttonImage")));
+			civ.button.setBackground(getDrawable(map.get("buttonImage")));
 			civ.button.setFocusable(false);
 			civ.button.setTextSize(childButtontextSize);
 			civ.button.setTextColor(childButtontextColor);

@@ -1,6 +1,5 @@
 package simple.library.wsd.downloader;
 
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -205,14 +204,9 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 		File file = new File(path);
 		if (file.isAbsolute()) {
 			File target = file.getCanonicalFile();
-			File external = new File(Environment.getExternalStorageDirectory(),
-				"Android/data/" + activity.getPackageName() + "/files").getCanonicalFile();
-			if (target.getPath().startsWith(external.getPath() + File.separator)) {
-				// Android 11+ 的应用外部根目录须由系统创建，不能直接依赖 mkdirs。
-				if (activity.getExternalFilesDir(null) == null) {
-					throw new IOException("应用外部文件目录不可用。");
-				}
-			}
+			// 应用外部私有目录由系统创建，兼容分区存储及多个可用存储卷。
+			// 不猜测 /Android/data 路径；其它绝对路径仍由调用方保证访问授权。
+			activity.getExternalFilesDirs(null);
 
 			return target;
 		}

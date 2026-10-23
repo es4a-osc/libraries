@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "跨程序辅助",
-					"description": "订阅系统无障碍事件，读取和操作当前活动窗口中的节点；节点离开原窗口后可能失效。",
+					"description": "订阅系统无障碍事件，读取和操作当前活动窗口中的节点；须先取得系统授权并连接服务。节点离开原窗口后可能失效，应重新读取。",
 					"icon": "icons/accessible.svg",
 					"kind": "component",
 					"type": "simple.library.wsd.accessibility.跨程序辅助",
@@ -24,8 +24,9 @@
 					],
 					"functions": [
 						{
-							"name": "初始化",
-							"description": "开始接收无障碍服务事件；服务尚未启用时打开系统无障碍设置。"
+							"name": "打开设置",
+							"description": "打开系统无障碍设置，由用户决定是否启用本应用服务；打开页面不表示已经授权或连接。",
+							"return": "逻辑型"
 						},
 						{
 							"name": "是否已开启",

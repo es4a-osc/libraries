@@ -63,8 +63,8 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 	}
 
 	@Override
-	public void 出现错误() {
-		EventDispatcher.dispatchEvent(this, "出现错误");
+	public void 出现错误(String message) {
+		EventDispatcher.dispatchEvent(this, "出现错误", message);
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 				current = session;
 			}
 		} catch (IllegalArgumentException exception) {
-			notifyError(null);
+			notifyError(null, exception.toString());
 		} finally {
 			if (previous != null && previous.socket != null) previous.socket.cancel();
 		}
@@ -133,7 +133,7 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 			}
 		}
 
-		if (!accepted) notifyError(session);
+		if (!accepted) notifyError(session, "没有可发送的连接、消息为空或发送队列已拒绝");
 	}
 
 	@Override
@@ -198,13 +198,14 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 	 * 仅向仍有效的连接会话分发错误通知。
 	 *
 	 * @param session 当前连接会话
+	 * @param message 实际失败原因
 	 */
-	private void notifyError(Session session) {
+	private void notifyError(Session session, final String message) {
 		post(session, new Runnable() {
 
 			@Override
 			public void run() {
-				出现错误();
+				出现错误(message);
 			}
 		});
 	}
@@ -298,7 +299,7 @@ public final class WS客户端Impl extends 组件Impl implements WS客户端 {
 					session.terminated = true;
 				}
 
-				notifyError(session);
+				notifyError(session, failure.toString());
 			}
 		};
 	}

@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -256,21 +255,24 @@ public final class APK信息 {
 	}
 
 	/**
-	 * 在 API 26 编译工具链下读取新系统的完整版本号，避免截断高位。
+	 * 按系统版本读取完整版本号，旧字段按无符号低 32 位解释。
 	 *
 	 * @param info 本次平台解析结果。
 	 * @return 完整版本号。
-	 * @throws ReflectiveOperationException 新系统版本接口不可用或调用失败。
 	 */
-	private static long readVersionCode(PackageInfo info) throws ReflectiveOperationException {
-		if (Build.VERSION.SDK_INT < 28) {
-			return ((long) info.versionCode) & 0xffffffffL;
-		}
-		try {
-			return ((Long) PackageInfo.class.getMethod("getLongVersionCode").invoke(info)).longValue();
-		} catch (InvocationTargetException error) {
-			throw new IllegalStateException("无法读取完整版本号", error.getCause());
-		}
+	private static long readVersionCode(PackageInfo info) {
+		return Build.VERSION.SDK_INT >= 28 ? info.getLongVersionCode() : readLegacyVersionCode(info);
+	}
+
+	/**
+	 * API 27 及以下没有完整版本号接口，读取清单的原始低位字段。
+	 *
+	 * @param info 本次平台解析结果。
+	 * @return 无符号低 32 位版本号。
+	 */
+	@SuppressWarnings("deprecation")
+	private static long readLegacyVersionCode(PackageInfo info) {
+		return ((long) info.versionCode) & 0xffffffffL;
 	}
 
 	/**

@@ -21,7 +21,7 @@
 					"inherits": [
 						"simple.runtime.components.可视组件"
 					],
-					"description": "MPAndroidChart 图表公共接口。",
+					"description": "MPAndroidChart 图表共同的样式、构建流程和选择事件。\n\n\n仅在界面线程操作；先初始化，再按各图表的数据接口添加数据并构建图表。",
 					"functions": [
 						{
 							"name": "初始化图表",
@@ -86,15 +86,18 @@
 							"params": [
 								{
 									"name": "数据组",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "数据组添加顺序编号。"
 								},
 								{
 									"name": "项目",
-									"type": "整数型"
+									"type": "整数型",
+									"description": "项目索引；饼图为扇区索引。"
 								},
 								{
 									"name": "数值",
-									"type": "单精度小数型"
+									"type": "单精度小数型",
+									"description": "当前数值。"
 								}
 							]
 						},
@@ -111,7 +114,7 @@
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.图表"
 					],
-					"description": "具有分类轴和左右数值轴的图表。",
+					"description": "具有分类横轴和左右数值轴的图表公共接口。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"functions": [
 						{
 							"name": "设置项目名称",
@@ -174,7 +177,7 @@
 					"name": "折线图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.折线图",
-					"description": "多组折线，支持左右轴及平滑曲线。",
+					"description": "多组折线，支持左右轴及平滑曲线。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-dots.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.坐标图表"
@@ -222,7 +225,7 @@
 					"name": "柱状图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.柱状图",
-					"description": "按分类展示多组并列柱状数据。",
+					"description": "按分类展示多组并列柱状数据。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-bar-popular.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.坐标图表"
@@ -260,7 +263,7 @@
 					"name": "横向柱状图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.横向柱状图",
-					"description": "横向展示多组柱状数据；数值轴沿水平方向。",
+					"description": "横向展示多组柱状数据；数值轴沿水平方向。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-bar-horizontal.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.坐标图表"
@@ -298,7 +301,7 @@
 					"name": "饼状图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.饼状图",
-					"description": "展示非负数据占比，非空图表至少有一个正数。",
+					"description": "展示非负数据占比，非空图表至少有一个正数。\n\n\n仅在界面线程操作；依次初始化、添加扇区并构建图表。",
 					"icon": "icons/chart-pie-2.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.图表"
@@ -331,7 +334,7 @@
 					"name": "散点图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.散点图",
-					"description": "按分类索引展示离散点；横轴不是任意连续数值。",
+					"description": "按分类索引展示离散点；横轴不是任意连续数值。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-scatter.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.坐标图表"
@@ -369,7 +372,7 @@
 					"name": "气泡图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.气泡图",
-					"description": "按分类索引展示数值和非负气泡大小。",
+					"description": "按分类索引展示数值和非负气泡大小。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-bubble.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.坐标图表"
@@ -412,7 +415,7 @@
 					"name": "雷达图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.雷达图",
-					"description": "至少三个分类项目，展示多组非负指标。",
+					"description": "至少三个分类项目，展示多组非负指标。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-radar.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.图表"
@@ -456,7 +459,7 @@
 					"name": "蜡烛图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.蜡烛图",
-					"description": "按分类展示开盘、最高、最低和收盘；上涨空心、下跌实心。",
+					"description": "按分类展示开盘、最高、最低和收盘；上涨空心、下跌实心。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-candle.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.坐标图表"
@@ -509,7 +512,7 @@
 					"name": "组合图",
 					"kind": "component",
 					"type": "simple.library.wsd.mpandroidchart.组合图",
-					"description": "组合折线、柱状、散点、气泡和蜡烛数据，按添加顺序编号。",
+					"description": "组合折线、柱状、散点、气泡和蜡烛数据，按添加顺序编号。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-covariate.svg",
 					"inherits": [
 						"simple.library.wsd.mpandroidchart.坐标图表"

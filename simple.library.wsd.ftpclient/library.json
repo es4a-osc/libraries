@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "FTP客户端",
-					"description": "FTP 和 SFTP 文件管理；SFTP 首次确认并记住服务器，支持 Android 8.0+。",
+					"description": "FTP/SFTP 客户端；同步方法应在后台线程调用，同一连接串行操作。SFTP 需要 Android 8.0（API 26）及以上，支持密码认证；首次确认服务器后保存信任，也可指定公钥指纹。",
 					"kind": "component",
 					"type": "simple.library.wsd.ftpclient.FTP客户端",
 					"icon": "icons/file-transfer.svg",

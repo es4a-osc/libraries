@@ -110,6 +110,14 @@ public interface 低功耗蓝牙 extends 组件 {
 	@SimpleEvent
 	void 通道数据改变(String serviceUuid, String characteristicUuid, byte[] data);
 
+	/**
+	 * 搜索启动失败或被系统拒绝时触发。
+	 *
+	 * @param errorCode 正值为系统扫描错误码；-1 设备或初始化不可用，-2 权限不足，-3 启动异常。
+	 */
+	@SimpleEvent
+	void 搜索失败(int errorCode);
+
 	/* 组件方法 */
 
 	/**
@@ -120,6 +128,15 @@ public interface 低功耗蓝牙 extends 组件 {
 	 */
 	@SimpleFunction
 	boolean 初始化BLE();
+
+	/**
+	 * 返回扫描设备及读取设备名称所需的运行时权限。
+	 * 调用方通过权限请求组件申请这些权限，全部授权后再初始化和搜索。
+	 *
+	 * @return 当前系统所需的权限名称；无需运行时授权时返回空数组。
+	 */
+	@SimpleFunction
+	String[] 取扫描权限();
 
 	/**
 	 * 弹出系统可发现请求，使本机可被经典蓝牙设备发现。

@@ -40,7 +40,7 @@ public final class 通知构建器 {
 	// 为各按钮分配稳定且不同的 PendingIntent 请求码。
 	private static final AtomicInteger NEXT_ACTION_REQUEST_CODE = new AtomicInteger(1);
 
-	/* 编译平台为 API 26；以下两个常量用于 Android 12 的内联回复兼容处理。 */
+	/* 编译平台为 API 30；以下两个常量用于 Android 12 的内联回复兼容处理。 */
 	private static final int ANDROID_12_API_LEVEL = 31;
 	private static final int FLAG_MUTABLE = 0x02000000;
 
@@ -187,7 +187,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 选择是否播放系统默认提示音。API 26 起声音由通知渠道控制。
+	 * 选择是否播放系统默认提示音；系统通知设置可以覆盖此选项。
 	 *
 	 * @param playSound 是否使用有声通知渠道
 	 */
@@ -201,7 +201,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 设置提醒优先级。API 16 至 25 设置构建器，API 26 起对应通知渠道；更早版本不生效。
+	 * 设置提醒优先级；系统通知设置可以覆盖此选项。
 	 *
 	 * @param priority 使用本对象的优先级常量
 	 */
@@ -538,7 +538,12 @@ public final class 通知构建器 {
 	@SuppressWarnings("deprecation")
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	private void appendLegacyAction(ActionSpec action, PendingIntent pendingIntent) {
-		builder.addAction(action.icon, action.title, pendingIntent);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+			// API 20 至 22 尚无 Icon 构造器，但已经支持 Action 对象。
+			builder.addAction(new Notification.Action.Builder(action.icon, action.title, pendingIntent).build());
+		} else {
+			builder.addAction(action.icon, action.title, pendingIntent);
+		}
 	}
 
 	/**

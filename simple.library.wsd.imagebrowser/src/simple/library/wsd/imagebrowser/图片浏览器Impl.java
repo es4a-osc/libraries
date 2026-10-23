@@ -530,10 +530,14 @@ public final class 图片浏览器Impl extends 组件Impl implements 图片浏�
 			return states;
 		}
 
-		@SuppressWarnings("deprecation")
+		/**
+		 * 为浏览器操作控件设置状态背景；支持范围内均可使用主题感知的视图接口。
+		 *
+		 * @param view 操作控件
+		 * @param background 已构造的状态背景
+		 */
 		private void setBackground(View view, Drawable background) {
-			// setBackground 从 API 16 才提供，保留 API 14 的等效调用。
-			view.setBackgroundDrawable(background);
+			view.setBackground(background);
 		}
 
 		private int dp(int value) {

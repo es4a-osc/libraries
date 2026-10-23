@@ -44,6 +44,7 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 	private BluetoothAdapter adapter;
 	private BluetoothLeService service;
 	private boolean scanning;
+	private ScanSession scanSession;
 	private boolean bound;
 	private boolean receiverRegistered;
 	private boolean destroyed;
@@ -129,53 +130,55 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 		}
 	};
 
-	// 扫描结果切回主线程，只有当前轮次才能更新设备集合并触发事件。
-	private final BluetoothAdapter.LeScanCallback scanCallback = new BluetoothAdapter.LeScanCallback() {
-
-		@Override
-		public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
-			if (device == null) {
-				return;
-			}
-
-			final int[] beaconIds = parseBeaconIds(scanRecord);
-			final int generation = scanGeneration;
-
-			activity.runOnUiThread(new Runnable() {
-
-				@Override
-				public void run() {
-					if (!scanning || destroyed || generation != scanGeneration) {
-						return;
-					}
-
-					try {
-						String address = device.getAddress();
-						String name = device.getName();
-
-						if (name == null) {
-							name = "";
-						}
-
-						if (discoveredAddresses.add(address)) {
-							int bondState = 1;
-							if (device.getBondState() == BluetoothDevice.BOND_BONDING) {
-								bondState = 2;
-							} else if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-								bondState = 3;
-							}
-
-							发现设备(name, address, beaconIds[0], beaconIds[1], bondState);
-						} else {
-							信号强度改变(name, address, rssi);
-						}
-					} catch (SecurityException exception) {
-						停止搜索();
-					}
-				}
-			});
+	/**
+	 * 只接收启动时捕获的扫描代次，旧回调不能混入重新开始后的设备列表。
+	 *
+	 * @param device 扫描到的设备
+	 * @param rssi 信号强度
+	 * @param scanRecord 广播原始数据
+	 * @param generation 所属扫描代次
+	 */
+	private void deliverScan(final BluetoothDevice device, final int rssi, byte[] scanRecord, final int generation) {
+		if (device == null) {
+			return;
 		}
-	};
+
+		final int[] beaconIds = parseBeaconIds(scanRecord);
+
+		activity.runOnUiThread(new Runnable() {
+
+			@Override
+			public void run() {
+				if (!scanning || destroyed || generation != scanGeneration) {
+					return;
+				}
+
+				try {
+					String address = device.getAddress();
+					String name = device.getName();
+
+					if (name == null) {
+						name = "";
+					}
+
+					if (discoveredAddresses.add(address)) {
+						int bondState = 1;
+						if (device.getBondState() == BluetoothDevice.BOND_BONDING) {
+							bondState = 2;
+						} else if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+							bondState = 3;
+						}
+
+						发现设备(name, address, beaconIds[0], beaconIds[1], bondState);
+					} else {
+						信号强度改变(name, address, rssi);
+					}
+				} catch (SecurityException exception) {
+					failScan(generation, -2);
+				}
+			}
+		});
+	}
 
 	/**
 	 * 创建不可视组件，并订阅所属 Activity 的销毁通知。
@@ -280,36 +283,187 @@ public final class 低功耗蓝牙Impl extends 组件Impl implements 低功耗�
 	}
 
 	@Override
+	public String[] 取扫描权限() {
+		// 编译 API 30 不包含新权限常量，使用权限名称字符串兼容更高版本系统。
+		if (Build.VERSION.SDK_INT >= 31) {
+			return new String[]{
+				"android.permission.ACCESS_FINE_LOCATION",
+				"android.permission.ACCESS_COARSE_LOCATION",
+				"android.permission.BLUETOOTH_SCAN",
+				"android.permission.BLUETOOTH_CONNECT"
+			};
+		}
+		if (Build.VERSION.SDK_INT >= 23) {
+			return new String[]{"android.permission.ACCESS_FINE_LOCATION"};
+		}
+		return new String[0];
+	}
+
+	@Override
 	public void 开始搜索() {
-		if (destroyed || !bound || adapter == null || scanning) {
+		if (destroyed || scanning) {
 			return;
 		}
 
+		final int token = ++scanGeneration;
+		if (!bound || adapter == null) {
+			failScan(token, -1);
+			return;
+		}
+		discoveredAddresses.clear();
+		scanning = true;
 		try {
-			// 新轮次重新发现设备，旧轮次尚未执行的回调会被丢弃。
-			discoveredAddresses.clear();
-			scanGeneration++;
-			scanning = true;
-			scanning = adapter.startLeScan(scanCallback);
+			scanSession = Build.VERSION.SDK_INT >= 21 ? new ModernScan(token) : new LegacyScan(token);
+			if (!scanSession.start()) {
+				failScan(token, -1);
+			}
+		} catch (SecurityException exception) {
+			failScan(token, -2);
 		} catch (RuntimeException exception) {
-			scanning = false;
+			failScan(token, -3);
 		}
 	}
 
 	@Override
 	public void 停止搜索() {
-		if (!scanning) {
-			return;
-		}
-
-		// 先使待处理回调失效，再通知 Android 停止扫描。
+		// 先使已排队的回调失效，再释放本轮实际取得的扫描会话。
 		scanning = false;
 		scanGeneration++;
+		ScanSession previous = scanSession;
+		scanSession = null;
+		if (previous != null) {
+			try {
+				previous.stop();
+			} catch (RuntimeException exception) {
+				// 蓝牙关闭或授权撤回后，组件仍保持停止状态。
+			}
+		}
+	}
 
-		try {
-			adapter.stopLeScan(scanCallback);
-		} catch (RuntimeException exception) {
-			// 蓝牙关闭或授权撤回时，仍先结束本组件的扫描状态。
+	@Override
+	public void 搜索失败(int errorCode) {
+		EventDispatcher.dispatchEvent(this, "搜索失败", errorCode);
+	}
+
+	/**
+	 * 异步报告本轮失败，调用方有机会完成提交请求后的界面状态更新。
+	 *
+	 * @param token 请求所属扫描代次
+	 * @param code 系统错误码或组件负值错误码
+	 */
+	private void failScan(final int token, final int code) {
+		activity.getWindow().getDecorView().post(new Runnable() {
+			@Override
+			public void run() {
+				if (!destroyed && token == scanGeneration) {
+					停止搜索();
+					搜索失败(code);
+				}
+			}
+		});
+	}
+
+	/**
+	 * 隔离新旧扫描类型，低版本仅加载实际使用的实现。
+	 */
+	private interface ScanSession {
+		/**
+		 * 读取扫描请求是否已提交。
+		 *
+		 * @return 扫描请求是否已提交
+		 */
+		boolean start();
+
+		/**
+		 * 停止本会话的扫描。
+		 */
+		void stop();
+	}
+
+	/**
+	 * API 21 起使用 BluetoothLeScanner，处理单条、批量结果及异步启动失败。
+	 */
+	private final class ModernScan extends android.bluetooth.le.ScanCallback implements ScanSession {
+		private final int token;
+		private final android.bluetooth.le.BluetoothLeScanner scanner;
+
+		/**
+		 * 固定本轮扫描器和代次，不复用上轮回调。
+		 *
+		 * @param token 当前扫描代次
+		 */
+		ModernScan(int token) {
+			this.token = token;
+			scanner = adapter.getBluetoothLeScanner();
+		}
+
+		@Override
+		public boolean start() {
+			if (scanner == null) {
+				return false;
+			}
+			scanner.startScan(this);
+			return true;
+		}
+
+		@Override
+		public void stop() {
+			if (scanner != null) {
+				scanner.stopScan(this);
+			}
+		}
+
+		@Override
+		public void onScanResult(int callbackType, android.bluetooth.le.ScanResult result) {
+			if (result != null) {
+				android.bluetooth.le.ScanRecord record = result.getScanRecord();
+				deliverScan(result.getDevice(), result.getRssi(), record == null ? null : record.getBytes(), token);
+			}
+		}
+
+		@Override
+		public void onBatchScanResults(List<android.bluetooth.le.ScanResult> results) {
+			for (android.bluetooth.le.ScanResult result : results) {
+				onScanResult(0, result);
+			}
+		}
+
+		@Override
+		public void onScanFailed(int errorCode) {
+			failScan(token, errorCode);
+		}
+	}
+
+	/**
+	 * API 18 至 20 没有 BluetoothLeScanner，继续使用该版本可用的扫描 API。
+	 */
+	private final class LegacyScan implements ScanSession, BluetoothAdapter.LeScanCallback {
+		private final int token;
+
+		/**
+		 * 固定本轮旧版扫描的回调代次。
+		 *
+		 * @param token 当前扫描代次
+		 */
+		LegacyScan(int token) {
+			this.token = token;
+		}
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public boolean start() {
+			return adapter.startLeScan(this);
+		}
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public void stop() {
+			adapter.stopLeScan(this);
+		}
+
+		@Override
+		public void onLeScan(BluetoothDevice device, int rssi, byte[] record) {
+			deliverScan(device, rssi, record, token);
 		}
 	}
 

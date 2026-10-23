@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "HTML解析器",
-					"description": "同步解析 HTML 文本、字节和普通文件；静态函数集，不请求网络。",
+					"description": "同步解析 HTML 文本、字节、普通文件和应用资产的静态函数集；不访问网络或执行脚本。文件读取和大文档解析应在后台线程处理，同一文档及其元素应串行访问。",
 					"kind": "object",
 					"type": "simple.library.wsd.jsoup.HTML解析器",
 					"icon": "icons/code-circle.svg",
@@ -142,7 +142,7 @@
 				},
 				{
 					"name": "HTML文档",
-					"description": "HTML 文档的标题、头部和正文；继承元素查询与修改能力。",
+					"description": "HTML 文档的标题、头部和正文，继承元素查询与修改能力。通过 HTML解析器 获得；不执行脚本，也不自动加载样式、图片或链接资源。",
 					"kind": "object",
 					"type": "simple.library.wsd.jsoup.HTML文档",
 					"icon": "icons/file-type-html.svg",
@@ -197,7 +197,7 @@
 				},
 				{
 					"name": "HTML元素",
-					"description": "CSS 查询、节点遍历、文本和属性读写；与所属文档共享元素。",
+					"description": "CSS 查询、节点遍历、文本和属性读写；与所属文档共享元素，同一文档应串行访问。文本按 HTML 规则合并空白，输出 HTML 不保证保留原始排版。",
 					"kind": "object",
 					"type": "simple.library.wsd.jsoup.HTML元素",
 					"icon": "icons/brackets-angle.svg",

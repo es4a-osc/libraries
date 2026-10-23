@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Movie;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -28,7 +27,7 @@ import simple.runtime.events.EventDispatcher;
  *
  * <p>所有界面和播放状态均由主线程维护。取消或销毁后不会派发过期回调；
  * 已进入平台解码的调用可能继续至返回，其结果将被丢弃。清空移除组件持有的
- * Movie 引用，平台原生内存由系统回收，不承诺立即释放。
+ * 帧引用；新平台主动回收帧位图，旧平台原生内存由系统回收。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -43,7 +42,7 @@ public final class GIF图片框Impl extends 视图组件 implements GIF图片框
 	private volatile int generation;
 	private volatile boolean destroyed;
 
-	private Movie movie;
+	private GifFrames movie;
 	private GifInfo info;
 	private String image = "";
 	private String lastError = "";
@@ -388,6 +387,9 @@ public final class GIF图片框Impl extends 视图组件 implements GIF图片框
 		loading = false;
 		image = "";
 		lastError = "";
+		if (movie != null) {
+			movie.close();
+		}
 		movie = null;
 		info = null;
 		clock.clear(SystemClock.uptimeMillis());
@@ -451,6 +453,9 @@ public final class GIF图片框Impl extends 视图组件 implements GIF图片框
 		destroyed = true;
 		worker.shutdownNow();
 		handler.removeCallbacksAndMessages(null);
+		if (movie != null) {
+			movie.close();
+		}
 		movie = null;
 		info = null;
 		image = "";
@@ -518,21 +523,25 @@ public final class GIF图片框Impl extends 视图组件 implements GIF图片框
 						return;
 					}
 
-					final Movie decoded = Movie.decodeByteArray(data, 0, data.length);
+					final GifFrames decoded = GifFrames.decode(data, parsed);
 					if (decoded == null || decoded.width() != parsed.width || decoded.height() != parsed.height) {
 						throw new IOException("平台无法解码此 GIF");
 					}
 
-					// Movie 在后台创建，后续 setTime 和绘制仅由界面线程调用。
+					// 后台完成解码，帧的绘制和释放仅由界面线程持有。
 					if (!destroyed && generation == token) {
 						handler.post(new Runnable() {
 
 							@Override
 							public void run() {
 								if (destroyed || token != generation) {
+									decoded.close();
 									return;
 								}
 
+								if (movie != null) {
+									movie.close();
+								}
 								movie = decoded;
 								info = parsed;
 								image = source;
@@ -546,6 +555,8 @@ public final class GIF图片框Impl extends 视图组件 implements GIF图片框
 								载入成功(parsed.width, parsed.height, parsed.frames);
 							}
 						});
+					} else {
+						decoded.close();
 					}
 				} catch (IOException exception) {
 					fail(token, exception.getMessage());
@@ -727,7 +738,7 @@ public final class GIF图片框Impl extends 视图组件 implements GIF图片框
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
-			Movie current = movie;
+			GifFrames current = movie;
 			if (current == null) {
 				return;
 			}
@@ -752,8 +763,7 @@ public final class GIF图片框Impl extends 视图组件 implements GIF图片框
 				getWidth() - getPaddingRight(), getHeight() - getPaddingBottom());
 			canvas.translate(left, top);
 			canvas.scale(scaleX, scaleY);
-			current.setTime(clock.position());
-			current.draw(canvas, 0, 0);
+			current.draw(canvas, 0, 0, clock.position());
 			canvas.restoreToCount(saved);
 		}
 	}

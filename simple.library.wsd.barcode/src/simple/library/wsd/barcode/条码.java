@@ -10,7 +10,7 @@ import simple.runtime.components.组件;
 
 /**
  * 二维码与条码的生成、图片识别和相机扫描。
- * 保留原组件的十个方法及扫描完毕事件；ZBar 仅附带原始 armeabi 二进制。
+ * ZBar 图片识别和样式 1 需要设备支持随库的 ARM 32 位原生库。
  */
 @SimpleComponent
 @SimpleObject
@@ -43,6 +43,14 @@ public interface 条码 extends 组件 {
 	 */
 	@SimpleEvent
 	void 扫描完毕(String result);
+
+	/**
+	 * 扫描界面无法使用相机、原生解码器或解码失败时触发；取消扫描不触发。
+	 *
+	 * @param message 失败说明
+	 */
+	@SimpleEvent
+	void 扫描失败(String message);
 
 	/* 方法 */
 

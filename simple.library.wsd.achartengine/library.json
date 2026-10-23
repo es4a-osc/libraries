@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "饼状图",
-					"description": "展示非负数值占比；非空图表至少包含一个正数。",
+					"description": "展示非负数值占比；非空图表至少包含一个正数。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
 					"icon": "icons/chart-pie.svg",
 					"kind": "component",
 					"type": "simple.library.wsd.achartengine.饼状图",
@@ -78,7 +78,7 @@
 				},
 				{
 					"name": "柱状图",
-					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。",
+					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
 					"icon": "icons/chart-bar.svg",
 					"kind": "component",
 					"type": "simple.library.wsd.achartengine.柱状图",
@@ -151,7 +151,7 @@
 				},
 				{
 					"name": "折线图",
-					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。",
+					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
 					"icon": "icons/chart-line.svg",
 					"kind": "component",
 					"type": "simple.library.wsd.achartengine.折线图",

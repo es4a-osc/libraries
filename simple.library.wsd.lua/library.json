@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "Lua堆栈",
-					"description": "Lua 实例或同步回调的堆栈操作视图。",
+					"description": "Lua 实例或同步回调的堆栈操作视图。正索引从 1 开始，负索引从栈顶 -1 开始，不接受伪索引。回调视图仅在当前回调线程和期间有效；多步操作须保证不交错。",
 					"kind": "object",
 					"type": "simple.library.wsd.lua.Lua堆栈",
 					"icon": "icons/text-caption.svg",
@@ -438,7 +438,7 @@
 				},
 				{
 					"name": "Lua实例",
-					"description": "拥有独立 Lua 5.1.5 解释器的普通对象，继承完整堆栈操作。",
+					"description": "拥有独立 Lua 5.1.5 解释器的普通对象，继承完整堆栈操作。创建时打开标准库，使用后须显式关闭，返回的 Lua 值须释放。脚本与应用共享权限，不是安全沙箱。",
 					"kind": "object",
 					"type": "simple.library.wsd.lua.Lua实例",
 					"icon": "icons/text-caption.svg",
@@ -613,7 +613,7 @@
 				},
 				{
 					"name": "Lua表",
-					"description": "Lua 表的稳定引用，支持原始字段读写及键快照遍历。",
+					"description": "Lua 表的稳定引用，支持原始字段读写及键快照遍历，不触发字段和长度元方法。Lua 数组习惯从 1 开始，返回的键数组索引从 0 开始。",
 					"kind": "object",
 					"type": "simple.library.wsd.lua.Lua表",
 					"icon": "icons/text-caption.svg",
@@ -674,7 +674,7 @@
 				},
 				{
 					"name": "Lua回调",
-					"description": "供 Simple 对象继承并覆写的同步宿主函数。",
+					"description": "供 Simple 对象继承并覆写的同步宿主函数。参数从逻辑索引 1 开始，压入返回值后返回数量；在调用线程执行，回调结束后堆栈视图立即失效。",
 					"kind": "object",
 					"type": "simple.library.wsd.lua.Lua回调",
 					"icon": "icons/text-caption.svg",

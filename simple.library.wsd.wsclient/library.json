@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "WS客户端",
-					"description": "不可视 WebSocket 文本客户端，每个组件维护一条连接，事件在主线程触发。",
+					"description": "支持 ws:// 和 wss:// 的不可视 WebSocket 文本客户端，每个组件维护一条连接，事件在主线程触发。",
 					"kind": "component",
 					"type": "simple.library.wsd.wsclient.WS客户端",
 					"icon": "icons/messages.svg",
@@ -32,7 +32,14 @@
 						},
 						{
 							"name": "出现错误",
-							"description": "连接失败、网络故障、无有效连接或发送被拒绝时触发。"
+							"description": "连接失败、网络故障、无有效连接或发送被拒绝时触发。",
+							"params": [
+								{
+									"name": "说明",
+									"type": "文本型",
+									"description": "失败原因，包括系统网络策略或服务端握手错误。"
+								}
+							]
 						},
 						{
 							"name": "收到数据",

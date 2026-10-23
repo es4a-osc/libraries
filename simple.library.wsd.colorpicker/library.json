@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "颜色选择框",
-					"description": "通过色环和明暗渐变条选择颜色；显示立即返回，确定后才提交结果，取消保留原色。透明度沿用初始颜色。",
+					"description": "通过色环和明暗渐变条选择颜色；所有成员在界面线程调用。显示立即返回，确定后才提交结果，取消保留原色。透明度沿用初始颜色，不提供透明度调节。",
 					"kind": "component",
 					"type": "simple.library.wsd.colorpicker.颜色选择框",
 					"icon": "icons/color-swatch.svg",

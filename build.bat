@@ -20,9 +20,9 @@ REM --------------------------------------------------
 
 :定义变量
 REM JavaSDK根目录
-FOR %%I IN ("%~dp0..\sdk\tools\jdk1.8.0_503") DO SET "JAVA_HOME=%%~fI"
+FOR %%I IN ("%~dp0..\sdk\tools\jdk-11") DO SET "JAVA_HOME=%%~fI"
 REM Android指定API等级目录（编译Simple运行库需要）
-FOR %%I IN ("%~dp0..\sdk\tools\android\platforms\android-26") DO SET "ANDROID_LEVEL=%%~fI"
+FOR %%I IN ("%~dp0..\sdk\tools\android\platforms\android-30") DO SET "ANDROID_LEVEL=%%~fI"
 REM Simple根目录（编译器和所有运行库JAR包所在的根目录）
 FOR %%I IN ("%~dp0..\sdk\simple") DO SET "SIMPLE_HOME=%%~fI"
 
@@ -42,8 +42,11 @@ REM 所有依赖JAR包
 SET "CLASS_PATH=%ANDROID_LEVEL%\android.jar;%SIMPLE_HOME%\SimpleAndroidRuntime.jar;%LIBRARY_HOME%\libs\*"
 REM 欲要编译源文件列表
 SET "SOURCE_LIST=%LIBRARY_HOME%\build\source.txt"
-REM 列出指定目录及子目录的文件列表
+REM javac按UTF-8读取参数文件，临时切换代码页生成源码列表后恢复
+FOR /F "tokens=2 delims=:" %%I IN ('CHCP') DO SET "SOURCE_CODE_PAGE=%%I"
+CHCP 65001 >NUL
 DIR "%LIBRARY_HOME%\src\*.java" /S /B >"%SOURCE_LIST%"
+CHCP %SOURCE_CODE_PAGE% >NUL
 REM 执行 javac.exe 编译源文件
 "%JAVA_HOME%\bin\javac" -Xlint:unchecked -Xlint:deprecation -Xdiags:verbose -encoding utf-8 -d "%CLASSES_DIR%" -classpath "%CLASS_PATH%" "@%SOURCE_LIST%"
 REM 检验前面 javac.exe 控制台程序返回值是否为 0

@@ -384,12 +384,22 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public String 取IMEI码() {
 		if (Build.VERSION.SDK_INT < 29) {
 			try {
 				TelephonyManager manager = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
-				String value = manager == null ? null : manager.getDeviceId();
+				String value = null;
+				if (manager != null) {
+					if (Build.VERSION.SDK_INT >= 26) {
+						if (manager.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA) {
+							value = manager.getMeid();
+						} else if (manager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+							value = manager.getImei();
+						}
+					} else {
+						value = readLegacyDeviceId(manager);
+					}
+				}
 
 				if (value != null && value.length() > 0) return value;
 			} catch (SecurityException exception) {
@@ -410,6 +420,17 @@ public final class MQTT通讯Impl extends 组件Impl implements MQTT通讯 {
 		}
 
 		return value;
+	}
+
+	/**
+	 * API 25 及以下没有分别读取 IMEI、MEID 的接口。
+	 *
+	 * @param manager 已取得的电话服务
+	 * @return 设备标识，受权限及设备能力限制时可能为空
+	 */
+	@SuppressWarnings("deprecation")
+	private static String readLegacyDeviceId(TelephonyManager manager) {
+		return manager.getDeviceId();
 	}
 
 	/* 生命周期与内部辅助 */

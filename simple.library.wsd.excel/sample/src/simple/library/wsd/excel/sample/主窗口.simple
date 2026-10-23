@@ -41,7 +41,7 @@
 $属性
 	$资源 $窗口
 	$定义 主窗口 $为 窗口
-		标题 = "XLS 读写"
+		标题 = "EXCEL操作"
 		布局 = 布局_线性
 		布局.方向 = 布局_方向_垂直
 		$定义 EXCEL操作1 $为 simple.library.wsd.excel.EXCEL操作

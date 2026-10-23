@@ -37,12 +37,11 @@ import net.sourceforge.zbar.SymbolSet;
 
 /**
  * 实现二维码和条形码生成、图片识别及相机扫描。
- * 编码算法及两种扫描界面沿用原实现，Android 资源由应用包按名称解析。
+ * 编码算法与扫描样式分别保留，扫描共用相机会话和资源清理。
  */
 public final class 条码Impl extends 组件Impl implements 条码 {
 
 	// 原组件的扫描设置由应用内各实例共享。
-	private static final int QRCODE_RESULT = 444;
 	private static int style = 1;
 	private static boolean beep;
 	private static boolean continuous;
@@ -84,6 +83,12 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 		}
 	}
 
+	@Override
+	public void 扫描失败(String message) {
+		unregisterResultReceiver();
+		EventDispatcher.dispatchEvent(this, "扫描失败", message);
+	}
+
 	/* 方法 */
 
 	@Override
@@ -97,8 +102,8 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 
 		try {
 			result = writer.encode(content, BarcodeFormat.CODE_128, requestedWidth, requestedHeight, null);
-		} catch (WriterException e) {
-			e.printStackTrace();
+		} catch (WriterException | IllegalArgumentException e) {
+			return null;
 		}
 
 		int width = result.getWidth();
@@ -275,7 +280,11 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 		intent.putExtra("beep", beep);
 		intent.putExtra("continuous", continuous);
 		intent.putExtra("flashlight", flashlight);
-		activity.startActivityForResult(intent, QRCODE_RESULT);
+		try {
+			activity.startActivity(intent);
+		} catch (RuntimeException error) {
+			扫描失败(error.toString());
+		}
 	}
 
 	@Override
@@ -315,10 +324,14 @@ public final class 条码Impl extends 组件Impl implements 条码 {
 			public void onReceive(Context context, Intent intent) {
 				if (receiverRegistered && (activity.getPackageName() + ".barcode.RESULT").equals(intent.getAction())) {
 					扫描完毕(intent.getStringExtra("code"));
+				} else if (receiverRegistered && (activity.getPackageName() + ".barcode.ERROR").equals(intent.getAction())) {
+					扫描失败(intent.getStringExtra("message"));
 				}
 			}
 		};
-		activity.registerReceiver(receiver, new IntentFilter(activity.getPackageName() + ".barcode.RESULT"));
+		IntentFilter filter = new IntentFilter(activity.getPackageName() + ".barcode.RESULT");
+		filter.addAction(activity.getPackageName() + ".barcode.ERROR");
+		activity.registerReceiver(receiver, filter);
 		receiverRegistered = true;
 	}
 

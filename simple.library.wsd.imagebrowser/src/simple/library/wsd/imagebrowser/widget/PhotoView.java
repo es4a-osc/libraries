@@ -159,7 +159,7 @@ public class PhotoView extends ImageView {
 	public void setImageResource(int resId) {
 		Drawable drawable = null;
 		try {
-			drawable = getResources().getDrawable(resId);
+			drawable = getContext().getDrawable(resId);
 		} catch (Exception e) {
 		}
 

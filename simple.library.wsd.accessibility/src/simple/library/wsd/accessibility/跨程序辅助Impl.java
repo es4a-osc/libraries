@@ -75,6 +75,8 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 		super(container);
 		activity = MainActivity.getContext();
 		activity.addOnDestroyListener(this);
+		AccessibilityListener.addListener(this);
+		listening = true;
 	}
 
 	/* 事件 */
@@ -117,19 +119,13 @@ public final class 跨程序辅助Impl extends 组件Impl implements 跨程序�
 	/* 方法 */
 
 	@Override
-	public void 初始化() {
-		// 重复调用只注册一次；系统授权与组件订阅是两个独立步骤。
-		if (!listening) {
-			AccessibilityListener.addListener(this);
-			listening = true;
-		}
-
-		if (!是否已开启()) {
-			try {
-				activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
-			} catch (RuntimeException error) {
-				Log.e(TAG, "无法打开无障碍设置", error);
-			}
+	public boolean 打开设置() {
+		try {
+			activity.startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+			return true;
+		} catch (RuntimeException error) {
+			Log.e(TAG, "无法打开无障碍设置", error);
+			return false;
 		}
 	}
 

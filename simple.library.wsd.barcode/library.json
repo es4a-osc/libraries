@@ -29,12 +29,23 @@
 					"events": [
 						{
 							"name": "扫描完毕",
-							"description": "扫描到内容时在主线程触发。",
+							"description": "扫描得到有效内容时在主线程触发；连续模式下可以多次触发。",
 							"params": [
 								{
 									"name": "结果",
 									"type": "文本型",
 									"description": "二维码或条码内容。"
+								}
+							]
+						},
+						{
+							"name": "扫描失败",
+							"description": "扫描界面无法使用相机、原生解码器或解码失败时触发；取消扫描不触发。",
+							"params": [
+								{
+									"name": "说明",
+									"type": "文本型",
+									"description": "失败说明。"
 								}
 							]
 						}

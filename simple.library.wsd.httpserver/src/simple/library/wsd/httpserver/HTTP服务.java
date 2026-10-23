@@ -35,7 +35,27 @@ public final class HTTP服务 {
 	*/
 
 	// HTTP服务
-	private AsyncHttpServer server = new AsyncHttpServer();
+	private final AsyncHttpServer server = new AsyncHttpServer() {
+
+		/**
+		 * 在路由处理前修正旧依赖的 WebSocket 握手响应编码。
+		 *
+		 * @param callback 已匹配的路由回调
+		 * @param request 当前请求
+		 * @param response 尚未写出的响应
+		 */
+		@Override
+		protected void onRequest(HttpServerRequestCallback callback,
+				AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+			if ("websocket".equalsIgnoreCase(request.getHeaders().get("Upgrade"))) {
+				// AndroidAsync 2.2.1 会给 101 响应错误补入分块编码，严格客户端会拒绝握手。
+				// 空值是该依赖禁用分块并移除此头的约定；后续仍由原路由校验升级请求。
+				response.getHeaders().set("Transfer-Encoding", "");
+			}
+
+			super.onRequest(callback, request, response);
+		}
+	};
 
 	/* 方法 */
 

@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "JSONPath操作",
-					"description": "创建可读写JSONPath文档和标准JSON值的静态入口。",
+					"description": "创建 JSONPath 文档和标准 JSON 值的静态入口，仅操作内存数据，不联网或读写文件。文档不与传入的 JSON值 共享修改；大文档和复杂过滤应在后台线程处理。",
 					"kind": "object",
 					"type": "simple.library.wsd.jsonpath.JSONPath操作",
 					"icon": "icons/filter-code.svg",
@@ -63,7 +63,7 @@
 				},
 				{
 					"name": "JSONPath文档",
-					"description": "通过JSONPath查询、新增、修改、删除和重命名；同一文档串行使用。",
+					"description": "同步执行 JSONPath 查询、新增、修改、删除和重命名；同一文档在同一线程串行使用。修改失败不留下部分结果，不自动创建路径中缺失的父对象。",
 					"kind": "object",
 					"type": "simple.library.wsd.jsonpath.JSONPath文档",
 					"icon": "icons/json.svg",
@@ -310,7 +310,7 @@
 				},
 				{
 					"name": "JSONPath结果",
-					"description": "独立查询快照，保留JSON类型并区分未匹配与null。",
+					"description": "独立查询快照，区分未匹配与 JSON null。确定路径返回实际值，通配符和过滤等不确定路径返回数组；结果不随文档后续修改而改变。",
 					"kind": "object",
 					"type": "simple.library.wsd.jsonpath.JSONPath结果",
 					"icon": "icons/list-search.svg",

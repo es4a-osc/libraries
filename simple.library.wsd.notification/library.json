@@ -9,7 +9,7 @@
 			"definitions": [
 				{
 					"name": "通知管理器",
-					"description": "创建、发送、更新和删除应用通知。",
+					"description": "创建、发送、更新和删除应用通知；通知点击与按钮事件由当前窗口中的管理器实例接收。",
 					"kind": "component",
 					"type": "simple.library.wsd.notification.通知管理器",
 					"icon": "icons/bell-ringing.svg",
@@ -289,7 +289,7 @@
 						},
 						{
 							"name": "添加按钮",
-							"description": "添加文本操作按钮，最多三个；需要 Android 4.1。",
+							"description": "添加文本操作按钮，最多三个，需要 Android 4.1（API 16）及以上；点击后由通知管理器发出按钮事件。",
 							"params": [
 								{
 									"name": "标题",
