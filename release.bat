@@ -90,11 +90,11 @@ ECHO - 复制类库文件成功！
 REM --------------------------------------------------
 
 :复制目录
-REM 复制依赖和示例目录
-FOR %%D IN (libs res assets jni icons sample) DO (
+REM 只复制运行所需的依赖和资源目录，不发布测试工程
+FOR %%D IN (libs res assets jni icons) DO (
 	IF EXIST "%LIBRARY_HOME%\%%D\" (
-		REM 排除依赖源码和示例构建目录
-		ROBOCOPY "%LIBRARY_HOME%\%%D" "%RELEASE_DIR%\%%D" /E /XD "%LIBRARY_HOME%\libs\sources" "%LIBRARY_HOME%\sample\build" /R:0 >NUL
+		REM 排除依赖源码；测试项目不在复制白名单中
+		ROBOCOPY "%LIBRARY_HOME%\%%D" "%RELEASE_DIR%\%%D" /E /XD "%LIBRARY_HOME%\libs\sources" /R:0 >NUL
 		IF ERRORLEVEL 8 (
 			ECHO - 复制类库目录失败: %%D
 			GOTO 失败退出

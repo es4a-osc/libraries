@@ -1,6 +1,6 @@
 # ES4A 扩展类库
 
-维护 Simple 扩展类库的 Java 源码、清单、依赖、图标和样例，各类库按包名组织为独立目录。
+维护 Simple 扩展类库的 Java 源码、清单、依赖、图标和独立测试，各类库按包名组织为独立目录。
 
 
 ## 类库列表
@@ -34,22 +34,22 @@
 | [下载器库](simple.library.wsd.downloader/) | HTTP/HTTPS 文件下载、暂停、续传与任务记录。 |
 | [EXCEL操作库](simple.library.wsd.excel/) | Excel 97-2003 .xls 的第一张工作表读写。 |
 | [MySQL数据库](simple.library.wsd.mysql/) | MySQL JDBC 同步与异步访问。 |
-| [MsSQL数据库类库](simple.library.wsd.mssql/) | SQL Server JDBC 同步与异步访问。 |
+| [MsSQL数据库](simple.library.wsd.mssql/) | SQL Server JDBC 同步与异步访问。 |
 
 
 ## 目录
 
 - `build.bat`：编译指定类库，生成该类库目录下的 `classes.jar`。
 - `release.bat`：将指定类库的已有交付文件复制到同级 `sdk/libraries/`。
-- 各类库目录：`src/` 为 Java 源码，`library.json` 为清单，`sample/` 为使用样例；依赖和资源按需放在 `libs/`、`res/`、`assets/`、`jni/`、`icons/`。
+- 各类库目录：`src/` 为 Java 源码，`library.json` 为清单，`test/` 为该库独立维护的测试项目；依赖和资源按需放在 `libs/`、`res/`、`assets/`、`jni/`、`icons/`。
 - 各类库的 `build/`：编译生成目录。
 
 
 ## 构建
 
-在 ES4A 根工作区打开某个类库内的文件，通过 VS Code“运行任务”执行 **ES4A: 构建类库**。执行 **ES4A: 发布类库到SDK** 将该库已有的交付文件更新到同级 `sdk`，不重新编译；仅处理当前标签页所属类库，附带 `sample/` 示例，排除 `libs/sources/` 和 `sample/build/`。
+在 ES4A 根工作区打开某个类库内的文件，通过 VS Code“运行任务”执行 **ES4A: 构建类库**。执行 **ES4A: 发布类库到SDK** 将该库已有的交付文件更新到同级 `sdk`，不重新编译；仅处理当前标签页所属类库，排除 `libs/sources/`，不复制 `test/`。
 
-将已准备好 JDK 和 Android 工具的 [ES4A SDK](https://gitee.com/es4a/sdk) 与本仓库同级放置；工具准备见 SDK 的 README。
+各扩展库是独立的第三方类库，不依赖 SDK 安装目录维护源码或测试。以下辅助脚本按同级目录约定使用工具链，将已准备好 JDK 和 Android 工具的 [ES4A SDK](https://gitee.com/es4a/sdk) 与本仓库同级放置；工具准备见 SDK 的 README。
 
 ```text
 工作目录/
@@ -65,6 +65,13 @@
 ```
 
 也可以将类库文件夹拖到对应 BAT 上。
+
+
+## 测试
+
+各库在开发和发布前使用自身的 `test/project.properties` 验证公开功能、属性、事件、生命周期及必要的失败路径。界面和源码就近说明权限、设备、服务器或账号等前置条件，并区分预期值与实际结果。测试项目相互独立，不建立跨类库的集中测试工程。
+
+测试源码不安装到 `sdk/libraries/`；当前阶段不规定或维护扩展库用户示例。编译检查和设备功能验证分别进行，编译成功不能代替运行结果。
 
 
 ## 接入 SDK
