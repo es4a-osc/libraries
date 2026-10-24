@@ -51,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 /**
  * 两种条码扫描界面共享 Camera2 会话、亮度帧读取和前后台资源管理。
@@ -113,17 +114,30 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 		LinearLayout actions = new LinearLayout(this);
 		flash = new Button(this);
 		flash.setText(torch ? "关闪光灯" : "开闪光灯");
-		flash.setOnClickListener(view -> {
-			torch = !torch;
-			flash.setText(torch ? "关闪光灯" : "开闪光灯");
-			Session owner = current;
-			if (owner != null) {
-				worker.post(owner::repeat);
+		flash.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				torch = !torch;
+				flash.setText(torch ? "关闪光灯" : "开闪光灯");
+				Session owner = current;
+				if (owner != null) {
+					worker.post(new Runnable() {
+						@Override
+						public void run() {
+							owner.repeat();
+						}
+					});
+				}
 			}
 		});
 		Button cancel = new Button(this);
 		cancel.setText("取消扫描");
-		cancel.setOnClickListener(view -> finish());
+		cancel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				finish();
+			}
+		});
 		actions.addView(flash);
 		actions.addView(cancel);
 		controls.addView(actions);
@@ -170,7 +184,12 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 			player.release();
 			player = null;
 		}
-		worker.post(this::retireThread);
+		worker.post(new Runnable() {
+			@Override
+			public void run() {
+				ScanActivity.this.retireThread();
+			}
+		});
 		super.onDestroy();
 	}
 
@@ -194,7 +213,13 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 	private void openIfReady() {
 		if (active && !destroyed && current == null && preview.getHolder().getSurface().isValid()) {
 			current = new Session();
-			worker.post(current::open);
+			final Session owner = current;
+			worker.post(new Runnable() {
+				@Override
+				public void run() {
+					owner.open();
+				}
+			});
 		}
 	}
 
@@ -206,7 +231,12 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 		current = null;
 		if (owner != null) {
 			owner.retired = true;
-			worker.post(owner::close);
+			worker.post(new Runnable() {
+				@Override
+				public void run() {
+					owner.close();
+				}
+			});
 		}
 	}
 
@@ -226,11 +256,14 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 	 * @param message 错误说明
 	 */
 	private void fail(Session owner, String message) {
-		ui.post(() -> {
-			if (current == owner && !destroyed) {
-				sendBroadcast(new Intent(getPackageName() + ".barcode.ERROR")
-					.setPackage(getPackageName()).putExtra("message", message));
-				finish();
+		ui.post(new Runnable() {
+			@Override
+			public void run() {
+				if (current == owner && !destroyed) {
+					sendBroadcast(new Intent(getPackageName() + ".barcode.ERROR")
+						.setPackage(getPackageName()).putExtra("message", message));
+					finish();
+				}
 			}
 		});
 	}
@@ -242,24 +275,27 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 	 * @param text 实际识别文本
 	 */
 	private void result(Session owner, String text) {
-		ui.post(() -> {
-			if (current != owner || destroyed || text == null || text.isEmpty()) {
-				return;
-			}
-			long now = SystemClock.elapsedRealtime();
-			if (text.equals(previousText) && now - previousResult < 1000) {
-				return;
-			}
-			previousText = text;
-			previousResult = now;
-			status.setText("识别结果：" + text);
-			if (beep && player != null) {
-				player.start();
-			}
-			sendBroadcast(new Intent(getPackageName() + ".barcode.RESULT")
-				.setPackage(getPackageName()).putExtra("code", text));
-			if (!continuous) {
-				finish();
+		ui.post(new Runnable() {
+			@Override
+			public void run() {
+				if (current != owner || destroyed || text == null || text.isEmpty()) {
+					return;
+				}
+				long now = SystemClock.elapsedRealtime();
+				if (text.equals(previousText) && now - previousResult < 1000) {
+					return;
+				}
+				previousText = text;
+				previousResult = now;
+				status.setText("识别结果：" + text);
+				if (beep && player != null) {
+					player.start();
+				}
+				sendBroadcast(new Intent(getPackageName() + ".barcode.RESULT")
+					.setPackage(getPackageName()).putExtra("code", text));
+				if (!continuous) {
+					finish();
+				}
 			}
 		});
 	}
@@ -341,7 +377,12 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 		private boolean hasFlash;
 		private int autofocus;
 		private long lastFrame;
-		private final Runnable focusTask = this::focusOnce;
+		private final Runnable focusTask = new Runnable() {
+			@Override
+			public void run() {
+				Session.this.focusOnce();
+			}
+		};
 
 		/**
 		 * 检查能力并异步打开后置相机；没有后置相机时允许使用其它相机。
@@ -396,7 +437,12 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 					}
 				}
 				reader = ImageReader.newInstance(chosen.getWidth(), chosen.getHeight(), ImageFormat.YUV_420_888, 2);
-				reader.setOnImageAvailableListener(this::frame, worker);
+				reader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
+					@Override
+					public void onImageAvailable(ImageReader value) {
+						Session.this.frame(value);
+					}
+				}, worker);
 				if (style != 2) {
 					System.loadLibrary("iconv");
 					System.loadLibrary("ZBarDecoder");
@@ -408,19 +454,27 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 				hints.put(DecodeHintType.CHARACTER_SET, "UTF-8");
 				decoder.setHints(hints);
 				final String cameraId = selected;
-				ui.post(() -> {
-					if (current != this || retired) {
-						return;
+				ui.post(new Runnable() {
+					@Override
+					public void run() {
+						if (current != Session.this || retired) {
+							return;
+						}
+						preview.imageWidth = rotation % 180 == 0 ? chosen.getWidth() : chosen.getHeight();
+						preview.imageHeight = rotation % 180 == 0 ? chosen.getHeight() : chosen.getWidth();
+						preview.getHolder().setFixedSize(chosen.getWidth(), chosen.getHeight());
+						preview.requestLayout();
+						flash.setEnabled(hasFlash);
+						if (!hasFlash) {
+							flash.setText("无闪光灯");
+						}
+						worker.post(new Runnable() {
+							@Override
+							public void run() {
+								openDevice(manager, cameraId);
+							}
+						});
 					}
-					preview.imageWidth = rotation % 180 == 0 ? chosen.getWidth() : chosen.getHeight();
-					preview.imageHeight = rotation % 180 == 0 ? chosen.getHeight() : chosen.getWidth();
-					preview.getHolder().setFixedSize(chosen.getWidth(), chosen.getHeight());
-					preview.requestLayout();
-					flash.setEnabled(hasFlash);
-					if (!hasFlash) {
-						flash.setText("无闪光灯");
-					}
-					worker.post(() -> openDevice(manager, cameraId));
 				});
 			} catch (CameraAccessException | IOException | RuntimeException | LinkageError error) {
 				fail(this, error.toString());
@@ -510,7 +564,12 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 			try {
 				opening++;
 				if (Build.VERSION.SDK_INT >= 28) {
-					manager.openCamera(id, command -> worker.post(command), callback);
+					manager.openCamera(id, new Executor() {
+						@Override
+						public void execute(Runnable command) {
+							worker.post(command);
+						}
+					}, callback);
 				} else {
 					manager.openCamera(id, callback, worker);
 				}
@@ -576,7 +635,12 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 				outputs.add(new OutputConfiguration(surface));
 			}
 			camera.createCaptureSession(new SessionConfiguration(SessionConfiguration.SESSION_REGULAR,
-				outputs, command -> worker.post(command), callback));
+				outputs, new Executor() {
+					@Override
+					public void execute(Runnable command) {
+						worker.post(command);
+					}
+				}, callback));
 		}
 
 		/**

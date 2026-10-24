@@ -3,6 +3,7 @@ package simple.library.wsd.gif;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ImageDecoder;
 import android.graphics.PorterDuff;
 import android.os.Build;
 
@@ -244,7 +245,12 @@ abstract class GifFrames {
 					encoded.write(0x3b);
 					Bitmap patch = android.graphics.ImageDecoder.decodeBitmap(
 						android.graphics.ImageDecoder.createSource(ByteBuffer.wrap(encoded.toByteArray())),
-						(decoder, image, source) -> decoder.setAllocator(android.graphics.ImageDecoder.ALLOCATOR_SOFTWARE));
+						new ImageDecoder.OnHeaderDecodedListener() {
+							@Override
+							public void onHeaderDecoded(ImageDecoder decoder, ImageDecoder.ImageInfo image, ImageDecoder.Source source) {
+								decoder.setAllocator(android.graphics.ImageDecoder.ALLOCATOR_SOFTWARE);
+							}
+						});
 					try {
 						canvas.drawBitmap(patch, left, top, null);
 					} finally {
