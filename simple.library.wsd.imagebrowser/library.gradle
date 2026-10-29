@@ -1,0 +1,12 @@
+/*
+ * ES4A 扩展库 Gradle 配置
+ */
+android {
+	// 本库资源 R 类的包名
+	namespace = 'simple.library.wsd.imagebrowser'
+}
+
+dependencies {
+	// AndroidX 第一代分页容器，保留现有图片浏览行为
+	implementation 'androidx.viewpager:viewpager:1.0.0'
+}

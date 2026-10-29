@@ -4,4 +4,4 @@
 
 ## 依赖来源
 
-- [Android Support v4 23.2.1](https://developer.android.com/topic/libraries/support-library)：来自 Google。
+- [AndroidX ViewPager 1.0.0](https://developer.android.com/jetpack/androidx/releases/viewpager)

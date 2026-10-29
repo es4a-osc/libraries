@@ -1,8 +1,8 @@
 package simple.library.wsd.mpandroidchart;
 
+import simple.runtime.annotations.SimpleComponent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
-import simple.runtime.annotations.SimpleComponent;
 
 /**
  * 至少三个分类项目，展示多组非负指标。

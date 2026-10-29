@@ -1,0 +1,12 @@
+/*
+ * ES4A 扩展库 Gradle 配置
+ */
+android {
+	// 本库资源 R 类的包名
+	namespace = 'simple.library.wsd.viewpager'
+}
+
+dependencies {
+	// AndroidX 滑动页面容器
+	implementation 'androidx.viewpager:viewpager:1.0.0'
+}

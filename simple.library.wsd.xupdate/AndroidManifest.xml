@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+	<!-- 不用权限移除标记影响其它库；下载使用私有缓存，不发起存储授权请求。 -->
+	<application>
+		<!-- 后台任务只持有应用上下文和文件传输，不持有 Simple 窗口。 -->
+		<service android:name="simple.library.wsd.xupdate.UpdateBackgroundService" android:exported="false" />
+		<!-- 使用本库每实例网络任务与原生 Dialog，不启用上游全局 Service/Activity。 -->
+		<service android:name="com.xuexiang.xupdate.service.DownloadService" tools:node="remove" />
+		<activity android:name="com.xuexiang.xupdate.widget.UpdateDialogActivity" tools:node="remove" />
+		<!-- 便捷入口按实例配置，不允许 EasyUpdate Provider 覆盖全局默认配置。 -->
+		<provider android:name="com.xuexiang.xupdate.easy.init.EasyUpdateInitProvider" tools:node="remove" />
+	</application>
+</manifest>

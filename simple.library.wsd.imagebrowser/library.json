@@ -1,6 +1,6 @@
 {
 	"name": "图片浏览器库",
-	"description": "静态图片浏览、滑动翻页和手势缩放。",
+	"description": "基于 ImageBrowse https://github.com/brucetoo/ImageBrowse 的缩放控件封装，提供图片浏览、滑动翻页、双击及双指缩放；GIF 仅显示静态帧。",
 	"version": "0.1.0",
 	"authors": [
 		{

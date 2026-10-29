@@ -1,6 +1,6 @@
 {
 	"name": "状态条通知库",
-	"description": "构建、发送、更新和删除应用通知，并处理通知点击事件。",
+	"description": "提供应用通知的创建、发送、更新和移除，以及通知点击事件。",
 	"version": "0.1.0",
 	"kind": "library",
 	"categories": [

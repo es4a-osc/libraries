@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- 原生居中指示器模式不会创建标题布局；右置指示器同时保留标题区域。 -->
+	<style name="Es4aXuiImageBanner">
+		<item name="bb_indicatorGravity">RIGHT</item>
+	</style>
+</resources>

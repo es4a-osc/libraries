@@ -1,8 +1,8 @@
 package simple.library.wsd.mpandroidchart;
 
+import simple.runtime.annotations.SimpleComponent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
-import simple.runtime.annotations.SimpleComponent;
 
 /**
  * 横向展示多组柱状数据；数值轴沿水平方向。

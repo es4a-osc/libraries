@@ -10,6 +10,7 @@ import simple.runtime.annotations.SimpleFunction;
 /* Simple基础类 */
 import simple.runtime.components.可视组件;
 import simple.runtime.components.组件容器;
+import simple.runtime.errors.索引超出界限错误;
 
 /**
  * 滑动页面框组件
@@ -33,10 +34,10 @@ public interface 滑动页面框 extends 可视组件, 组件容器 {
 	static final int 滑动状态_正在滑动 = 1;
 
 	/**
-	 * 页面正在自动滚动到最终位置，值为 2；沿用现有名称，不表示动画已经结束。
+	 * 页面正在自动滚动到最终位置，值为 2。
 	 */
 	@SimpleDataElement
-	static final int 滑动状态_滑动完毕 = 2;
+	static final int 滑动状态_自动滚动 = 2;
 
 	/* 事件 */
 
@@ -118,6 +119,7 @@ public interface 滑动页面框 extends 可视组件, 组件容器 {
 	 * 切换当前页面，是否平滑滚动由切换特效属性决定。
 	 *
 	 * @param position 目标页面索引，从 0 开始。
+	 * @throws 索引超出界限错误 没有页面或索引不在有效范围内。
 	 */
 	@SimpleProperty
 	void 现行页面(int position);
@@ -128,6 +130,7 @@ public interface 滑动页面框 extends 可视组件, 组件容器 {
 	 * 将可视组件从原父容器移出，添加到页面列表末尾。
 	 *
 	 * @param component 用作页面的可视组件；可使用包含其它组件的容器。
+	 * @throws IllegalArgumentException 组件为空、视图尚未创建、重复添加页面，或添加自身及祖先容器。
 	 */
 	@SimpleFunction
 	void 添加页面(可视组件 component);
@@ -136,6 +139,7 @@ public interface 滑动页面框 extends 可视组件, 组件容器 {
 	 * 删除指定索引的页面，后续页面索引随之改变。
 	 *
 	 * @param position 要删除的有效页面索引，从 0 开始。
+	 * @throws 索引超出界限错误 没有页面或索引不在有效范围内。
 	 */
 	@SimpleFunction
 	void 删除页面(int position);

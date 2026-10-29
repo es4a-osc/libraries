@@ -15,8 +15,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -28,6 +26,9 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import simple.library.wsd.imagebrowser.widget.PhotoView;
 import simple.runtime.android.MainActivity;

@@ -1,8 +1,8 @@
 package simple.library.wsd.mpandroidchart;
 
+import simple.runtime.annotations.SimpleComponent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
-import simple.runtime.annotations.SimpleComponent;
 
 /**
  * 展示非负数据占比，非空图表至少有一个正数。

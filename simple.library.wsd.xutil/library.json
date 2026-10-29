@@ -1,0 +1,2537 @@
+{
+	"name": "XUtil工具库",
+	"description": "基于 XUtil 2.0.0 https://github.com/xuexiangjys/XUtil 的 AndroidX 工具扩展库，按函数集提供文本、文件、缓存、编码、网络及设备等能力，权限随实际引用的函数集收集。",
+	"version": "0.1.0",
+	"kind": "library",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"categories": [
+		{
+			"name": "函数集",
+			"definitions": [
+				{
+					"name": "XUtil文本",
+					"description": "文本判空、整理、转换及版本名称比较。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil文本",
+					"functions": [
+						{
+							"name": "是否空",
+							"static": true,
+							"description": "判断文本是否为空或长度为零。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否空白",
+							"static": true,
+							"description": "判断文本是否为空或仅包含空白字符。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "去首尾空白",
+							"static": true,
+							"description": "去除文本首尾空白，空引用返回空文本。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "去全部空白",
+							"static": true,
+							"description": "去除空白字符，包括换行及制表符。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "反转",
+							"static": true,
+							"description": "按上游规则反转文本。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "首字母大写",
+							"static": true,
+							"description": "将首个字母转换为大写。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "首字母小写",
+							"static": true,
+							"description": "将首个字母转换为小写。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "忽略大小写比较",
+							"static": true,
+							"description": "忽略大小写比较两段文本。",
+							"params": [
+								{
+									"name": "第一文本",
+									"type": "文本型",
+									"description": "第一文本。"
+								},
+								{
+									"name": "第二文本",
+									"type": "文本型",
+									"description": "第二文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "比较版本",
+							"static": true,
+							"description": "比较点分隔的数字版本；大于、等于、小于分别返回正数、零、负数。",
+							"params": [
+								{
+									"name": "第一文本",
+									"type": "文本型",
+									"description": "第一文本。"
+								},
+								{
+									"name": "第二文本",
+									"type": "文本型",
+									"description": "第二文本。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "到整数",
+							"static": true,
+							"description": "转换数值，失败时返回指定默认值。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "默认值",
+									"type": "整数型",
+									"description": "默认值。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "到长整数",
+							"static": true,
+							"description": "转换数值，失败时返回指定默认值。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "默认值",
+									"type": "长整数型",
+									"description": "默认值。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "到小数",
+							"static": true,
+							"description": "转换数值，失败时返回指定默认值。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "默认值",
+									"type": "双精度小数型",
+									"description": "默认值。"
+								}
+							],
+							"return": "双精度小数型"
+						}
+					],
+					"icon": "icons/text-spellcheck.svg"
+				},
+				{
+					"name": "XUtil正则",
+					"description": "正则匹配、提取、分割与替换。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil正则",
+					"functions": [
+						{
+							"name": "匹配",
+							"static": true,
+							"description": "判断整段文本是否匹配表达式。",
+							"params": [
+								{
+									"name": "表达式",
+									"type": "文本型",
+									"description": "Java 正则表达式，格式错误时抛出异常。"
+								},
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "提取",
+							"static": true,
+							"description": "按出现顺序提取全部匹配文本。",
+							"params": [
+								{
+									"name": "表达式",
+									"type": "文本型",
+									"description": "Java 正则表达式，格式错误时抛出异常。"
+								},
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型()"
+						},
+						{
+							"name": "分割",
+							"static": true,
+							"description": "按表达式分割文本，末尾空项按 Java 分割规则处理。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "表达式",
+									"type": "文本型",
+									"description": "Java 正则表达式，格式错误时抛出异常。"
+								}
+							],
+							"return": "文本型()"
+						},
+						{
+							"name": "替换首次",
+							"static": true,
+							"description": "替换匹配内容；替换文本支持 $1 等捕获组引用。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "表达式",
+									"type": "文本型",
+									"description": "Java 正则表达式，格式错误时抛出异常。"
+								},
+								{
+									"name": "替换文本",
+									"type": "文本型",
+									"description": "替换文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "替换全部",
+							"static": true,
+							"description": "替换匹配内容；替换文本支持 $1 等捕获组引用。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "表达式",
+									"type": "文本型",
+									"description": "Java 正则表达式，格式错误时抛出异常。"
+								},
+								{
+									"name": "替换文本",
+									"type": "文本型",
+									"description": "替换文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "是否邮箱",
+							"static": true,
+							"description": "按 XUtil 内置规则检查文本格式；不验证数据真实性。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否网址",
+							"static": true,
+							"description": "按 XUtil 内置规则检查文本格式；不验证数据真实性。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否IP地址",
+							"static": true,
+							"description": "按 XUtil 内置规则检查文本格式；不验证数据真实性。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否手机号码",
+							"static": true,
+							"description": "按 XUtil 内置规则检查文本格式；不验证数据真实性。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否中文",
+							"static": true,
+							"description": "按 XUtil 内置规则检查文本格式；不验证数据真实性。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						}
+					],
+					"icon": "icons/regex.svg"
+				},
+				{
+					"name": "XUtil编码",
+					"description": "UTF-8 文本、Base64、URL 与 HTML 编解码。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil编码",
+					"functions": [
+						{
+							"name": "文本到字节集",
+							"static": true,
+							"description": "使用 UTF-8 编码文本。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "字节集到文本",
+							"static": true,
+							"description": "使用 UTF-8 解码字节集。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "Base64编码",
+							"static": true,
+							"description": "编码字节集为无换行的标准 Base64。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "Base64解码",
+							"static": true,
+							"description": "解码标准 Base64，非法输入抛出异常。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "URL编码",
+							"static": true,
+							"description": "使用上游规则进行URL编码；URL 文本使用 UTF-8。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "URL解码",
+							"static": true,
+							"description": "使用上游规则进行URL解码；URL 文本使用 UTF-8。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "HTML编码",
+							"static": true,
+							"description": "使用上游规则进行HTML编码；URL 文本使用 UTF-8。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "HTML解码",
+							"static": true,
+							"description": "将 HTML 实体及标记转换为纯文本。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/binary.svg"
+				},
+				{
+					"name": "XUtil摘要",
+					"description": "文本及文件摘要和 HMAC；MD5、SHA1 仅用于既有协议或内容校验。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil摘要",
+					"functions": [
+						{
+							"name": "MD5",
+							"static": true,
+							"description": "计算 UTF-8 文本的 MD5 十六进制摘要。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "SHA1",
+							"static": true,
+							"description": "计算 UTF-8 文本的 SHA1 十六进制摘要。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "SHA256",
+							"static": true,
+							"description": "计算 UTF-8 文本的 SHA256 十六进制摘要。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "SHA512",
+							"static": true,
+							"description": "计算 UTF-8 文本的 SHA512 十六进制摘要。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "HMACSHA256",
+							"static": true,
+							"description": "计算 UTF-8 文本的 HMAC-SHA256。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "密钥",
+									"type": "文本型",
+									"description": "密钥。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "HMACSHA512",
+							"static": true,
+							"description": "计算 UTF-8 文本的 HMAC-SHA512。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "密钥",
+									"type": "文本型",
+									"description": "密钥。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "文件MD5",
+							"static": true,
+							"description": "计算可读文件的 MD5，读取失败返回空文本。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/fingerprint.svg"
+				},
+				{
+					"name": "XUtil日期",
+					"description": "毫秒时间戳、格式转换、日期判断与星期查询。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil日期",
+					"functions": [
+						{
+							"name": "取当前时间",
+							"static": true,
+							"description": "取得当前 Unix 毫秒时间戳。",
+							"params": [],
+							"return": "长整数型"
+						},
+						{
+							"name": "格式化",
+							"static": true,
+							"description": "按指定时区和格式输出时间。",
+							"params": [
+								{
+									"name": "时间戳",
+									"type": "长整数型",
+									"description": "时间戳。"
+								},
+								{
+									"name": "格式",
+									"type": "文本型",
+									"description": "格式。"
+								},
+								{
+									"name": "时区",
+									"type": "文本型",
+									"description": "时区标识，例如 Asia/Shanghai 或 UTC；无效标识拒绝。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "解析",
+							"static": true,
+							"description": "严格解析日期时间，格式或日期不匹配时抛出异常。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "格式",
+									"type": "文本型",
+									"description": "格式。"
+								},
+								{
+									"name": "时区",
+									"type": "文本型",
+									"description": "时区。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "是否今天",
+							"static": true,
+							"description": "按设备当前时区判断时间戳是否属于今天。",
+							"params": [
+								{
+									"name": "时间戳",
+									"type": "长整数型",
+									"description": "时间戳。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取星期",
+							"static": true,
+							"description": "按设备时区取星期，星期日为 1，星期六为 7。",
+							"params": [
+								{
+									"name": "时间戳",
+									"type": "长整数型",
+									"description": "时间戳。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "取友好间隔",
+							"static": true,
+							"description": "取得相对当前时间的中文时间描述。",
+							"params": [
+								{
+									"name": "时间戳",
+									"type": "长整数型",
+									"description": "时间戳。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/calendar.svg"
+				},
+				{
+					"name": "XUtil颜色",
+					"description": "颜色明暗、透明比例与文本转换。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil颜色",
+					"functions": [
+						{
+							"name": "到文本",
+							"static": true,
+							"description": "取得颜色十六进制文本。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 整数颜色。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "从文本",
+							"static": true,
+							"description": "解析 #RRGGBB、#AARRGGBB 或系统颜色名称。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "是否深色",
+							"static": true,
+							"description": "按亮度阈值判断是否为深色。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 整数颜色。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "置透明比例",
+							"static": true,
+							"description": "返回新的透明比例颜色，不修改传入颜色。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 整数颜色。"
+								},
+								{
+									"name": "比例",
+									"type": "单精度小数型",
+									"description": "范围 0 到 1；0 为透明，1 为不透明。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "加深",
+							"static": true,
+							"description": "按 0 到 1 的比例调整颜色明暗。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 整数颜色。"
+								},
+								{
+									"name": "比例",
+									"type": "单精度小数型",
+									"description": "比例。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "变浅",
+							"static": true,
+							"description": "按 0 到 1 的比例调整颜色明暗。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 整数颜色。"
+								},
+								{
+									"name": "比例",
+									"type": "单精度小数型",
+									"description": "比例。"
+								}
+							],
+							"return": "整数型"
+						}
+					],
+					"icon": "icons/palette.svg"
+				},
+				{
+					"name": "XUtil尺寸",
+					"description": "设备显示密度、屏幕尺寸及 DIP、SP、像素转换。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil尺寸",
+					"functions": [
+						{
+							"name": "DP到像素",
+							"static": true,
+							"description": "按当前显示配置转换单位。",
+							"params": [
+								{
+									"name": "数值",
+									"type": "单精度小数型",
+									"description": "数值。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "像素到DP",
+							"static": true,
+							"description": "按当前显示配置转换单位。",
+							"params": [
+								{
+									"name": "数值",
+									"type": "单精度小数型",
+									"description": "数值。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "SP到像素",
+							"static": true,
+							"description": "按当前显示配置转换单位。",
+							"params": [
+								{
+									"name": "数值",
+									"type": "单精度小数型",
+									"description": "数值。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "像素到SP",
+							"static": true,
+							"description": "按当前显示配置转换单位。",
+							"params": [
+								{
+									"name": "数值",
+									"type": "单精度小数型",
+									"description": "数值。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "取屏幕宽度",
+							"static": true,
+							"description": "取得当前显示配置的屏幕宽度；宽高单位为像素。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "取屏幕高度",
+							"static": true,
+							"description": "取得当前显示配置的屏幕高度；宽高单位为像素。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "取密度",
+							"static": true,
+							"description": "取得当前显示配置的密度；宽高单位为像素。",
+							"params": [],
+							"return": "单精度小数型"
+						}
+					],
+					"icon": "icons/ruler-measure.svg"
+				},
+				{
+					"name": "XUtil配置",
+					"description": "按配置名读写应用私有 SharedPreferences，不需要存储权限。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil配置",
+					"functions": [
+						{
+							"name": "写文本",
+							"static": true,
+							"description": "同步保存文本；返回提交是否成功。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "值。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "读文本",
+							"static": true,
+							"description": "读取文本；不存在时返回默认值。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "默认值",
+									"type": "文本型",
+									"description": "默认值。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "写整数",
+							"static": true,
+							"description": "同步保存整数；返回提交是否成功。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "值",
+									"type": "整数型",
+									"description": "值。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "读整数",
+							"static": true,
+							"description": "读取整数；不存在时返回默认值。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "默认值",
+									"type": "整数型",
+									"description": "默认值。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "写长整数",
+							"static": true,
+							"description": "同步保存长整数；返回提交是否成功。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "值",
+									"type": "长整数型",
+									"description": "值。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "读长整数",
+							"static": true,
+							"description": "读取长整数；不存在时返回默认值。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "默认值",
+									"type": "长整数型",
+									"description": "默认值。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "写逻辑",
+							"static": true,
+							"description": "同步保存逻辑；返回提交是否成功。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "值",
+									"type": "逻辑型",
+									"description": "值。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "读逻辑",
+							"static": true,
+							"description": "读取逻辑；不存在时返回默认值。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "默认值",
+									"type": "逻辑型",
+									"description": "默认值。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "写单精度",
+							"static": true,
+							"description": "同步保存单精度；返回提交是否成功。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "值",
+									"type": "单精度小数型",
+									"description": "值。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "读单精度",
+							"static": true,
+							"description": "读取单精度；不存在时返回默认值。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "默认值",
+									"type": "单精度小数型",
+									"description": "默认值。"
+								}
+							],
+							"return": "单精度小数型"
+						},
+						{
+							"name": "是否存在",
+							"static": true,
+							"description": "检查键是否存在。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "删除",
+							"static": true,
+							"description": "移除键并返回提交是否成功。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "清空",
+							"static": true,
+							"description": "清空指定配置并返回提交是否成功。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "应用私有配置名称，不得为空或包含路径分隔符。"
+								}
+							],
+							"return": "逻辑型"
+						}
+					],
+					"icon": "icons/adjustments-horizontal.svg"
+				},
+				{
+					"name": "XUtil缓存",
+					"description": "应用私有磁盘缓存，支持文本、字节集和秒级有效期。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil缓存",
+					"functions": [
+						{
+							"name": "写文本",
+							"static": true,
+							"description": "写入文本缓存；有效期以秒计。",
+							"params": [
+								{
+									"name": "缓存名",
+									"type": "文本型",
+									"description": "私有缓存名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "值。"
+								},
+								{
+									"name": "有效秒数",
+									"type": "整数型",
+									"description": "大于零为有效秒数，零表示不过期；负数拒绝。"
+								}
+							]
+						},
+						{
+							"name": "读文本",
+							"static": true,
+							"description": "读取缓存，未命中或过期返回默认值。",
+							"params": [
+								{
+									"name": "缓存名",
+									"type": "文本型",
+									"description": "私有缓存名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "默认值",
+									"type": "文本型",
+									"description": "默认值。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "写字节集",
+							"static": true,
+							"description": "写入字节集缓存；有效期以秒计。",
+							"params": [
+								{
+									"name": "缓存名",
+									"type": "文本型",
+									"description": "私有缓存名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "值",
+									"type": "字节型()",
+									"description": "值。"
+								},
+								{
+									"name": "有效秒数",
+									"type": "整数型",
+									"description": "大于零为有效秒数，零表示不过期；负数拒绝。"
+								}
+							]
+						},
+						{
+							"name": "读字节集",
+							"static": true,
+							"description": "读取缓存，未命中或过期返回默认值。",
+							"params": [
+								{
+									"name": "缓存名",
+									"type": "文本型",
+									"description": "私有缓存名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								},
+								{
+									"name": "默认值",
+									"type": "字节型()",
+									"description": "默认值。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "删除",
+							"static": true,
+							"description": "操作指定缓存；删除或清空返回是否成功，容量单位为字节。",
+							"params": [
+								{
+									"name": "缓存名",
+									"type": "文本型",
+									"description": "私有缓存名称，不得为空或包含路径分隔符。"
+								},
+								{
+									"name": "键",
+									"type": "文本型",
+									"description": "键。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "清空",
+							"static": true,
+							"description": "操作指定缓存；删除或清空返回是否成功，容量单位为字节。",
+							"params": [
+								{
+									"name": "缓存名",
+									"type": "文本型",
+									"description": "私有缓存名称，不得为空或包含路径分隔符。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取字节数",
+							"static": true,
+							"description": "操作指定缓存；删除或清空返回是否成功，容量单位为字节。",
+							"params": [
+								{
+									"name": "缓存名",
+									"type": "文本型",
+									"description": "私有缓存名称，不得为空或包含路径分隔符。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "取数量",
+							"static": true,
+							"description": "操作指定缓存；删除或清空返回是否成功，容量单位为字节。",
+							"params": [
+								{
+									"name": "缓存名",
+									"type": "文本型",
+									"description": "私有缓存名称，不得为空或包含路径分隔符。"
+								}
+							],
+							"return": "整数型"
+						}
+					],
+					"icon": "icons/database.svg"
+				},
+				{
+					"name": "XUtil文件",
+					"description": "文件路径、文本读写和目录操作；仅能访问应用实际有权访问的路径。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil文件",
+					"functions": [
+						{
+							"name": "取私有目录",
+							"static": true,
+							"description": "取得应用私有目录的绝对路径，不需要存储权限。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取缓存目录",
+							"static": true,
+							"description": "取得应用私有目录的绝对路径，不需要存储权限。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "是否存在",
+							"static": true,
+							"description": "按给定路径是否存在；删除目录时递归删除，请先确认目标。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否文件",
+							"static": true,
+							"description": "按给定路径是否文件；删除目录时递归删除，请先确认目标。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否目录",
+							"static": true,
+							"description": "按给定路径是否目录；删除目录时递归删除，请先确认目标。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "创建目录",
+							"static": true,
+							"description": "按给定路径创建目录；删除目录时递归删除，请先确认目标。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "创建文件",
+							"static": true,
+							"description": "按给定路径创建文件；删除目录时递归删除，请先确认目标。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "删除",
+							"static": true,
+							"description": "按给定路径删除；删除目录时递归删除，请先确认目标。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取文件长度",
+							"static": true,
+							"description": "取得文件字节数；不存在或不是文件时返回 -1。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "读文本",
+							"static": true,
+							"description": "以 UTF-8 读取完整文本，读取失败抛出异常；大文件应使用流式接口。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "写文本",
+							"static": true,
+							"description": "以 UTF-8 写入文本，必要时创建父目录；写入失败抛出异常。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								},
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "追加",
+									"type": "逻辑型",
+									"description": "追加。"
+								}
+							]
+						},
+						{
+							"name": "列出",
+							"static": true,
+							"description": "列出目录直接子项的绝对路径并稳定排序；目录不可读时抛出异常。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "文本型()"
+						}
+					],
+					"icon": "icons/folder.svg"
+				},
+				{
+					"name": "XUtil压缩",
+					"description": "ZIP 压缩、目录索引与受路径边界约束的解压。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil压缩",
+					"functions": [
+						{
+							"name": "压缩",
+							"static": true,
+							"description": "压缩文件或目录为 ZIP；不能把目标 ZIP 放入源目录。",
+							"params": [
+								{
+									"name": "源路径",
+									"type": "文本型",
+									"description": "源路径。"
+								},
+								{
+									"name": "目标文件",
+									"type": "文本型",
+									"description": "目标文件。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "列出",
+							"static": true,
+							"description": "列出 ZIP 的条目名称，损坏归档抛出异常。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "文本型()"
+						},
+						{
+							"name": "解压",
+							"static": true,
+							"description": "解压 ZIP 并返回文件路径；拒绝路径越界及符号链接目标，累计解压上限由调用者指定。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								},
+								{
+									"name": "目标目录",
+									"type": "文本型",
+									"description": "目标目录。"
+								},
+								{
+									"name": "最大字节数",
+									"type": "长整数型",
+									"description": "所有文件累计解压上限，必须大于零；失败可能保留已写入文件。"
+								}
+							],
+							"return": "文本型()"
+						}
+					],
+					"icon": "icons/file-zip.svg"
+				},
+				{
+					"name": "XUtil设备",
+					"description": "Android 公开设备信息与应用范围标识，不读取受限 IMEI、IMSI 或硬件 MAC。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil设备",
+					"functions": [
+						{
+							"name": "取品牌",
+							"static": true,
+							"description": "取得品牌；AndroidID 按系统规则限定于签名、用户和设备，不是跨应用永久标识。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取制造商",
+							"static": true,
+							"description": "取得制造商；AndroidID 按系统规则限定于签名、用户和设备，不是跨应用永久标识。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取型号",
+							"static": true,
+							"description": "取得型号；AndroidID 按系统规则限定于签名、用户和设备，不是跨应用永久标识。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取硬件",
+							"static": true,
+							"description": "取得硬件；AndroidID 按系统规则限定于签名、用户和设备，不是跨应用永久标识。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取系统版本",
+							"static": true,
+							"description": "取得系统版本；AndroidID 按系统规则限定于签名、用户和设备，不是跨应用永久标识。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取系统API",
+							"static": true,
+							"description": "取得系统API；AndroidID 按系统规则限定于签名、用户和设备，不是跨应用永久标识。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "取AndroidID",
+							"static": true,
+							"description": "取得AndroidID；AndroidID 按系统规则限定于签名、用户和设备，不是跨应用永久标识。",
+							"params": [],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/device-mobile.svg"
+				},
+				{
+					"name": "XUtil应用",
+					"description": "当前应用版本、包名及可见应用信息；Android 11 起查询受包可见性限制。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil应用",
+					"functions": [
+						{
+							"name": "取包名",
+							"static": true,
+							"description": "查询当前应用的包名。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取名称",
+							"static": true,
+							"description": "查询当前应用的名称。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取版本名",
+							"static": true,
+							"description": "查询当前应用的版本名。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取版本号",
+							"static": true,
+							"description": "查询当前应用的版本号。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "是否调试版",
+							"static": true,
+							"description": "查询当前应用的否调试版。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取安装路径",
+							"static": true,
+							"description": "查询当前应用的安装路径。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "是否已安装",
+							"static": true,
+							"description": "判断指定包是否对当前应用可见且已安装；不可见不等于设备上不存在。",
+							"params": [
+								{
+									"name": "包名",
+									"type": "文本型",
+									"description": "包名。"
+								}
+							],
+							"return": "逻辑型"
+						}
+					],
+					"icon": "icons/apps.svg"
+				},
+				{
+					"name": "XUtil网络",
+					"description": "查询默认网络的连接、互联网验证和传输类型。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil网络",
+					"functions": [
+						{
+							"name": "是否已连接",
+							"static": true,
+							"description": "默认网络存在时返回真，不表示可以访问互联网。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否可访问互联网",
+							"static": true,
+							"description": "默认网络已被系统验证可访问互联网时返回真。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否无线网络",
+							"static": true,
+							"description": "默认网络通过 Wi-Fi 传输时返回真。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否移动网络",
+							"static": true,
+							"description": "默认网络通过蜂窝网络传输时返回真。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否以太网",
+							"static": true,
+							"description": "默认网络通过以太网传输时返回真。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否VPN",
+							"static": true,
+							"description": "默认网络为 VPN 时返回真。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否按流量计费",
+							"static": true,
+							"description": "查询默认网络是否被系统视为按流量计费。",
+							"params": [],
+							"return": "逻辑型"
+						}
+					],
+					"icon": "icons/network.svg"
+				},
+				{
+					"name": "XUtil域名",
+					"description": "域名与本机 IP 查询；可能阻塞，必须在工作线程调用。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil域名",
+					"functions": [
+						{
+							"name": "解析",
+							"static": true,
+							"description": "解析域名的全部地址；失败抛出异常，禁止在界面线程执行。",
+							"params": [
+								{
+									"name": "域名",
+									"type": "文本型",
+									"description": "域名。"
+								}
+							],
+							"return": "文本型()"
+						},
+						{
+							"name": "取本机IP",
+							"static": true,
+							"description": "查找本机网络接口地址；无符合地址时返回空文本。",
+							"params": [
+								{
+									"name": "使用IPv4",
+									"type": "逻辑型",
+									"description": "使用IPv4。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/world-search.svg"
+				},
+				{
+					"name": "XUtil资源",
+					"description": "读取当前应用资源和资产文本。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil资源",
+					"functions": [
+						{
+							"name": "取标识",
+							"static": true,
+							"description": "按名称与资源类型查询当前应用资源标识；不存在返回零。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "名称。"
+								},
+								{
+									"name": "类型",
+									"type": "文本型",
+									"description": "类型。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "取文本",
+							"static": true,
+							"description": "读取有效资源标识对应的文本，标识无效时抛出异常。",
+							"params": [
+								{
+									"name": "标识",
+									"type": "整数型",
+									"description": "标识。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取文本数组",
+							"static": true,
+							"description": "读取有效资源标识对应的文本数组，标识无效时抛出异常。",
+							"params": [
+								{
+									"name": "标识",
+									"type": "整数型",
+									"description": "标识。"
+								}
+							],
+							"return": "文本型()"
+						},
+						{
+							"name": "取整数数组",
+							"static": true,
+							"description": "读取有效资源标识对应的整数数组，标识无效时抛出异常。",
+							"params": [
+								{
+									"name": "标识",
+									"type": "整数型",
+									"description": "标识。"
+								}
+							],
+							"return": "整数型()"
+						},
+						{
+							"name": "取尺寸像素",
+							"static": true,
+							"description": "读取有效资源标识对应的尺寸像素，标识无效时抛出异常。",
+							"params": [
+								{
+									"name": "标识",
+									"type": "整数型",
+									"description": "标识。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "读资产文本",
+							"static": true,
+							"description": "以 UTF-8 读取资产文本并保留原有换行；缺失时抛出异常。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/box.svg"
+				},
+				{
+					"name": "XUtil剪贴板",
+					"description": "前台窗口的系统文本剪贴板；界面线程调用。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil剪贴板",
+					"functions": [
+						{
+							"name": "写文本",
+							"static": true,
+							"description": "把文本放到系统剪贴板；界面线程调用。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							]
+						},
+						{
+							"name": "读文本",
+							"static": true,
+							"description": "读取系统剪贴板文本，无文本时返回空文本；受系统前台访问限制。",
+							"params": [],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/clipboard.svg"
+				},
+				{
+					"name": "XUtil键盘",
+					"description": "操作当前 Simple 窗口的软键盘；界面线程调用。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil键盘",
+					"functions": [
+						{
+							"name": "显示",
+							"static": true,
+							"description": "对当前窗口显示软键盘；显示需要窗口内已有可输入焦点。",
+							"params": []
+						},
+						{
+							"name": "隐藏",
+							"static": true,
+							"description": "对当前窗口隐藏软键盘；显示需要窗口内已有可输入焦点。",
+							"params": []
+						},
+						{
+							"name": "是否显示",
+							"static": true,
+							"description": "对当前窗口是否显示软键盘；显示需要窗口内已有可输入焦点。",
+							"params": [],
+							"return": "逻辑型"
+						}
+					],
+					"icon": "icons/keyboard.svg"
+				},
+				{
+					"name": "XUtil随机",
+					"description": "一般用途随机数和随机文本，不用于密码或安全令牌。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil随机",
+					"functions": [
+						{
+							"name": "取整数",
+							"static": true,
+							"description": "取左闭右开的随机整数；上下限相等时返回该值。",
+							"params": [
+								{
+									"name": "下限",
+									"type": "整数型",
+									"description": "下限。"
+								},
+								{
+									"name": "上限",
+									"type": "整数型",
+									"description": "上限。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "取数字文本",
+							"static": true,
+							"description": "生成指定长度的随机文本；长度必须非负。",
+							"params": [
+								{
+									"name": "长度",
+									"type": "整数型",
+									"description": "长度。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取字母文本",
+							"static": true,
+							"description": "生成指定长度的随机文本；长度必须非负。",
+							"params": [
+								{
+									"name": "长度",
+									"type": "整数型",
+									"description": "长度。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取大写字母",
+							"static": true,
+							"description": "生成指定长度的随机文本；长度必须非负。",
+							"params": [
+								{
+									"name": "长度",
+									"type": "整数型",
+									"description": "长度。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取小写字母",
+							"static": true,
+							"description": "生成指定长度的随机文本；长度必须非负。",
+							"params": [
+								{
+									"name": "长度",
+									"type": "整数型",
+									"description": "长度。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取数字字母",
+							"static": true,
+							"description": "生成指定长度的随机文本；长度必须非负。",
+							"params": [
+								{
+									"name": "长度",
+									"type": "整数型",
+									"description": "长度。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/dice.svg"
+				},
+				{
+					"name": "XUtil大数",
+					"description": "十进制文本运算及金额格式化，避免小数通过二进制浮点输入丢失精度。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil大数",
+					"functions": [
+						{
+							"name": "加",
+							"static": true,
+							"description": "计算两段十进制数值文本，结果用普通十进制表示。",
+							"params": [
+								{
+									"name": "第一文本",
+									"type": "文本型",
+									"description": "第一文本。"
+								},
+								{
+									"name": "第二文本",
+									"type": "文本型",
+									"description": "第二文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "减",
+							"static": true,
+							"description": "计算两段十进制数值文本，结果用普通十进制表示。",
+							"params": [
+								{
+									"name": "第一文本",
+									"type": "文本型",
+									"description": "第一文本。"
+								},
+								{
+									"name": "第二文本",
+									"type": "文本型",
+									"description": "第二文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "乘",
+							"static": true,
+							"description": "计算两段十进制数值文本，结果用普通十进制表示。",
+							"params": [
+								{
+									"name": "第一文本",
+									"type": "文本型",
+									"description": "第一文本。"
+								},
+								{
+									"name": "第二文本",
+									"type": "文本型",
+									"description": "第二文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "除",
+							"static": true,
+							"description": "十进制除法，按四舍五入保留指定小数位；除零抛出异常。",
+							"params": [
+								{
+									"name": "第一文本",
+									"type": "文本型",
+									"description": "第一文本。"
+								},
+								{
+									"name": "第二文本",
+									"type": "文本型",
+									"description": "第二文本。"
+								},
+								{
+									"name": "小数位数",
+									"type": "整数型",
+									"description": "小数位数。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "舍入",
+							"static": true,
+							"description": "按四舍五入保留指定小数位。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "小数位数",
+									"type": "整数型",
+									"description": "小数位数。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "比较",
+							"static": true,
+							"description": "比较十进制数，返回负数、零或正数。",
+							"params": [
+								{
+									"name": "第一文本",
+									"type": "文本型",
+									"description": "第一文本。"
+								},
+								{
+									"name": "第二文本",
+									"type": "文本型",
+									"description": "第二文本。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "金额格式化",
+							"static": true,
+							"description": "按上游金额规则添加分组分隔符。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "分隔符",
+									"type": "文本型",
+									"description": "分隔符。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/math.svg"
+				},
+				{
+					"name": "XUtil身份证",
+					"description": "中国居民身份证本地格式与校验位检查、生日及脱敏，不代替联网实名核验。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil身份证",
+					"functions": [
+						{
+							"name": "校验",
+							"static": true,
+							"description": "按 XUtil 本地规则校验身份证号码；提取信息前应先校验。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取生日",
+							"static": true,
+							"description": "按 XUtil 本地规则取生日身份证号码；提取信息前应先校验。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取性别",
+							"static": true,
+							"description": "按 XUtil 本地规则取性别身份证号码；提取信息前应先校验。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取省份",
+							"static": true,
+							"description": "按 XUtil 本地规则取省份身份证号码；提取信息前应先校验。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "脱敏",
+							"static": true,
+							"description": "按 XUtil 本地规则脱敏身份证号码；提取信息前应先校验。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/id.svg"
+				},
+				{
+					"name": "XUtil字节集",
+					"description": "字节数组拼接、查找与切片。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil字节集",
+					"functions": [
+						{
+							"name": "拼接",
+							"static": true,
+							"description": "返回两个字节集连接后的新字节集。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "另一数据",
+									"type": "字节型()",
+									"description": "另一数据。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "查找",
+							"static": true,
+							"description": "返回子字节集首次出现的零基索引；不存在返回 -1。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "另一数据",
+									"type": "字节型()",
+									"description": "另一数据。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "反向查找",
+							"static": true,
+							"description": "返回子字节集最后出现的零基索引；不存在返回 -1。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "另一数据",
+									"type": "字节型()",
+									"description": "另一数据。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "切片",
+							"static": true,
+							"description": "按左闭右开的零基范围复制；越界拒绝，不自动补零。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "起始索引",
+									"type": "整数型",
+									"description": "起始索引。"
+								},
+								{
+									"name": "结束索引",
+									"type": "整数型",
+									"description": "结束索引。"
+								}
+							],
+							"return": "字节型()"
+						}
+					],
+					"icon": "icons/file-code.svg"
+				},
+				{
+					"name": "XUtilBCD",
+					"description": "十进制数字文本与压缩 BCD 字节集转换。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtilBCD",
+					"functions": [
+						{
+							"name": "编码",
+							"static": true,
+							"description": "编码非空偶数位数字文本为 BCD；非法字符或奇数长度拒绝。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "解码",
+							"static": true,
+							"description": "解码压缩 BCD 为数字文本；任一半字节大于 9 时拒绝。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								}
+							],
+							"return": "文本型"
+						}
+					],
+					"icon": "icons/barcode.svg"
+				},
+				{
+					"name": "XUtil几何",
+					"description": "二维点的距离、中点和插值。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil几何",
+					"functions": [
+						{
+							"name": "距离",
+							"static": true,
+							"description": "计算两个二维点之间的直线距离。",
+							"params": [
+								{
+									"name": "起点X",
+									"type": "单精度小数型",
+									"description": "起点X。"
+								},
+								{
+									"name": "起点Y",
+									"type": "单精度小数型",
+									"description": "起点Y。"
+								},
+								{
+									"name": "终点X",
+									"type": "单精度小数型",
+									"description": "终点X。"
+								},
+								{
+									"name": "终点Y",
+									"type": "单精度小数型",
+									"description": "终点Y。"
+								}
+							],
+							"return": "单精度小数型"
+						},
+						{
+							"name": "中点",
+							"static": true,
+							"description": "返回包含 X、Y 的两个元素数组。",
+							"params": [
+								{
+									"name": "起点X",
+									"type": "单精度小数型",
+									"description": "起点X。"
+								},
+								{
+									"name": "起点Y",
+									"type": "单精度小数型",
+									"description": "起点Y。"
+								},
+								{
+									"name": "终点X",
+									"type": "单精度小数型",
+									"description": "终点X。"
+								},
+								{
+									"name": "终点Y",
+									"type": "单精度小数型",
+									"description": "终点Y。"
+								}
+							],
+							"return": "单精度小数型()"
+						},
+						{
+							"name": "插值",
+							"static": true,
+							"description": "返回包含 X、Y 的两个元素数组。",
+							"params": [
+								{
+									"name": "起点X",
+									"type": "单精度小数型",
+									"description": "起点X。"
+								},
+								{
+									"name": "起点Y",
+									"type": "单精度小数型",
+									"description": "起点Y。"
+								},
+								{
+									"name": "终点X",
+									"type": "单精度小数型",
+									"description": "终点X。"
+								},
+								{
+									"name": "终点Y",
+									"type": "单精度小数型",
+									"description": "终点Y。"
+								},
+								{
+									"name": "比例",
+									"type": "单精度小数型",
+									"description": "0 为起点，1 为终点，范围外表示延长线。"
+								}
+							],
+							"return": "单精度小数型()"
+						}
+					],
+					"icon": "icons/ruler-2.svg"
+				},
+				{
+					"name": "XUtil电话",
+					"description": "查询电话及 SIM 类型或打开拨号界面；不读取设备受限标识。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil电话",
+					"functions": [
+						{
+							"name": "是否电话设备",
+							"static": true,
+							"description": "查询是否电话设备，无电话能力时由系统返回缺省信息。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取电话类型",
+							"static": true,
+							"description": "查询取电话类型，无电话能力时由系统返回缺省信息。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "SIM是否就绪",
+							"static": true,
+							"description": "查询SIM是否就绪，无电话能力时由系统返回缺省信息。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取运营商",
+							"static": true,
+							"description": "查询取运营商，无电话能力时由系统返回缺省信息。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "打开拨号",
+							"static": true,
+							"description": "打开系统拨号界面供用户确认，不会直接拨出；无可处理应用时返回假。",
+							"params": [
+								{
+									"name": "号码",
+									"type": "文本型",
+									"description": "号码。"
+								}
+							],
+							"return": "逻辑型"
+						}
+					],
+					"icon": "icons/phone.svg"
+				},
+				{
+					"name": "XUtil通话",
+					"description": "直接拨号，必须先取得 CALL_PHONE 运行时授权；界面线程调用。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XUtil通话",
+					"functions": [
+						{
+							"name": "是否已授权",
+							"static": true,
+							"description": "检查当前应用是否已获得 CALL_PHONE 授权，不弹出授权框。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "拨打",
+							"static": true,
+							"description": "直接请求拨号；未授权抛出异常，无处理应用时返回假；真仅表示请求已发出，不表示接通。",
+							"params": [
+								{
+									"name": "号码",
+									"type": "文本型",
+									"description": "号码。"
+								}
+							],
+							"return": "逻辑型"
+						}
+					],
+					"icon": "icons/phone-call.svg"
+				}
+			]
+		}
+	]
+}

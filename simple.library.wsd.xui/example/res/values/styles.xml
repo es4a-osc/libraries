@@ -1,0 +1,11 @@
+<resources>
+	<style name="XuiExampleTheme" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorPrimary">#299EE3</item>
+		<item name="colorPrimaryDark">#1859C6</item>
+		<item name="colorAccent">#1683C6</item>
+		<item name="android:statusBarColor">#1859C6</item>
+		<item name="android:navigationBarColor">#FFFFFF</item>
+		<item name="android:windowLightNavigationBar">true</item>
+		<item name="android:windowBackground">#FFFFFF</item>
+	</style>
+</resources>

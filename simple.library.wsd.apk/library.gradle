@@ -1,0 +1,7 @@
+/*
+ * ES4A 扩展库 Gradle 配置
+ */
+android {
+	// 本库资源 R 类的包名
+	namespace = 'simple.library.wsd.apk'
+}

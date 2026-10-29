@@ -1,8 +1,8 @@
 package simple.library.wsd.mpandroidchart;
 
+import simple.runtime.annotations.SimpleComponent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
-import simple.runtime.annotations.SimpleComponent;
 
 /**
  * 按分类索引展示数值和非负气泡大小。

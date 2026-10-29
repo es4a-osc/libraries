@@ -1,6 +1,6 @@
 {
 	"name": "MQTT通讯库",
-	"description": "基于 Eclipse Paho 的 MQTT 连接、发布和订阅。",
+	"description": "基于 Eclipse Paho https://github.com/eclipse-paho/paho.mqtt.java 封装，提供 MQTT 连接、消息发布、主题订阅及连接状态事件。",
 	"version": "0.1.0",
 	"authors": [
 		{

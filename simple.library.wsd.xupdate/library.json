@@ -1,0 +1,918 @@
+{
+	"name": "XUpdate更新库",
+	"description": "基于 XUpdate 2.1.5 https://github.com/xuexiangjys/XUpdate 与 XUpdateAPI 1.0.1 https://github.com/xuexiangjys/XUpdateAPI 的应用更新扩展库，提供基础更新、便捷入口、暂停续传及流程定制。",
+	"version": "0.1.0",
+	"kind": "library",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"categories": [
+		{
+			"name": "扩展非可视组件",
+			"definitions": [
+				{
+					"name": "更新器",
+					"type": "simple.library.wsd.xupdate.更新器",
+					"kind": "component",
+					"description": "通过默认实现完成一键更新，也可分别替换检查、解析、提示、下载、网络、校验和安装；支持独立下载、本地安装及带通知的后台下载。",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"icon": "icons/refresh-dot.svg",
+					"functions": [
+						{
+							"name": "检查更新",
+							"description": "异步检查版本；已有任务时拒绝启动第二个任务。",
+							"params": [
+								{
+									"name": "地址",
+									"type": "文本型",
+									"description": "版本检查接口的完整 HTTP 或 HTTPS 地址。"
+								}
+							]
+						},
+						{
+							"name": "解析更新",
+							"description": "解析已有响应；默认解析器比较本机版本，自定义解析自行决定是否更新。",
+							"params": [
+								{
+									"name": "响应",
+									"type": "文本型",
+									"description": "默认 XUpdate JSON，或由解析响应事件处理的自定义内容。"
+								}
+							]
+						},
+						{
+							"name": "显示更新",
+							"description": "显示 XUpdate 原生更新提示，使用传入信息的快照。",
+							"params": [
+								{
+									"name": "信息",
+									"type": "simple.library.wsd.xupdate.更新信息",
+									"description": "包含版本名称、下载地址和更新内容的更新信息。"
+								}
+							]
+						},
+						{
+							"name": "下载更新",
+							"description": "直接下载指定文件，不要求有更新或版本号高于本机；结果仍须校验。",
+							"params": [
+								{
+									"name": "信息",
+									"type": "simple.library.wsd.xupdate.更新信息",
+									"description": "具有下载地址和可选校验信息的版本信息。"
+								}
+							]
+						},
+						{
+							"name": "安装更新",
+							"description": "请求安装可读取的本地 APK；不要求由当前实例下载，系统安装仍需用户授权和确认。",
+							"params": [
+								{
+									"name": "文件",
+									"type": "文本型",
+									"description": "可读取的本地 APK 绝对路径。"
+								}
+							]
+						},
+						{
+							"name": "取消",
+							"description": "显式取消本实例的检查、提示、下载或待授权安装；后台任务同样取消。",
+							"params": []
+						},
+						{
+							"name": "置请求参数",
+							"description": "新增或替换版本检查参数；GET 使用查询串，POST 使用表单。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空参数名。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "参数文本，使用 UTF-8 编码。"
+								}
+							]
+						},
+						{
+							"name": "置请求头",
+							"description": "新增或替换检查与下载请求头；配置在任务开始时固定。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "合法 HTTP 请求头名称。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "不含换行的请求头值。"
+								}
+							]
+						},
+						{
+							"name": "清空请求配置",
+							"description": "清空请求参数与请求头，不改变其它配置。",
+							"params": []
+						},
+						{
+							"name": "置提示样式",
+							"description": "设置下次更新框的颜色、顶部图片及尺寸。",
+							"params": [
+								{
+									"name": "主题颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色；-1 使用上游默认。"
+								},
+								{
+									"name": "文字颜色",
+									"type": "整数型",
+									"description": "按钮文字颜色；0 使用上游默认。"
+								},
+								{
+									"name": "顶部图片",
+									"type": "文本型",
+									"description": "drawable 资源标识；空文本使用上游默认。"
+								},
+								{
+									"name": "宽度比例",
+									"type": "单精度型",
+									"description": "屏幕宽度比例，0 至 1；0 使用默认。"
+								},
+								{
+									"name": "高度比例",
+									"type": "单精度型",
+									"description": "屏幕高度比例，0 至 1；0 适应内容。"
+								}
+							]
+						},
+						{
+							"name": "清除忽略版本",
+							"description": "清除 XUpdate 为当前应用记录的忽略版本。",
+							"params": []
+						},
+						{
+							"name": "暂停下载",
+							"description": "暂停已接入可暂停下载器的任务；实际停止后触发已暂停。",
+							"params": []
+						},
+						{
+							"name": "继续下载",
+							"description": "恢复已暂停或网络失败的续传任务，沿用开始下载时的地址、请求头和安装配置。",
+							"params": []
+						},
+						{
+							"name": "清理缓存",
+							"description": "移除本实例的已下载文件及续传记录；正在下载或安装时请先暂停或取消。",
+							"params": []
+						},
+						{
+							"name": "置检查器",
+							"description": "替换本实例的检查器；仅可在空闲时设置，空对象恢复默认实现。",
+							"params": [
+								{
+									"name": "实现",
+									"type": "simple.library.wsd.xupdate.检查器",
+									"description": "自定义检查器。"
+								}
+							]
+						},
+						{
+							"name": "置解析器",
+							"description": "替换本实例的解析器；仅可在空闲时设置，空对象恢复默认实现。",
+							"params": [
+								{
+									"name": "实现",
+									"type": "simple.library.wsd.xupdate.解析器",
+									"description": "自定义解析器。"
+								}
+							]
+						},
+						{
+							"name": "置提示器",
+							"description": "替换本实例的提示器；仅可在空闲时设置，空对象恢复默认实现。",
+							"params": [
+								{
+									"name": "实现",
+									"type": "simple.library.wsd.xupdate.提示器",
+									"description": "自定义提示器。"
+								}
+							]
+						},
+						{
+							"name": "置下载器",
+							"description": "替换本实例的下载器；仅可在空闲时设置，空对象恢复默认实现。",
+							"params": [
+								{
+									"name": "实现",
+									"type": "simple.library.wsd.xupdate.下载器",
+									"description": "自定义下载器。"
+								}
+							]
+						},
+						{
+							"name": "置网络服务",
+							"description": "替换本实例的网络服务；仅可在空闲时设置，空对象恢复默认实现。",
+							"params": [
+								{
+									"name": "实现",
+									"type": "simple.library.wsd.xupdate.网络服务",
+									"description": "自定义网络服务。"
+								}
+							]
+						},
+						{
+							"name": "置校验器",
+							"description": "替换本实例的校验器；仅可在空闲时设置，空对象恢复默认实现。",
+							"params": [
+								{
+									"name": "实现",
+									"type": "simple.library.wsd.xupdate.校验器",
+									"description": "自定义校验器。"
+								}
+							]
+						},
+						{
+							"name": "置安装器",
+							"description": "替换本实例的安装器；仅可在空闲时设置，空对象恢复默认实现。",
+							"params": [
+								{
+									"name": "实现",
+									"type": "simple.library.wsd.xupdate.安装器",
+									"description": "自定义安装器。"
+								}
+							]
+						},
+						{
+							"name": "转入后台",
+							"description": "下载中关闭提示并转入后台通知；不表示允许静默安装。",
+							"params": []
+						}
+					],
+					"properties": [
+						{
+							"name": "使用POST",
+							"type": "逻辑型",
+							"description": "是否用 POST 表单检查；默认为 GET。",
+							"writable": true,
+							"initializer": "假"
+						},
+						{
+							"name": "自定义解析",
+							"type": "逻辑型",
+							"description": "是否通过解析响应事件填写更新信息。",
+							"writable": true,
+							"initializer": "假"
+						},
+						{
+							"name": "自动提示",
+							"type": "逻辑型",
+							"description": "检查发现更新后是否自动显示更新框。",
+							"writable": true,
+							"initializer": "真"
+						},
+						{
+							"name": "下载后安装",
+							"type": "逻辑型",
+							"description": "下载完成后是否请求系统安装；设置为假可先取得 APK。",
+							"writable": true,
+							"initializer": "真"
+						},
+						{
+							"name": "仅WiFi",
+							"type": "逻辑型",
+							"description": "开始检查和下载时是否要求当前网络为 Wi-Fi；不自动切换网络。",
+							"writable": true,
+							"initializer": "假"
+						},
+						{
+							"name": "请求超时",
+							"type": "整数型",
+							"description": "连接及连续读取的超时毫秒数，范围 1000 至 120000。",
+							"writable": true,
+							"initializer": "15000"
+						},
+						{
+							"name": "状态",
+							"type": "整数型",
+							"description": "当前状态，使用状态_* 常量比较。",
+							"writable": false
+						},
+						{
+							"name": "已下载文件",
+							"type": "文本型",
+							"description": "最后一次下载校验通过的私有 APK 路径，尚无文件时为空文本。",
+							"writable": false
+						},
+						{
+							"name": "POST使用JSON",
+							"type": "逻辑型",
+							"description": "POST 是否发送 UTF-8 JSON 对象，参数值为文本；默认假表示表单。",
+							"writable": true,
+							"initializer": "假"
+						},
+						{
+							"name": "自动下载",
+							"description": "发现更新后跳过提示直接下载；是否请求安装由下载后安装独立控制。",
+							"type": "逻辑型",
+							"writable": true,
+							"initializer": "假"
+						}
+					],
+					"events": [
+						{
+							"name": "检查开始",
+							"description": "版本请求即将发出，事件在界面线程触发。",
+							"params": []
+						},
+						{
+							"name": "解析响应",
+							"description": "启用自定义解析后触发；默认有更新为假，必须明确填写有效信息。",
+							"params": [
+								{
+									"name": "响应",
+									"type": "文本型",
+									"description": "原始响应内容。"
+								},
+								{
+									"name": "信息",
+									"type": "simple.library.wsd.xupdate.更新信息",
+									"description": "在本事件内填写；事件返回后读取其快照。"
+								}
+							]
+						},
+						{
+							"name": "发现更新",
+							"description": "存在高于本机的未忽略版本，之后按自动提示配置决定是否显示更新框。",
+							"params": [
+								{
+									"name": "信息",
+									"type": "simple.library.wsd.xupdate.更新信息",
+									"description": "独立的版本信息，修改不影响当前提示或下载。"
+								}
+							]
+						},
+						{
+							"name": "无需更新",
+							"description": "服务端无更新、本机版本已足够或此版本被用户忽略。",
+							"params": []
+						},
+						{
+							"name": "下载开始",
+							"description": "下载任务已启动，进度事件在界面线程返回。",
+							"params": []
+						},
+						{
+							"name": "下载进度",
+							"description": "下载期间的进度；只有写入完成且校验通过后才报告 100%。",
+							"params": [
+								{
+									"name": "已下载",
+									"type": "长整数型",
+									"description": "已接收的字节数。"
+								},
+								{
+									"name": "总大小",
+									"type": "长整数型",
+									"description": "预期字节数；未知时为零。"
+								},
+								{
+									"name": "百分比",
+									"type": "整数型",
+									"description": "0 至 100；总大小未知时为 -1。"
+								}
+							]
+						},
+						{
+							"name": "下载完成",
+							"description": "APK 下载和可选大小、MD5 校验完成；不表示已经安装。",
+							"params": [
+								{
+									"name": "文件",
+									"type": "文本型",
+									"description": "已写入完成且校验通过的私有缓存 APK 绝对路径。"
+								}
+							]
+						},
+						{
+							"name": "安装授权",
+							"description": "已打开允许此来源安装应用的系统设置；拒绝后报告失败，可重新请求。",
+							"params": [
+								{
+									"name": "文件",
+									"type": "文本型",
+									"description": "等待本应用安装来源授权的已校验 APK。"
+								}
+							]
+						},
+						{
+							"name": "已请求安装",
+							"description": "系统安装界面已打开；用户仍可拒绝或取消，不表示安装成功。",
+							"params": [
+								{
+									"name": "文件",
+									"type": "文本型",
+									"description": "交给系统安装器的 APK 路径。"
+								}
+							]
+						},
+						{
+							"name": "已取消",
+							"description": "活动任务被用户或程序取消；切换窗口时静默释放，不回调旧窗口。",
+							"params": []
+						},
+						{
+							"name": "失败",
+							"description": "检查、下载、校验或安装失败；续传的网络失败保留记录，可继续或取消；校验失败移除损坏文件。",
+							"params": [
+								{
+									"name": "阶段",
+									"type": "整数型",
+									"description": "阶段_检查、阶段_下载或阶段_安装。"
+								},
+								{
+									"name": "说明",
+									"type": "文本型",
+									"description": "失败原因，任务已停止；可修正配置后重试。"
+								}
+							]
+						},
+						{
+							"name": "已暂停",
+							"description": "下载已停止且续传记录已保留，现在可以继续；不表示下载完成。",
+							"params": []
+						},
+						{
+							"name": "检查结束",
+							"description": "检查请求已经结束；随后仍可能解析、提示或下载。",
+							"params": []
+						}
+					],
+					"constants": [
+						{
+							"name": "状态_空闲",
+							"type": "整数型",
+							"value": "0",
+							"description": "状态：空闲。"
+						},
+						{
+							"name": "状态_检查",
+							"type": "整数型",
+							"value": "1",
+							"description": "状态：检查。"
+						},
+						{
+							"name": "状态_提示",
+							"type": "整数型",
+							"value": "2",
+							"description": "状态：提示。"
+						},
+						{
+							"name": "状态_下载",
+							"type": "整数型",
+							"value": "3",
+							"description": "状态：下载。"
+						},
+						{
+							"name": "状态_就绪",
+							"type": "整数型",
+							"value": "4",
+							"description": "状态：就绪。"
+						},
+						{
+							"name": "状态_授权",
+							"type": "整数型",
+							"value": "5",
+							"description": "状态：授权。"
+						},
+						{
+							"name": "状态_安装",
+							"type": "整数型",
+							"value": "6",
+							"description": "状态：安装。"
+						},
+						{
+							"name": "阶段_检查",
+							"type": "整数型",
+							"value": "1",
+							"description": "阶段：检查。"
+						},
+						{
+							"name": "阶段_下载",
+							"type": "整数型",
+							"value": "2",
+							"description": "阶段：下载。"
+						},
+						{
+							"name": "阶段_安装",
+							"type": "整数型",
+							"value": "3",
+							"description": "阶段：安装。"
+						},
+						{
+							"name": "状态_暂停",
+							"type": "整数型",
+							"value": "7",
+							"description": "暂停或可恢复的失败，等待已暂停或失败事件后可继续。"
+						}
+					]
+				},
+				{
+					"name": "快捷更新器",
+					"type": "simple.library.wsd.xupdateapi.快捷更新器",
+					"kind": "component",
+					"description": "通过 EasyUpdate 发起更新，沿用核心更新器的配置与事件，可直接启用 Aria 断点续传。",
+					"icon": "icons/refresh-dot.svg",
+					"inherits": [
+						"simple.library.wsd.xupdate.更新器"
+					],
+					"properties": [
+						{
+							"name": "断点续传",
+							"type": "逻辑型",
+							"description": "下次下载是否使用 Aria 续传，默认关闭。启用时必须提供真实 MD5；暂停保留记录，取消或未转入后台时离开窗口移除未完成记录；不保证进程重启后恢复，同地址不能多实例同时下载。",
+							"writable": true,
+							"initializer": "假"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "更新信息",
+					"type": "simple.library.wsd.xupdate.更新信息",
+					"kind": "object",
+					"description": "可创建、修改的版本信息；提交更新器后使用独立快照，大小单位为字节。",
+					"icon": "icons/file-info.svg",
+					"properties": [
+						{
+							"name": "有更新",
+							"type": "逻辑型",
+							"description": "是否有可用更新；自定义解析时须明确设置。",
+							"writable": true
+						},
+						{
+							"name": "版本号",
+							"type": "整数型",
+							"description": "服务端版本号，必须大于零且大于本机版本才作为更新。",
+							"writable": true
+						},
+						{
+							"name": "版本名",
+							"type": "文本型",
+							"description": "向用户显示的版本名称。",
+							"writable": true
+						},
+						{
+							"name": "更新内容",
+							"type": "文本型",
+							"description": "向用户显示的更新说明，支持换行。",
+							"writable": true
+						},
+						{
+							"name": "下载地址",
+							"type": "文本型",
+							"description": "完整的 HTTP 或 HTTPS APK 下载地址。",
+							"writable": true
+						},
+						{
+							"name": "文件大小",
+							"type": "长整数型",
+							"description": "预期文件大小，单位为字节；零表示未知。",
+							"writable": true
+						},
+						{
+							"name": "MD5",
+							"type": "文本型",
+							"description": "APK 的 32 位十六进制 MD5；空文本表示不校验摘要。",
+							"writable": true
+						},
+						{
+							"name": "强制更新",
+							"type": "逻辑型",
+							"description": "隐藏提示框关闭按钮；程序仍可取消，系统安装仍由用户确认。",
+							"writable": true
+						},
+						{
+							"name": "允许忽略",
+							"type": "逻辑型",
+							"description": "允许用户忽略该版本；强制更新优先，不显示忽略入口。",
+							"writable": true
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "高级定制（可选）",
+			"definitions": [
+				{
+					"name": "检查器",
+					"description": "替换版本检查过程；通过回调提交原始响应或已经解析的更新信息。",
+					"type": "simple.library.wsd.xupdate.检查器",
+					"kind": "interface",
+					"functions": [
+						{
+							"name": "检查",
+							"description": "开始异步检查。",
+							"params": [
+								{
+									"name": "地址",
+									"type": "文本型",
+									"description": "检查地址。"
+								},
+								{
+									"name": "回调",
+									"type": "simple.library.wsd.xupdate.检查回调",
+									"description": "本次检查的单次结果回调。"
+								}
+							]
+						},
+						{
+							"name": "取消",
+							"description": "取消本检查器持有的请求。",
+							"params": []
+						}
+					]
+				},
+				{
+					"name": "解析器",
+					"description": "将业务协议转换为更新信息；自定义解析结果自行决定是否存在更新。",
+					"type": "simple.library.wsd.xupdate.解析器",
+					"kind": "interface",
+					"functions": [
+						{
+							"name": "解析",
+							"description": "解析服务器响应。",
+							"params": [
+								{
+									"name": "响应",
+									"type": "文本型",
+									"description": "原始响应文本。"
+								}
+							],
+							"return": "simple.library.wsd.xupdate.更新信息"
+						}
+					]
+				},
+				{
+					"name": "提示器",
+					"description": "接管更新提示界面；调用方可使用自己的组件展示信息并决定何时下载。",
+					"type": "simple.library.wsd.xupdate.提示器",
+					"kind": "interface",
+					"functions": [
+						{
+							"name": "显示",
+							"description": "显示更新提示；后续下载可调用更新器的下载更新。",
+							"params": [
+								{
+									"name": "信息",
+									"type": "simple.library.wsd.xupdate.更新信息",
+									"description": "与活动流程隔离的更新信息。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "下载器",
+					"description": "替换 APK 下载实现；进度、结果及错误必须通过本次下载回调返回。",
+					"type": "simple.library.wsd.xupdate.下载器",
+					"kind": "interface",
+					"functions": [
+						{
+							"name": "下载",
+							"description": "开始下载，不执行版本检查或安装。",
+							"params": [
+								{
+									"name": "信息",
+									"type": "simple.library.wsd.xupdate.更新信息",
+									"description": "地址、大小和校验信息。"
+								},
+								{
+									"name": "回调",
+									"type": "simple.library.wsd.xupdate.下载回调",
+									"description": "本次下载的结果回调。"
+								}
+							]
+						},
+						{
+							"name": "取消",
+							"description": "取消当前下载。",
+							"params": []
+						},
+						{
+							"name": "转入后台",
+							"description": "将当前下载转入此下载器支持的后台执行方式。",
+							"params": []
+						}
+					]
+				},
+				{
+					"name": "网络服务",
+					"description": "替换版本检查的网络传输；请求配置以 JSON 对象文本传递，值为文本。",
+					"type": "simple.library.wsd.xupdate.网络服务",
+					"kind": "interface",
+					"functions": [
+						{
+							"name": "请求",
+							"description": "发出异步请求；只提交响应，不执行更新判断。",
+							"params": [
+								{
+									"name": "使用POST",
+									"type": "逻辑型",
+									"description": "是否使用 POST，假表示 GET。"
+								},
+								{
+									"name": "使用JSON",
+									"type": "逻辑型",
+									"description": "POST 是否使用 JSON 请求体。"
+								},
+								{
+									"name": "地址",
+									"type": "文本型",
+									"description": "请求地址。"
+								},
+								{
+									"name": "参数",
+									"type": "文本型",
+									"description": "参数 JSON 对象文本。"
+								},
+								{
+									"name": "请求头",
+									"type": "文本型",
+									"description": "请求头 JSON 对象文本。"
+								},
+								{
+									"name": "回调",
+									"type": "simple.library.wsd.xupdate.检查回调",
+									"description": "本次请求的结果回调。"
+								}
+							]
+						},
+						{
+							"name": "取消",
+							"description": "取消本服务持有的检查请求。",
+							"params": []
+						}
+					]
+				},
+				{
+					"name": "校验器",
+					"description": "替换下载文件的最终校验；只有通过后才报告下载完成和允许后续安装。",
+					"type": "simple.library.wsd.xupdate.校验器",
+					"kind": "interface",
+					"functions": [
+						{
+							"name": "校验",
+							"description": "验证已下载的完整文件。",
+							"params": [
+								{
+									"name": "文件",
+									"type": "文本型",
+									"description": "文件绝对路径。"
+								},
+								{
+									"name": "信息",
+									"type": "simple.library.wsd.xupdate.更新信息",
+									"description": "预期大小及校验信息。"
+								}
+							],
+							"return": "逻辑型"
+						}
+					]
+				},
+				{
+					"name": "安装器",
+					"description": "接管 APK 安装请求；返回值只表示是否接管，不能表示系统已经安装成功。",
+					"type": "simple.library.wsd.xupdate.安装器",
+					"kind": "interface",
+					"functions": [
+						{
+							"name": "安装",
+							"description": "请求安装有效的本地 APK。",
+							"params": [
+								{
+									"name": "文件",
+									"type": "文本型",
+									"description": "可读取的 APK 绝对路径。"
+								}
+							],
+							"return": "逻辑型"
+						}
+					]
+				},
+				{
+					"name": "检查回调",
+					"description": "一次检查的异步结果；首个提交生效，取消或新任务开始后旧结果不再进入流程。",
+					"type": "simple.library.wsd.xupdate.检查回调",
+					"kind": "object",
+					"functions": [
+						{
+							"name": "提交响应",
+							"description": "提交原始响应，交由当前解析器处理。",
+							"params": [
+								{
+									"name": "响应",
+									"type": "文本型",
+									"description": "原始响应文本。"
+								}
+							]
+						},
+						{
+							"name": "提交信息",
+							"description": "直接提交已解析的信息，跳过文本解析器。",
+							"params": [
+								{
+									"name": "信息",
+									"type": "simple.library.wsd.xupdate.更新信息",
+									"description": "更新信息；提交时固定其值。"
+								}
+							]
+						},
+						{
+							"name": "报告失败",
+							"description": "报告本次检查失败。",
+							"params": [
+								{
+									"name": "说明",
+									"type": "文本型",
+									"description": "错误说明。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "下载回调",
+					"description": "自定义下载器的进度与终止回调；完成后仍由更新流程执行最终文件校验。",
+					"type": "simple.library.wsd.xupdate.下载回调",
+					"kind": "object",
+					"functions": [
+						{
+							"name": "报告进度",
+							"description": "汇报下载进度，尚未校验时不会作为最终完成。",
+							"params": [
+								{
+									"name": "已下载字节",
+									"type": "长整数型",
+									"description": "已下载字节数。"
+								},
+								{
+									"name": "总字节",
+									"type": "长整数型",
+									"description": "总字节数，未知时为零。"
+								}
+							]
+						},
+						{
+							"name": "提交文件",
+							"description": "提交已经写入完成的文件，随后执行当前配置的校验。",
+							"params": [
+								{
+									"name": "文件",
+									"type": "文本型",
+									"description": "本地文件绝对路径。"
+								}
+							]
+						},
+						{
+							"name": "报告失败",
+							"description": "结束下载并报告失败。",
+							"params": [
+								{
+									"name": "说明",
+									"type": "文本型",
+									"description": "错误说明。"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "下载适配",
+			"definitions": [
+				{
+					"name": "Aria下载器",
+					"kind": "object",
+					"type": "simple.library.wsd.xupdateapi.Aria下载器",
+					"description": "可设置到 XUpdate 更新器的 Aria 续传策略，配合核心的暂停、继续、校验及后台通知使用。",
+					"icon": "icons/refresh-dot.svg",
+					"inherits": [
+						"simple.library.wsd.xupdate.下载器"
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,21 @@
+/*
+ * XHttp2 的 AndroidX 网络依赖。
+ * 显式提供上游 compileOnly 所需的客户端、序列化和响应式运行依赖。
+ */
+android {
+	// 本库资源包名，与 Java 基础包保持一致。
+	namespace = 'simple.library.wsd.xhttp2'
+}
+
+dependencies {
+	// aars/ 内为同版本清单适配包，仅移除固定权限，保留原始代码及其它条目。
+	implementation 'androidx.appcompat:appcompat:1.1.0'
+	implementation 'com.squareup.okhttp3:okhttp:3.14.9'
+	implementation 'com.google.code.gson:gson:2.8.5'
+	implementation 'io.reactivex.rxjava2:rxjava:2.2.20'
+	implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+	implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+	implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+	implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+	implementation 'com.jakewharton:disklrucache:2.0.2'
+}

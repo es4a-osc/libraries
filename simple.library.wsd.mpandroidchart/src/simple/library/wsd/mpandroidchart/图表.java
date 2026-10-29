@@ -1,9 +1,9 @@
 package simple.library.wsd.mpandroidchart;
 
+import simple.runtime.annotations.SimpleEvent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleProperty;
-import simple.runtime.annotations.SimpleEvent;
 import simple.runtime.components.可视组件;
 
 /**
@@ -35,6 +35,24 @@ public interface 图表 extends 可视组件 {
 	void 选择被取消();
 
 	/* 图表属性 */
+
+	/**
+	 * 已添加的数据组数量；饼图有扇区时为 1，否则为 0。
+	 *
+	 * @return 当前模型中的数据组数量，不要求已经构建图形。
+	 * @throws IllegalStateException 组件已销毁或未在界面线程调用。
+	 */
+	@SimpleProperty
+	int 数据组数量();
+
+	/**
+	 * 分类项目数量；饼图返回已经添加的扇区数量。
+	 *
+	 * @return 当前项目数量，清空数据后为 0。
+	 * @throws IllegalStateException 组件已销毁或未在界面线程调用。
+	 */
+	@SimpleProperty
+	int 项目数量();
 
 	/**
 	 * 构建动画时长，0 至 60000 毫秒，0 表示关闭。

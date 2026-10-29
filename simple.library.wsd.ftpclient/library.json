@@ -1,6 +1,6 @@
 {
 	"name": "FTP客户端",
-	"description": "FTP 和 SFTP 文件管理；SFTP 首次确认并记住服务器，支持 Android 8.0+。",
+	"description": "基于 Apache Commons Net https://commons.apache.org/proper/commons-net/ 和 JSch https://github.com/mwiede/jsch 封装，提供 FTP/SFTP 文件管理及传输；SFTP 需 Android 8.0 及以上。",
 	"version": "0.1.0",
 	"authors": [
 		{

@@ -1,0 +1,456 @@
+{
+	"name": "Alerter提示条库",
+	"description": "基于 Alerter https://github.com/Tapadoo/Alerter 封装，提供窗口内提示条，支持图标、按钮、进度、动画及交互事件。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展非可视组件",
+			"definitions": [
+				{
+					"name": "提示条",
+					"description": "在当前窗口内显示标题、内容、图标、进度和按钮；配置用于下次显示，同一窗口的新显示替换旧显示。界面线程调用。",
+					"kind": "component",
+					"type": "simple.library.wsd.alerter.提示条",
+					"icon": "icons/layout-navbar.svg",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"properties": [
+						{
+							"name": "标题",
+							"type": "文本型",
+							"description": "标题文本，空文本不显示标题。 配置用于下次显示。",
+							"initializer": "\"\""
+						},
+						{
+							"name": "内容",
+							"type": "文本型",
+							"description": "正文文本，空文本不显示正文。 配置用于下次显示。",
+							"initializer": "\"\""
+						},
+						{
+							"name": "显示时间",
+							"type": "长整数型",
+							"description": "自动关闭前的显示时间，单位毫秒，不得小于零；始终显示开启时不自动关闭。 配置用于下次显示。",
+							"initializer": "3000"
+						},
+						{
+							"name": "背景颜色",
+							"type": "整数型",
+							"description": "背景 ARGB 颜色；背景图片非空时优先使用图片。 配置用于下次显示。",
+							"initializer": "&HFF424242",
+							"editor": "simple.color"
+						},
+						{
+							"name": "背景图片",
+							"type": "文本型",
+							"description": "背景图片，支持资源编号文本、@drawable/名称、资产文件名及有读取权限的绝对文件路径；空文本使用背景颜色。 配置用于下次显示。",
+							"initializer": "\"\"",
+							"editor": "simple.asset"
+						},
+						{
+							"name": "图标",
+							"type": "文本型",
+							"description": "左侧图片，支持资源编号文本、@drawable/名称、资产文件名及有读取权限的绝对文件路径；空文本沿用内置图标。 配置用于下次显示。",
+							"initializer": "\"\"",
+							"editor": "simple.asset"
+						},
+						{
+							"name": "右侧图标",
+							"type": "文本型",
+							"description": "右侧图片，图片标识规则与图标相同；是否显示由显示右侧图标决定。 配置用于下次显示。",
+							"initializer": "\"\"",
+							"editor": "simple.asset"
+						},
+						{
+							"name": "图标颜色",
+							"type": "整数型",
+							"description": "左侧图标的 ARGB 着色。 配置用于下次显示。",
+							"initializer": "&HFFFFFFFF",
+							"editor": "simple.color"
+						},
+						{
+							"name": "右侧图标颜色",
+							"type": "整数型",
+							"description": "右侧图标的 ARGB 着色。 配置用于下次显示。",
+							"initializer": "&HFFFFFFFF",
+							"editor": "simple.color"
+						},
+						{
+							"name": "图标尺寸",
+							"type": "整数型",
+							"description": "左侧图标宽高，单位 DIP；-1 沿用内置尺寸，设置后取消像素尺寸设置。 配置用于下次显示。",
+							"initializer": "-1"
+						},
+						{
+							"name": "右侧图标尺寸",
+							"type": "整数型",
+							"description": "右侧图标宽高，单位 DIP；-1 沿用内置尺寸，设置后取消像素尺寸设置。 配置用于下次显示。",
+							"initializer": "-1"
+						},
+						{
+							"name": "显示图标",
+							"type": "逻辑型",
+							"description": "是否显示左侧图标；显示进度开启时由进度指示替代。 配置用于下次显示。",
+							"initializer": "真"
+						},
+						{
+							"name": "显示右侧图标",
+							"type": "逻辑型",
+							"description": "是否显示右侧图标。 配置用于下次显示。",
+							"initializer": "假"
+						},
+						{
+							"name": "图标动画",
+							"type": "逻辑型",
+							"description": "是否播放左侧图标的脉冲动画。 配置用于下次显示。",
+							"initializer": "真"
+						},
+						{
+							"name": "右侧图标动画",
+							"type": "逻辑型",
+							"description": "是否播放右侧图标的脉冲动画。 配置用于下次显示。",
+							"initializer": "真"
+						},
+						{
+							"name": "单击动画",
+							"type": "逻辑型",
+							"description": "是否显示提示条按下时的反馈动画。 配置用于下次显示。",
+							"initializer": "真"
+						},
+						{
+							"name": "单击关闭",
+							"type": "逻辑型",
+							"description": "点击提示条主体后是否关闭；先派发被单击事件，再关闭仍属于本次显示的提示条。 配置用于下次显示。",
+							"initializer": "真"
+						},
+						{
+							"name": "始终显示",
+							"type": "逻辑型",
+							"description": "是否持续显示，直至关闭、滑动关闭或被新的提示条替换。 配置用于下次显示。",
+							"initializer": "假"
+						},
+						{
+							"name": "滑动关闭",
+							"type": "逻辑型",
+							"description": "是否允许使用滑动手势关闭提示条。 配置用于下次显示。",
+							"initializer": "假"
+						},
+						{
+							"name": "启用震动",
+							"type": "逻辑型",
+							"description": "显示时是否请求震动反馈；实际效果受设备硬件和系统设置影响。 配置用于下次显示。",
+							"initializer": "假"
+						},
+						{
+							"name": "显示进度",
+							"type": "逻辑型",
+							"description": "是否在图标区域显示进度指示。 配置用于下次显示。",
+							"initializer": "假"
+						},
+						{
+							"name": "进度颜色",
+							"type": "整数型",
+							"description": "进度指示的 ARGB 颜色。 配置用于下次显示。",
+							"initializer": "&HFFFFFFFF",
+							"editor": "simple.color"
+						},
+						{
+							"name": "禁用外部触摸",
+							"type": "逻辑型",
+							"description": "显示时是否阻止提示条以外区域的触摸。 配置用于下次显示。",
+							"initializer": "假"
+						},
+						{
+							"name": "位置",
+							"type": "整数型",
+							"description": "提示条在窗口中的 Android Gravity 值，48 表示顶部，80 表示底部。 配置用于下次显示。",
+							"initializer": "48",
+							"editor": "simple.gravity"
+						},
+						{
+							"name": "内容对齐",
+							"type": "整数型",
+							"description": "提示条内容区域的 Android Gravity 值，16 表示垂直居中。 配置用于下次显示。",
+							"initializer": "16",
+							"editor": "simple.gravity"
+						},
+						{
+							"name": "右侧图标对齐",
+							"type": "整数型",
+							"description": "右侧图标的 Android Gravity 值，8388613 表示跟随文字方向的末端。 配置用于下次显示。",
+							"initializer": "8388613",
+							"editor": "simple.gravity"
+						},
+						{
+							"name": "进入动画资源",
+							"type": "整数型",
+							"description": "进入动画资源编号，0 沿用内置动画。 配置用于下次显示。",
+							"initializer": "0"
+						},
+						{
+							"name": "退出动画资源",
+							"type": "整数型",
+							"description": "退出动画资源编号，0 沿用内置动画。 配置用于下次显示。",
+							"initializer": "0"
+						},
+						{
+							"name": "阴影高度",
+							"type": "单精度小数型",
+							"description": "背景的抬升高度，单位 DIP；-1 沿用内置值，不改变提示条布局高度。 配置用于下次显示。",
+							"initializer": "-1"
+						},
+						{
+							"name": "提示声音",
+							"type": "文本型",
+							"description": "提示音 URI，空文本不播放；内容 URI 需具备读取权限，可使用 android.resource://包名/raw/资源名。 配置用于下次显示。",
+							"initializer": "\"\""
+						},
+						{
+							"name": "正在显示",
+							"type": "逻辑型",
+							"description": "本实例的提示条是否正在等待显示、显示或退出。",
+							"writable": false
+						}
+					],
+					"events": [
+						{
+							"name": "被显示",
+							"description": "本次提示条完成进入动画后触发。"
+						},
+						{
+							"name": "被隐藏",
+							"description": "本次提示条自动关闭、程序关闭、滑动关闭或被另一提示条替换后触发一次；销毁不派发。"
+						},
+						{
+							"name": "被单击",
+							"description": "用户点击提示条主体时触发；是否随后关闭由本次显示采用的单击关闭设置决定。"
+						},
+						{
+							"name": "按钮被单击",
+							"description": "用户点击操作按钮时触发；不会自动关闭，调用关闭方法可结束显示。",
+							"params": [
+								{
+									"name": "标记",
+									"type": "整数型",
+									"description": "添加按钮时指定的标记。"
+								}
+							]
+						}
+					],
+					"functions": [
+						{
+							"name": "显示",
+							"description": "使用当前配置显示提示条，立即返回；同一窗口的新显示替换旧显示。"
+						},
+						{
+							"name": "关闭",
+							"description": "使用退出动画关闭本实例当前提示条；重复调用不重复触发被隐藏。"
+						},
+						{
+							"name": "添加按钮",
+							"description": "为下次显示添加按钮；相同标记替换已有配置，按钮顺序保留首次添加顺序。",
+							"params": [
+								{
+									"name": "标记",
+									"type": "整数型",
+									"description": "用于按钮被单击事件的标记。"
+								},
+								{
+									"name": "标题",
+									"type": "文本型",
+									"description": "按钮显示文字。"
+								},
+								{
+									"name": "样式",
+									"type": "整数型",
+									"description": "按钮样式资源编号，-1 使用内置 AlertButton，0 不指定额外样式。"
+								}
+							]
+						},
+						{
+							"name": "清空按钮",
+							"description": "清除下次显示的全部按钮，不修改当前界面。"
+						},
+						{
+							"name": "更新标题",
+							"description": "更新标题配置，并立即修改本实例当前提示条的标题。",
+							"params": [
+								{
+									"name": "标题",
+									"type": "文本型",
+									"description": "新的标题文本。"
+								}
+							]
+						},
+						{
+							"name": "更新内容",
+							"description": "更新正文配置，并立即修改本实例当前提示条的正文。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型",
+									"description": "新的正文文本。"
+								}
+							]
+						},
+						{
+							"name": "置标题资源",
+							"description": "读取字符串资源作为下次显示的标题。",
+							"params": [
+								{
+									"name": "资源编号",
+									"type": "整数型",
+									"description": "字符串资源编号。"
+								}
+							]
+						},
+						{
+							"name": "置内容资源",
+							"description": "读取字符串资源作为下次显示的正文。",
+							"params": [
+								{
+									"name": "资源编号",
+									"type": "整数型",
+									"description": "字符串资源编号。"
+								}
+							]
+						},
+						{
+							"name": "置背景颜色资源",
+							"description": "读取颜色资源作为下次显示的背景颜色。",
+							"params": [
+								{
+									"name": "资源编号",
+									"type": "整数型",
+									"description": "颜色资源编号。"
+								}
+							]
+						},
+						{
+							"name": "置进度颜色资源",
+							"description": "读取颜色资源作为下次显示的进度颜色。",
+							"params": [
+								{
+									"name": "资源编号",
+									"type": "整数型",
+									"description": "颜色资源编号。"
+								}
+							]
+						},
+						{
+							"name": "置图标像素尺寸",
+							"description": "设置下次显示的左侧图标宽高，优先于此前的 DIP 尺寸设置。",
+							"params": [
+								{
+									"name": "尺寸",
+									"type": "整数型",
+									"description": "像素尺寸，不得小于零。"
+								}
+							]
+						},
+						{
+							"name": "置右侧图标像素尺寸",
+							"description": "设置下次显示的右侧图标宽高，优先于此前的 DIP 尺寸设置。",
+							"params": [
+								{
+									"name": "尺寸",
+									"type": "整数型",
+									"description": "像素尺寸，不得小于零。"
+								}
+							]
+						},
+						{
+							"name": "置背景图片资源",
+							"description": "设置下次显示的背景图片资源；0 恢复使用背景颜色。",
+							"params": [
+								{
+									"name": "资源编号",
+									"type": "整数型",
+									"description": "图片资源编号，不得小于零。"
+								}
+							]
+						},
+						{
+							"name": "置图标资源",
+							"description": "设置下次显示的左侧图标资源；0 沿用内置图标。",
+							"params": [
+								{
+									"name": "资源编号",
+									"type": "整数型",
+									"description": "图片资源编号，不得小于零。"
+								}
+							]
+						},
+						{
+							"name": "置右侧图标资源",
+							"description": "设置下次显示的右侧图标资源；0 沿用内置图标。",
+							"params": [
+								{
+									"name": "资源编号",
+									"type": "整数型",
+									"description": "图片资源编号，不得小于零。"
+								}
+							]
+						},
+						{
+							"name": "置标题字体",
+							"description": "设置下次显示使用的标题字体。",
+							"params": [
+								{
+									"name": "字体名称",
+									"type": "文本型",
+									"description": "系统字体族名称、@assets/字体文件名或有读取权限的绝对文件路径；空文本使用默认字体。"
+								},
+								{
+									"name": "样式",
+									"type": "整数型",
+									"description": "0 普通、1 粗体、2 斜体、3 粗斜体。"
+								}
+							]
+						},
+						{
+							"name": "置内容字体",
+							"description": "设置下次显示使用的内容字体。",
+							"params": [
+								{
+									"name": "字体名称",
+									"type": "文本型",
+									"description": "系统字体族名称、@assets/字体文件名或有读取权限的绝对文件路径；空文本使用默认字体。"
+								},
+								{
+									"name": "样式",
+									"type": "整数型",
+									"description": "0 普通、1 粗体、2 斜体、3 粗斜体。"
+								}
+							]
+						},
+						{
+							"name": "置按钮字体",
+							"description": "设置下次显示使用的按钮字体。",
+							"params": [
+								{
+									"name": "字体名称",
+									"type": "文本型",
+									"description": "系统字体族名称、@assets/字体文件名或有读取权限的绝对文件路径；空文本使用默认字体。"
+								},
+								{
+									"name": "样式",
+									"type": "整数型",
+									"description": "0 普通、1 粗体、2 斜体、3 粗斜体。"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,6 +1,6 @@
 {
 	"name": "APK信息库",
-	"description": "读取本地独立 APK 的名称、包名、版本和 PNG 图标。",
+	"description": "提供本地独立 APK 的名称、包名、版本及图标读取，不支持 APKS、XAPK 或拆分 APK 组合。",
 	"version": "0.1.0",
 	"authors": [
 		{

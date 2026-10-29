@@ -1,0 +1,10 @@
+<!-- 构造时允许确定与不确定模式切换，并为两种模式准备 Material 绘制资源。 -->
+<com.xuexiang.xui.widget.progress.materialprogressbar.MaterialProgressBar
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:indeterminateOnly="false"
+	android:indeterminate="false"
+	android:max="100"
+	app:mpb_setBothDrawables="true" />

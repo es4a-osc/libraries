@@ -1,6 +1,6 @@
 {
 	"name": "MPAndroidChart图表库",
-	"description": "折线、柱状、横向柱状、饼状、散点、气泡、雷达、蜡烛和组合图；MPAndroidChart 2.1.5。",
+	"description": "基于 MPAndroidChart https://github.com/PhilJay/MPAndroidChart 封装，提供折线、柱状、横向柱状、饼状、散点、气泡、雷达、蜡烛及组合图。",
 	"version": "0.1.0",
 	"authors": [
 		{
@@ -28,17 +28,17 @@
 							"description": "在界面线程初始化样式，清空数据和自定义轴范围；后续数据操作必须先初始化。",
 							"params": [
 								{
-									"name": "标题",
+									"name": "title",
 									"type": "文本型",
 									"description": "图表标题，允许空文本。"
 								},
 								{
-									"name": "字体大小",
+									"name": "textSize",
 									"type": "单精度小数型",
 									"description": "单位 SP，范围 6 至 24。"
 								},
 								{
-									"name": "背景颜色",
+									"name": "backgroundColor",
 									"type": "整数型",
 									"description": "ARGB 颜色。"
 								}
@@ -54,6 +54,18 @@
 						}
 					],
 					"properties": [
+						{
+							"name": "数据组数量",
+							"description": "已添加的数据组数量；饼图有扇区时为 1，否则为 0。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "项目数量",
+							"description": "分类项目数量；饼图返回已经添加的扇区数量，清空后为 0。",
+							"type": "整数型",
+							"writable": false
+						},
 						{
 							"name": "动画时间",
 							"description": "构建动画时长，0 至 60000 毫秒，0 表示关闭。",
@@ -85,17 +97,17 @@
 							"description": "编号从零开始；饼图组号为 0，蜡烛图数值为收盘值。",
 							"params": [
 								{
-									"name": "数据组",
+									"name": "series",
 									"type": "整数型",
 									"description": "数据组添加顺序编号。"
 								},
 								{
-									"name": "项目",
+									"name": "item",
 									"type": "整数型",
 									"description": "项目索引；饼图为扇区索引。"
 								},
 								{
-									"name": "数值",
+									"name": "value",
 									"type": "单精度小数型",
 									"description": "当前数值。"
 								}
@@ -121,7 +133,7 @@
 							"description": "设置分类项目名称；横坐标按数组索引排列。",
 							"params": [
 								{
-									"name": "项目名称",
+									"name": "names",
 									"type": "文本型()",
 									"description": "按数据顺序排列的项目名称；添加数据前设置，更换前先清空。"
 								}
@@ -132,17 +144,17 @@
 							"description": "设置指定数值轴范围，重新构建后生效；初始化图表可恢复自动范围。",
 							"params": [
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								},
 								{
-									"name": "最小值",
+									"name": "min",
 									"type": "单精度小数型",
 									"description": "有限数值，必须小于最大值。"
 								},
 								{
-									"name": "最大值",
+									"name": "max",
 									"type": "单精度小数型",
 									"description": "有限数值。"
 								}
@@ -188,22 +200,22 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -236,22 +248,22 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -274,22 +286,22 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -312,17 +324,17 @@
 							"description": "添加一个非负扇区，数值总和必须为正；构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "扇区名称。"
 								},
 								{
-									"name": "数值",
+									"name": "value",
 									"type": "单精度小数型",
 									"description": "有限非负数。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								}
@@ -345,22 +357,22 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -383,27 +395,27 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "大小",
+									"name": "sizes",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长的非负气泡大小数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -426,7 +438,7 @@
 							"description": "设置分类项目名称；横坐标按数组索引排列。",
 							"params": [
 								{
-									"name": "项目名称",
+									"name": "names",
 									"type": "文本型()",
 									"description": "按数据顺序排列的项目名称；添加数据前设置，更换前先清空。"
 								}
@@ -437,17 +449,17 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								}
@@ -470,37 +482,37 @@
 							"description": "添加一组开高低收数据，各数组长度须与项目名称相同。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "开盘",
+									"name": "open",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
 								},
 								{
-									"name": "最高",
+									"name": "high",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
 								},
 								{
-									"name": "最低",
+									"name": "low",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
 								},
 								{
-									"name": "收盘",
+									"name": "close",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -523,22 +535,22 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -549,22 +561,22 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -575,22 +587,22 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -601,27 +613,27 @@
 							"description": "添加一组数据，复制输入数组；校验失败时不改变原数据，构建后显示。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "数值",
+									"name": "values",
 									"type": "单精度小数型()",
 									"description": "与项目名称数量相同的有限数值数组。"
 								},
 								{
-									"name": "大小",
+									"name": "sizes",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长的非负气泡大小数组。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}
@@ -632,37 +644,37 @@
 							"description": "添加一组开高低收数据。",
 							"params": [
 								{
-									"name": "名称",
+									"name": "name",
 									"type": "文本型",
 									"description": "数据组名称。"
 								},
 								{
-									"name": "开盘",
+									"name": "open",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
 								},
 								{
-									"name": "最高",
+									"name": "high",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
 								},
 								{
-									"name": "最低",
+									"name": "low",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
 								},
 								{
-									"name": "收盘",
+									"name": "close",
 									"type": "单精度小数型()",
 									"description": "与项目名称等长；最低值不得高于开盘、收盘，最高值不得低于两者。"
 								},
 								{
-									"name": "颜色",
+									"name": "color",
 									"type": "整数型",
 									"description": "数据组的 ARGB 颜色。"
 								},
 								{
-									"name": "坐标轴",
+									"name": "axis",
 									"type": "整数型",
 									"description": "0 为左轴，1 为右轴；横向柱图表示下轴和上轴。"
 								}

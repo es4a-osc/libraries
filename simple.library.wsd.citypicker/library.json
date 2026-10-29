@@ -1,0 +1,240 @@
+{
+	"name": "CityPicker城市选择库",
+	"description": "基于 CityPicker https://github.com/xuexiangjys/CityPicker 封装，提供城市搜索、字母索引、热门城市、样式设置及定位结果回填。",
+	"version": "0.1.0",
+	"kind": "library",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"categories": [
+		{
+			"name": "扩展非可视组件",
+			"definitions": [
+				{
+					"name": "城市选择器",
+					"kind": "component",
+					"type": "simple.library.wsd.citypicker.城市选择器",
+					"icon": "icons/map-search.svg",
+					"description": "整页弹出城市选择界面，界面线程调用，切换所属窗口时自动关闭；定位由应用提供，不包含定位 SDK。",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"functions": [
+						{
+							"name": "置主题",
+							"description": "设置整页界面主题，保留上游全部 cp* 样式属性。",
+							"params": [
+								{
+									"name": "style",
+									"type": "文本型",
+									"description": "继承 CityPickerDialogTheme 的资源标识，如 @style/MyCityTheme；空文本恢复默认。"
+								}
+							]
+						},
+						{
+							"name": "置动画",
+							"description": "设置窗口动画。",
+							"params": [
+								{
+									"name": "style",
+									"type": "文本型",
+									"description": "动画样式资源标识，如 @style/CityPickerAnimation；空文本关闭动画。"
+								}
+							]
+						},
+						{
+							"name": "置城市数据",
+							"description": "替换全部城市数据，允许空数组；名称、省份、拼音和代码数组长度必须相等。",
+							"params": [
+								{
+									"name": "names",
+									"type": "文本型[]",
+									"description": "非空的城市名称。"
+								},
+								{
+									"name": "provinces",
+									"type": "文本型[]",
+									"description": "省份。"
+								},
+								{
+									"name": "pinyins",
+									"type": "文本型[]",
+									"description": "用于搜索及字母分组的完整拼音。"
+								},
+								{
+									"name": "codes",
+									"type": "文本型[]",
+									"description": "城市代码，保留调用方定义。"
+								}
+							]
+						},
+						{
+							"name": "使用内置城市",
+							"description": "恢复随 CityPicker 1.0.2 携带的城市列表，不保证行政区划及时更新。",
+							"params": []
+						},
+						{
+							"name": "置热门城市",
+							"description": "替换热门城市，允许空数组；三个数组长度必须相等，顺序保持不变。",
+							"params": [
+								{
+									"name": "names",
+									"type": "文本型[]",
+									"description": "非空的城市名称。"
+								},
+								{
+									"name": "provinces",
+									"type": "文本型[]",
+									"description": "省份。"
+								},
+								{
+									"name": "codes",
+									"type": "文本型[]",
+									"description": "城市代码。"
+								}
+							]
+						},
+						{
+							"name": "使用默认热门城市",
+							"description": "恢复上游默认的九个热门城市。",
+							"params": []
+						},
+						{
+							"name": "置定位城市",
+							"description": "设置预先获得的定位城市；下次显示时直接提供该城市，不自动发起定位请求。",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "非空城市名称。"
+								},
+								{
+									"name": "province",
+									"type": "文本型",
+									"description": "省份。"
+								},
+								{
+									"name": "code",
+									"type": "文本型",
+									"description": "城市代码。"
+								}
+							]
+						},
+						{
+							"name": "清除定位城市",
+							"description": "清除预设定位城市；下次显示时触发定位已请求事件。",
+							"params": []
+						},
+						{
+							"name": "回填定位",
+							"description": "回填当前定位请求的成功结果；必须在界面线程调用。",
+							"params": [
+								{
+									"name": "request",
+									"type": "长整数型",
+									"description": "定位已请求事件提供的标记。"
+								},
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "非空城市名称。"
+								},
+								{
+									"name": "province",
+									"type": "文本型",
+									"description": "省份。"
+								},
+								{
+									"name": "code",
+									"type": "文本型",
+									"description": "城市代码。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "定位失败",
+							"description": "结束一次定位请求并显示失败状态；用户可点击定位区域重试。",
+							"params": [
+								{
+									"name": "request",
+									"type": "长整数型",
+									"description": "当前定位请求标记。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "显示",
+							"description": "在所属 Simple 窗口上显示选择器；重复调用保持当前界面与输入。",
+							"params": []
+						},
+						{
+							"name": "关闭",
+							"description": "关闭当前界面并使未完成的定位请求失效；重复关闭不重复触发事件。",
+							"params": []
+						},
+						{
+							"name": "是否显示",
+							"description": "查询当前选择界面的显示状态。",
+							"params": [],
+							"return": "逻辑型"
+						}
+					],
+					"events": [
+						{
+							"name": "城市已选择",
+							"description": "用户选择城市；界面已关闭，代码原样取自当前数据源，不保证为行政区划代码。",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "城市名称。"
+								},
+								{
+									"name": "province",
+									"type": "文本型",
+									"description": "所属省份。"
+								},
+								{
+									"name": "pinyin",
+									"type": "文本型",
+									"description": "城市拼音。"
+								},
+								{
+									"name": "code",
+									"type": "文本型",
+									"description": "数据源中的城市代码。"
+								}
+							]
+						},
+						{
+							"name": "选择已取消",
+							"description": "用户通过取消按钮或系统返回取消选择；程序关闭和窗口切换不触发此事件。",
+							"params": []
+						},
+						{
+							"name": "已关闭",
+							"description": "本次选择界面已关闭，包括选择、取消、程序关闭及所属窗口离开。",
+							"params": []
+						},
+						{
+							"name": "定位已请求",
+							"description": "请求应用提供定位结果；本库不申请权限，也不包含定位 SDK。",
+							"params": [
+								{
+									"name": "request",
+									"type": "长整数型",
+									"description": "当前请求标记；回填时传回此值，已关闭或旧请求的结果会被拒绝。"
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

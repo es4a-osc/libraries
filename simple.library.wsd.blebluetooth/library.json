@@ -1,6 +1,6 @@
 {
 	"name": "低功耗蓝牙库",
-	"description": "提供 BLE 设备扫描、GATT 服务发现、特征读写和通知订阅的不可视组件。",
+	"description": "提供 BLE 设备扫描、GATT 连接、服务发现、特征读写及通知订阅。",
 	"version": "0.1.0",
 	"authors": [
 		{

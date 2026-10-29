@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- 将 AppCompat 控件主题限制在更新框内，不改变 Simple 窗口主题。 -->
+	<style name="XUpdateSimpleTheme" parent="Theme.AppCompat.Light.NoActionBar">
+		<item name="colorAccent">#1976D2</item>
+	</style>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- 只覆盖个别主题属性，验证未改写的上游样式仍可继承。 -->
+	<style name="CityPickerTestTheme" parent="CityPickerDialogTheme">
+		<item name="cpCancelTextColor">#008577</item>
+		<item name="cpSearchHintText">定制搜索：名称或拼音</item>
+		<item name="cpIndexBarSelectedTextColor">#008577</item>
+		<item name="cpSectionBackground">#E0F2F1</item>
+		<item name="cpSectionTextColor">#00695C</item>
+		<item name="cpOverlayBackground">#008577</item>
+	</style>
+</resources>

@@ -1,0 +1,12 @@
+/*
+ * ES4A 扩展库 Gradle 配置
+ */
+android {
+	// 本库资源 R 类的包名
+	namespace = 'simple.library.wsd.mqtt'
+}
+
+dependencies {
+	// Paho Android Service 使用的进程内广播
+	implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+}

@@ -23,7 +23,9 @@ final class ChartModel {
 	String[] names = new String[0];
 	final List<Series> series = new ArrayList<Series>();
 
-	/** 清空名称和数据，释放模型持有的数组。 */
+	/**
+	 * 清空名称和数据，释放模型持有的数组。
+	 */
 	void clear() {
 		names = new String[0];
 		series.clear();
@@ -115,7 +117,9 @@ final class ChartModel {
 		series.add(new Series(PIE, name, new float[][] { { value } }, color, 0));
 	}
 
-	/** 拒绝无法计算占比的全零饼图。 */
+	/**
+	 * 拒绝无法计算占比的全零饼图。
+	 */
 	void checkPie() {
 		for (Series item : series) {
 			if (item.columns[0][0] > 0) {
@@ -153,7 +157,9 @@ final class ChartModel {
 		}
 	}
 
-	/** 独立复制的数据组，不向 Simple 导出底层对象。 */
+	/**
+	 * 独立复制的数据组，不向 Simple 导出底层对象。
+	 */
 	static final class Series {
 
 		final int kind;

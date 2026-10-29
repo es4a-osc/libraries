@@ -1,6 +1,6 @@
 {
 	"name": "颜色选择框库",
-	"description": "色环及明暗渐变选色、ARGB 颜色预览和确认取消事件，无第三方依赖。",
+	"description": "提供色环与明暗渐变选色、ARGB 颜色预览及确认、取消事件。",
 	"version": "0.1.0",
 	"authors": [
 		{

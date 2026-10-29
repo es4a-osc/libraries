@@ -1,12 +1,14 @@
 package simple.library.wsd.mpandroidchart;
 
 import android.content.Context;
-import com.github.mikephil.charting.charts.Chart;
+
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.Chart;
+
 import simple.runtime.components.组件容器;
 
 /**
- * 柱状图的 Android 实现，使用 MPAndroidChart 2.1.5。
+ * 柱状图的 Android 实现，使用 MPAndroidChart 3.2.0。
  *
  * @author 树先生 xhwsd@qq.com
  */

@@ -1,0 +1,14 @@
+/*
+ * XUtil 原始代码与资源由 aars/ 中的清单适配包提供；仅移除其固定权限和未使用的宿主节点。
+ * 上游 compileOnly 依赖显式补齐，不依赖安装其它扩展库。
+ */
+android {
+	// 与 Java 基础包一致，供资源及依赖元数据使用。
+	namespace = 'simple.library.wsd.xutil'
+}
+
+dependencies {
+	implementation 'androidx.appcompat:appcompat:1.3.1'
+	implementation 'com.google.android.material:material:1.4.0'
+	implementation 'com.google.code.gson:gson:2.8.5'
+}

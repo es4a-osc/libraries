@@ -1,6 +1,6 @@
 {
 	"name": "下载器库",
-	"description": "支持断点续传和任务记录的 HTTP/HTTPS 异步文件下载。",
+	"description": "提供 HTTP/HTTPS 文件下载、暂停、继续、取消及断点续传，任务随应用进程运行。",
 	"version": "0.1.0",
 	"authors": [
 		{

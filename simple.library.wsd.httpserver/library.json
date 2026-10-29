@@ -1,6 +1,6 @@
 {
 	"name": "HTTP服务库",
-	"description": "基于[AndroidAsync](https://github.com/koush/AndroidAsync)封装的HTTP服务端，支持HTTP、WebSocket通信功能。",
+	"description": "基于 AndroidAsync https://github.com/koush/AndroidAsync 封装，提供 HTTP 服务及 WebSocket 通信。",
 	"version": "0.1.0",
 	"authors": [
 		{

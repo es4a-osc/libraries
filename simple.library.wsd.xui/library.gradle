@@ -1,0 +1,15 @@
+/*
+ * ES4A 扩展库 Gradle 配置
+ */
+android {
+	// 本库资源 R 类的包名
+	namespace = 'simple.library.wsd.xui'
+}
+
+dependencies {
+	// XUI AndroidX 组件及上游标记为 compileOnly 的可选功能依赖
+	implementation 'com.github.xuexiangjys:XUI:1.2.1'
+	implementation 'androidx.recyclerview:recyclerview:1.2.1'
+	implementation 'com.google.android.material:material:1.4.0'
+	implementation 'com.github.bumptech.glide:glide:4.11.0'
+}

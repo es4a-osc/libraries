@@ -1,6 +1,6 @@
 {
 	"name": "蓝牙打印机库",
-	"description": "经典蓝牙打印机连接和原库 ESC/POS 指令；非 BLE 打印协议。",
+	"description": "基于群索打印 SDK https://www.qsprinter.com/download.html 封装，提供经典蓝牙连接及 ESC/POS 文本、图片和条码打印。",
 	"version": "0.1.0",
 	"authors": [
 		{

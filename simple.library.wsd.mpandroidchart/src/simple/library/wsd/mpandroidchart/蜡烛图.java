@@ -1,8 +1,8 @@
 package simple.library.wsd.mpandroidchart;
 
+import simple.runtime.annotations.SimpleComponent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
-import simple.runtime.annotations.SimpleComponent;
 
 /**
  * 按分类展示开盘、最高、最低和收盘；上涨空心、下跌实心。

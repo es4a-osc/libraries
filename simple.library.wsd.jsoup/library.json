@@ -1,6 +1,6 @@
 {
 	"name": "HTML解析库",
-	"description": "基于 jsoup 1.15.4 的 HTML 文档、元素查询、提取和修改。",
+	"description": "基于 jsoup https://github.com/jhy/jsoup 封装，提供 HTML 文档解析、元素查询、内容提取及修改。",
 	"version": "0.1.0",
 	"authors": [
 		{

@@ -1,6 +1,6 @@
 {
 	"name": "OTG通讯库",
-	"description": "USB Host 下的 CH34x 串口通讯；支持 1a86:7523 和 1a86:5523。",
+	"description": "基于沁恒 CH34x Android 驱动 https://www.wch.cn/downloads/CH341SER_ANDROID_ZIP.html 封装，提供 USB 转串口数据收发；支持设备标识 1a86:7523、1a86:5523。",
 	"version": "0.1.0",
 	"authors": [
 		{

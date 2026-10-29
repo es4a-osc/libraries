@@ -9,16 +9,18 @@ import simple.runtime.components.impl.android.视图组件;
 import simple.runtime.components.impl.android.视图组件容器;
 import simple.runtime.android.MainActivity;
 import simple.runtime.events.EventDispatcher;
+import simple.runtime.errors.索引超出界限错误;
 
 /* Android类 */
 import android.os.Parcelable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 
-/* Android扩展类库V4类 */
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
+/* AndroidX 页面容器 */
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 /* Java类 */
 import java.util.ArrayList;
@@ -52,7 +54,7 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 	protected View createView() {
 		pageViews = new ArrayList<View>();
 
-		// PagerAdapter https://developer.android.google.cn/reference/android/support/v4/view/PagerAdapter
+		// 按视图身份维护页面位置，删除前面的页面时保留仍然存在的当前页面。
 		adapter = new PagerAdapter() {
 
 			@Override
@@ -67,7 +69,8 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 
 			@Override
 			public int getItemPosition(Object object) {
-				return -2;
+				int position = pageViews.indexOf(object);
+				return position >= 0 ? position : POSITION_NONE;
 			}
 
 			@Override
@@ -87,7 +90,7 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 			}
 		};
 
-		// ViewPager https://developer.android.google.cn/reference/android/support/v4/view/ViewPager
+		// 禁止手势仅影响触摸分发，程序切换仍由现行页面属性控制。
 		ViewPager view = new ViewPager(MainActivity.getContext()) {
 
 			@Override
@@ -184,6 +187,7 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 
 	@Override
 	public void 现行页面(int position) {
+		checkPageIndex(position);
 		ViewPager view = (ViewPager) getView();
 
 		view.setCurrentItem(position, switchEffects);
@@ -193,31 +197,17 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 
 	@Override
 	public void 添加页面(可视组件 visibleComponent) {
-		try {
-			// 把可视组件接口转为实现接口视图组件
-			视图组件 viewComponent = (视图组件) visibleComponent;
-
-			// 将视图从父级布局中移除
-			View view = viewComponent.getView();
-			ViewGroup group = (ViewGroup) view.getParent();
-
-			if (group != null) {
-				group.removeView(view);
-			}
-
-			// 将欲添加组件添加到页面视图
-			addPageView(view);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (!(visibleComponent instanceof 视图组件)) {
+			throw new IllegalArgumentException("页面必须是已经创建视图的可视组件。");
 		}
+		addPageView(((视图组件) visibleComponent).getView());
 	}
 
 	@Override
 	public void 删除页面(int position) {
-		if (pageViews.size() > position) {
-			pageViews.remove(position);
-			adapter.notifyDataSetChanged();
-		}
+		checkPageIndex(position);
+		pageViews.remove(position);
+		adapter.notifyDataSetChanged();
 	}
 
 	@Override
@@ -254,11 +244,37 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 	/* 内部辅助方法 */
 
 	/**
-	 * 页面由适配器延迟挂载，须先建立布局参数，供 Simple 初始化宽高属性使用。
+	 * 统一校验显式切页和删除操作，不依赖底层控件截断越界索引。
 	 *
-	 * @param view 目标原生视图
+	 * @param position 从零开始的页面索引。
+	 * @throws 索引超出界限错误 页面索引无效。
+	 */
+	private void checkPageIndex(int position) {
+		if (position < 0 || position >= pageViews.size()) {
+			throw new 索引超出界限错误();
+		}
+	}
+
+	/**
+	 * 校验页面身份后移出原父容器，准备延迟挂载需要的布局参数并登记页面。
+	 *
+	 * @param view 目标原生视图。
+	 * @throws IllegalArgumentException 视图为空、页面重复或造成容器循环嵌套。
 	 */
 	private void addPageView(View view) {
+		// 先验证，失败时不能把组件从原容器移走，也不能登记重复页面。
+		if (view == null || pageViews.contains(view)) {
+			throw new IllegalArgumentException("页面视图尚未创建或已经添加到当前滑动页面框。");
+		}
+		View ancestor = getView();
+		while (ancestor != null) {
+			if (ancestor == view) {
+				throw new IllegalArgumentException("不能将滑动页面框自身或祖先容器添加为页面。");
+			}
+			ViewParent parent = ancestor.getParent();
+			ancestor = parent instanceof View ? (View) parent : null;
+		}
+
 		// 页面尚未挂载到 ViewPager，布局参数可能为空。
 		// 必须提前建立参数，否则 Simple 初始化宽高时会发生空指针异常。
 		ViewGroup.LayoutParams current = view.getLayoutParams();
@@ -277,7 +293,11 @@ public final class 滑动页面框Impl extends 视图组件 implements 滑动页
 			view.setLayoutParams(params);
 		}
 
-		// 先准备布局参数，再登记页面并通知适配器。
+		// 原容器解除挂载后由适配器接管；清空后原页面仍可再次添加。
+		ViewParent parent = view.getParent();
+		if (parent instanceof ViewGroup) {
+			((ViewGroup) parent).removeView(view);
+		}
 		pageViews.add(view);
 		adapter.notifyDataSetChanged();
 	}

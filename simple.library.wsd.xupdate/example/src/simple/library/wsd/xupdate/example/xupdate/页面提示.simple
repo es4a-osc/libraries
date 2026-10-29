@@ -1,0 +1,10 @@
+变量 页面 为 流程定制
+
+过程 显示(信息 为 simple.library.wsd.xupdate.更新信息)
+	页面.显示业务信息(信息)
+结束 过程
+
+$属性
+	$资源 $对象
+	实现接口 = simple.library.wsd.xupdate.提示器
+$结束 $属性

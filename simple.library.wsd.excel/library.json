@@ -1,6 +1,6 @@
 {
 	"name": "EXCEL操作库",
-	"description": "基于 JExcelAPI 读写 Excel 97-2003 .xls 的第一张工作表，不支持 .xlsx。",
+	"description": "基于 JExcelAPI https://jexcelapi.sourceforge.net/ 封装，提供 Excel 97-2003 .xls 第一张工作表的读写，不支持 .xlsx。",
 	"version": "0.1.0",
 	"authors": [
 		{

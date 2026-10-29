@@ -1,6 +1,6 @@
 {
 	"name": "GIF图片框库",
-	"description": "本地 GIF 动画显示与播放控制，无第三方 JAR 或原生库依赖。",
+	"description": "提供本地 GIF 动画显示及播放控制。",
 	"version": "0.1.0",
 	"authors": [
 		{

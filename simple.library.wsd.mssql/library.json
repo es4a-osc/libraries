@@ -1,6 +1,6 @@
 {
 	"name": "MsSQL数据库",
-	"description": "JDBC 直连；异步串行执行并在主线程通知，同步方法阻塞调用线程。",
+	"description": "基于 jTDS https://jtds.sourceforge.net/ 封装，提供 SQL Server 连接、查询和写入，支持同步调用与异步结果事件。",
 	"version": "0.1.0",
 	"authors": [
 		{

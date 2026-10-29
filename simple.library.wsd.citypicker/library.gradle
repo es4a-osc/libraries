@@ -1,0 +1,13 @@
+/*
+ * 城市选择库的资源命名空间与 AndroidX 依赖。
+ */
+android {
+	// 源码、主题、布局及城市数据库随本库维护。
+	namespace = 'simple.library.wsd.citypicker'
+}
+
+dependencies {
+	// 保留上游 AppCompat 主题；列表由 AndroidX RecyclerView 承载。
+	implementation 'androidx.appcompat:appcompat:1.3.1'
+	implementation 'androidx.recyclerview:recyclerview:1.2.1'
+}

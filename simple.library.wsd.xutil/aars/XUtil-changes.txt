@@ -1,0 +1,54 @@
+ES4A XUtil 2.0.0 本地清单适配记录
+上游：https://github.com/xuexiangjys/XUtil/tree/2.0.0
+仅 AndroidManifest.xml 与原包不同，其余 ZIP 条目集合及解压内容逐项校验一致。
+
+xutil-core-2.0.0.aar
+来源坐标：com.github.xuexiangjys.XUtil:xutil-core:2.0.0
+原包 SHA-256：16fffe0047a78962854f046c1d0b5b14a4b5393d99d48c834cf53c52cf02fb55
+适配包 SHA-256：3a161178a9da93da04efdcabfb9a703eb00f143e6435294182bb05a4293a10b7
+移除的清单节点：
+	uses-permission: android.permission.KILL_BACKGROUND_PROCESSES
+	uses-permission: android.permission.READ_EXTERNAL_STORAGE
+	uses-permission: android.permission.WRITE_EXTERNAL_STORAGE
+	uses-permission: android.permission.INTERNET
+	uses-permission: android.permission.ACCESS_WIFI_STATE
+	uses-permission: android.permission.CHANGE_WIFI_STATE
+	uses-permission: android.permission.ACCESS_NETWORK_STATE
+	activity: com.xuexiang.xutil.system.PermissionUtils$PermissionActivity
+	provider: androidx.core.content.FileProvider4Utils
+
+xutil-sub-2.0.0.aar
+来源坐标：com.github.xuexiangjys.XUtil:xutil-sub:2.0.0
+原包 SHA-256：bab33a4eb35ae3c81f7697cf2a350d12706dd1698fba2cf610fdc67499d98967
+适配包 SHA-256：9202cc395f1e3890199124f2ac7d4bf34908f07fbb67f74e7865c7d37ce54b8c
+移除的清单节点：
+	uses-permission: android.permission.ACCESS_NETWORK_STATE
+	uses-permission: android.permission.ACCESS_WIFI_STATE
+	uses-permission: android.permission.CHANGE_WIFI_STATE
+	uses-permission: android.permission.BLUETOOTH_ADMIN
+	uses-permission: android.permission.BLUETOOTH
+	uses-permission: android.permission.ACCESS_COARSE_LOCATION
+	uses-permission: android.permission.ACCESS_FINE_LOCATION
+	uses-permission: android.permission.WAKE_LOCK
+	uses-permission: android.permission.FOREGROUND_SERVICE
+	uses-permission: android.permission.SYSTEM_ALERT_WINDOW
+	uses-permission: android.permission.INSTALL_PACKAGES
+	uses-permission: android.permission.REQUEST_INSTALL_PACKAGES
+	uses-permission: android.permission.VIBRATE
+	uses-permission: android.permission.READ_PHONE_STATE
+	uses-permission: android.permission.CALL_PHONE
+	uses-permission: android.permission.SEND_SMS
+	uses-permission: android.permission.READ_SMS
+	uses-permission: android.permission.READ_CONTACTS
+	uses-permission: android.permission.READ_CALENDAR
+	uses-permission: android.permission.RECORD_AUDIO
+	uses-permission: android.permission.MODIFY_PHONE_STATE
+	uses-permission: android.permission.CAMERA
+	uses-permission: android.permission.FLASHLIGHT
+	uses-feature: android.hardware.camera
+	uses-feature: android.hardware.camera.autofocus
+	uses-feature: android.hardware.camera.flash
+	uses-permission: android.permission.KILL_BACKGROUND_PROCESSES
+	uses-permission: android.permission.EXPAND_STATUS_BAR
+	uses-permission: android.permission.MOUNT_UNMOUNT_FILESYSTEMS
+	uses-permission: android.permission.WRITE_SETTINGS

@@ -1,9 +1,9 @@
 package simple.library.wsd.mpandroidchart;
 
+import simple.runtime.annotations.SimpleComponent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleProperty;
-import simple.runtime.annotations.SimpleComponent;
 
 /**
  * 组合折线、柱状、散点、气泡和蜡烛数据，按添加顺序编号。

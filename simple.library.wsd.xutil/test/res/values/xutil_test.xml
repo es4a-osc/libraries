@@ -1,0 +1,6 @@
+<resources>
+	<string name="xutil_test_message">资源读取成功</string>
+	<string-array name="xutil_test_words"><item>甲</item><item>乙</item></string-array>
+	<integer-array name="xutil_test_numbers"><item>3</item><item>5</item></integer-array>
+	<dimen name="xutil_test_size">16dp</dimen>
+</resources>

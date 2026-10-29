@@ -1,6 +1,6 @@
 {
 	"name": "Lua脚本库",
-	"description": "基于 LuaJava 和 Lua 5.1.5 的实例、堆栈、值、表、函数及宿主回调对象封装；附带 32 位 ARM 原生库。",
+	"description": "基于 LuaJava https://github.com/LuaDist/luajava 和 Lua 5.1.5 封装，提供脚本执行、值与表操作、函数调用及宿主回调；仅支持 ARM 32 位。",
 	"version": "0.1.0",
 	"authors": [
 		{

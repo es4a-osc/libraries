@@ -1,6 +1,6 @@
 {
 	"name": "AChartEngine图表库",
-	"description": "饼状图、柱状图和折线图，使用 AChartEngine 1.0.0。",
+	"description": "基于 AChartEngine https://github.com/ddanny/achartengine 封装，提供饼状图、柱状图和折线图。",
 	"version": "0.1.0",
 	"authors": [
 		{

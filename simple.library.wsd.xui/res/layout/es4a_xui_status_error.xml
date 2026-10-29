@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 状态弹层由封装层提供默认内容，上游 StatusView 不携带默认布局。 -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="#DD333333"
+	android:gravity="center"
+	android:text="失败"
+	android:textColor="#FFFFFF"
+	android:textSize="20sp" />

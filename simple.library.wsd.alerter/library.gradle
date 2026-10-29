@@ -1,0 +1,14 @@
+/*
+ * ES4A 扩展库 Gradle 配置
+ */
+android {
+	// 本库资源 R 类的包名
+	namespace = 'simple.library.wsd.alerter'
+}
+
+dependencies {
+	// aars/alerter-7.2.4.aar 依赖
+	implementation 'androidx.annotation:annotation:1.2.0'
+	implementation 'androidx.appcompat:appcompat:1.2.0'
+	implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.4.21'
+}

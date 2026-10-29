@@ -1,6 +1,6 @@
 {
 	"name": "演示扩展库",
-	"description": "入门演示：编写可视组件与普通对象，并在 Simple 项目中调用。",
+	"description": "演示可视组件与普通对象的扩展开发，以及在 Simple 项目中的调用。",
 	"version": "0.1.0",
 	"authors": [
 		{

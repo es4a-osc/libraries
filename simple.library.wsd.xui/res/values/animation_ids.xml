@@ -1,0 +1,4 @@
+<!-- 界面工具私有动画状态，不与字体或调用方标签混用。 -->
+<resources>
+	<item name="es4a_xui_background_animation" type="id" />
+</resources>

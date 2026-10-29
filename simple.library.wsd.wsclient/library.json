@@ -1,6 +1,6 @@
 {
 	"name": "WS客户端库",
-	"description": "提供支持 ws 和 wss 的 WebSocket 文本客户端组件。",
+	"description": "基于 OkHttp https://github.com/square/okhttp 封装，提供 ws/wss 文本消息收发、请求头设置及连接状态事件。",
 	"version": "0.1.0",
 	"authors": [
 		{

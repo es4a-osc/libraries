@@ -1,9 +1,9 @@
 package simple.library.wsd.mpandroidchart;
 
+import simple.runtime.annotations.SimpleComponent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleProperty;
-import simple.runtime.annotations.SimpleComponent;
 
 /**
  * 多组折线，支持左右轴及平滑曲线。

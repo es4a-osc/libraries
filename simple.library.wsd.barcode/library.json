@@ -1,6 +1,6 @@
 {
 	"name": "条码库",
-	"description": "二维码、CODE_128 条形码生成，图片识别及相机扫描。",
+	"description": "基于 ZXing https://github.com/zxing/zxing 和 ZBar https://github.com/mchehab/zbar 封装，提供二维码、CODE_128 条码生成、图片识别及相机扫描；ZBar 原生功能仅支持 ARM 32 位。",
 	"version": "0.1.0",
 	"authors": [
 		{

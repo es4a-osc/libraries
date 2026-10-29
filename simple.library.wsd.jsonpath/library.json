@@ -1,6 +1,6 @@
 {
 	"name": "JSONPath库",
-	"description": "JSON路径查询及新增、修改、删除、重命名。",
+	"description": "基于 Jayway JsonPath https://github.com/json-path/JsonPath 封装，提供 JSON 路径查询和节点新增、修改、删除及重命名。",
 	"version": "0.1.0",
 	"authors": [
 		{

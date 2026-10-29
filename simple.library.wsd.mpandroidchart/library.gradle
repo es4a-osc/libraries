@@ -1,0 +1,14 @@
+/*
+ * MPAndroidChart 扩展库的资源命名空间与 AndroidX 依赖。
+ */
+android {
+	// 本库生成的资源索引使用独立包名，与 Java 源码保持一致。
+	namespace = 'simple.library.wsd.mpandroidchart'
+}
+
+dependencies {
+	// 固定 Java 3.x 版本；AAR 及 AndroidX 注解依赖由 SDK 工具链统一准备。
+	implementation 'com.github.PhilJay:MPAndroidChart:v3.2.0'
+	// 编译器和 IDE 需要读取上游字节码中的 AndroidX 注解。
+	implementation 'androidx.annotation:annotation:1.0.0'
+}
