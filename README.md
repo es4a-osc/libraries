@@ -2,7 +2,6 @@
 
 维护 Simple 扩展类库的 Java 源码、清单、依赖、图标和独立测试，各类库按包名组织为独立目录。
 
-
 ## 类库列表
 
 以下列出本仓库维护的类库源码，不表示所用 SDK 已安装全部类库；用途和必要条件以各库自述及清单为准。
@@ -45,62 +44,13 @@
 | [XUpdate更新库](simple.library.wsd.xupdate/) | 应用更新、快捷入口、下载续传和更新流程定制。 |
 | [XUtil工具库](simple.library.wsd.xutil/) | 文本、文件、缓存、编码、网络和设备静态函数集。 |
 
-
-## 目录
-
-- 各类库目录：`src/` 为 Java 源码，`library.json` 为清单，`library.gradle` 声明命名空间及依赖，`test/` 为本库独立测试项目。
-- 本地 JAR 放在 `libs/`，本地 AAR 放在 `aars/`；资源按需放在 `res/`、`assets/`、`jni/`、`icons/`。
-- 编译结果：库根目录的 `classes.jar`、`dependencies.json`、`dependencies.module` 及必要的清单、资源附加文件。
-- `build/`：各库的开发生成目录，无需随编译结果传播。
-
-
-## 构建
-
-下载并解压[完整 SDK](https://dwz.wsd.cx/es4a-sdk)，与本仓库同级放置：
-
-```text
-工作目录/
-├─ libraries/
-└─ sdk/
-```
-
-统一使用 SDK 的 `utils/library/library.ps1`，在本仓库目录运行，例如：
-
-```powershell
-& "..\sdk\utils\library\library.ps1" compile ".\com.example.demo"
-```
-
-`compile` 准备依赖、生成 VS Code 工作区并编译类库；仅刷新依赖时使用 `prepare`。也可打开生成的 `.code-workspace`，通过任务执行。详情见 [扩展库开发工具](https://gitee.com/es4a/sdk/blob/main/utils/library/README.md)。
-
-编译后的类库目录可直接复制传播，无需先发布到 SDK。复制时保留依赖描述、本地原包和自有资源，不必携带 `build/`。
-
-
-## 测试
-
-发布前使用各库的 `test/project.properties` 编译测试 APK，并在设备或模拟器上验证功能。必要条件见测试界面或源码；编译成功不能代替功能验证。
-
-
-## 接入 SDK
-
-测试通过后，在本仓库目录执行：
-
-```powershell
-& "..\sdk\utils\library\library.ps1" publish ".\com.example.demo"
-```
-
-`publish` 将已有编译结果安装到 SDK 的 `libraries/<基础包名>/`，不重新编译，不携带实现源码、测试、源码附件或开发缓存。复制规则见 [扩展库开发工具](https://gitee.com/es4a/sdk/blob/main/utils/library/README.md)。
-
-安装目录中的 `library.json` 即表示注册，更新后刷新 ES4A 类库视图。
-
-
 ## 文档
 
-通用开发和清单文档统一随 SDK 维护：
+下载并解压[完整 SDK](https://dwz.wsd.cx/es4a-sdk)，开发、构建、测试和接入 SDK 按以下文档操作：
 
-- [文档入口](https://gitee.com/es4a/sdk/blob/main/docs/README.md)
 - [Simple 类库开发](https://gitee.com/es4a/sdk/blob/main/docs/Simple类库开发.md)
 - [类库清单定义](https://gitee.com/es4a/sdk/blob/main/docs/类库清单定义.md)
-
+- [全部开发文档](https://gitee.com/es4a/sdk/blob/main/docs/README.md)
 
 ## 相关链接
 

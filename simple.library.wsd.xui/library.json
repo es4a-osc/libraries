@@ -15200,7 +15200,7 @@
 					],
 					"events": [],
 					"projection": {
-						"layout": "linear-horizontal"
+						"layout": "linearHorizontal"
 					}
 				},
 				{
@@ -15626,7 +15626,7 @@
 						}
 					],
 					"projection": {
-						"layout": "linear-vertical"
+						"layout": "linearVertical"
 					}
 				},
 				{
@@ -15845,7 +15845,7 @@
 					],
 					"events": [],
 					"projection": {
-						"layout": "linear-vertical",
+						"layout": "linearVertical",
 						"scroll": "vertical"
 					}
 				},
@@ -15874,7 +15874,7 @@
 					],
 					"events": [],
 					"projection": {
-						"layout": "linear-horizontal"
+						"layout": "linearHorizontal"
 					}
 				},
 				{
@@ -15888,7 +15888,7 @@
 					],
 					"events": [],
 					"projection": {
-						"layout": "linear-vertical",
+						"layout": "linearVertical",
 						"scroll": "vertical"
 					}
 				},
@@ -16796,7 +16796,7 @@
 					],
 					"events": [],
 					"projection": {
-						"layout": "linear-horizontal"
+						"layout": "linearHorizontal"
 					},
 					"constants": [
 						{
@@ -17359,7 +17359,7 @@
 						}
 					],
 					"projection": {
-						"layout": "linear-vertical"
+						"layout": "linearVertical"
 					},
 					"constants": [
 						{
@@ -17552,7 +17552,7 @@
 						}
 					],
 					"projection": {
-						"layout": "linear-vertical"
+						"layout": "linearVertical"
 					}
 				},
 				{
@@ -17627,7 +17627,7 @@
 						}
 					],
 					"projection": {
-						"layout": "linear-vertical",
+						"layout": "linearVertical",
 						"scroll": "vertical"
 					}
 				},
@@ -17671,7 +17671,7 @@
 					],
 					"events": [],
 					"projection": {
-						"layout": "linear-vertical",
+						"layout": "linearVertical",
 						"scroll": "vertical"
 					}
 				},
@@ -17713,7 +17713,7 @@
 						}
 					],
 					"projection": {
-						"layout": "linear-vertical",
+						"layout": "linearVertical",
 						"scroll": "vertical"
 					}
 				},
@@ -17741,7 +17741,7 @@
 					],
 					"events": [],
 					"projection": {
-						"layout": "linear-vertical",
+						"layout": "linearVertical",
 						"scroll": "vertical"
 					}
 				}

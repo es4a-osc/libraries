@@ -1,61 +1,62 @@
 {
-	"folders":  [
+	"folders": [
 		{
-			"path":  "."
+			"path": "."
 		}
 	],
-	"settings":  {
-		"java.import.gradle.enabled":  false,
-		"java.import.maven.enabled":  false,
-		"java.import.exclusions":  [
+	"settings": {
+		"files.exclude": {
+			"**/.gradle": true,
+			"**/build": true
+		},
+		"files.associations": {
+			"library.gradle": "groovy"
+		},
+		"java.server.launchMode": "Standard",
+		"java.configuration.runtimes": [
+			{
+				"path": "${workspaceFolder}/../../sdk/tools/jdk-11.0.32.1",
+				"name": "JavaSE-11",
+				"default": true
+			}
+		],
+		"java.import.gradle.enabled": false,
+		"java.import.maven.enabled": false,
+		"java.import.exclusions": [
 			"**/build/**",
 			"**/.gradle/**",
 			"**/test/**"
 		],
-		"java.server.launchMode":  "Standard",
-		"java.project.sourcePaths":  [
+		"java.project.sourcePaths": [
 			"src"
 		],
-		"java.project.outputPath":  "build/ide/classes",
-		"java.configuration.runtimes":  [
-			{
-				"path":  "${workspaceFolder}/../../sdk/tools/jdk-11.0.32.1",
-				"default":  true,
-				"name":  "JavaSE-11"
-			}
-		],
-		"java.project.referencedLibraries":  {
-			"include":  [
+		"java.project.outputPath": "build/ide/classes",
+		"java.project.referencedLibraries": {
+			"include": [
 				"../../sdk/tools/android-sdk/platforms/android-30/android.jar",
 				"../../sdk/tools/android-sdk/build-tools/36.1.0/core-lambda-stubs.jar",
 				"../../sdk/simple/SimpleAndroidRuntime.jar",
 				"libs/*.jar",
 				"build/ide/libs/**/*.jar"
 			],
-			"exclude":  [
+			"exclude": [
 				"libs/*-sources.jar",
 				"build/ide/libs/**/*-sources.jar"
 			],
-			"sources":  {
-				"../../sdk/tools/android-sdk/platforms/android-30/android.jar":  "../../sdk/tools/android-sdk/platforms/android-30/android-stubs-src.jar"
+			"sources": {
+				"../../sdk/tools/android-sdk/platforms/android-30/android.jar": "../../sdk/tools/android-sdk/platforms/android-30/android-stubs-src.jar"
 			}
-		},
-		"files.associations":  {
-			"library.gradle":  "groovy"
-		},
-		"files.exclude":  {
-			"**/.gradle":  true,
-			"**/build":  true
 		}
 	},
-	"tasks":  {
-		"version":  "2.0.0",
-		"tasks":  [
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
 			{
-				"label":  "ES4A扩展库: 刷新依赖",
-				"type":  "process",
-				"command":  "powershell.exe",
-				"args":  [
+				"label": "ES4A扩展库: 刷新依赖",
+				"detail": "刷新供VSC代码提示等使用的依赖包",
+				"type": "process",
+				"command": "powershell.exe",
+				"args": [
 					"-NoLogo",
 					"-NoProfile",
 					"-ExecutionPolicy",
@@ -65,18 +66,17 @@
 					"prepare",
 					"${workspaceFolder}"
 				],
-				"options":  {
-					"cwd":  "${workspaceFolder}"
+				"options": {
+					"cwd": "${workspaceFolder}"
 				},
-				"group":  "build",
-				"problemMatcher":  [
-				]
+				"problemMatcher": []
 			},
 			{
-				"label":  "ES4A扩展库: 编译扩展库",
-				"type":  "process",
-				"command":  "powershell.exe",
-				"args":  [
+				"label": "ES4A扩展库: 构建类库",
+				"detail": "将扩展库源码等构建为可交付类库",
+				"type": "process",
+				"command": "powershell.exe",
+				"args": [
 					"-NoLogo",
 					"-NoProfile",
 					"-ExecutionPolicy",
@@ -84,35 +84,50 @@
 					"-File",
 					"../../sdk/utils/library/library.ps1",
 					"compile",
-					"${workspaceFolder}"
+					"${workspaceFolder}",
+					"-Dependencies",
+					"${input:libraryDependencies}",
+					"-Destination",
+					"${input:libraryDestination}"
 				],
-				"options":  {
-					"cwd":  "${workspaceFolder}"
+				"options": {
+					"cwd": "${workspaceFolder}"
 				},
-				"group":  "build",
-				"problemMatcher":  [
-				]
+				"problemMatcher": []
+			}
+		],
+		"inputs": [
+			{
+				"id": "libraryDependencies",
+				"type": "pickString",
+				"description": "是否包含离线依赖？",
+				"options": [
+					{
+						"label": "排除离线依赖",
+						"value": "exclude"
+					},
+					{
+						"label": "包含离线依赖",
+						"value": "include"
+					}
+				],
+				"default": "exclude"
 			},
 			{
-				"label":  "ES4A扩展库: 发布到SDK",
-				"type":  "process",
-				"command":  "powershell.exe",
-				"args":  [
-					"-NoLogo",
-					"-NoProfile",
-					"-ExecutionPolicy",
-					"Bypass",
-					"-File",
-					"../../sdk/utils/library/library.ps1",
-					"publish",
-					"${workspaceFolder}"
+				"id": "libraryDestination",
+				"type": "pickString",
+				"description": "是否发布到SDK？",
+				"options": [
+					{
+						"label": "输出到本库构建目录",
+						"value": "build"
+					},
+					{
+						"label": "输出到SDK类库目录",
+						"value": "sdk"
+					}
 				],
-				"options":  {
-					"cwd":  "${workspaceFolder}"
-				},
-				"group":  "build",
-				"problemMatcher":  [
-				]
+				"default": "build"
 			}
 		]
 	}
