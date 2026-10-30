@@ -14,3 +14,5 @@ Lua 语法可参考 [Lua 5.1 手册](https://www.lua.org/manual/5.1/)。
 
 - [Lua 5.1.5](https://www.lua.org/versions.html#5.1)
 - [LuaJava](https://github.com/LuaDist/luajava)：使用 Android 适配绑定。
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

@@ -5,3 +5,7 @@ android {
 	// 本库资源 R 类的包名
 	namespace = 'simple.library.wsd.httpserver'
 }
+
+dependencies {
+	implementation "com.koushikdutta.async:androidasync:3.1.0"
+}

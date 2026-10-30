@@ -19,3 +19,5 @@
 - [Material Components 1.4.0](https://github.com/material-components/material-components-android/releases/tag/1.4.0)
 - [Glide 4.11.0](https://github.com/bumptech/glide/releases/tag/v4.11.0)
 - [Tabler Icons](https://github.com/tabler/tabler-icons)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程，按组件分类查看样式与交互。

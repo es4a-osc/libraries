@@ -17,3 +17,5 @@
 - [AndroidX Annotation 1.2.0](https://developer.android.com/jetpack/androidx/releases/annotation)
 - [Kotlin 标准库 1.4.21](https://github.com/JetBrains/kotlin/tree/v1.4.21)
 - [JetBrains Annotations 13.0](https://github.com/JetBrains/java-annotations)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

@@ -6,4 +6,6 @@
 
 ## 依赖来源
 
-- [AndroidAsync 2.2.1](https://github.com/koush/AndroidAsync)
+- [AndroidAsync 3.1.0](https://github.com/koush/AndroidAsync)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

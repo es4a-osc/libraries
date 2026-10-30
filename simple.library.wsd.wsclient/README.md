@@ -10,3 +10,5 @@
 
 - [OkHttp 3.9.0](https://github.com/square/okhttp)
 - [Okio 1.13.0](https://github.com/square/okio)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

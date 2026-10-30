@@ -8,9 +8,9 @@ SFTP 首次连接须核实并确认服务器公钥，后续连接自动校验已
 
 同步网络操作须在后台线程调用。一个组件同时处理一项后台传输，通过完成事件取得结果。下载会覆盖同名文件，递归传输失败时可能留下部分内容。
 
-> 注意：目前 D8 3.3.20 暂不兼容随库的 JSch 依赖，引用本库的项目会在 DEX 转换阶段构建失败。
-
 ## 依赖来源
 
 - [Apache Commons Net 3.0.1](https://commons.apache.org/proper/commons-net/)：FTP 支持。
 - [维护版 JSch 2.28.8](https://github.com/mwiede/jsch)：SFTP 支持，使用 Android 适配版本。
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

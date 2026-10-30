@@ -12,6 +12,7 @@ import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
 import com.koushikdutta.async.http.WebSocket;
+import com.koushikdutta.async.http.ServerWebSocket;
 import com.koushikdutta.async.callback.CompletedCallback;
 
 /**
@@ -35,27 +36,7 @@ public final class HTTP服务 {
 	*/
 
 	// HTTP服务
-	private final AsyncHttpServer server = new AsyncHttpServer() {
-
-		/**
-		 * 在路由处理前修正旧依赖的 WebSocket 握手响应编码。
-		 *
-		 * @param callback 已匹配的路由回调
-		 * @param request 当前请求
-		 * @param response 尚未写出的响应
-		 */
-		@Override
-		protected void onRequest(HttpServerRequestCallback callback,
-				AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-			if ("websocket".equalsIgnoreCase(request.getHeaders().get("Upgrade"))) {
-				// AndroidAsync 2.2.1 会给 101 响应错误补入分块编码，严格客户端会拒绝握手。
-				// 空值是该依赖禁用分块并移除此头的约定；后续仍由原路由校验升级请求。
-				response.getHeaders().set("Transfer-Encoding", "");
-			}
-
-			super.onRequest(callback, request, response);
-		}
-	};
+	private final AsyncHttpServer server = new AsyncHttpServer();
 
 	/* 方法 */
 
@@ -67,7 +48,8 @@ public final class HTTP服务 {
 	 */
 	@SimpleFunction
 	public void 注销路由(String action, String regex) {
-		server.removeAction(action, regex);
+		// AndroidAsync 注册时自动添加 ^，注销时须匹配其保存的完整表达式。
+		server.removeAction(action, "^" + regex);
 	}
 
 	/**
@@ -154,10 +136,14 @@ public final class HTTP服务 {
 	public void 注册套接字(String regex, Object unit, String name, Variant mark) {
 		Variant object = ObjectVariant.getObjectVariant(unit);
 
-		server.websocket(regex, new AsyncHttpServer.WebSocketRequestCallback() {
+		server.get(regex, new HttpServerRequestCallback() {
 
 			@Override
-			public void onConnected(final WebSocket webSocket, AsyncHttpServerRequest request) {
+			public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+				final ServerWebSocket webSocket = ServerWebSocket.upgrade(request, response);
+				if (webSocket == null) {
+					return;
+				}
 				Variant[] args = new Variant[4];
 
 				args[0] = ObjectVariant.getObjectVariant(new HTTP服务套接字(webSocket));
@@ -188,6 +174,8 @@ public final class HTTP服务 {
 				args[1] = StringVariant.getStringVariant("connected");
 				args[2] = ObjectVariant.getObjectVariant(new HTTP服务请求(request));
 				object.function(name, args);
+				// 先安装回调并通知业务层，再恢复接收，避免首帧早于回调注册。
+				webSocket.resume();
 			}
 		});
 	}

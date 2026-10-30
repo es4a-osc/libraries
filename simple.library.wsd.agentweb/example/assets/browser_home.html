@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AgentWeb 本地示例</title><style>body{margin:0;padding:18px;font:16px/1.6 sans-serif;color:#18324a;background:#f5f8fb}h1{font-size:25px;margin:0 0 12px}p{margin:8px 0}button,a.action{display:block;box-sizing:border-box;width:100%;border:0;border-radius:8px;background:#1976d2;color:white;padding:12px;margin:12px 0;text-align:center;font:inherit;text-decoration:none}small{display:block;color:#526b80}#web-result{padding:10px;border-left:4px solid #1976d2;background:white}</style></head>
+<body><h1>AgentWeb 本地示例</h1><p>网页来自示例的 assets 目录，以下操作不依赖网络。</p>
+<a class="action" href="browser_second.html">打开本地第二页</a>
+<button id="send">发送消息给 Simple</button>
+<button id="alert">弹出网页提示</button>
+<button id="confirm">网页确认与取消</button>
+<button id="select">选择本地文件</button><input id="file" type="file" accept="text/*" multiple hidden>
+<p id="web-result">等待网页操作。</p><small>文件由系统选择器授权访问，取消也会向 Simple 返回结果。示例不请求摄像头、麦克风或定位。</small>
+<script>
+const result=document.getElementById('web-result');
+document.getElementById('send').onclick=function(){if(window.ES4A){window.ES4A.postMessage('来自本地网页的问候');result.textContent='网页消息已发送。';}else{result.textContent='当前页面未注册演示接口，请回到本地主页。';}};
+document.getElementById('alert').onclick=function(){alert('来自网页的提示框');result.textContent='网页提示框已关闭。';};
+document.getElementById('confirm').onclick=function(){result.textContent=confirm('是否保留这次选择？')?'网页确认结果：已确认。':'网页确认结果：已取消。';};
+document.getElementById('select').onclick=function(){document.getElementById('file').click();};
+document.getElementById('file').onchange=function(){result.textContent='网页取得 '+this.files.length+' 个文件授权。';};
+</script></body></html>

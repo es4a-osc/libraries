@@ -21,3 +21,5 @@
 - [DiskLruCache 2.0.2](https://github.com/JakeWharton/DiskLruCache)
 - [AndroidX AppCompat 1.1.0](https://developer.android.com/jetpack/androidx/releases/appcompat)
 - [Tabler Icons](https://github.com/tabler/tabler-icons)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

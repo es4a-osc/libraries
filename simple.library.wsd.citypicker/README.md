@@ -14,3 +14,5 @@
 - [AndroidX AppCompat 1.3.1](https://developer.android.com/jetpack/androidx/releases/appcompat)
 - [AndroidX RecyclerView 1.2.1](https://developer.android.com/jetpack/androidx/releases/recyclerview)
 - [Tabler Icons](https://github.com/tabler/tabler-icons)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

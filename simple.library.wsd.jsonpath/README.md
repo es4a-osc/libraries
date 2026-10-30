@@ -20,3 +20,5 @@
 - [Jakarta JSON-B 2.0.0](https://github.com/jakartaee/jsonb-api)
 - [Jettison 1.5.4](https://github.com/jettison-json/jettison)
 - [StAX API 1.0-2](https://repo.maven.apache.org/maven2/javax/xml/stream/stax-api/1.0-2/)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

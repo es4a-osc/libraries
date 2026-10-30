@@ -499,7 +499,7 @@
 						{
 							"name": "MD5",
 							"static": true,
-							"description": "计算 UTF-8 文本的 MD5 十六进制摘要。",
+							"description": "计算 UTF-8 文本的 MD5 大写十六进制摘要，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -512,7 +512,7 @@
 						{
 							"name": "SHA1",
 							"static": true,
-							"description": "计算 UTF-8 文本的 SHA1 十六进制摘要。",
+							"description": "计算 UTF-8 文本的 SHA1 大写十六进制摘要，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -525,7 +525,7 @@
 						{
 							"name": "SHA256",
 							"static": true,
-							"description": "计算 UTF-8 文本的 SHA256 十六进制摘要。",
+							"description": "计算 UTF-8 文本的 SHA256 大写十六进制摘要，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -538,7 +538,7 @@
 						{
 							"name": "SHA512",
 							"static": true,
-							"description": "计算 UTF-8 文本的 SHA512 十六进制摘要。",
+							"description": "计算 UTF-8 文本的 SHA512 大写十六进制摘要，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -551,7 +551,7 @@
 						{
 							"name": "HMACSHA256",
 							"static": true,
-							"description": "计算 UTF-8 文本的 HMAC-SHA256。",
+							"description": "计算 UTF-8 文本的 HMAC-SHA256 大写十六进制结果，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -561,7 +561,7 @@
 								{
 									"name": "密钥",
 									"type": "文本型",
-									"description": "密钥。"
+									"description": "UTF-8 密钥，允许空密钥并按 HMAC 定义计算。"
 								}
 							],
 							"return": "文本型"
@@ -569,7 +569,7 @@
 						{
 							"name": "HMACSHA512",
 							"static": true,
-							"description": "计算 UTF-8 文本的 HMAC-SHA512。",
+							"description": "计算 UTF-8 文本的 HMAC-SHA512 大写十六进制结果，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -579,7 +579,7 @@
 								{
 									"name": "密钥",
 									"type": "文本型",
-									"description": "密钥。"
+									"description": "UTF-8 密钥，允许空密钥并按 HMAC 定义计算。"
 								}
 							],
 							"return": "文本型"

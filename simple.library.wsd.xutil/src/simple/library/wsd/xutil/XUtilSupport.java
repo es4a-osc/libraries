@@ -35,6 +35,7 @@ import com.xuexiang.xutil.data.ACache;
 import com.xuexiang.xutil.data.SPUtils;
 
 import simple.runtime.android.MainActivity;
+import simple.runtime.errors.运行错误;
 
 /**
  * 集中处理 Simple 上下文、输入边界及 XUtil 上游需要补充的兼容约束。
@@ -266,8 +267,30 @@ final class XUtilSupport {
 	 * @param failure 原始异常。
 	 * @return 包含原始原因的异常。
 	 */
-	static IllegalStateException ioFailure(IOException failure) {
-		return new IllegalStateException("文件或网络操作失败：" + failure.getMessage(), failure);
+	static 运行错误 ioFailure(IOException failure) {
+		return failure("文件或网络操作失败：" + failure.getMessage(), failure);
+	}
+
+	/**
+	 * 将库内可报告的失败交给 Simple 错误处理，保持消息与原始原因。
+	 *
+	 * <p>Simple 的转换器不接受 IllegalStateException；继承运行错误使“位于错误”
+	 * 能先处理失败，避免未处理异常继续进入线程的反射调用层。不修改全局异常映射。
+	 */
+	static 运行错误 failure(String message, Throwable cause) {
+		return new XUtilError(message, cause);
+	}
+
+	/**
+	 * 仅供本库 I/O 和计算边界使用的 Simple 错误，不改变解压等操作原有的保护条件。
+	 */
+	private static final class XUtilError extends 运行错误 {
+		private static final long serialVersionUID = 1L;
+
+		XUtilError(String message, Throwable cause) {
+			super(message);
+			initCause(cause);
+		}
 	}
 
 	/**

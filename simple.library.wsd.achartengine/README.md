@@ -9,3 +9,5 @@
 ## 依赖来源
 
 - [AChartEngine 1.0.0](https://github.com/ddanny/achartengine)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>本机 HTTP / WS 客户端</title>
+<style>body{font:15px sans-serif;margin:10px;color:#123}button{font:14px sans-serif;padding:9px;margin:3px;border:1px solid #789;border-radius:5px;background:#eef5ff}input{font:15px sans-serif;width:94%;padding:7px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eef;padding:9px;min-height:65px}h3{margin:8px 0}</style>
+<h3>本机客户端 · 真实网络请求</h3><p>HTTP 响应：</p>
+<button onclick="request('/hello?name=Simple')">GET 问候</button>
+<button onclick="request('/item/42')">路径捕获</button>
+<button onclick="request('/json')">JSON 响应</button>
+<button onclick="request('/redirect')">重定向</button>
+<button onclick="request('/status')">状态码 418</button>
+<button onclick="request('/temporary')">临时路由</button>
+<input id="payload" value="你好 Simple" aria-label="发送文本">
+<button onclick="request('/echo',{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:payload.value})">POST 文本</button>
+<pre id="httpResult">尚未请求</pre><h3>WebSocket 文本回显</h3>
+<button onclick="connect()">连接 WS</button><button onclick="send()">发送文本</button><button onclick="disconnect()">断开 WS</button>
+<pre id="wsResult">尚未连接</pre>
+<script>
+const payload=document.getElementById('payload'),httpResult=document.getElementById('httpResult'),wsResult=document.getElementById('wsResult');
+let socket;
+async function request(url,options){httpResult.textContent='请求中…';try{const r=await fetch('http://127.0.0.1:5000'+url,options);httpResult.textContent='HTTP '+r.status+' | '+r.url+'\n'+await r.text();}catch(e){httpResult.textContent='请求失败：'+e.message;}}
+function connect(){if(socket&&(socket.readyState===0||socket.readyState===1)){wsResult.textContent='已有连接，请先断开';return;}socket=new WebSocket('ws://127.0.0.1:5000/ws');socket.onopen=()=>wsResult.textContent='WS 已连接';socket.onmessage=e=>wsResult.textContent='WS 收到：'+e.data;socket.onerror=()=>wsResult.textContent='WS 连接错误';socket.onclose=e=>wsResult.textContent='WS 已关闭：'+e.code+'；wasClean='+e.wasClean+'；原因='+e.reason+(e.wasClean?'':'（关闭握手未正常完成）');}
+function send(){if(!socket||socket.readyState!==1){wsResult.textContent='请先连接 WS';return;}socket.send(payload.value);}
+function disconnect(){if(socket){socket.close(1000,'示例关闭');}else{wsResult.textContent='尚未连接';}}
+window.addEventListener('pagehide',()=>{if(socket)socket.close(1000,'页面离开');});
+</script></html>

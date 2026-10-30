@@ -11,3 +11,5 @@
 - [Eclipse Paho Java Client 1.2.0](https://github.com/eclipse-paho/paho.mqtt.java)
 - [Paho Android Service 1.1.1](https://github.com/eclipse-paho/paho.mqtt.android)：使用 AndroidX LocalBroadcastManager 的本地适配包，保留该版本接口。
 - [AndroidX LocalBroadcastManager 1.0.0](https://developer.android.com/jetpack/androidx/releases/localbroadcastmanager)：Paho 服务使用的进程内广播。
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

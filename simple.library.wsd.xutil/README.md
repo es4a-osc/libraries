@@ -18,3 +18,5 @@
 - AndroidX AppCompat 1.3.1 https://developer.android.com/jetpack/androidx/releases/appcompat
 - Material Components 1.4.0 https://github.com/material-components/material-components-android
 - Gson 2.8.5 https://github.com/google/gson
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

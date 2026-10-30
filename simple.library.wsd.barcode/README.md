@@ -13,3 +13,5 @@
 - [GNU libiconv](https://www.gnu.org/software/libiconv/)
 
 随库 ZBar 包装及原生库的具体分发来源和版本尚未确认。
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

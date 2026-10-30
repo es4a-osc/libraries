@@ -1,6 +1,6 @@
 # ES4A 扩展类库
 
-维护 Simple 扩展类库的 Java 源码、清单、依赖、图标和独立测试，各类库按包名组织为独立目录。
+维护 Simple 扩展类库的 Java 源码、清单、依赖、图标和使用示例，各类库按包名组织为独立目录。
 
 ## 类库列表
 
@@ -46,7 +46,7 @@
 
 ## 文档
 
-下载并解压[完整 SDK](https://dwz.wsd.cx/es4a-sdk)，开发、构建、测试和接入 SDK 按以下文档操作：
+下载并解压[完整 SDK](https://dwz.wsd.cx/es4a-sdk)，开发、构建、验证和接入 SDK 按以下文档操作：
 
 - [Simple 类库开发](https://gitee.com/es4a/sdk/blob/main/docs/Simple类库开发.md)
 - [类库清单定义](https://gitee.com/es4a/sdk/blob/main/docs/类库清单定义.md)

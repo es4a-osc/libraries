@@ -66,6 +66,7 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 	private HandlerThread thread;
 	private Handler worker;
 	private Preview preview;
+	private Finder finder;
 	private TextView status;
 	private Button flash;
 	private Session current;
@@ -106,7 +107,8 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 		root.setBackgroundColor(Color.BLACK);
 		preview = new Preview();
 		root.addView(preview, new FrameLayout.LayoutParams(-1, -1, Gravity.CENTER));
-		root.addView(new Finder(), new FrameLayout.LayoutParams(-1, -1));
+		finder = new Finder();
+		root.addView(finder, new FrameLayout.LayoutParams(-1, -1));
 		LinearLayout controls = new LinearLayout(this);
 		controls.setOrientation(LinearLayout.VERTICAL);
 		controls.setGravity(Gravity.CENTER_HORIZONTAL);
@@ -317,8 +319,8 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 	 * 保持预览比例，不把设备画面拉伸到窗口比例。
 	 */
 	private final class Preview extends SurfaceView {
-		private int imageWidth = 3;
-		private int imageHeight = 4;
+		private int imageWidth;
+		private int imageHeight;
 
 		/**
 		 * 创建带表面通知的预览视图。
@@ -333,8 +335,19 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 		protected void onMeasure(int widthSpec, int heightSpec) {
 			int width = MeasureSpec.getSize(widthSpec);
 			int height = MeasureSpec.getSize(heightSpec);
-			float scale = Math.min(width / (float) imageWidth, height / (float) imageHeight);
-			setMeasuredDimension(Math.max(1, Math.round(imageWidth * scale)), Math.max(1, Math.round(imageHeight * scale)));
+			// 相机尺寸尚未返回时只用默认比例占位，不把占位尺寸用于识别框。
+			int measuredWidth = imageWidth > 0 ? imageWidth : 3;
+			int measuredHeight = imageHeight > 0 ? imageHeight : 4;
+			float scale = Math.min(width / (float) measuredWidth, height / (float) measuredHeight);
+			setMeasuredDimension(Math.max(1, Math.round(measuredWidth * scale)), Math.max(1, Math.round(measuredHeight * scale)));
+		}
+
+		@Override
+		protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+			super.onLayout(changed, left, top, right, bottom);
+			// 相机尺寸异步返回后预览会重新布局，而覆盖层自身尺寸可能不变。
+			// 必须在预览位置和尺寸确定后重绘，避免保留按初始占位比例画出的过大取景框。
+			finder.invalidate();
 		}
 	}
 
@@ -353,12 +366,19 @@ public class ScanActivity extends Activity implements SurfaceHolder.Callback {
 
 		@Override
 		protected void onDraw(Canvas canvas) {
-			Rect rect = crop(preview.getWidth(), preview.getHeight());
-			rect.offset(preview.getLeft(), preview.getTop());
+			if (preview.imageWidth <= 0 || preview.imageHeight <= 0) {
+				return;
+			}
+			// 与解码使用同一旋转后图像坐标系的裁剪结果，再映射到预览。
+			// 不在屏幕像素上重新裁剪，避免缩放和整数舍入造成显示范围与实际输入不一致。
+			Rect rect = crop(preview.imageWidth, preview.imageHeight);
+			float scaleX = preview.getWidth() / (float) preview.imageWidth;
+			float scaleY = preview.getHeight() / (float) preview.imageHeight;
 			paint.setColor(style == 2 ? Color.GREEN : Color.CYAN);
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setStrokeWidth(3 * getResources().getDisplayMetrics().density);
-			canvas.drawRect(rect, paint);
+			canvas.drawRect(preview.getLeft() + rect.left * scaleX, preview.getTop() + rect.top * scaleY,
+				preview.getLeft() + rect.right * scaleX, preview.getTop() + rect.bottom * scaleY, paint);
 		}
 	}
 

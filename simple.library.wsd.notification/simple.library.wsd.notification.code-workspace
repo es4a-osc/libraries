@@ -24,8 +24,7 @@
 		"java.import.maven.enabled": false,
 		"java.import.exclusions": [
 			"**/build/**",
-			"**/.gradle/**",
-			"**/test/**"
+			"**/.gradle/**"
 		],
 		"java.project.sourcePaths": [
 			"src"
@@ -83,7 +82,7 @@
 					"Bypass",
 					"-File",
 					"../../sdk/utils/library/library.ps1",
-					"compile",
+					"build",
 					"${workspaceFolder}",
 					"-Dependencies",
 					"${input:libraryDependencies}",

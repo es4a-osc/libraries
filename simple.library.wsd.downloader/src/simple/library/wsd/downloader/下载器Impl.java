@@ -14,6 +14,7 @@ import simple.runtime.android.MainActivity;
 import simple.runtime.collections.集合;
 import simple.runtime.components.组件容器;
 import simple.runtime.components.impl.组件Impl;
+import simple.runtime.errors.运行错误;
 import simple.runtime.events.EventDispatcher;
 import simple.runtime.variants.StringVariant;
 
@@ -43,7 +44,7 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 	 * 创建下载器并恢复应用私有任务记录。
 	 *
 	 * @param container 容纳非可视组件的窗口。
-	 * @throws IllegalStateException 下载记录读取或恢复失败。
+	 * @throws 运行错误 下载记录读取或恢复失败。
 	 */
 	public 下载器Impl(组件容器 container) {
 		super(container);
@@ -58,7 +59,7 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 				manager = shared;
 				manager.clients.add(this);
 			} catch (IOException e) {
-				throw new IllegalStateException(e.getMessage(), e);
+				throw new DownloadError(e.getMessage(), e);
 			}
 		}
 
@@ -81,7 +82,7 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 			check();
 			return manager.engine.start(address, resolve(path));
 		} catch (IOException e) {
-			throw new IllegalStateException(e.getMessage(), e);
+			throw new DownloadError(e.getMessage(), e);
 		}
 	}
 
@@ -91,7 +92,7 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 			check();
 			manager.engine.pause(taskId);
 		} catch (IOException e) {
-			throw new IllegalStateException(e.getMessage(), e);
+			throw new DownloadError(e.getMessage(), e);
 		}
 	}
 
@@ -102,7 +103,7 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 			resolve(manager.engine.info(taskId).path);
 			manager.engine.resume(taskId);
 		} catch (IOException e) {
-			throw new IllegalStateException(e.getMessage(), e);
+			throw new DownloadError(e.getMessage(), e);
 		}
 	}
 
@@ -112,7 +113,7 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 			check();
 			manager.engine.cancel(taskId);
 		} catch (IOException e) {
-			throw new IllegalStateException(e.getMessage(), e);
+			throw new DownloadError(e.getMessage(), e);
 		}
 	}
 
@@ -185,7 +186,7 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 	 */
 	private void check() {
 		if (destroyed) {
-			throw new IllegalStateException("下载器已经销毁。");
+			throw new DownloadError("下载器已经销毁。", null);
 		}
 	}
 
@@ -219,6 +220,28 @@ public final class 下载器Impl extends 组件Impl implements 下载器 {
 		}
 
 		return target;
+	}
+
+	/**
+	 * 同步调用失败的库内错误，保留下载引擎的消息和原始原因。
+	 *
+	 * <p>Simple 的错误转换只接受现有运行错误或少数 Java 异常，不能直接承接
+	 * IllegalStateException。此边界继承运行错误，让调用方的“位于错误”能够处理失败，
+	 * 不扩展全局异常映射，也不改变异步传输失败的下载完毕事件。
+	 */
+	private static final class DownloadError extends 运行错误 {
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * 创建保留原始诊断信息的同步错误。
+		 *
+		 * @param message 同步操作失败的说明。
+		 * @param cause 原始失败原因；仅由组件状态检查产生时可以为空。
+		 */
+		DownloadError(String message, Throwable cause) {
+			super(message);
+			initCause(cause);
+		}
 	}
 
 	/**

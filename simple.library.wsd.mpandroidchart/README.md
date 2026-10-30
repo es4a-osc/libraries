@@ -13,3 +13,5 @@
 ## 依赖来源
 
 - [MPAndroidChart 3.2.0](https://github.com/PhilJay/MPAndroidChart/tree/v3.2.0)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

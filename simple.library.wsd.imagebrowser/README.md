@@ -11,3 +11,5 @@
 - [ImageBrowse](https://github.com/brucetoo/ImageBrowse)：图片缩放控件。
 - [bm-x/PhotoView](https://github.com/bm-x/PhotoView)：ImageBrowse 中 PhotoView 的上游来源。
 - [AndroidX ViewPager 1.0.0](https://developer.android.com/jetpack/androidx/releases/viewpager)：分页支持，来自 Google。
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

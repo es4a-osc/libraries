@@ -5,3 +5,5 @@
 ## 依赖来源
 
 - [AndroidX ViewPager 1.0.0](https://developer.android.com/jetpack/androidx/releases/viewpager)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

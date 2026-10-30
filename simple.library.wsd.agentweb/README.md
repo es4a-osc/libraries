@@ -16,3 +16,5 @@ JavaScript 消息接口需要显式注册，只暴露 `postMessage(text)`；仅�
 - [AndroidX Legacy 1.0.0](https://developer.android.com/jetpack/androidx/releases/legacy)
 - [Material Components 1.4.0](https://github.com/material-components/material-components-android/tree/1.4.0)
 - [Tabler Icons](https://github.com/tabler/tabler-icons)
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

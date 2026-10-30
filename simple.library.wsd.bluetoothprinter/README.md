@@ -9,3 +9,5 @@
 ## 依赖来源
 
 - [群索（Qunsuo/QS）打印 SDK](https://www.qsprinter.com/download.html)：随库旧版驱动的具体发布版本尚未确认。
+
+[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

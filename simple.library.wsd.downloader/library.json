@@ -15,7 +15,7 @@
 			"definitions": [
 				{
 					"name": "下载器",
-					"description": "HTTP/HTTPS 异步下载组件，实例共享任务和事件；最后一个实例销毁时保存并暂停活动任务，不提供后台驻留服务。",
+					"description": "HTTP/HTTPS 异步下载组件，实例共享任务和事件；最后一个实例销毁时保存并暂停活动任务，不提供后台驻留服务。同步调用失败可用“位于错误”处理；异步传输失败通过下载完毕事件和任务信息报告。",
 					"kind": "component",
 					"type": "simple.library.wsd.downloader.下载器",
 					"icon": "icons/downloader.svg",
