@@ -1,0 +1,837 @@
+{
+	"name": "XQRCode二维码库",
+	"description": "二维码生成、图像识别和相机扫码，ZXing 在库内隔离。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "二维码",
+					"kind": "component",
+					"type": "simple.library.wsd.xqrcode.二维码",
+					"description": "二维码生成、图片识别与独立相机扫码。所有成员在主线程调用，任务失败通过事件报告。",
+					"properties": [
+						{
+							"name": "当前扫描序号",
+							"description": "独立扫码页尚未结束的请求序号；没有请求时为 0。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "异步任务数",
+							"description": "尚未完成或取消的生成、图片识别及选图请求数量。",
+							"type": "整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "生成二维码",
+							"description": "同步生成二维码 PNG；输入或配置无效时抛出错误，大图建议使用异步生成。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.二维码配置"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "异步生成",
+							"description": "复制配置并提交后台生成，返回正整数请求序号；队列满时通过任务失败报告。",
+							"params": [
+								{
+									"name": "内容",
+									"type": "文本型"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.二维码配置"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "识别图片",
+							"description": "同步识别资产、文件或 content URI；仅使用格式、字符集及返回图像设置。无结果时抛出错误。",
+							"params": [
+								{
+									"name": "图片路径",
+									"type": "文本型"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.扫码配置"
+								}
+							],
+							"return": "simple.library.wsd.xqrcode.识别结果"
+						},
+						{
+							"name": "识别字节图片",
+							"description": "同步识别图像字节；输入压缩数据不超过 32 MiB，无结果时抛出错误。",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.扫码配置"
+								}
+							],
+							"return": "simple.library.wsd.xqrcode.识别结果"
+						},
+						{
+							"name": "异步识别图片",
+							"description": "后台识别资产、文件或 content URI，以识别完成或任务失败返回结果。",
+							"params": [
+								{
+									"name": "图片路径",
+									"type": "文本型"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.扫码配置"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "异步识别字节图片",
+							"description": "复制图像数据及配置后后台识别，返回请求序号。",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.扫码配置"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "选择图片识别",
+							"description": "打开系统文档选择器并后台识别所选图片；同时只能有一个选图请求，忙时返回 0。",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.扫码配置"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "取消任务",
+							"description": "取消指定异步或选图请求并丢弃在途结果；存在该请求时返回真。取消选图不关闭系统选择器，返回前不能再次选图。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "开始扫描",
+							"description": "打开普通 Activity 扫码页并自动请求相机权限；已有本组件请求时返回 0，否则返回正整数请求序号。",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.扫码配置"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "停止扫描",
+							"description": "关闭指定独立扫码页并取消请求；过期或其它实例的序号返回假。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "暂停扫描",
+							"description": "暂停指定请求并释放相机；请求有效且操作被接受时返回真。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "继续扫描",
+							"description": "继续指定请求，等待前台及权限后恢复预览。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置扫描补光",
+							"description": "设置指定请求的真实补光；预览未打开、请求过期或硬件不支持时返回假。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "开启",
+									"type": "逻辑型"
+								}
+							],
+							"return": "逻辑型"
+						}
+					],
+					"events": [
+						{
+							"name": "生成完成",
+							"description": "异步生成成功后在主线程触发，图片为 PNG 数据。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "图片数据",
+									"type": "字节型()"
+								}
+							]
+						},
+						{
+							"name": "识别完成",
+							"description": "异步图片识别成功后在主线程触发。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "结果",
+									"type": "simple.library.wsd.xqrcode.识别结果"
+								}
+							]
+						},
+						{
+							"name": "任务失败",
+							"description": "异步任务失败时触发，不会同时触发成功或取消。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "操作",
+									"type": "文本型"
+								},
+								{
+									"name": "原因",
+									"type": "文本型"
+								}
+							]
+						},
+						{
+							"name": "任务取消",
+							"description": "成功取消异步任务或用户取消选图时触发；销毁不再触发事件。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "操作",
+									"type": "文本型"
+								}
+							]
+						},
+						{
+							"name": "扫描准备就绪",
+							"description": "独立扫码页的真实相机预览启动后触发；恢复前台时可再次触发。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								}
+							]
+						},
+						{
+							"name": "扫描得到结果",
+							"description": "独立扫码页识别成功时触发；连续模式可重复触发。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "结果",
+									"type": "simple.library.wsd.xqrcode.识别结果"
+								}
+							]
+						},
+						{
+							"name": "扫描失败",
+							"description": "独立扫码页报告权限、设备或补光失败；补光或提示反馈失败不结束现有预览。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "原因",
+									"type": "文本型"
+								}
+							]
+						},
+						{
+							"name": "扫描取消",
+							"description": "返回或主动停止独立扫码页时触发；销毁后不触发。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								}
+							]
+						}
+					],
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"permissions": [
+						"android.permission.CAMERA",
+						"android.permission.FLASHLIGHT",
+						"android.permission.VIBRATE"
+					],
+					"icon": "icons/qrcode-art.svg"
+				}
+			]
+		},
+		{
+			"name": "扩展可视组件",
+			"definitions": [
+				{
+					"name": "扫码框",
+					"kind": "component",
+					"type": "simple.library.wsd.xqrcode.扫码框",
+					"description": "可嵌入 Simple 窗口的扫码预览；自动处理相机权限和前后台释放。",
+					"properties": [
+						{
+							"name": "当前状态",
+							"description": "读取本实例当前状态。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "扫描中",
+							"description": "相机预览已经真实启动时为真。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "补光开启",
+							"description": "本次真实开启的补光状态，暂停或停止后为假。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "开始扫描",
+							"description": "复制配置并请求扫描；正在处理请求时返回假，接受请求不等于识别成功。",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.xqrcode.扫码配置"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "暂停扫描",
+							"description": "暂停当前请求并释放相机；没有请求时返回假。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "继续扫描",
+							"description": "继续当前请求；自动等待前台、表面及相机权限。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "停止扫描",
+							"description": "停止当前请求并触发扫描取消；没有请求时返回假。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置补光",
+							"description": "设置真实补光，设备不支持或预览未打开时返回假并报告原因。",
+							"params": [
+								{
+									"name": "开启",
+									"type": "逻辑型"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取得配置",
+							"description": "取得当前会话独立配置副本，修改副本不会影响进行中的扫描。",
+							"params": [],
+							"return": "simple.library.wsd.xqrcode.扫码配置"
+						}
+					],
+					"events": [
+						{
+							"name": "扫描就绪",
+							"description": "真实相机预览启动后触发，恢复前台时可能再次触发。",
+							"params": []
+						},
+						{
+							"name": "识别完成",
+							"description": "识别成功后在主线程触发；连续模式按配置间隔重复触发。",
+							"params": [
+								{
+									"name": "结果",
+									"type": "simple.library.wsd.xqrcode.识别结果"
+								}
+							]
+						},
+						{
+							"name": "扫描失败",
+							"description": "报告权限、设备及补光问题；补光或提示反馈失败不终止扫描，其余失败后须重新开始。",
+							"params": [
+								{
+									"name": "原因",
+									"type": "文本型"
+								}
+							]
+						},
+						{
+							"name": "扫描取消",
+							"description": "主动停止或扫码框移出界面时触发；销毁后不再触发。",
+							"params": []
+						},
+						{
+							"name": "状态改变",
+							"description": "状态变化时触发，状态包括未开始、等待界面、等待权限、正在打开相机、正在扫描、已暂停、已完成和失败。",
+							"params": [
+								{
+									"name": "原状态",
+									"type": "文本型"
+								},
+								{
+									"name": "新状态",
+									"type": "文本型"
+								}
+							]
+						}
+					],
+					"inherits": [
+						"simple.runtime.components.可视组件"
+					],
+					"permissions": [
+						"android.permission.CAMERA",
+						"android.permission.FLASHLIGHT",
+						"android.permission.VIBRATE"
+					],
+					"icon": "icons/scan-frame.svg"
+				}
+			]
+		},
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "二维码配置",
+					"kind": "object",
+					"type": "simple.library.wsd.xqrcode.二维码配置",
+					"description": "提交时复制的独立配置快照。",
+					"properties": [
+						{
+							"name": "尺寸",
+							"type": "整数型",
+							"initializer": "400",
+							"description": "二维码正方形边长，单位像素，范围 32 至 2048。"
+						},
+						{
+							"name": "图像宽度",
+							"type": "整数型",
+							"initializer": "0",
+							"description": "输出宽度，0 使用尺寸；非零范围 32 至 2048。"
+						},
+						{
+							"name": "图像高度",
+							"type": "整数型",
+							"initializer": "0",
+							"description": "输出高度，0 使用尺寸；非零范围 32 至 2048。"
+						},
+						{
+							"name": "边距",
+							"type": "整数型",
+							"initializer": "12",
+							"description": "二维码边缘宽度，范围 0 至 256。"
+						},
+						{
+							"name": "数据点比例",
+							"type": "单精度小数型",
+							"initializer": "0.5",
+							"description": "艺术二维码的数据点比例，大于 0 且不大于 1。"
+						},
+						{
+							"name": "深色",
+							"type": "整数型",
+							"initializer": "-16777216",
+							"description": "二维码深色点的 ARGB 颜色。"
+						},
+						{
+							"name": "浅色",
+							"type": "整数型",
+							"initializer": "-1",
+							"description": "二维码浅色点的 ARGB 颜色。"
+						},
+						{
+							"name": "背景图片",
+							"type": "文本型",
+							"initializer": "\"\"",
+							"description": "背景位图的资产、文件或内容 URI；空文本不使用背景。"
+						},
+						{
+							"name": "白色边缘",
+							"type": "逻辑型",
+							"initializer": "真",
+							"description": "是否保留艺术二维码的白色边缘。"
+						},
+						{
+							"name": "自动取色",
+							"type": "逻辑型",
+							"initializer": "真",
+							"description": "是否从背景自动选择艺术二维码的深色。"
+						},
+						{
+							"name": "二值化",
+							"type": "逻辑型",
+							"initializer": "假",
+							"description": "是否对艺术二维码背景进行二值化。"
+						},
+						{
+							"name": "二值化阈值",
+							"type": "整数型",
+							"initializer": "128",
+							"description": "二值化阈值，范围 0 至 255。"
+						},
+						{
+							"name": "图标图片",
+							"type": "文本型",
+							"initializer": "\"\"",
+							"description": "中心图标的资产、文件或内容 URI；空文本不使用图标。"
+						},
+						{
+							"name": "图标比例",
+							"type": "单精度小数型",
+							"initializer": "0.2",
+							"description": "图标相对二维码的比例，大于 0 且不大于 0.4。"
+						}
+					],
+					"functions": [
+						{
+							"name": "置图标字节",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()"
+								}
+							]
+						},
+						{
+							"name": "取图标字节",
+							"return": "字节型()",
+							"params": []
+						},
+						{
+							"name": "置背景字节",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()"
+								}
+							]
+						},
+						{
+							"name": "取背景字节",
+							"return": "字节型()",
+							"params": []
+						}
+					]
+				},
+				{
+					"name": "扫码配置",
+					"kind": "object",
+					"type": "simple.library.wsd.xqrcode.扫码配置",
+					"description": "提交时复制的独立配置快照。",
+					"properties": [
+						{
+							"name": "连续扫描",
+							"type": "逻辑型",
+							"initializer": "假",
+							"description": "是否连续输出扫描结果。"
+						},
+						{
+							"name": "连续间隔",
+							"type": "长整数型",
+							"initializer": "1000",
+							"description": "连续扫描两次识别之间的间隔，100 至 60000 毫秒。"
+						},
+						{
+							"name": "对焦间隔",
+							"type": "长整数型",
+							"initializer": "1500",
+							"description": "自动对焦间隔，200 至 10000 毫秒。"
+						},
+						{
+							"name": "提示音",
+							"type": "逻辑型",
+							"initializer": "真",
+							"description": "成功识别后是否播放提示音，静音模式下不播放。"
+						},
+						{
+							"name": "振动",
+							"type": "逻辑型",
+							"initializer": "真",
+							"description": "成功识别后是否振动，需要设备具备振动器。"
+						},
+						{
+							"name": "振动时长",
+							"type": "整数型",
+							"initializer": "200",
+							"description": "成功提示的振动时长，0 至 3000 毫秒。"
+						},
+						{
+							"name": "保持亮屏",
+							"type": "逻辑型",
+							"initializer": "真",
+							"description": "扫描期间是否保持屏幕点亮。"
+						},
+						{
+							"name": "初始补光",
+							"type": "逻辑型",
+							"initializer": "假",
+							"description": "开始扫描时是否请求打开相机补光灯，需要相机支持。"
+						},
+						{
+							"name": "相机编号",
+							"type": "整数型",
+							"initializer": "-1",
+							"description": "相机编号；-1 优先使用后置相机。"
+						},
+						{
+							"name": "扫描框宽度",
+							"type": "整数型",
+							"initializer": "0",
+							"description": "扫描框宽度，单位 DIP；0 自动，最大 4096。"
+						},
+						{
+							"name": "扫描框高度",
+							"type": "整数型",
+							"initializer": "0",
+							"description": "扫描框高度，单位 DIP；0 自动，最大 4096。"
+						},
+						{
+							"name": "顶部偏移",
+							"type": "整数型",
+							"initializer": "-1",
+							"description": "扫描框顶部偏移，单位 DIP；-1 居中，最大 4096。"
+						},
+						{
+							"name": "边角颜色",
+							"type": "整数型",
+							"initializer": "-15940866",
+							"description": "扫描框边角的 ARGB 颜色。"
+						},
+						{
+							"name": "边角长度",
+							"type": "单精度小数型",
+							"initializer": "32",
+							"description": "边角长度，单位 DIP，0 至 256。"
+						},
+						{
+							"name": "边角线宽",
+							"type": "单精度小数型",
+							"initializer": "3",
+							"description": "边角线宽，单位 DIP，大于 0 且不大于 64。"
+						},
+						{
+							"name": "遮罩颜色",
+							"type": "整数型",
+							"initializer": "1610612736",
+							"description": "扫描框外遮罩的 ARGB 颜色。"
+						},
+						{
+							"name": "结果遮罩颜色",
+							"type": "整数型",
+							"initializer": "-1342177280",
+							"description": "单次识别成功后的遮罩颜色。"
+						},
+						{
+							"name": "识别点颜色",
+							"type": "整数型",
+							"initializer": "-16128",
+							"description": "识别结果点的 ARGB 颜色。"
+						},
+						{
+							"name": "扫描图像",
+							"type": "文本型",
+							"initializer": "\"\"",
+							"description": "自定义扫描线位图来源；空文本使用默认扫描线。"
+						},
+						{
+							"name": "扫描图着色",
+							"type": "整数型",
+							"initializer": "-1",
+							"description": "自定义扫描线的 ARGB 着色；-1 保留原色。"
+						},
+						{
+							"name": "扫描速度",
+							"type": "单精度小数型",
+							"initializer": "5",
+							"description": "每帧扫描线移动距离，单位 DIP，大于 0 且不大于 100。"
+						},
+						{
+							"name": "动画间隔",
+							"type": "整数型",
+							"initializer": "25",
+							"description": "扫描线绘制间隔，10 至 250 毫秒。"
+						},
+						{
+							"name": "显示结果点",
+							"type": "逻辑型",
+							"initializer": "真",
+							"description": "是否绘制扫描结果点。"
+						},
+						{
+							"name": "返回识别图像",
+							"type": "逻辑型",
+							"initializer": "真",
+							"description": "是否在结果对象中返回识别区域的 PNG 图像。"
+						},
+						{
+							"name": "仅识别框内",
+							"type": "逻辑型",
+							"initializer": "真",
+							"description": "是否只识别扫描框内的预览内容。"
+						},
+						{
+							"name": "字符集",
+							"type": "文本型",
+							"initializer": "\"\"",
+							"description": "指定识别字符集；空文本由引擎判断。"
+						}
+					],
+					"functions": [
+						{
+							"name": "置识别格式",
+							"params": [
+								{
+									"name": "格式名称",
+									"type": "文本型()"
+								}
+							]
+						},
+						{
+							"name": "取识别格式",
+							"return": "文本型()",
+							"params": []
+						}
+					]
+				},
+				{
+					"name": "识别结果",
+					"kind": "object",
+					"type": "simple.library.wsd.xqrcode.识别结果",
+					"description": "一次成功识别的独立快照。",
+					"properties": [
+						{
+							"name": "内容",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "格式",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "原始字节",
+							"type": "字节型()",
+							"writable": false
+						},
+						{
+							"name": "有效位数",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "时间戳",
+							"type": "长整数型",
+							"writable": false
+						},
+						{
+							"name": "识别图像",
+							"type": "字节型()",
+							"writable": false
+						},
+						{
+							"name": "识别点",
+							"type": "单精度小数型()",
+							"writable": false
+						},
+						{
+							"name": "附加信息",
+							"type": "文本型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "二维码错误",
+					"kind": "object",
+					"type": "simple.library.wsd.xqrcode.二维码错误",
+					"inherits": [
+						"simple.runtime.errors.运行错误"
+					],
+					"description": "二维码或扫码框的调用状态无效时抛出的可捕获错误。可在错误处理的分支中捕获。",
+					"properties": [
+						{
+							"name": "说明",
+							"type": "文本型",
+							"writable": false,
+							"description": "操作被拒绝的具体原因。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

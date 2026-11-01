@@ -1,0 +1,10 @@
+/* CalendarView 3.7.1 的独立源码与 AndroidX 依赖。 */
+android {
+	namespace = 'simple.library.wsd.calendarview'
+	sourceSets.main.java.srcDir new File(providers.gradleProperty('libraryDir').get(), 'vendor/CalendarView/src')
+}
+dependencies {
+	implementation 'androidx.viewpager:viewpager:1.0.0'
+	implementation 'androidx.recyclerview:recyclerview:1.2.1'
+	compileOnly 'androidx.annotation:annotation:1.1.0'
+}

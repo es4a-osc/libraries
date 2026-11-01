@@ -1,0 +1,24 @@
+/* SmartRefreshLayout 的 AndroidX 版本及源码直接引用的宿主依赖。 */
+android {
+	namespace = 'simple.library.wsd.smartrefresh'
+	// 上游未单独发布的 AndroidX 动画头保留在 vendor，资源索引改用本库命名空间。
+	sourceSets.main.java.srcDir new File(providers.gradleProperty('libraryDir').get(), 'vendor/SmartRefreshLayout/src')
+}
+
+dependencies {
+	implementation 'io.github.scwang90:refresh-layout-kernel:3.0.0-alpha'
+	implementation 'io.github.scwang90:refresh-header-classics:3.0.0-alpha'
+	implementation 'io.github.scwang90:refresh-footer-classics:3.0.0-alpha'
+	implementation 'io.github.scwang90:refresh-header-radar:3.0.0-alpha'
+	implementation 'io.github.scwang90:refresh-header-material:3.0.0-alpha'
+	implementation 'io.github.scwang90:refresh-header-falsify:3.0.0-alpha'
+	implementation 'io.github.scwang90:refresh-header-two-level:3.0.0-alpha'
+	implementation 'io.github.scwang90:refresh-footer-ball:3.0.0-alpha'
+	implementation 'io.github.scwang90:refresh-drawable-path:3.0.0-alpha'
+	// 上游将这些引用声明为 compileOnly，发布 POM 不会自动补齐。
+	implementation 'androidx.appcompat:appcompat:1.3.1'
+	implementation 'androidx.recyclerview:recyclerview:1.2.1'
+	implementation 'androidx.viewpager:viewpager:1.0.0'
+	implementation 'androidx.viewpager2:viewpager2:1.0.0'
+	implementation 'com.google.android.material:material:1.4.0'
+}

@@ -11,7 +11,7 @@
 	],
 	"categories": [
 		{
-			"name": "扩展非可视组件",
+			"name": "扩展组件",
 			"definitions": [
 				{
 					"name": "城市选择器",

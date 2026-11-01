@@ -1,0 +1,82 @@
+/* 本库只接入二维码核心，不把 Fragment 宿主和未隔离的 ZXing 带入应用。 */
+
+android {
+	namespace = 'simple.library.wsd.xqrcode'
+	sourceSets.main.java.srcDir new File(providers.gradleProperty('libraryDir').get(), 'vendor/XQRCode/src')
+}
+
+configurations {
+	xqrcodeEngine
+}
+dependencies {
+	xqrcodeEngine 'com.google.zxing:core:3.3.3'
+}
+
+def isolatedJar = layout.buildDirectory.file('isolated/xqrcode-zxing-3.3.3.jar')
+def isolate = tasks.register('isolateXqrcodeEngine') {
+	inputs.files configurations.xqrcodeEngine
+	outputs.file isolatedJar
+	doLast {
+		def destination = isolatedJar.get().asFile
+		destination.parentFile.mkdirs()
+		// JVM 常量池中的内部名、描述符及反射类名一并迁移，不改动方法指令。
+		def relocate = { byte[] source ->
+			def input = new DataInputStream(new ByteArrayInputStream(source))
+			def bytes = new ByteArrayOutputStream()
+			def output = new DataOutputStream(bytes)
+			output.writeInt(input.readInt())
+			output.writeShort(input.readUnsignedShort())
+			output.writeShort(input.readUnsignedShort())
+			int count = input.readUnsignedShort()
+			output.writeShort(count)
+			for (int index = 1; index < count; index++) {
+				int tag = input.readUnsignedByte()
+				output.writeByte(tag)
+				if (tag == 1) {
+					output.writeUTF(input.readUTF().replace('com/google/zxing', 'simple/library/wsd/xqrcode/internal/zxing').replace('com.google.zxing', 'simple.library.wsd.xqrcode.internal.zxing'))
+				} else {
+					int length = [3:4, 4:4, 5:8, 6:8, 7:2, 8:2, 9:4, 10:4, 11:4, 12:4, 15:3, 16:2, 17:4, 18:4, 19:2, 20:2][tag] ?: 0
+					if (!length) {
+						throw new GradleException("不支持的 JVM 常量池标记：${tag}")
+					}
+					byte[] payload = new byte[length]
+					input.readFully(payload)
+					output.write(payload)
+					if (tag == 5 || tag == 6) {
+						index++
+					}
+				}
+			}
+			output.write(input.readAllBytes())
+			output.close()
+			bytes.toByteArray()
+		}
+		new java.util.zip.ZipOutputStream(new FileOutputStream(destination)).withCloseable { output ->
+			new java.util.zip.ZipFile(configurations.xqrcodeEngine.singleFile).withCloseable { input ->
+				Collections.list(input.entries()).findAll { !it.directory }.sort { it.name }.each { entry ->
+					if (!entry.name.startsWith('META-INF/') || entry.name.endsWith('LICENSE') || entry.name.endsWith('NOTICE')) {
+						byte[] bytes = input.getInputStream(entry).withCloseable { it.bytes }
+						String name = entry.name
+						if (name.endsWith('.class')) {
+							bytes = relocate(bytes)
+							name = name.replace('com/google/zxing/', 'simple/library/wsd/xqrcode/internal/zxing/')
+						}
+						def target = new java.util.zip.ZipEntry(name)
+						target.time = 0L
+						output.putNextEntry(target)
+						output.write(bytes)
+						output.closeEntry()
+					}
+				}
+			}
+		}
+	}
+}
+dependencies {
+	implementation files(isolatedJar).builtBy(isolate)
+}
+tasks.configureEach {
+	if (name in ['prepareIde', 'compileDebugJavaWithJavac', 'generateMetadataFileForEs4aPublication', 'buildLibrary']) {
+		dependsOn isolate
+	}
+}

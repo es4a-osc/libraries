@@ -11,7 +11,7 @@
 	],
 	"categories": [
 		{
-			"name": "网络组件",
+			"name": "扩展组件",
 			"definitions": [
 				{
 					"name": "XHttp客户端",

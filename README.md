@@ -11,6 +11,7 @@
 | [演示扩展库](com.example.demo/) | 可视组件和普通对象的入门演示。 |
 | [Alerter提示条库](simple.library.wsd.alerter/) | 窗口内提示条、图标、按钮、进度和动画。 |
 | [AgentWeb浏览器库](simple.library.wsd.agentweb/) | 网页导航、JavaScript 交互、文件上传下载及视频全屏。 |
+| [CalendarView日历库](simple.library.wsd.calendarview/) | 年月周日历、日期选择与标记、周月收缩联动和公农历工具。 |
 | [CityPicker城市选择库](simple.library.wsd.citypicker/) | 城市搜索、字母索引、热门城市和定位结果回填。 |
 | [APK信息库](simple.library.wsd.apk/) | 独立 APK 名称、包名、版本和 PNG 图标读取。 |
 | [跨程序辅助库](simple.library.wsd.accessibility/) | 无障碍节点读取、操作和事件监听。 |
@@ -25,9 +26,11 @@
 | [颜色选择框库](simple.library.wsd.colorpicker/) | 色环与明暗渐变选色、ARGB 预览及确认取消事件。 |
 | [Lua脚本库](simple.library.wsd.lua/) | Lua 5.1.5 代码执行、参数传入和返回值读取，附带 32 位 ARM 原生库。 |
 | [条码库](simple.library.wsd.barcode/) | 二维码和条形码生成、图片识别及相机扫描。 |
+| [XQRCode二维码库](simple.library.wsd.xqrcode/) | 艺术二维码生成、图片识别、独立扫码页和内嵌预览。 |
 | [AChartEngine图表库](simple.library.wsd.achartengine/) | 饼状图、柱状图与折线图。 |
 | [MPAndroidChart图表库](simple.library.wsd.mpandroidchart/) | 折线、柱状、横向柱状、饼状、散点、气泡、雷达、蜡烛与组合图。 |
-| [拉动刷新框库](simple.library.wsd.pullrefresh/) | 上下拉手势、自定义提示及可滚动内容容器。 |
+| [智能刷新框库](simple.library.wsd.smartrefresh/) | 下拉刷新、上拉加载、内置头尾样式、二楼与自定义交互。 |
+| [下拉刷新框库](simple.library.wsd.pulldownrefresh/) | 上下拉手势、自定义提示及可滚动内容容器。 |
 | [状态条通知库](simple.library.wsd.notification/) | 应用通知的构建、发送、更新和删除。 |
 | [滑动页面框库](simple.library.wsd.viewpager/) | 可左右滑动切换页面的可视容器。 |
 | [WS客户端库](simple.library.wsd.wsclient/) | WebSocket 连接、文本收发和连接状态事件。 |

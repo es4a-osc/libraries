@@ -11602,12 +11602,7 @@
 							]
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "XUI文本与编辑",
-			"definitions": [
+				},
 				{
 					"name": "XUI透明按钮",
 					"description": "XUI透明按钮组件。",
@@ -15112,7 +15107,7 @@
 			]
 		},
 		{
-			"name": "XUI容器",
+			"name": "XUI组件容器",
 			"definitions": [
 				{
 					"name": "XUI透明帧容器",
@@ -17744,11 +17739,49 @@
 						"layout": "linearVertical",
 						"scroll": "vertical"
 					}
+				},
+				{
+					"name": "XUI侧滑返回容器",
+					"description": "在容器边缘识别返回手势，完成后触发当前 Simple 窗口的返回键事件；子组件放在容器内。",
+					"icon": "icons/chevron-down-left.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.xui.XUI侧滑返回容器",
+					"inherits": [
+						"simple.library.wsd.xui.XUI视图组件",
+						"simple.runtime.components.组件容器"
+					],
+					"projection": {
+						"layout": "frame"
+					},
+					"functions": [
+						{
+							"name": "置响应边缘",
+							"description": "设置响应边缘。",
+							"params": [
+								{
+									"name": "边缘",
+									"type": "整数型",
+									"description": "0：左；1：右；2：两侧。"
+								}
+							]
+						},
+						{
+							"name": "置触发距离",
+							"description": "设置手指横向移动的触发距离。",
+							"params": [
+								{
+									"name": "距离",
+									"type": "整数型",
+									"description": "距离，单位为 dp，须大于零。"
+								}
+							]
+						}
+					]
 				}
 			]
 		},
 		{
-			"name": "XUI附着装饰",
+			"name": "XUI组件",
 			"definitions": [
 				{
 					"name": "XUI徽标",
@@ -18061,12 +18094,7 @@
 							]
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "XUI弹层与选择",
-			"definitions": [
+				},
 				{
 					"name": "XUI对话框",
 					"description": "提示、输入、选择、进度及自定义内容对话框，支持取消控制和确认前校验。",
@@ -20305,12 +20333,450 @@
 							"return": "逻辑型"
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "XUI工具",
-			"definitions": [
+				},
+				{
+					"name": "XUI键盘工具",
+					"description": "控制软键盘并监听所属窗口内的键盘显示状态。",
+					"icon": "icons/keyboard.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.xui.XUI键盘工具",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"functions": [
+						{
+							"name": "显示",
+							"description": "为编辑组件请求焦点并显示软键盘。",
+							"params": [
+								{
+									"name": "目标组件",
+									"type": "simple.runtime.components.可视组件",
+									"description": "原生视图为 EditText 的组件。"
+								}
+							]
+						},
+						{
+							"name": "隐藏",
+							"description": "隐藏当前窗口的软键盘。"
+						},
+						{
+							"name": "是否显示",
+							"description": "查询所属窗口是否受软键盘遮挡。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "开始监听",
+							"description": "监听键盘显示状态，重复调用不会重复注册。"
+						},
+						{
+							"name": "关闭",
+							"description": "停止本组件注册的键盘监听。"
+						}
+					],
+					"events": [
+						{
+							"name": "显示状态改变",
+							"description": "软键盘显示或隐藏时触发。",
+							"params": [
+								{
+									"name": "可见",
+									"type": "逻辑型",
+									"description": "是否显示。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "XUI富文本工具",
+					"description": "构建带样式和图片的文本，应用到文本类组件。",
+					"icon": "icons/text-color.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.xui.XUI富文本工具",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"functions": [
+						{
+							"name": "添加文本",
+							"description": "添加新的文本片段，后续样式设置作用于该片段。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							]
+						},
+						{
+							"name": "添加换行",
+							"description": "添加换行。"
+						},
+						{
+							"name": "置文字颜色",
+							"description": "设置当前文本片段颜色。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "置背景颜色",
+							"description": "设置当前文本片段背景。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "置文字大小",
+							"description": "设置当前片段的绝对字号。",
+							"params": [
+								{
+									"name": "文字大小",
+									"type": "整数型",
+									"description": "字号，单位为 dp，须大于零。"
+								}
+							]
+						},
+						{
+							"name": "置粗体",
+							"description": "把当前片段设置为粗体。"
+						},
+						{
+							"name": "置斜体",
+							"description": "把当前片段设置为斜体。"
+						},
+						{
+							"name": "置下划线",
+							"description": "给当前片段添加下划线。"
+						},
+						{
+							"name": "置删除线",
+							"description": "给当前片段添加删除线。"
+						},
+						{
+							"name": "置上标",
+							"description": "把当前片段设为上标。"
+						},
+						{
+							"name": "置下标",
+							"description": "把当前片段设为下标。"
+						},
+						{
+							"name": "添加图片",
+							"description": "添加本地图片片段。",
+							"params": [
+								{
+									"name": "图片",
+									"type": "文本型",
+									"description": "图片标识。"
+								}
+							]
+						},
+						{
+							"name": "应用到",
+							"description": "把富文本内容复制到文本类组件。",
+							"params": [
+								{
+									"name": "目标组件",
+									"type": "simple.runtime.components.可视组件",
+									"description": "原生视图为 TextView 的组件。"
+								}
+							]
+						},
+						{
+							"name": "取纯文本",
+							"description": "取得构建内容的纯文本。",
+							"return": "文本型"
+						},
+						{
+							"name": "清空",
+							"description": "清空已构建内容。"
+						},
+						{
+							"name": "关闭",
+							"description": "释放已构建内容。"
+						},
+						{
+							"name": "置点击标识",
+							"description": "将当前文本片段设为可点击内容，点击后回传标识。",
+							"params": [
+								{
+									"name": "标识",
+									"type": "文本型",
+									"description": "调用方用于区分片段的标识。"
+								}
+							]
+						},
+						{
+							"name": "置链接",
+							"description": "将当前文本片段设为链接；点击回传网址，由调用方决定如何打开。",
+							"params": [
+								{
+									"name": "网址",
+									"type": "文本型",
+									"description": "非空网址，不自动跳转外部应用。"
+								}
+							]
+						},
+						{
+							"name": "置段落对齐",
+							"description": "设置当前文本片段的段落对齐；片段应覆盖完整段落。",
+							"params": [
+								{
+									"name": "方式",
+									"type": "整数型",
+									"description": "段落对齐常量。"
+								}
+							]
+						},
+						{
+							"name": "置段落行高",
+							"description": "设置当前文本片段的段落行高。",
+							"params": [
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "大于零的像素行高。"
+								}
+							]
+						},
+						{
+							"name": "置段落缩进",
+							"description": "设置当前文本片段首行及其余行的像素缩进。",
+							"params": [
+								{
+									"name": "首行",
+									"type": "整数型",
+									"description": "非负像素。"
+								},
+								{
+									"name": "其余行",
+									"type": "整数型",
+									"description": "非负像素。"
+								}
+							]
+						},
+						{
+							"name": "置引用样式",
+							"description": "为当前文本片段添加引用竖线。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 竖线颜色。"
+								},
+								{
+									"name": "线宽",
+									"type": "整数型",
+									"description": "大于零的像素线宽。"
+								},
+								{
+									"name": "间隔",
+									"type": "整数型",
+									"description": "非负像素间隔。"
+								}
+							]
+						},
+						{
+							"name": "置项目符号",
+							"description": "为当前文本片段添加圆形项目符号。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 圆点颜色。"
+								},
+								{
+									"name": "半径",
+									"type": "整数型",
+									"description": "大于零的像素半径。"
+								},
+								{
+									"name": "间隔",
+									"type": "整数型",
+									"description": "非负像素间隔。"
+								}
+							]
+						},
+						{
+							"name": "添加图片",
+							"description": "添加指定像素大小与垂直对齐的图片片段。",
+							"params": [
+								{
+									"name": "图片",
+									"type": "文本型",
+									"description": "Simple 图片标识。"
+								},
+								{
+									"name": "宽度",
+									"type": "整数型",
+									"description": "大于零的像素宽度。"
+								},
+								{
+									"name": "高度",
+									"type": "整数型",
+									"description": "大于零的像素高度。"
+								},
+								{
+									"name": "对齐",
+									"type": "整数型",
+									"description": "图片对齐常量。"
+								}
+							]
+						},
+						{
+							"name": "置字体",
+							"description": "为当前文字片段设置资产字体，空文本恢复系统默认字体。",
+							"params": [
+								{
+									"name": "字体",
+									"type": "文本型",
+									"description": "字体资产路径。"
+								}
+							]
+						},
+						{
+							"name": "置图片间距",
+							"description": "设置当前图片片段左右的透明间距。",
+							"params": [
+								{
+									"name": "左间距",
+									"type": "整数型",
+									"description": "非负物理像素数。"
+								},
+								{
+									"name": "右间距",
+									"type": "整数型",
+									"description": "非负物理像素数。"
+								}
+							]
+						}
+					],
+					"events": [
+						{
+							"name": "片段被单击",
+							"description": "已应用的文本片段被单击时触发。",
+							"params": [
+								{
+									"name": "标识",
+									"type": "文本型",
+									"description": "片段标识；链接片段为网址。"
+								},
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "被点击的片段文字。"
+								}
+							]
+						}
+					],
+					"constants": [
+						{
+							"name": "段落对齐_起点",
+							"type": "整数型",
+							"value": "0",
+							"description": "起点对齐段落。"
+						},
+						{
+							"name": "段落对齐_居中",
+							"type": "整数型",
+							"value": "1",
+							"description": "居中对齐段落。"
+						},
+						{
+							"name": "段落对齐_末尾",
+							"type": "整数型",
+							"value": "2",
+							"description": "末尾对齐段落。"
+						},
+						{
+							"name": "图片对齐_底部",
+							"type": "整数型",
+							"value": "0",
+							"description": "底部对齐图片。"
+						},
+						{
+							"name": "图片对齐_基线",
+							"type": "整数型",
+							"value": "1",
+							"description": "基线对齐图片。"
+						},
+						{
+							"name": "图片对齐_居中",
+							"type": "整数型",
+							"value": "2",
+							"description": "居中对齐图片。"
+						},
+						{
+							"name": "图片对齐_顶部",
+							"type": "整数型",
+							"value": "3",
+							"description": "顶部对齐图片。"
+						}
+					]
+				},
+				{
+					"name": "XUI倒计时工具",
+					"description": "为任意文本按钮提供倒计时，结束、取消或切窗时恢复原文本和启用状态。",
+					"icon": "icons/clock-play.svg",
+					"kind": "component",
+					"type": "simple.library.wsd.xui.XUI倒计时工具",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"functions": [
+						{
+							"name": "开始",
+							"description": "开始倒计时并暂时禁用目标。",
+							"params": [
+								{
+									"name": "目标组件",
+									"type": "simple.runtime.components.可视组件",
+									"description": "原生视图为 TextView 的组件。"
+								},
+								{
+									"name": "秒数",
+									"type": "整数型",
+									"description": "总秒数，1～86400。"
+								},
+								{
+									"name": "间隔",
+									"type": "整数型",
+									"description": "回调间隔秒数，须为正数且不大于总秒数。"
+								}
+							]
+						},
+						{
+							"name": "关闭",
+							"description": "取消当前倒计时，恢复原状态。"
+						}
+					],
+					"events": [
+						{
+							"name": "剩余时间改变",
+							"description": "倒计时更新。",
+							"params": [
+								{
+									"name": "秒数",
+									"type": "整数型",
+									"description": "剩余秒数。"
+								}
+							]
+						},
+						{
+							"name": "倒计时结束",
+							"description": "自然结束时触发，主动取消不触发。"
+						}
+					]
+				},
 				{
 					"name": "XUI颜色工具",
 					"description": "XUI 颜色计算；颜色均采用 ARGB 整数。",
@@ -21104,497 +21570,6 @@
 						}
 					]
 				},
-				{
-					"name": "XUI键盘工具",
-					"description": "控制软键盘并监听所属窗口内的键盘显示状态。",
-					"icon": "icons/keyboard.svg",
-					"kind": "component",
-					"type": "simple.library.wsd.xui.XUI键盘工具",
-					"inherits": [
-						"simple.runtime.components.组件"
-					],
-					"functions": [
-						{
-							"name": "显示",
-							"description": "为编辑组件请求焦点并显示软键盘。",
-							"params": [
-								{
-									"name": "目标组件",
-									"type": "simple.runtime.components.可视组件",
-									"description": "原生视图为 EditText 的组件。"
-								}
-							]
-						},
-						{
-							"name": "隐藏",
-							"description": "隐藏当前窗口的软键盘。"
-						},
-						{
-							"name": "是否显示",
-							"description": "查询所属窗口是否受软键盘遮挡。",
-							"return": "逻辑型"
-						},
-						{
-							"name": "开始监听",
-							"description": "监听键盘显示状态，重复调用不会重复注册。"
-						},
-						{
-							"name": "关闭",
-							"description": "停止本组件注册的键盘监听。"
-						}
-					],
-					"events": [
-						{
-							"name": "显示状态改变",
-							"description": "软键盘显示或隐藏时触发。",
-							"params": [
-								{
-									"name": "可见",
-									"type": "逻辑型",
-									"description": "是否显示。"
-								}
-							]
-						}
-					]
-				},
-				{
-					"name": "XUI富文本工具",
-					"description": "构建带样式和图片的文本，应用到文本类组件。",
-					"icon": "icons/text-color.svg",
-					"kind": "component",
-					"type": "simple.library.wsd.xui.XUI富文本工具",
-					"inherits": [
-						"simple.runtime.components.组件"
-					],
-					"functions": [
-						{
-							"name": "添加文本",
-							"description": "添加新的文本片段，后续样式设置作用于该片段。",
-							"params": [
-								{
-									"name": "文本",
-									"type": "文本型",
-									"description": "文本。"
-								}
-							]
-						},
-						{
-							"name": "添加换行",
-							"description": "添加换行。"
-						},
-						{
-							"name": "置文字颜色",
-							"description": "设置当前文本片段颜色。",
-							"params": [
-								{
-									"name": "颜色",
-									"type": "整数型",
-									"description": "ARGB 颜色。"
-								}
-							]
-						},
-						{
-							"name": "置背景颜色",
-							"description": "设置当前文本片段背景。",
-							"params": [
-								{
-									"name": "颜色",
-									"type": "整数型",
-									"description": "ARGB 颜色。"
-								}
-							]
-						},
-						{
-							"name": "置文字大小",
-							"description": "设置当前片段的绝对字号。",
-							"params": [
-								{
-									"name": "文字大小",
-									"type": "整数型",
-									"description": "字号，单位为 dp，须大于零。"
-								}
-							]
-						},
-						{
-							"name": "置粗体",
-							"description": "把当前片段设置为粗体。"
-						},
-						{
-							"name": "置斜体",
-							"description": "把当前片段设置为斜体。"
-						},
-						{
-							"name": "置下划线",
-							"description": "给当前片段添加下划线。"
-						},
-						{
-							"name": "置删除线",
-							"description": "给当前片段添加删除线。"
-						},
-						{
-							"name": "置上标",
-							"description": "把当前片段设为上标。"
-						},
-						{
-							"name": "置下标",
-							"description": "把当前片段设为下标。"
-						},
-						{
-							"name": "添加图片",
-							"description": "添加本地图片片段。",
-							"params": [
-								{
-									"name": "图片",
-									"type": "文本型",
-									"description": "图片标识。"
-								}
-							]
-						},
-						{
-							"name": "应用到",
-							"description": "把富文本内容复制到文本类组件。",
-							"params": [
-								{
-									"name": "目标组件",
-									"type": "simple.runtime.components.可视组件",
-									"description": "原生视图为 TextView 的组件。"
-								}
-							]
-						},
-						{
-							"name": "取纯文本",
-							"description": "取得构建内容的纯文本。",
-							"return": "文本型"
-						},
-						{
-							"name": "清空",
-							"description": "清空已构建内容。"
-						},
-						{
-							"name": "关闭",
-							"description": "释放已构建内容。"
-						},
-						{
-							"name": "置点击标识",
-							"description": "将当前文本片段设为可点击内容，点击后回传标识。",
-							"params": [
-								{
-									"name": "标识",
-									"type": "文本型",
-									"description": "调用方用于区分片段的标识。"
-								}
-							]
-						},
-						{
-							"name": "置链接",
-							"description": "将当前文本片段设为链接；点击回传网址，由调用方决定如何打开。",
-							"params": [
-								{
-									"name": "网址",
-									"type": "文本型",
-									"description": "非空网址，不自动跳转外部应用。"
-								}
-							]
-						},
-						{
-							"name": "置段落对齐",
-							"description": "设置当前文本片段的段落对齐；片段应覆盖完整段落。",
-							"params": [
-								{
-									"name": "方式",
-									"type": "整数型",
-									"description": "段落对齐常量。"
-								}
-							]
-						},
-						{
-							"name": "置段落行高",
-							"description": "设置当前文本片段的段落行高。",
-							"params": [
-								{
-									"name": "高度",
-									"type": "整数型",
-									"description": "大于零的像素行高。"
-								}
-							]
-						},
-						{
-							"name": "置段落缩进",
-							"description": "设置当前文本片段首行及其余行的像素缩进。",
-							"params": [
-								{
-									"name": "首行",
-									"type": "整数型",
-									"description": "非负像素。"
-								},
-								{
-									"name": "其余行",
-									"type": "整数型",
-									"description": "非负像素。"
-								}
-							]
-						},
-						{
-							"name": "置引用样式",
-							"description": "为当前文本片段添加引用竖线。",
-							"params": [
-								{
-									"name": "颜色",
-									"type": "整数型",
-									"description": "ARGB 竖线颜色。"
-								},
-								{
-									"name": "线宽",
-									"type": "整数型",
-									"description": "大于零的像素线宽。"
-								},
-								{
-									"name": "间隔",
-									"type": "整数型",
-									"description": "非负像素间隔。"
-								}
-							]
-						},
-						{
-							"name": "置项目符号",
-							"description": "为当前文本片段添加圆形项目符号。",
-							"params": [
-								{
-									"name": "颜色",
-									"type": "整数型",
-									"description": "ARGB 圆点颜色。"
-								},
-								{
-									"name": "半径",
-									"type": "整数型",
-									"description": "大于零的像素半径。"
-								},
-								{
-									"name": "间隔",
-									"type": "整数型",
-									"description": "非负像素间隔。"
-								}
-							]
-						},
-						{
-							"name": "添加图片",
-							"description": "添加指定像素大小与垂直对齐的图片片段。",
-							"params": [
-								{
-									"name": "图片",
-									"type": "文本型",
-									"description": "Simple 图片标识。"
-								},
-								{
-									"name": "宽度",
-									"type": "整数型",
-									"description": "大于零的像素宽度。"
-								},
-								{
-									"name": "高度",
-									"type": "整数型",
-									"description": "大于零的像素高度。"
-								},
-								{
-									"name": "对齐",
-									"type": "整数型",
-									"description": "图片对齐常量。"
-								}
-							]
-						},
-						{
-							"name": "置字体",
-							"description": "为当前文字片段设置资产字体，空文本恢复系统默认字体。",
-							"params": [
-								{
-									"name": "字体",
-									"type": "文本型",
-									"description": "字体资产路径。"
-								}
-							]
-						},
-						{
-							"name": "置图片间距",
-							"description": "设置当前图片片段左右的透明间距。",
-							"params": [
-								{
-									"name": "左间距",
-									"type": "整数型",
-									"description": "非负物理像素数。"
-								},
-								{
-									"name": "右间距",
-									"type": "整数型",
-									"description": "非负物理像素数。"
-								}
-							]
-						}
-					],
-					"events": [
-						{
-							"name": "片段被单击",
-							"description": "已应用的文本片段被单击时触发。",
-							"params": [
-								{
-									"name": "标识",
-									"type": "文本型",
-									"description": "片段标识；链接片段为网址。"
-								},
-								{
-									"name": "文本",
-									"type": "文本型",
-									"description": "被点击的片段文字。"
-								}
-							]
-						}
-					],
-					"constants": [
-						{
-							"name": "段落对齐_起点",
-							"type": "整数型",
-							"value": "0",
-							"description": "起点对齐段落。"
-						},
-						{
-							"name": "段落对齐_居中",
-							"type": "整数型",
-							"value": "1",
-							"description": "居中对齐段落。"
-						},
-						{
-							"name": "段落对齐_末尾",
-							"type": "整数型",
-							"value": "2",
-							"description": "末尾对齐段落。"
-						},
-						{
-							"name": "图片对齐_底部",
-							"type": "整数型",
-							"value": "0",
-							"description": "底部对齐图片。"
-						},
-						{
-							"name": "图片对齐_基线",
-							"type": "整数型",
-							"value": "1",
-							"description": "基线对齐图片。"
-						},
-						{
-							"name": "图片对齐_居中",
-							"type": "整数型",
-							"value": "2",
-							"description": "居中对齐图片。"
-						},
-						{
-							"name": "图片对齐_顶部",
-							"type": "整数型",
-							"value": "3",
-							"description": "顶部对齐图片。"
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "XUI手势与计时",
-			"definitions": [
-				{
-					"name": "XUI侧滑返回容器",
-					"description": "在容器边缘识别返回手势，完成后触发当前 Simple 窗口的返回键事件；子组件放在容器内。",
-					"icon": "icons/chevron-down-left.svg",
-					"kind": "component",
-					"type": "simple.library.wsd.xui.XUI侧滑返回容器",
-					"inherits": [
-						"simple.library.wsd.xui.XUI视图组件",
-						"simple.runtime.components.组件容器"
-					],
-					"projection": {
-						"layout": "frame"
-					},
-					"functions": [
-						{
-							"name": "置响应边缘",
-							"description": "设置响应边缘。",
-							"params": [
-								{
-									"name": "边缘",
-									"type": "整数型",
-									"description": "0：左；1：右；2：两侧。"
-								}
-							]
-						},
-						{
-							"name": "置触发距离",
-							"description": "设置手指横向移动的触发距离。",
-							"params": [
-								{
-									"name": "距离",
-									"type": "整数型",
-									"description": "距离，单位为 dp，须大于零。"
-								}
-							]
-						}
-					]
-				},
-				{
-					"name": "XUI倒计时工具",
-					"description": "为任意文本按钮提供倒计时，结束、取消或切窗时恢复原文本和启用状态。",
-					"icon": "icons/clock-play.svg",
-					"kind": "component",
-					"type": "simple.library.wsd.xui.XUI倒计时工具",
-					"inherits": [
-						"simple.runtime.components.组件"
-					],
-					"functions": [
-						{
-							"name": "开始",
-							"description": "开始倒计时并暂时禁用目标。",
-							"params": [
-								{
-									"name": "目标组件",
-									"type": "simple.runtime.components.可视组件",
-									"description": "原生视图为 TextView 的组件。"
-								},
-								{
-									"name": "秒数",
-									"type": "整数型",
-									"description": "总秒数，1～86400。"
-								},
-								{
-									"name": "间隔",
-									"type": "整数型",
-									"description": "回调间隔秒数，须为正数且不大于总秒数。"
-								}
-							]
-						},
-						{
-							"name": "关闭",
-							"description": "取消当前倒计时，恢复原状态。"
-						}
-					],
-					"events": [
-						{
-							"name": "剩余时间改变",
-							"description": "倒计时更新。",
-							"params": [
-								{
-									"name": "秒数",
-									"type": "整数型",
-									"description": "剩余秒数。"
-								}
-							]
-						},
-						{
-							"name": "倒计时结束",
-							"description": "自然结束时触发，主动取消不触发。"
-						}
-					]
-				}
-			]
-		},
-		{
-			"name": "XUI设备与系统栏",
-			"definitions": [
 				{
 					"name": "XUI设备工具",
 					"description": "查询 XUI 使用的设备分类及 Android 公开设备信息。",

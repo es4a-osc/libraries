@@ -1,0 +1,2110 @@
+{
+	"name": "CalendarView日历库",
+	"description": "年月周日历、选择、标记、收缩联动与自定义绘制。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展可视组件",
+			"definitions": [
+				{
+					"name": "日历框",
+					"kind": "component",
+					"type": "simple.library.wsd.calendarview.日历框",
+					"inherits": [
+						"simple.runtime.components.可视组件"
+					],
+					"description": "年月周日历及选择、标记、绘制；仅在主线程操作，绘制和拦截回调内不能修改日历。",
+					"properties": [
+						{
+							"name": "当前选择",
+							"description": "当前焦点日期快照；范围及多选模式的完整选择请读取相应日期数组，尚未选择时为空引用。",
+							"type": "simple.library.wsd.calendarview.日历日期",
+							"writable": false
+						},
+						{
+							"name": "显示年",
+							"description": "月视图当前显示的公历年。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "显示月",
+							"description": "月视图当前显示的公历月。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "是月视图",
+							"description": "当前是否显示月视图；周视图为假。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "年视图已打开",
+							"description": "年份快速选择视图是否已打开。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "应用配置",
+							"description": "复制并应用日历配置；不重建日历实例。选择模式改变时清理旧模式的选择，范围内的日期及标记保持独立。",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.calendarview.日历配置",
+									"description": "配置。"
+								}
+							]
+						},
+						{
+							"name": "取得配置",
+							"description": "取得当前配置副本，后续修改副本不改变现有日历。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历配置"
+						},
+						{
+							"name": "设置日期范围",
+							"description": "设置包含首尾的公历日期范围；日期必须真实有效且最小不晚于最大。",
+							"params": [
+								{
+									"name": "最小日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "最小日期。"
+								},
+								{
+									"name": "最大日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "最大日期。"
+								}
+							]
+						},
+						{
+							"name": "取最小日期",
+							"description": "读取允许浏览和选择的最小公历日期。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期"
+						},
+						{
+							"name": "取最大日期",
+							"description": "读取允许浏览和选择的最大公历日期。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期"
+						},
+						{
+							"name": "跳转日期",
+							"description": "跳转到指定日期；范围外或被拦截时返回假。默认自动选择模式不执行日期拦截。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "平滑滚动",
+									"type": "逻辑型",
+									"description": "平滑滚动。"
+								},
+								{
+									"name": "触发选择事件",
+									"type": "逻辑型",
+									"description": "触发选择事件。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "返回今天",
+							"description": "跳转到今天；今天超出允许范围或被拦截时返回假。",
+							"params": [
+								{
+									"name": "平滑滚动",
+									"type": "逻辑型",
+									"description": "平滑滚动。"
+								},
+								{
+									"name": "触发选择事件",
+									"type": "逻辑型",
+									"description": "触发选择事件。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "前一页",
+							"description": "向前翻动当前月、周或年视图。",
+							"params": [
+								{
+									"name": "平滑滚动",
+									"type": "逻辑型",
+									"description": "平滑滚动。"
+								}
+							]
+						},
+						{
+							"name": "后一页",
+							"description": "向后翻动当前月、周或年视图。",
+							"params": [
+								{
+									"name": "平滑滚动",
+									"type": "逻辑型",
+									"description": "平滑滚动。"
+								}
+							]
+						},
+						{
+							"name": "滚动到选择",
+							"description": "滚动回当前选中日期。",
+							"params": []
+						},
+						{
+							"name": "打开年视图",
+							"description": "打开指定年份的快速选月视图；年份须处于当前日期范围内。",
+							"params": [
+								{
+									"name": "年份",
+									"type": "整数型",
+									"description": "年份。"
+								}
+							]
+						},
+						{
+							"name": "关闭年视图",
+							"description": "关闭年份快速选择视图。",
+							"params": []
+						},
+						{
+							"name": "取当前月日期",
+							"description": "读取当前月视图中的日期快照，包括该显示方式的填充日期。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期()"
+						},
+						{
+							"name": "取当前周日期",
+							"description": "读取当前周视图的七个日期快照。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期()"
+						},
+						{
+							"name": "取多选日期",
+							"description": "按公历顺序读取全部多选日期。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期()"
+						},
+						{
+							"name": "取范围日期",
+							"description": "读取当前完整范围中未被拦截的日期；未完成范围选择时为空数组。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期()"
+						},
+						{
+							"name": "取全部标记日期",
+							"description": "按公历顺序读取全部标记日期及其独立标记副本。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期()"
+						},
+						{
+							"name": "加入多选",
+							"description": "批量加入多选，要求当前为多选模式；整批先校验范围、拦截及数量，失败不部分写入。",
+							"params": [
+								{
+									"name": "日期数组",
+									"type": "simple.library.wsd.calendarview.日历日期()",
+									"description": "日期数组。"
+								}
+							]
+						},
+						{
+							"name": "移除多选",
+							"description": "移除指定多选日期，要求当前为多选模式。",
+							"params": [
+								{
+									"name": "日期数组",
+									"type": "simple.library.wsd.calendarview.日历日期()",
+									"description": "日期数组。"
+								}
+							]
+						},
+						{
+							"name": "清除单选",
+							"description": "清除当前单选日期。",
+							"params": []
+						},
+						{
+							"name": "清除多选",
+							"description": "清除全部多选日期。",
+							"params": []
+						},
+						{
+							"name": "清除范围",
+							"description": "清除已选择的范围及起点。",
+							"params": []
+						},
+						{
+							"name": "设置范围选择",
+							"description": "设置包含首尾的选择范围，要求范围选择模式；先校验边界、端点拦截及跨度，失败返回假。",
+							"params": [
+								{
+									"name": "起点",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "起点。"
+								},
+								{
+									"name": "终点",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "终点。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置范围起点",
+							"description": "设置范围选择起点并清除原终点，要求范围选择模式。",
+							"params": [
+								{
+									"name": "起点",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "起点。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置范围终点",
+							"description": "为已有起点设置终点；须满足日期顺序、端点拦截和跨度限制。",
+							"params": [
+								{
+									"name": "终点",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "终点。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置全部标记",
+							"description": "以携带标记的日期数组替换全部标记；使用日历工具附加标记构造输入。",
+							"params": [
+								{
+									"name": "标记日期",
+									"type": "simple.library.wsd.calendarview.日历日期()",
+									"description": "标记日期。"
+								}
+							]
+						},
+						{
+							"name": "追加标记",
+							"description": "批量增加或替换指定日期的标记，其它日期保持不变。",
+							"params": [
+								{
+									"name": "标记日期",
+									"type": "simple.library.wsd.calendarview.日历日期()",
+									"description": "标记日期。"
+								}
+							]
+						},
+						{
+							"name": "移除标记",
+							"description": "移除指定日期的全部标记。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								}
+							]
+						},
+						{
+							"name": "清除标记",
+							"description": "移除全部日期标记。",
+							"params": []
+						},
+						{
+							"name": "设置禁用日期",
+							"description": "替换禁用日期集合；单选、范围及多选模式生效，默认自动选择模式不拦截。",
+							"params": [
+								{
+									"name": "日期数组",
+									"type": "simple.library.wsd.calendarview.日历日期()",
+									"description": "日期数组。"
+								}
+							]
+						},
+						{
+							"name": "取禁用日期",
+							"description": "按公历顺序读取禁用日期的副本数组。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期()"
+						},
+						{
+							"name": "启用日期拦截",
+							"description": "是否同步触发日期拦截事件；默认关闭。处理器只计算条件，不能在拦截回调中修改日历。",
+							"params": [
+								{
+									"name": "启用",
+									"type": "逻辑型",
+									"description": "启用。"
+								}
+							]
+						},
+						{
+							"name": "刷新今天",
+							"description": "重新读取系统日期，更新今天的标识和相关视图。",
+							"params": []
+						},
+						{
+							"name": "请求重绘",
+							"description": "重绘月、周、年视图及星期栏，不修改选择和标记。",
+							"params": []
+						},
+						{
+							"name": "载入绘制图片",
+							"description": "预先载入供绘制事件使用的图片；支持资产、绝对路径及内容 URI，返回图片编号。",
+							"params": [
+								{
+									"name": "图片路径",
+									"type": "文本型",
+									"description": "图片路径。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "载入绘制图片字节",
+							"description": "预先载入图片字节，压缩数据上限 16 MiB；图片采样到最长边 1024 像素。",
+							"params": [
+								{
+									"name": "图片数据",
+									"type": "字节型()",
+									"description": "图片数据。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "释放绘制图片",
+							"description": "释放本日历预先载入的图片，重复释放无副作用。",
+							"params": [
+								{
+									"name": "图片编号",
+									"type": "整数型",
+									"description": "图片编号。"
+								}
+							]
+						}
+					],
+					"events": [
+						{
+							"name": "日期选中",
+							"description": "单选或默认自动选择完成时触发；用户点击为假表示程序调用或自动切换。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "用户点击",
+									"type": "逻辑型",
+									"description": "用户点击。"
+								}
+							]
+						},
+						{
+							"name": "日期越界",
+							"description": "尝试选择超出当前允许范围的日期时触发。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								}
+							]
+						},
+						{
+							"name": "范围选择",
+							"description": "选择范围的起点或终点时触发。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "是否终点",
+									"type": "逻辑型",
+									"description": "是否终点。"
+								}
+							]
+						},
+						{
+							"name": "跨度越界",
+							"description": "范围的包含首尾天数不符合限制时触发。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "小于最小跨度",
+									"type": "逻辑型",
+									"description": "小于最小跨度。"
+								}
+							]
+						},
+						{
+							"name": "多选改变",
+							"description": "用户或程序加入、移除多选后触发，携带操作后的数量与选择状态。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "当前数量",
+									"type": "整数型",
+									"description": "当前数量。"
+								},
+								{
+									"name": "最大数量",
+									"type": "整数型",
+									"description": "最大数量。"
+								},
+								{
+									"name": "当前已选中",
+									"type": "逻辑型",
+									"description": "当前已选中。"
+								}
+							]
+						},
+						{
+							"name": "多选数量超限",
+							"description": "尝试加入超过多选数量上限的日期时触发。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "最大数量",
+									"type": "整数型",
+									"description": "最大数量。"
+								}
+							]
+						},
+						{
+							"name": "日期长按",
+							"description": "长按有效日期时触发，是否同时选择由配置决定。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								}
+							]
+						},
+						{
+							"name": "长按越界",
+							"description": "长按超出当前允许范围的日期时触发。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								}
+							]
+						},
+						{
+							"name": "日期拦截",
+							"description": "启用日期拦截后同步查询是否禁用该日；该事件可能在绘制时频繁调用，只能计算条件。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "禁止",
+									"type": "逻辑型",
+									"description": "禁止。",
+									"byRef": true
+								}
+							]
+						},
+						{
+							"name": "日期被拦截",
+							"description": "尝试选择被禁用的日期时触发。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "用户点击",
+									"type": "逻辑型",
+									"description": "用户点击。"
+								}
+							]
+						},
+						{
+							"name": "年份改变",
+							"description": "年份选择视图切换年份时触发。",
+							"params": [
+								{
+									"name": "年份",
+									"type": "整数型",
+									"description": "年份。"
+								}
+							]
+						},
+						{
+							"name": "月份改变",
+							"description": "月视图切换月份时触发。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型",
+									"description": "年。"
+								},
+								{
+									"name": "月",
+									"type": "整数型",
+									"description": "月。"
+								}
+							]
+						},
+						{
+							"name": "周改变",
+							"description": "周视图切换到其它周时触发。",
+							"params": [
+								{
+									"name": "本周日期",
+									"type": "simple.library.wsd.calendarview.日历日期()",
+									"description": "本周日期。"
+								}
+							]
+						},
+						{
+							"name": "视图改变",
+							"description": "日历在月、周视图间转换时触发。",
+							"params": [
+								{
+									"name": "是否月视图",
+									"type": "逻辑型",
+									"description": "是否月视图。"
+								}
+							]
+						},
+						{
+							"name": "年视图改变",
+							"description": "年份选择视图打开或关闭时触发。",
+							"params": [
+								{
+									"name": "是否打开",
+									"type": "逻辑型",
+									"description": "是否打开。"
+								}
+							]
+						},
+						{
+							"name": "边距被点击",
+							"description": "点击日历内边距时触发，坐标单位 DIP；没有相邻日期时为空引用。",
+							"params": [
+								{
+									"name": "横坐标",
+									"type": "单精度小数型",
+									"description": "横坐标。"
+								},
+								{
+									"name": "纵坐标",
+									"type": "单精度小数型",
+									"description": "纵坐标。"
+								},
+								{
+									"name": "是否月视图",
+									"type": "逻辑型",
+									"description": "是否月视图。"
+								},
+								{
+									"name": "相邻日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "相邻日期。"
+								}
+							]
+						},
+						{
+							"name": "绘制日项",
+							"description": "启用绘制事件后同步绘制日项；阶段 0 选区、1 标记、2 文本，3 年视图选区、4 年视图标记、5 年视图文本。设默认绘制为假可替代该阶段，绘图对象仅本回调有效。",
+							"params": [
+								{
+									"name": "绘图",
+									"type": "simple.library.wsd.calendarview.日历绘图",
+									"description": "绘图。"
+								},
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "阶段",
+									"type": "整数型",
+									"description": "阶段。"
+								},
+								{
+									"name": "已选中",
+									"type": "逻辑型",
+									"description": "已选中。"
+								},
+								{
+									"name": "前项选中",
+									"type": "逻辑型",
+									"description": "前项选中。"
+								},
+								{
+									"name": "后项选中",
+									"type": "逻辑型",
+									"description": "后项选中。"
+								},
+								{
+									"name": "默认绘制",
+									"type": "逻辑型",
+									"description": "默认绘制。",
+									"byRef": true
+								}
+							]
+						},
+						{
+							"name": "绘制标题",
+							"description": "启用绘制事件后同步绘制标题；阶段 0 年视图月份、1 年视图星期、2 顶部星期栏。星期为 0 周日至 6 周六；月份标题的星期为 -1。",
+							"params": [
+								{
+									"name": "绘图",
+									"type": "simple.library.wsd.calendarview.日历绘图",
+									"description": "绘图。"
+								},
+								{
+									"name": "年",
+									"type": "整数型",
+									"description": "年。"
+								},
+								{
+									"name": "月",
+									"type": "整数型",
+									"description": "月。"
+								},
+								{
+									"name": "阶段",
+									"type": "整数型",
+									"description": "阶段。"
+								},
+								{
+									"name": "星期",
+									"type": "整数型",
+									"description": "星期。"
+								},
+								{
+									"name": "默认绘制",
+									"type": "逻辑型",
+									"description": "默认绘制。",
+									"byRef": true
+								}
+							]
+						},
+						{
+							"name": "绘制失败",
+							"description": "绘制处理发生可传播的错误时报告原因；绘图对象仍会结束有效期。",
+							"params": [
+								{
+									"name": "原因",
+									"type": "文本型",
+									"description": "原因。"
+								}
+							]
+						}
+					],
+					"icon": "icons/calendar-month.svg"
+				}
+			]
+		},
+		{
+			"name": "扩展组件容器",
+			"definitions": [
+				{
+					"name": "日历布局",
+					"kind": "component",
+					"type": "simple.library.wsd.calendarview.日历布局",
+					"inherits": [
+						"simple.runtime.components.可视组件",
+						"simple.runtime.components.组件容器"
+					],
+					"description": "接受一个日历框和一个 ViewGroup 内容组件（面板、滚动框、列表或网页），提供周月收缩联动。",
+					"properties": [
+						{
+							"name": "已经展开",
+							"description": "读取日历是否已展开为月视图。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "日历可见",
+							"description": "读取是否显示上方日历。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "展开",
+							"description": "展开为月视图，动画时长单位毫秒；状态不允许、动画中或没有内容时返回假。",
+							"params": [
+								{
+									"name": "动画时长",
+									"type": "整数型",
+									"description": "动画时长。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "收缩",
+							"description": "收缩为周视图，动画时长单位毫秒；状态不允许、动画中或没有内容时返回假。",
+							"params": [
+								{
+									"name": "动画时长",
+									"type": "整数型",
+									"description": "动画时长。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置显示模式",
+							"description": "设置布局模式：0 周月均可，1 仅周，2 仅月。",
+							"params": [
+								{
+									"name": "模式",
+									"type": "整数型",
+									"description": "模式。"
+								}
+							]
+						},
+						{
+							"name": "启用收缩手势",
+							"description": "是否允许上下拖动日历与内容进行周月切换；不控制日历的左右翻页。",
+							"params": [
+								{
+									"name": "启用",
+									"type": "逻辑型",
+									"description": "启用。"
+								}
+							]
+						},
+						{
+							"name": "显示日历",
+							"description": "显示或隐藏日历部分，保留下方内容。",
+							"params": [
+								{
+									"name": "可见",
+									"type": "逻辑型",
+									"description": "可见。"
+								}
+							]
+						},
+						{
+							"name": "取得日历",
+							"description": "读取布局内的日历组件；尚未添加时为空引用。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历框"
+						},
+						{
+							"name": "取得内容",
+							"description": "读取布局内的内容组件；尚未添加时为空引用。",
+							"params": [],
+							"return": "simple.runtime.components.可视组件"
+						}
+					],
+					"events": [],
+					"icon": "icons/calendar-week.svg"
+				}
+			]
+		},
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "日历日期",
+					"kind": "object",
+					"type": "simple.library.wsd.calendarview.日历日期",
+					"description": "日期及农历、标记信息的独立只读快照。未选择时相关接口可返回空引用。",
+					"properties": [
+						{
+							"name": "年",
+							"description": "公历年。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "月",
+							"description": "公历月，1 至 12。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "日",
+							"description": "公历日号。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "日期文本",
+							"description": "八位公历日期标识 yyyyMMdd。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "星期",
+							"description": "星期编号，0 为周日，6 为周六。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "是周末",
+							"description": "是否为周六或周日。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "是今天",
+							"description": "生成快照时是否为今天。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "属于当前月",
+							"description": "该快照在对应视图中是否属于当前月。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "是闰年",
+							"description": "公历年是否闰年。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "农历文字",
+							"description": "农历或优先显示的节日、节气文字。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "农历年",
+							"description": "农历年；未填充时为 0。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "农历月",
+							"description": "农历月；未填充时为 0。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "农历日",
+							"description": "农历日；未填充时为 0。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "是农历闰月",
+							"description": "该日是否属于农历闰月。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "节气",
+							"description": "当日节气，没有则为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "公历节日",
+							"description": "当日公历节日，没有则为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "传统节日",
+							"description": "当日传统节日，没有则为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "标记文字",
+							"description": "当日主标记文字，没有则为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "标记颜色",
+							"description": "当日主标记颜色，ARGB。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "有标记",
+							"description": "是否有主标记或多项标记。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "UTC时间戳",
+							"description": "该公历日 UTC 零点的毫秒时间戳。",
+							"type": "长整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取全部标记",
+							"description": "读取当日全部标记的独立副本数组。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历标记()"
+						}
+					]
+				},
+				{
+					"name": "日历标记",
+					"kind": "object",
+					"type": "simple.library.wsd.calendarview.日历标记",
+					"description": "日历事务标记；颜色为 ARGB，附加数据中的对象按引用保留。",
+					"properties": [
+						{
+							"name": "类型",
+							"description": "由应用定义的标记类型编号。",
+							"type": "整数型"
+						},
+						{
+							"name": "颜色",
+							"description": "标记的 ARGB 颜色。",
+							"type": "整数型"
+						},
+						{
+							"name": "文字",
+							"description": "标记文字。",
+							"type": "文本型"
+						},
+						{
+							"name": "附加文本",
+							"description": "附加说明文本。",
+							"type": "文本型"
+						},
+						{
+							"name": "附加数据",
+							"description": "应用附加数据；其中的对象保持引用语义。",
+							"type": "变体型"
+						}
+					]
+				},
+				{
+					"name": "日历配置",
+					"type": "simple.library.wsd.calendarview.日历配置",
+					"kind": "object",
+					"description": "日历行为与外观的独立配置快照；几何尺寸用 DIP，字体用 SP。",
+					"properties": [
+						{
+							"name": "选择模式",
+							"description": "选择模式：0 默认自动选择，1 单选，2 范围，3 多选。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "周起始",
+							"description": "每周起始：1 周日，2 周一，7 周六。",
+							"type": "整数型",
+							"initializer": "2"
+						},
+						{
+							"name": "月份填充",
+							"description": "月份填充：0 固定六行，1 只显示本月，2 按实际周数填充。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "自动选择日",
+							"description": "默认模式翻页时：0 首日，1 跟随上次日期并优先今天，2 只跟随上次日期。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "最大多选数",
+							"description": "多选数量上限，范围 1 至 10000。",
+							"type": "整数型",
+							"initializer": "5"
+						},
+						{
+							"name": "最小选择跨度",
+							"description": "范围选择包含首尾的最小天数。",
+							"type": "整数型",
+							"initializer": "1"
+						},
+						{
+							"name": "最大选择跨度",
+							"description": "范围选择包含首尾的最大天数，-1 不限制。",
+							"type": "整数型",
+							"initializer": "-1"
+						},
+						{
+							"name": "日项高度",
+							"description": "日项高度，单位 DIP，范围 16 至 512。",
+							"type": "整数型",
+							"initializer": "56"
+						},
+						{
+							"name": "周栏高度",
+							"description": "星期栏高度，单位 DIP；0 隐藏星期栏。",
+							"type": "整数型",
+							"initializer": "36"
+						},
+						{
+							"name": "日期字号",
+							"description": "日期文字大小，单位 SP。",
+							"type": "单精度小数型",
+							"initializer": "16"
+						},
+						{
+							"name": "农历字号",
+							"description": "农历文字大小，单位 SP。",
+							"type": "单精度小数型",
+							"initializer": "10"
+						},
+						{
+							"name": "周栏字号",
+							"description": "星期栏文字大小，单位 SP。",
+							"type": "单精度小数型",
+							"initializer": "13"
+						},
+						{
+							"name": "左内边距",
+							"description": "日历左内边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "右内边距",
+							"description": "日历右内边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "分隔线边距",
+							"description": "星期栏分隔线的左右边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "内置样式",
+							"description": "内置样式：0 圆形，1 方形，2 圆角，3 进度圆环，4 多点标记；范围模式绘制连续选区。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "显示农历",
+							"description": "是否绘制农历、节气及节日文字。",
+							"type": "逻辑型",
+							"initializer": "真"
+						},
+						{
+							"name": "启用绘制事件",
+							"description": "是否同步触发 Simple 绘制事件；默认关闭以减少逐单元事件开销。",
+							"type": "逻辑型",
+							"initializer": "假"
+						},
+						{
+							"name": "长按阻止选择",
+							"description": "长按时是否仅通知长按而不改变所选日期。",
+							"type": "逻辑型",
+							"initializer": "假"
+						},
+						{
+							"name": "月视图可滑动",
+							"description": "是否允许手势翻动月视图。",
+							"type": "逻辑型",
+							"initializer": "真"
+						},
+						{
+							"name": "周视图可滑动",
+							"description": "是否允许手势翻动周视图。",
+							"type": "逻辑型",
+							"initializer": "真"
+						},
+						{
+							"name": "年视图可滑动",
+							"description": "是否允许手势翻动年视图。",
+							"type": "逻辑型",
+							"initializer": "真"
+						},
+						{
+							"name": "年月份字号",
+							"description": "年视图月份标题字号，单位 SP。",
+							"type": "单精度小数型",
+							"initializer": "16"
+						},
+						{
+							"name": "年日期字号",
+							"description": "年视图日期字号，单位 SP。",
+							"type": "单精度小数型",
+							"initializer": "10"
+						},
+						{
+							"name": "年星期字号",
+							"description": "年视图星期字号，单位 SP。",
+							"type": "单精度小数型",
+							"initializer": "9"
+						},
+						{
+							"name": "年月份标题高度",
+							"description": "年视图月份标题高度，单位 DIP。",
+							"type": "整数型",
+							"initializer": "40"
+						},
+						{
+							"name": "年星期高度",
+							"description": "年视图星期栏高度，单位 DIP。",
+							"type": "整数型",
+							"initializer": "24"
+						},
+						{
+							"name": "年左内边距",
+							"description": "年视图左内边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "年右内边距",
+							"description": "年视图右内边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "0"
+						},
+						{
+							"name": "年月份左边距",
+							"description": "年视图单月左边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "4"
+						},
+						{
+							"name": "年月份右边距",
+							"description": "年视图单月右边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "4"
+						},
+						{
+							"name": "年月份上边距",
+							"description": "年视图单月上边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "2"
+						},
+						{
+							"name": "年月份下边距",
+							"description": "年视图单月下边距，单位 DIP。",
+							"type": "整数型",
+							"initializer": "2"
+						},
+						{
+							"name": "今日文字颜色",
+							"description": "今日文字颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-1223853",
+							"editor": "simple.color"
+						},
+						{
+							"name": "今日农历颜色",
+							"description": "今日农历颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-1223853",
+							"editor": "simple.color"
+						},
+						{
+							"name": "本月文字颜色",
+							"description": "本月文字颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-14273992",
+							"editor": "simple.color"
+						},
+						{
+							"name": "其他月文字颜色",
+							"description": "其他月文字颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-5194043",
+							"editor": "simple.color"
+						},
+						{
+							"name": "本月农历颜色",
+							"description": "本月农历颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-8875876",
+							"editor": "simple.color"
+						},
+						{
+							"name": "其他月农历颜色",
+							"description": "其他月农历颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-3155748",
+							"editor": "simple.color"
+						},
+						{
+							"name": "选中背景颜色",
+							"description": "选中背景颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-15303303",
+							"editor": "simple.color"
+						},
+						{
+							"name": "选中文字颜色",
+							"description": "选中文字颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "0xfffffff",
+							"editor": "simple.color"
+						},
+						{
+							"name": "选中农历颜色",
+							"description": "选中农历颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "0xfffffff",
+							"editor": "simple.color"
+						},
+						{
+							"name": "标记颜色",
+							"description": "标记颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-1223853",
+							"editor": "simple.color"
+						},
+						{
+							"name": "标记文字颜色",
+							"description": "标记文字颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-14273992",
+							"editor": "simple.color"
+						},
+						{
+							"name": "标记农历颜色",
+							"description": "标记农历颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-8875876",
+							"editor": "simple.color"
+						},
+						{
+							"name": "周栏背景颜色",
+							"description": "周栏背景颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "0xfffffff",
+							"editor": "simple.color"
+						},
+						{
+							"name": "周栏文字颜色",
+							"description": "周栏文字颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-12232092",
+							"editor": "simple.color"
+						},
+						{
+							"name": "分隔线颜色",
+							"description": "分隔线颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-1249295",
+							"editor": "simple.color"
+						},
+						{
+							"name": "年背景颜色",
+							"description": "年背景颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "0xfffffff",
+							"editor": "simple.color"
+						},
+						{
+							"name": "年月份颜色",
+							"description": "年月份颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-14273992",
+							"editor": "simple.color"
+						},
+						{
+							"name": "年日期颜色",
+							"description": "年日期颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-12232092",
+							"editor": "simple.color"
+						},
+						{
+							"name": "年标记颜色",
+							"description": "年标记颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-1223853",
+							"editor": "simple.color"
+						},
+						{
+							"name": "年今日颜色",
+							"description": "年今日颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-1223853",
+							"editor": "simple.color"
+						},
+						{
+							"name": "年选中颜色",
+							"description": "年选中颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-15303303",
+							"editor": "simple.color"
+						},
+						{
+							"name": "年星期颜色",
+							"description": "年星期颜色，ARGB 整数。",
+							"type": "整数型",
+							"initializer": "-8875876",
+							"editor": "simple.color"
+						},
+						{
+							"name": "填满高度",
+							"type": "逻辑型",
+							"initializer": "假",
+							"description": "让独立月日历填满可用高度；不能与收缩日历布局共用。"
+						},
+						{
+							"name": "默认标记文字",
+							"type": "文本型",
+							"initializer": "\"记\"",
+							"description": "没有单独指定文字时使用的标记文字。"
+						}
+					],
+					"functions": [
+						{
+							"name": "置星期文字",
+							"description": "设置从周日到周六的七个星期文字；输入数组会复制。",
+							"params": [
+								{
+									"name": "星期文字",
+									"type": "文本型()",
+									"description": "星期文字。"
+								}
+							]
+						},
+						{
+							"name": "取星期文字",
+							"description": "取得从周日到周六排列的独立文字数组。",
+							"params": [],
+							"return": "文本型()"
+						}
+					]
+				},
+				{
+					"name": "日历绘图",
+					"kind": "object",
+					"type": "simple.library.wsd.calendarview.日历绘图",
+					"description": "仅同步绘制回调内有效；原点位于单元左上角，坐标为 DIP，字号为 SP，回调结束后拒绝绘制。",
+					"properties": [
+						{
+							"name": "有效",
+							"description": "回调是否仍在进行；此属性可在回调外读取。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "左边",
+							"description": "单元在所属视图中的左边位置，DIP。",
+							"type": "单精度小数型",
+							"writable": false
+						},
+						{
+							"name": "顶边",
+							"description": "单元在所属视图中的顶边位置，DIP。",
+							"type": "单精度小数型",
+							"writable": false
+						},
+						{
+							"name": "宽度",
+							"description": "单元宽度，DIP。",
+							"type": "单精度小数型",
+							"writable": false
+						},
+						{
+							"name": "高度",
+							"description": "单元高度，DIP。",
+							"type": "单精度小数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "画线",
+							"description": "绘制线段，坐标及线宽用 DIP。",
+							"params": [
+								{
+									"name": "起点横坐标",
+									"type": "单精度小数型",
+									"description": "起点横坐标。"
+								},
+								{
+									"name": "起点纵坐标",
+									"type": "单精度小数型",
+									"description": "起点纵坐标。"
+								},
+								{
+									"name": "终点横坐标",
+									"type": "单精度小数型",
+									"description": "终点横坐标。"
+								},
+								{
+									"name": "终点纵坐标",
+									"type": "单精度小数型",
+									"description": "终点纵坐标。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								},
+								{
+									"name": "线宽",
+									"type": "单精度小数型",
+									"description": "线宽。"
+								}
+							]
+						},
+						{
+							"name": "画矩形",
+							"description": "绘制矩形，坐标及尺寸用 DIP。",
+							"params": [
+								{
+									"name": "左边",
+									"type": "单精度小数型",
+									"description": "左边。"
+								},
+								{
+									"name": "顶边",
+									"type": "单精度小数型",
+									"description": "顶边。"
+								},
+								{
+									"name": "宽",
+									"type": "单精度小数型",
+									"description": "宽。"
+								},
+								{
+									"name": "高",
+									"type": "单精度小数型",
+									"description": "高。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								},
+								{
+									"name": "填充",
+									"type": "逻辑型",
+									"description": "填充。"
+								},
+								{
+									"name": "线宽",
+									"type": "单精度小数型",
+									"description": "线宽。"
+								}
+							]
+						},
+						{
+							"name": "画圆角矩形",
+							"description": "绘制圆角矩形，坐标、尺寸及圆角用 DIP。",
+							"params": [
+								{
+									"name": "左边",
+									"type": "单精度小数型",
+									"description": "左边。"
+								},
+								{
+									"name": "顶边",
+									"type": "单精度小数型",
+									"description": "顶边。"
+								},
+								{
+									"name": "宽",
+									"type": "单精度小数型",
+									"description": "宽。"
+								},
+								{
+									"name": "高",
+									"type": "单精度小数型",
+									"description": "高。"
+								},
+								{
+									"name": "圆角半径",
+									"type": "单精度小数型",
+									"description": "圆角半径。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								},
+								{
+									"name": "填充",
+									"type": "逻辑型",
+									"description": "填充。"
+								},
+								{
+									"name": "线宽",
+									"type": "单精度小数型",
+									"description": "线宽。"
+								}
+							]
+						},
+						{
+							"name": "画圆",
+							"description": "绘制圆形，坐标及半径用 DIP。",
+							"params": [
+								{
+									"name": "圆心横坐标",
+									"type": "单精度小数型",
+									"description": "圆心横坐标。"
+								},
+								{
+									"name": "圆心纵坐标",
+									"type": "单精度小数型",
+									"description": "圆心纵坐标。"
+								},
+								{
+									"name": "半径",
+									"type": "单精度小数型",
+									"description": "半径。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								},
+								{
+									"name": "填充",
+									"type": "逻辑型",
+									"description": "填充。"
+								},
+								{
+									"name": "线宽",
+									"type": "单精度小数型",
+									"description": "线宽。"
+								}
+							]
+						},
+						{
+							"name": "画弧",
+							"description": "绘制椭圆弧，角度按顺时针度数表示。",
+							"params": [
+								{
+									"name": "左边",
+									"type": "单精度小数型",
+									"description": "左边。"
+								},
+								{
+									"name": "顶边",
+									"type": "单精度小数型",
+									"description": "顶边。"
+								},
+								{
+									"name": "宽",
+									"type": "单精度小数型",
+									"description": "宽。"
+								},
+								{
+									"name": "高",
+									"type": "单精度小数型",
+									"description": "高。"
+								},
+								{
+									"name": "起始角度",
+									"type": "单精度小数型",
+									"description": "起始角度。"
+								},
+								{
+									"name": "经过角度",
+									"type": "单精度小数型",
+									"description": "经过角度。"
+								},
+								{
+									"name": "连接圆心",
+									"type": "逻辑型",
+									"description": "连接圆心。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								},
+								{
+									"name": "线宽",
+									"type": "单精度小数型",
+									"description": "线宽。"
+								}
+							]
+						},
+						{
+							"name": "画文本",
+							"description": "绘制文字，位置用 DIP，字号用 SP；对齐 0 左、1 中、2 右，纵坐标是基线。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "单精度小数型",
+									"description": "横坐标。"
+								},
+								{
+									"name": "基线纵坐标",
+									"type": "单精度小数型",
+									"description": "基线纵坐标。"
+								},
+								{
+									"name": "字号",
+									"type": "单精度小数型",
+									"description": "字号。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								},
+								{
+									"name": "对齐",
+									"type": "整数型",
+									"description": "对齐。"
+								},
+								{
+									"name": "粗体",
+									"type": "逻辑型",
+									"description": "粗体。"
+								}
+							]
+						},
+						{
+							"name": "取文本宽度",
+							"description": "按 SP 字号测量文字，返回 DIP 宽度。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "字号",
+									"type": "单精度小数型",
+									"description": "字号。"
+								},
+								{
+									"name": "粗体",
+									"type": "逻辑型",
+									"description": "粗体。"
+								}
+							],
+							"return": "单精度小数型"
+						},
+						{
+							"name": "画图片",
+							"description": "绘制本日历预载入的图片，目标位置及尺寸用 DIP。",
+							"params": [
+								{
+									"name": "图片编号",
+									"type": "整数型",
+									"description": "图片编号。"
+								},
+								{
+									"name": "左边",
+									"type": "单精度小数型",
+									"description": "左边。"
+								},
+								{
+									"name": "顶边",
+									"type": "单精度小数型",
+									"description": "顶边。"
+								},
+								{
+									"name": "宽",
+									"type": "单精度小数型",
+									"description": "宽。"
+								},
+								{
+									"name": "高",
+									"type": "单精度小数型",
+									"description": "高。"
+								}
+							]
+						},
+						{
+							"name": "保存",
+							"description": "保存本次回调内的平移、裁剪及缩放状态。",
+							"params": []
+						},
+						{
+							"name": "恢复",
+							"description": "恢复本次回调内最近一次保存的状态；不能恢复到回调外。",
+							"params": []
+						},
+						{
+							"name": "平移",
+							"description": "按 DIP 平移局部画布。",
+							"params": [
+								{
+									"name": "横向位移",
+									"type": "单精度小数型",
+									"description": "横向位移。"
+								},
+								{
+									"name": "纵向位移",
+									"type": "单精度小数型",
+									"description": "纵向位移。"
+								}
+							]
+						},
+						{
+							"name": "缩放",
+							"description": "缩放局部画布，作用仅限本回调。",
+							"params": [
+								{
+									"name": "横向比例",
+									"type": "单精度小数型",
+									"description": "横向比例。"
+								},
+								{
+									"name": "纵向比例",
+									"type": "单精度小数型",
+									"description": "纵向比例。"
+								}
+							]
+						},
+						{
+							"name": "旋转",
+							"description": "绕局部原点按顺时针度数旋转。",
+							"params": [
+								{
+									"name": "角度",
+									"type": "单精度小数型",
+									"description": "角度。"
+								}
+							]
+						},
+						{
+							"name": "裁剪",
+							"description": "继续收紧当前单元的可绘制矩形。",
+							"params": [
+								{
+									"name": "左边",
+									"type": "单精度小数型",
+									"description": "左边。"
+								},
+								{
+									"name": "顶边",
+									"type": "单精度小数型",
+									"description": "顶边。"
+								},
+								{
+									"name": "宽",
+									"type": "单精度小数型",
+									"description": "宽。"
+								},
+								{
+									"name": "高",
+									"type": "单精度小数型",
+									"description": "高。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "日历工具",
+					"kind": "object",
+					"type": "simple.library.wsd.calendarview.日历工具",
+					"description": "公历输入限定 1900 至 2099 年，农历转换按真实闰月校验。",
+					"functions": [
+						{
+							"name": "创建日期",
+							"description": "按公历年月日创建包含农历信息的快照；不合法日期抛出错误。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型",
+									"description": "年。"
+								},
+								{
+									"name": "月",
+									"type": "整数型",
+									"description": "月。"
+								},
+								{
+									"name": "日",
+									"type": "整数型",
+									"description": "日。"
+								}
+							],
+							"return": "simple.library.wsd.calendarview.日历日期",
+							"static": true
+						},
+						{
+							"name": "取今天",
+							"description": "读取系统本地日期并生成包含农历信息的快照。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历日期",
+							"static": true
+						},
+						{
+							"name": "增加天数",
+							"description": "按公历日增加天数，负数表示减少；结果越界时抛出错误。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "天数",
+									"type": "整数型",
+									"description": "天数。"
+								}
+							],
+							"return": "simple.library.wsd.calendarview.日历日期",
+							"static": true
+						},
+						{
+							"name": "相差天数",
+							"description": "返回第一日期减第二日期的公历天数，不受夏令时影响。",
+							"params": [
+								{
+									"name": "第一日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "第一日期。"
+								},
+								{
+									"name": "第二日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "第二日期。"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "比较日期",
+							"description": "比较公历日期，早于返回 -1，相同返回 0，晚于返回 1。",
+							"params": [
+								{
+									"name": "第一日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "第一日期。"
+								},
+								{
+									"name": "第二日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "第二日期。"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "是否同月",
+							"description": "读取两个公历日期是否属于同年同月。",
+							"params": [
+								{
+									"name": "第一日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "第一日期。"
+								},
+								{
+									"name": "第二日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "第二日期。"
+								}
+							],
+							"return": "逻辑型",
+							"static": true
+						},
+						{
+							"name": "取本月天数",
+							"description": "取得指定公历月份的天数。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型",
+									"description": "年。"
+								},
+								{
+									"name": "月",
+									"type": "整数型",
+									"description": "月。"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "是否闰年",
+							"description": "读取公历年份是否为闰年。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型",
+									"description": "年。"
+								}
+							],
+							"return": "逻辑型",
+							"static": true
+						},
+						{
+							"name": "公历转农历",
+							"description": "返回农历年、月、日、闰月标志四项；闰月标志为 0 或 1。",
+							"params": [
+								{
+									"name": "公历日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "公历日期。"
+								}
+							],
+							"return": "整数型()",
+							"static": true
+						},
+						{
+							"name": "农历转公历",
+							"description": "转换真实农历日期，并通过反向转换校验闰月及日号；结果超出公历支持范围时拒绝。",
+							"params": [
+								{
+									"name": "农历年",
+									"type": "整数型",
+									"description": "农历年。"
+								},
+								{
+									"name": "农历月",
+									"type": "整数型",
+									"description": "农历月。"
+								},
+								{
+									"name": "农历日",
+									"type": "整数型",
+									"description": "农历日。"
+								},
+								{
+									"name": "是否闰月",
+									"type": "逻辑型",
+									"description": "是否闰月。"
+								}
+							],
+							"return": "simple.library.wsd.calendarview.日历日期",
+							"static": true
+						},
+						{
+							"name": "取干支年",
+							"description": "读取农历年编号对应的天干地支文字，年份为 1899 至 2099。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型",
+									"description": "年。"
+								}
+							],
+							"return": "文本型",
+							"static": true
+						},
+						{
+							"name": "取全年节气",
+							"description": "读取指定年份的节气条目，格式为 yyyyMMdd 加节气名。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型",
+									"description": "年。"
+								}
+							],
+							"return": "文本型()",
+							"static": true
+						},
+						{
+							"name": "取月份行数",
+							"description": "读取月视图行数；周起始为 1、2、7，填充方式为 0 固定六行、1 仅本月或 2 自适应。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型",
+									"description": "年。"
+								},
+								{
+									"name": "月",
+									"type": "整数型",
+									"description": "月。"
+								},
+								{
+									"name": "周起始",
+									"type": "整数型",
+									"description": "周起始。"
+								},
+								{
+									"name": "填充方式",
+									"type": "整数型",
+									"description": "填充方式。"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "附加标记",
+							"description": "复制日期并附加独立标记数组，原日期及调用方数组保持不变；附加数据中的对象仍按引用保留。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期",
+									"description": "日期。"
+								},
+								{
+									"name": "标记数组",
+									"type": "simple.library.wsd.calendarview.日历标记()",
+									"description": "标记数组。"
+								}
+							],
+							"return": "simple.library.wsd.calendarview.日历日期",
+							"static": true
+						}
+					]
+				},
+				{
+					"name": "日历错误",
+					"kind": "object",
+					"type": "simple.library.wsd.calendarview.日历错误",
+					"inherits": [
+						"simple.runtime.errors.运行错误"
+					],
+					"description": "日历状态、绘制作用域或资源操作无效时的错误，可在错误处理的位于分支捕获。",
+					"properties": [
+						{
+							"name": "说明",
+							"type": "文本型",
+							"writable": false,
+							"description": "操作被拒绝的具体原因。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

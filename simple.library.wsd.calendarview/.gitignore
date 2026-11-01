@@ -1,0 +1,4 @@
+/.gradle/
+/build/
+/*.code-workspace
+/example/build/
