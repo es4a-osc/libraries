@@ -20,6 +20,8 @@ public final class NativeCalendar extends CalendarView {
 	private Listener listener;
 	private int drawingDepth;
 	private boolean disposed;
+	private androidx.viewpager.widget.ViewPager.OnPageChangeListener monthListener;
+	private androidx.viewpager.widget.ViewPager.OnPageChangeListener weekListener;
 
 	/**
 	 * 创建普通 Activity 可直接使用的日历。
@@ -30,6 +32,8 @@ public final class NativeCalendar extends CalendarView {
 		super(context);
 		setWeekBar(CalendarCells.Header.class);
 		configure(options);
+		monthListener = bindPager(getMonthViewPager(), true);
+		weekListener = bindPager(getWeekViewPager(), false);
 	}
 
 	/**
@@ -280,6 +284,8 @@ public final class NativeCalendar extends CalendarView {
 		listener = null;
 		handler.removeCallbacksAndMessages(null);
 		images.close();
+		getMonthViewPager().removeOnPageChangeListener(monthListener);
+		getWeekViewPager().removeOnPageChangeListener(weekListener);
 		setOnCalendarInterceptListener(null);
 		setOnCalendarSelectListener(null);
 		setOnCalendarRangeSelectListener(null);
@@ -305,6 +311,24 @@ public final class NativeCalendar extends CalendarView {
 	 * @author 树先生 xhwsd@qq.com
 	 */
 	public interface Listener {
+
+		/**
+		 * 报告实际翻页位置。
+		 *
+		 * @param monthView 是否为月视图。
+		 * @param position 从 0 开始的页序号。
+		 * @param offset 页间比例。
+		 * @param pixels 物理像素偏移。
+		 */
+		void scrolled(boolean monthView, int position, float offset, int pixels);
+
+		/**
+		 * 报告实际翻页状态。
+		 *
+		 * @param monthView 是否为月视图。
+		 * @param state 0 空闲、1 拖动、2 自动滚动。
+		 */
+		void scrollState(boolean monthView, int state);
 
 		/**
 		 * 执行同步日项绘制。
@@ -338,4 +362,54 @@ public final class NativeCalendar extends CalendarView {
 		 */
 		void error(String reason);
 	}
+
+	/**
+	 * 注册实际翻页进度，不替换上游已有的日期选择监听。
+	 *
+	 * @param pager 月或周翻页视图。
+	 * @param monthView 是否为月视图。
+	 * @return 本实例注册的监听句柄。
+	 */
+	private androidx.viewpager.widget.ViewPager.OnPageChangeListener bindPager(androidx.viewpager.widget.ViewPager pager, final boolean monthView) {
+		androidx.viewpager.widget.ViewPager.OnPageChangeListener callback = new androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float offset, int pixels) {
+				if (!disposed && listener != null && isAttachedToWindow()) {
+					listener.scrolled(monthView, position, offset, pixels);
+				}
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+				if (!disposed && listener != null && isAttachedToWindow()) {
+					listener.scrollState(monthView, state);
+				}
+			}
+		};
+		pager.addOnPageChangeListener(callback);
+		return callback;
+	}
+
+	/**
+	 * 取得年视图当前真实页码对应的年份。
+	 *
+	 * @return 年视图显示的年份；未打开时为 0。
+	 */
+	public int yearPosition() {
+		if (!isYearSelectLayoutVisible()) {
+			return 0;
+		}
+		YearViewPager pager = findViewById(simple.library.wsd.calendarview.R.id.es4a_cv_selectLayout);
+		return getMinRangeCalendar().getYear() + pager.getCurrentItem();
+	}
+
+	/**
+	 * 查询父布局是否正在执行同步顶部判断。
+	 *
+	 * @return 当前处于同步布局查询时为真。
+	 */
+	public boolean layoutQuerying() {
+		return getParent() instanceof NativeLayout && ((NativeLayout) getParent()).querying();
+	}
+
 }

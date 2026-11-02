@@ -86,4 +86,40 @@ public interface 日历布局 extends 可视组件, 组件容器 {
 	 */
 	@SimpleFunction
 	可视组件 取得内容();
+
+	/**
+	 * 启用特殊内容的同步顶部判断；关闭时使用内容树的真实滚动状态。
+	 *
+	 * @param enabled 启用。
+	 */
+	@SimpleFunction
+	void 启用自定义顶部判断(boolean enabled);
+
+	/**
+	 * 同步判断内容是否位于顶部；初始值为实际滚动检查结果，回调中禁止修改布局或日历。
+	 *
+	 * @param atTop 位于顶部。
+	 */
+	@SimpleEvent
+	void 判断内容顶部(BooleanReferenceParameter atTop);
+
+	/**
+	 * 读取首次显示是否展开为月视图。
+	 *
+	 * @return 初始展开配置。
+	 */
+	@SimpleProperty
+	boolean 初始展开();
+
+	/**
+	 * 在首次显示前配置周月联动的初始状态；设置后不改变布局显示模式。
+	 *
+	 * @param value 真为月视图，假为周视图。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
+		initializer = "True"
+	)
+	void 初始展开(boolean value);
+
 }

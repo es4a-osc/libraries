@@ -155,21 +155,50 @@ public final class LegacyCamera {
 	/**
 	 * 触发支持自动对焦的设备对焦，不支持时保留原焦距。
 	 */
-	@SuppressWarnings("deprecation")
 	public void focus() {
-		if (camera != null) {
-			try {
-				if (Camera.Parameters.FOCUS_MODE_AUTO.equals(camera.getParameters().getFocusMode())) {
-					camera.autoFocus(new Camera.AutoFocusCallback() {
+		requestFocus(null);
+	}
+
+	/**
+	 * 请求一次真实对焦。
+	 *
+	 * @param listener 对焦完成监听；空表示仅发起请求。
+	 * @return 驱动已接受请求时为真，不代表已经对焦成功。
+	 */
+	@SuppressWarnings("deprecation")
+	public boolean requestFocus(final FocusListener listener) {
+		if (camera == null) {
+			return false;
+		}
+		try {
+			if (!Camera.Parameters.FOCUS_MODE_AUTO.equals(camera.getParameters().getFocusMode())) {
+				return false;
+			}
+			camera.autoFocus(
+					new Camera.AutoFocusCallback() {
 						@Override
 						public void onAutoFocus(boolean success, Camera source) {
+							if (listener != null) {
+								listener.completed(success);
+							}
 						}
 					});
-				}
-			} catch (RuntimeException ignored) {
-				// 对焦失败不是扫码成功；继续等待后续帧与下一次对焦。
-			}
+			return true;
+		} catch (RuntimeException error) {
+			return false;
 		}
+	}
+
+	/**
+	 * 真实设备对焦完成通知。
+	 */
+	public interface FocusListener {
+		/**
+		 * 接收驱动报告的对焦结果。
+		 *
+		 * @param success 实际对焦是否成功。
+		 */
+		void completed(boolean success);
 	}
 
 	/**

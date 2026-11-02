@@ -14,6 +14,8 @@ public final class NativeLayout extends CalendarLayout {
 	private NativeCalendar calendar;
 	private ViewGroup content;
 	private boolean disposed;
+	private TopListener topListener;
+	private int queryDepth;
 
 	/**
 	 * 创建尚未绑定子组件的布局。
@@ -81,7 +83,16 @@ public final class NativeLayout extends CalendarLayout {
 
 	@Override
 	protected boolean isScrollTop() {
-		return content == null || !canScrollUp(content);
+		boolean result = content == null || !canScrollUp(content);
+		if (disposed || topListener == null) {
+			return result;
+		}
+		queryDepth++;
+		try {
+			return topListener.atTop(result);
+		} finally {
+			queryDepth--;
+		}
 	}
 
 	/**
@@ -119,10 +130,45 @@ public final class NativeLayout extends CalendarLayout {
 	public void close() {
 		if (!disposed) {
 			disposed = true;
+			topListener = null;
 			es4aDispose();
 			removeAllViews();
 			calendar = null;
 			content = null;
 		}
 	}
+
+	/**
+	 * 连接特殊内容的同步顶部判定。
+	 *
+	 * @param listener 判定接收者。
+	 */
+	public void topListener(TopListener listener) {
+		topListener = listener;
+	}
+
+	/**
+	 * 查询本布局是否位于同步顶部判断栈中。
+	 *
+	 * @return 当前正在判定时为真。
+	 */
+	public boolean querying() {
+		return queryDepth != 0;
+	}
+
+	/**
+	 * 特殊内容的顶部判断协议。
+	 *
+	 * @author 树先生 xhwsd@qq.com
+	 */
+	public interface TopListener {
+		/**
+		 * 对默认顶部状态进行同步修正。
+		 *
+		 * @param defaultValue 原生内容树的顶部状态。
+		 * @return 调用方确认的顶部状态。
+		 */
+		boolean atTop(boolean defaultValue);
+	}
+
 }

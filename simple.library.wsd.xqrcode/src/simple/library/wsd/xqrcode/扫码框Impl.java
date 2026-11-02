@@ -2,11 +2,11 @@ package simple.library.wsd.xqrcode;
 
 import android.os.Looper;
 import android.view.View;
-import simple.runtime.android.MainActivity;
-import simple.runtime.components.组件容器;
-import simple.runtime.components.impl.android.视图组件;
-import simple.runtime.events.EventDispatcher;
 import simple.library.wsd.xqrcode.internal.ScanView;
+import simple.runtime.android.MainActivity;
+import simple.runtime.components.impl.android.视图组件;
+import simple.runtime.components.组件容器;
+import simple.runtime.events.EventDispatcher;
 
 /**
  * 将独立预览的会话及生命周期接入 Simple 视图组件。
@@ -31,32 +31,43 @@ public final class 扫码框Impl extends 视图组件 implements 扫码框,
 		host.addOnPauseListener(this);
 		host.addOnDestroyListener(this);
 		host.addOnRequestPermissionsResultListener(this);
-		view().listener(new ScanView.Listener() {
-			@Override
-			public void ready() {
-				扫描就绪();
-			}
+		view().listener(
+						new ScanView.Listener() {
+							@Override
+							public void focused(boolean success) {
+								对焦完成(success);
+							}
 
-			@Override
-			public void result(识别结果 result) {
-				识别完成(result);
-			}
+							@Override
+							public void points(float[] points) {
+								发现识别点(points);
+							}
 
-			@Override
-			public void problem(String reason) {
-				扫描失败(reason);
-			}
+							@Override
+							public void ready() {
+								扫描就绪();
+							}
 
-			@Override
-			public void cancelled() {
-				扫描取消();
-			}
+							@Override
+							public void result(识别结果 result) {
+								识别完成(result);
+							}
 
-			@Override
-			public void changed(String oldState, String newState) {
-				状态改变(oldState, newState);
-			}
-		});
+							@Override
+							public void problem(String reason) {
+								扫描失败(reason);
+							}
+
+							@Override
+							public void cancelled() {
+								扫描取消();
+							}
+
+							@Override
+							public void changed(String oldState, String newState) {
+								状态改变(oldState, newState);
+							}
+						});
 	}
 
 	@Override
@@ -209,4 +220,35 @@ public final class 扫码框Impl extends 视图组件 implements 扫码框,
 		}
 	}
 
+	@Override
+	public void 对焦完成(boolean success) {
+		if (!destroyed) {
+			EventDispatcher.dispatchEvent(this, "对焦完成", success);
+		}
+	}
+
+	@Override
+	public void 发现识别点(float[] points) {
+		if (!destroyed) {
+			EventDispatcher.dispatchEvent(this, "发现识别点", points.clone());
+		}
+	}
+
+	@Override
+	public boolean 触发对焦() {
+		check();
+		return view().focusOnce();
+	}
+
+	@Override
+	public int[] 取扫描区域() {
+		check();
+		return view().frameBounds();
+	}
+
+	@Override
+	public int[] 取预览识别区域() {
+		check();
+		return view().previewBounds();
+	}
 }

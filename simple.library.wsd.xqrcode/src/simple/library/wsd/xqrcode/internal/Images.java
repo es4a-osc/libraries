@@ -7,9 +7,9 @@ import android.net.Uri;
 import java.io.*;
 import java.util.*;
 import simple.library.wsd.xqrcode.*;
-import simple.library.wsd.xqrcode.vendor.util.QRCodeProduceUtils;
 import simple.library.wsd.xqrcode.internal.zxing.*;
 import simple.library.wsd.xqrcode.internal.zxing.common.HybridBinarizer;
+import simple.library.wsd.xqrcode.vendor.util.QRCodeProduceUtils;
 
 /**
  * 有界图像读取、二维码生成和无界面解码。
@@ -237,12 +237,31 @@ public final class Images {
 	 * @throws NotFoundException 图像中没有可识别的码。
 	 */
 	public static Result decode(LuminanceSource source, 扫码配置 options) throws NotFoundException {
+		return decode(source, options, null);
+	}
+
+	/**
+	 * 解码时按需采集候选点，候选点不能代替成功结果。
+	 *
+	 * @param source 亮度数据。
+	 * @param options 识别配置。
+	 * @param callback 候选点监听，空时不采集。
+	 * @return 成功的解码结果。
+	 * @throws NotFoundException 没有识别到码。
+	 */
+	public static Result decode(LuminanceSource source, 扫码配置 options, ResultPointCallback callback)
+			throws NotFoundException {
+		Map<DecodeHintType, Object> decodeHints = hints(options);
+		if (callback != null) {
+			decodeHints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, callback);
+		}
 		MultiFormatReader reader = new MultiFormatReader();
 		try {
-			return reader.decode(new BinaryBitmap(new HybridBinarizer(source)), hints(options));
+			return reader.decode(new BinaryBitmap(new HybridBinarizer(source)), decodeHints);
 		} catch (NotFoundException error) {
 			reader.reset();
-			return reader.decode(new BinaryBitmap(new HybridBinarizer(source.invert())), hints(options));
+			return reader.decode(
+					new BinaryBitmap(new HybridBinarizer(source.invert())), decodeHints);
 		} finally {
 			reader.reset();
 		}

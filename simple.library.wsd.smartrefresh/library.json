@@ -1,7 +1,7 @@
 {
 	"name": "智能刷新框库",
 	"description": "基于 SmartRefreshLayout 的单内容刷新容器，支持全部内置头尾、二楼、自定义外观、阶段事件及独立请求序号。",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"authors": [
 		{
 			"name": "树先生",
@@ -1058,6 +1058,17 @@
 								}
 							],
 							"return": "整数型"
+						},
+						{
+							"name": "重新测量头尾",
+							"description": "空闲时重新测量适应内容高度的头尾；固定像素高度不受理。",
+							"params": [
+								{
+									"name": "刷新头",
+									"type": "逻辑型"
+								}
+							],
+							"return": "逻辑型"
 						}
 					],
 					"constants": [
@@ -1240,6 +1251,13 @@
 							"type": "单精度小数型",
 							"initializer": "0",
 							"description": "0 至 10 的手动形变比例。"
+						},
+						{
+							"name": "场景视口高度",
+							"type": "单精度小数型",
+							"description": "场景绘制视口高度，单位 DIP；0 跟随组件高度。",
+							"writable": true,
+							"initializer": "0"
 						}
 					]
 				}
@@ -1258,7 +1276,7 @@
 							"name": "变换样式",
 							"type": "整数型",
 							"initializer": "-1",
-							"description": "-1 使用原生样式；0 平移，1 拉伸，2 固定背后，3 固定前面，4 填满布局。适用于经典、球脉冲及自定义；其它样式遵循其原生布局。"
+							"description": "经典、球脉冲或自定义头尾的变换方式；-1 使用原生样式，0 平移、1 拉伸、2 固定背后、3 固定前面、4 填满布局。"
 						},
 						{
 							"name": "主颜色",
@@ -1517,6 +1535,45 @@
 							"type": "逻辑型",
 							"initializer": "假",
 							"description": "自定义头尾是否报告水平拖动。"
+						},
+						{
+							"name": "自定义接收触摸",
+							"type": "逻辑型",
+							"description": "自定义头尾在打开或结束阶段允许内部控件接收触摸。",
+							"writable": true,
+							"editor": "simple.boolean",
+							"initializer": "假"
+						},
+						{
+							"name": "自定义背景颜色",
+							"type": "整数型",
+							"description": "自定义头尾拖动区域的 ARGB 背景颜色，0 不绘制背景。",
+							"writable": true,
+							"editor": "simple.color",
+							"initializer": "0"
+						},
+						{
+							"name": "Material圆背景颜色",
+							"type": "整数型",
+							"description": "Material 圆形进度盘的 ARGB 背景颜色。",
+							"writable": true,
+							"editor": "simple.color",
+							"initializer": "-1"
+						},
+						{
+							"name": "波浪阴影半径",
+							"type": "单精度小数型",
+							"description": "波浪样式阴影半径，单位 DIP。",
+							"writable": true,
+							"initializer": "0"
+						},
+						{
+							"name": "波浪阴影颜色",
+							"type": "整数型",
+							"description": "波浪样式阴影的 ARGB 颜色。",
+							"writable": true,
+							"editor": "simple.color",
+							"initializer": "-16777216"
 						}
 					],
 					"functions": [
@@ -1564,6 +1621,12 @@
 							"name": "取主题颜色",
 							"description": "返回主题颜色数组副本。",
 							"return": "整数型[]"
+						},
+						{
+							"name": "复制",
+							"description": "复制全部外观值及独立数组。",
+							"params": [],
+							"return": "simple.library.wsd.smartrefresh.刷新外观"
 						}
 					]
 				},

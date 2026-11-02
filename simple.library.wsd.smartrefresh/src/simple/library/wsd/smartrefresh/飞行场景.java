@@ -50,4 +50,24 @@ public interface 飞行场景 extends 可视组件 {
 		initializer = "0"
 	)
 	void 场景比例(float value);
+
+	/**
+	 * 读取场景绘制视口高度。
+	 *
+	 * @return DIP；0 跟随组件高度。
+	 */
+	@SimpleProperty
+	float 场景视口高度();
+
+	/**
+	 * 设置场景绘制视口高度，0 跟随组件高度。
+	 *
+	 * @param value 0 至 10000 DIP。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_SINGLE,
+		initializer = "0"
+	)
+	void 场景视口高度(float value);
+
 }

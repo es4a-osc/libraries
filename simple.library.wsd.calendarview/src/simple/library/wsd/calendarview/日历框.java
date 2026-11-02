@@ -226,7 +226,7 @@ public interface 日历框 extends 可视组件 {
 	void 清除范围();
 
 	/**
-	 * 设置包含首尾的选择范围，要求范围选择模式；先校验边界、端点拦截及跨度，失败返回假。
+	 * 设置包含首尾的选择范围，要求范围选择模式；先校验边界、端点拦截及跨度，失败返回假。 最小跨度为 -1 且首尾同日时只设置起点。
 	 *
 	 * @param start 起点。
 	 * @param end 终点。
@@ -520,4 +520,43 @@ public interface 日历框 extends 可视组件 {
 	 */
 	@SimpleEvent
 	void 绘制失败(String reason);
+
+	/**
+	 * 在已打开的年视图中滚动到指定年份，年份必须位于允许范围内。
+	 *
+	 * @param year 年。
+	 * @param smooth 平滑滚动。
+	 * @return 年视图已打开且请求被接受时为真。
+	 */
+	@SimpleFunction
+	boolean 定位年份(int year, boolean smooth);
+
+	/**
+	 * 读取年视图当前显示的年份，年视图未打开时返回 0。
+	 *
+	 * @return 当前年份或 0。
+	 */
+	@SimpleProperty
+	int 年视图年份();
+
+	/**
+	 * 月／周页的实际滚动进度；页序号以当前允许范围从 0 开始，像素偏移为物理像素。
+	 *
+	 * @param monthView 月视图。
+	 * @param position 页序号。
+	 * @param offset 页间比例。
+	 * @param pixels 像素偏移。
+	 */
+	@SimpleEvent
+	void 翻页进度(boolean monthView, int position, float offset, int pixels);
+
+	/**
+	 * 月／周翻页状态：0 空闲、1 手指拖动、2 自动滚动。
+	 *
+	 * @param monthView 月视图。
+	 * @param state 状态。
+	 */
+	@SimpleEvent
+	void 翻页状态改变(boolean monthView, int state);
+
 }

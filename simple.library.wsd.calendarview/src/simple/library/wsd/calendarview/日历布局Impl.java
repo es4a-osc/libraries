@@ -19,6 +19,9 @@ public final class 日历布局Impl extends 视图组件 implements 日历布局
 	private boolean destroyed;
 	private boolean visible = true;
 	private int mode;
+	private boolean customTop;
+	private boolean initiallyExpanded = true;
+	private int queryDepth;
 
 	/**
 	 * 创建日历布局及活动销毁监听。
@@ -28,6 +31,22 @@ public final class 日历布局Impl extends 视图组件 implements 日历布局
 	public 日历布局Impl(组件容器 container) {
 		super(container);
 		MainActivity.getContext().addOnDestroyListener(this);
+		view().topListener(new NativeLayout.TopListener() {
+			@Override
+			public boolean atTop(boolean defaultValue) {
+				if (!customTop || destroyed) {
+					return defaultValue;
+				}
+				queryDepth++;
+				try {
+					simple.runtime.parameters.BooleanReferenceParameter result = new simple.runtime.parameters.BooleanReferenceParameter(defaultValue);
+					判断内容顶部(result);
+					return result.get();
+				} finally {
+					queryDepth--;
+				}
+			}
+		});
 	}
 
 	@Override
@@ -37,7 +56,7 @@ public final class 日历布局Impl extends 视图组件 implements 日历布局
 
 	@Override
 	public void addComponent(组件 component) {
-		check();
+		write();
 		if (!(component instanceof 视图组件)) {
 			throw new IllegalArgumentException("日历布局只接受日历框和一个可视内容容器");
 		}
@@ -89,21 +108,21 @@ public final class 日历布局Impl extends 视图组件 implements 日历布局
 
 	@Override
 	public boolean 展开(int duration) {
-		check();
+		write();
 		duration(duration);
 		return mode != 1 && visible && view().ready() && !view().isExpand() && view().expand(duration);
 	}
 
 	@Override
 	public boolean 收缩(int duration) {
-		check();
+		write();
 		duration(duration);
 		return mode != 2 && visible && view().ready() && view().isExpand() && view().shrink(duration);
 	}
 
 	@Override
 	public void 设置显示模式(int value) {
-		check();
+		write();
 		if (value < 0 || value > 2) {
 			throw new IllegalArgumentException("日历布局模式为 0、1 或 2");
 		}
@@ -113,13 +132,13 @@ public final class 日历布局Impl extends 视图组件 implements 日历布局
 
 	@Override
 	public void 启用收缩手势(boolean enabled) {
-		check();
+		write();
 		view().es4aGesture(enabled);
 	}
 
 	@Override
 	public void 显示日历(boolean value) {
-		check();
+		write();
 		if (!view().ready()) {
 			throw new simple.library.wsd.calendarview.日历错误("请先添加日历框与内容容器并显示布局");
 		}
@@ -151,6 +170,7 @@ public final class 日历布局Impl extends 视图组件 implements 日历布局
 	@Override
 	public void 销毁() {
 		if (!destroyed) {
+			write();
 			destroyed = true;
 			MainActivity.getContext().removeOnDestroyListener(this);
 			view().close();
@@ -188,4 +208,41 @@ public final class 日历布局Impl extends 视图组件 implements 日历布局
 	private NativeLayout view() {
 		return (NativeLayout) getView();
 	}
+
+	@Override
+	public void 启用自定义顶部判断(boolean enabled) {
+		write();
+		customTop = enabled;
+	}
+
+	@Override
+	public void 判断内容顶部(simple.runtime.parameters.BooleanReferenceParameter atTop) {
+		simple.runtime.events.EventDispatcher.dispatchEvent(this, "判断内容顶部", atTop);
+	}
+
+	/**
+	 * 拒绝同步顶部判断中的重入写操作。
+	 */
+	private void write() {
+		check();
+		if (queryDepth != 0 || (calendar instanceof 日历框Impl && ((日历框Impl) calendar).同步查询中())) {
+			throw new 日历错误("不能在同步顶部判断、日期拦截或绘制中修改日历布局");
+		}
+	}
+
+	@Override
+	public boolean 初始展开() {
+		check();
+		return initiallyExpanded;
+	}
+
+	@Override
+	public void 初始展开(boolean value) {
+		write();
+		if (!view().es4aDefaultStatus(value)) {
+			throw new 日历错误("初始展开状态必须在首次显示前配置");
+		}
+		initiallyExpanded = value;
+	}
+
 }

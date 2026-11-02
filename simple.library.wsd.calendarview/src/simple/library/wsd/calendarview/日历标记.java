@@ -179,4 +179,15 @@ public final class 日历标记 {
 			value = payload;
 		}
 	}
+
+	/**
+	 * 复制标记属性；附加数据中的对象继续按引用保留。
+	 *
+	 * @return 独立标记对象。
+	 */
+	@SimpleFunction
+	public 日历标记 复制() {
+		return from(nativeValue());
+	}
+
 }

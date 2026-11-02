@@ -1,9 +1,9 @@
 package simple.library.wsd.xqrcode;
 
 import simple.runtime.Objects;
+import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleProperty;
-import simple.runtime.annotations.SimpleFunction;
 
 /**
  * 二维码生成的独立配置，提交时按快照复制。
@@ -456,5 +456,15 @@ public final class 二维码配置 implements Cloneable {
 		} catch (CloneNotSupportedException exception) {
 			throw new AssertionError(exception);
 		}
+	}
+
+	/**
+	 * 返回包含独立图像字节数组的配置副本。
+	 *
+	 * @return 可独立修改的配置副本。
+	 */
+	@SimpleFunction
+	public 二维码配置 复制() {
+		return copy();
 	}
 }

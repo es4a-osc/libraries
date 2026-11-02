@@ -76,4 +76,20 @@ public final class DateMath {
 	public static int differ(Calendar first, Calendar second) {
 		return (int) ((millis(first.getYear(), first.getMonth(), first.getDay()) - millis(second.getYear(), second.getMonth(), second.getDay())) / 86400000L);
 	}
+
+	/**
+	 * 计算日期相对周起始的前置空位。
+	 *
+	 * @param date 已验证公历日期。
+	 * @param weekStart 1 周日、2 周一、7 周六。
+	 * @return 0 至 6 的偏移。
+	 */
+	public static int weekOffset(Calendar date, int weekStart) {
+		if (date == null || (weekStart != 1 && weekStart != 2 && weekStart != 7)) {
+			throw new IllegalArgumentException("日期或周起始无效");
+		}
+		long days = millis(date.getYear(), date.getMonth(), date.getDay()) / 86400000L;
+		return (int) Math.floorMod(days + 4 - (weekStart - 1), 7L);
+	}
+
 }

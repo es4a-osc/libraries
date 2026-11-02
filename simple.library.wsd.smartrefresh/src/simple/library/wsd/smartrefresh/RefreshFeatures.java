@@ -420,7 +420,7 @@ final class RefreshFeatures {
 				material.setSize(headerAppearance.Material大号圆圈() ? 0 : 1);
 				material.setShowBezierWave(headerAppearance.Material波浪());
 				material.setScrollableWhenRefreshing(headerAppearance.Material刷新中滚动());
-				material.setProgressBackgroundColorSchemeColor(headerAppearance.主颜色());
+				material.setProgressBackgroundColorSchemeColor(headerAppearance.Material圆背景颜色());
 				material.setColorSchemeColors(animationColors(headerAppearance));
 				header = material;
 				break;
@@ -475,7 +475,7 @@ final class RefreshFeatures {
 				header = new WaterDropHeader(context);
 				break;
 			case 15:
-				WaveSwipeHeader wave = new WaveSwipeHeader(context);
+				WaveSwipeHeader wave = new ConfiguredWave(context, headerAppearance);
 				wave.setColorSchemeColors(animationColors(headerAppearance));
 				header = wave;
 				break;
@@ -545,6 +545,9 @@ final class RefreshFeatures {
 		// 上游仅将框架回调标为弃用；没有可以逐个设置所有样式颜色的等价新接口。
 		int[] theme = appearance.取主题颜色();
 		component.setPrimaryColors(theme.length == 0 ? new int[] { appearance.主颜色(), appearance.强调颜色() } : theme);
+		if (component instanceof WaveSwipeHeader) {
+			((WaveSwipeHeader) component).setColorSchemeColors(animationColors(appearance));
+		}
 		if (appearance.变换样式() >= 0) {
 			if (component instanceof ClassicsAbstract) {
 				((ClassicsAbstract<?>) component).setSpinnerStyle(spinnerStyle(appearance.变换样式()));
@@ -675,6 +678,13 @@ final class RefreshFeatures {
 		}
 
 		@Override
+		public void onInitialized(com.scwang.smart.refresh.layout.api.RefreshKernel kernel, int height, int maxHeight) {
+			super.onInitialized(kernel, height, maxHeight);
+			kernel.requestNeedTouchEventFor(this, headerAppearance.自定义接收触摸());
+			kernel.requestDrawBackgroundFor(this, headerAppearance.自定义背景颜色());
+		}
+
+		@Override
 		public int onFinish(RefreshLayout layout, boolean success) {
 			return headerAppearance.完成停留时间();
 		}
@@ -704,6 +714,13 @@ final class RefreshFeatures {
 		CustomFooter(View content) {
 			super(content);
 			mSpinnerStyle = spinnerStyle(footerAppearance.变换样式());
+		}
+
+		@Override
+		public void onInitialized(com.scwang.smart.refresh.layout.api.RefreshKernel kernel, int height, int maxHeight) {
+			super.onInitialized(kernel, height, maxHeight);
+			kernel.requestNeedTouchEventFor(this, footerAppearance.自定义接收触摸());
+			kernel.requestDrawBackgroundFor(this, footerAppearance.自定义背景颜色());
 		}
 
 		@Override
@@ -857,4 +874,23 @@ final class RefreshFeatures {
 			((android.animation.ValueAnimator) animation).removeAllUpdateListeners();
 		}
 	}
+
+	/**
+	 * 将波浪阴影的 XML 能力接入本实例外观。
+	 *
+	 * @author 树先生 xhwsd@qq.com
+	 */
+	private static final class ConfiguredWave extends WaveSwipeHeader {
+		/**
+		 * 创建独立的波浪刷新头。
+		 *
+		 * @param context 所属活动。
+		 * @param appearance 已复制的外观。
+		 */
+		ConfiguredWave(Context context, 刷新外观 appearance) {
+			super(context);
+			mWaveView.setShadow(SmartUtil.dp2px(appearance.波浪阴影半径()), appearance.波浪阴影颜色());
+		}
+	}
+
 }

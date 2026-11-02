@@ -146,6 +146,16 @@ public final class 日历框Impl extends 视图组件 implements 日历框, Main
 		});
 		view().listener(new NativeCalendar.Listener() {
 			@Override
+			public void scrolled(boolean monthView, int position, float offset, int pixels) {
+				翻页进度(monthView, position, offset, pixels);
+			}
+
+			@Override
+			public void scrollState(boolean monthView, int state) {
+				翻页状态改变(monthView, state);
+			}
+
+			@Override
 			public boolean draw(日历绘图 drawing, 日历日期 date, int stage, boolean selected, boolean previous, boolean next) {
 				BooleanReferenceParameter useDefault = new BooleanReferenceParameter(true);
 				绘制日项(drawing, date, stage, selected, previous, next, useDefault);
@@ -235,8 +245,8 @@ public final class 日历框Impl extends 视图组件 implements 日历框, Main
 	 */
 	private void write() {
 		check();
-		if (queries != 0 || view().drawing()) {
-			throw new simple.library.wsd.calendarview.日历错误("不能在日期拦截或绘制回调中修改日历，请在后续用户操作中执行");
+		if (queries != 0 || view().drawing() || view().layoutQuerying()) {
+			throw new simple.library.wsd.calendarview.日历错误("不能在日期拦截、绘制或顶部判断回调中修改日历，请在后续用户操作中执行");
 		}
 	}
 
@@ -942,9 +952,7 @@ public final class 日历框Impl extends 视图组件 implements 日历框, Main
 	@Override
 	public void 销毁() {
 		if (!destroyed) {
-			if (view().drawing() || queries != 0) {
-				throw new simple.library.wsd.calendarview.日历错误("不能在绘制或拦截回调中销毁日历");
-			}
+			write();
 			destroyed = true;
 			MainActivity.getContext().removeOnDestroyListener(this);
 			handler.removeCallbacksAndMessages(null);
@@ -955,4 +963,57 @@ public final class 日历框Impl extends 视图组件 implements 日历框, Main
 			super.销毁();
 		}
 	}
+
+	@Override
+	public boolean 定位年份(int year, boolean smooth) {
+		write();
+		if (year < view().getMinRangeCalendar().getYear() || year > view().getMaxRangeCalendar().getYear()) {
+			throw new IllegalArgumentException("年份超出当前允许范围");
+		}
+		if (!view().isYearSelectLayoutVisible()) {
+			return false;
+		}
+		view().scrollToYear(year, smooth);
+		return true;
+	}
+
+	@Override
+	public int 年视图年份() {
+		check();
+		return view().yearPosition();
+	}
+
+	@Override
+	public void 翻页进度(final boolean monthView, final int position, final float offset, final int pixels) {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				if (!destroyed && view().isAttachedToWindow()) {
+					EventDispatcher.dispatchEvent(日历框Impl.this, "翻页进度", monthView, position, offset, pixels);
+				}
+			}
+		});
+	}
+
+	@Override
+	public void 翻页状态改变(final boolean monthView, final int state) {
+		handler.post(new Runnable() {
+			@Override
+			public void run() {
+				if (!destroyed && view().isAttachedToWindow()) {
+					EventDispatcher.dispatchEvent(日历框Impl.this, "翻页状态改变", monthView, state);
+				}
+			}
+		});
+	}
+
+	/**
+	 * 供所属布局检查本日历的同步回调边界。
+	 *
+	 * @return 正在拦截或绘制回调中时为真。
+	 */
+	boolean 同步查询中() {
+		return queries != 0 || view().drawing();
+	}
+
 }

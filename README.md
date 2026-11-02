@@ -43,6 +43,7 @@
 | [MySQL数据库](simple.library.wsd.mysql/) | MySQL JDBC 同步与异步访问。 |
 | [MsSQL数据库](simple.library.wsd.mssql/) | SQL Server JDBC 同步与异步访问。 |
 | [XHttp2网络库](simple.library.wsd.xhttp2/) | 网络请求、上传下载、缓存、Cookie 和证书配置。 |
+| [字体图标库](simple.library.wsd.iconics/) | 字体图标、七类控件、文字混排、组合动画及 PNG 输出。 |
 | [XUI界面库](simple.library.wsd.xui/) | 可视组件、对话框、菜单、消息提示和界面工具。 |
 | [XUpdate更新库](simple.library.wsd.xupdate/) | 应用更新、快捷入口、下载续传和更新流程定制。 |
 | [XUtil工具库](simple.library.wsd.xutil/) | 文本、文件、缓存、编码、网络和设备静态函数集。 |

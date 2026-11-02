@@ -678,7 +678,6 @@ public final class 智能刷新框Impl extends 视图组件 implements 智能刷
 		}
 	}
 
-
 	private int headerType;
 
 	@Override
@@ -1365,7 +1364,6 @@ public final class 智能刷新框Impl extends 视图组件 implements 智能刷
 		view().setReboundInterpolator(interpolator);
 	}
 
-
 	@Override
 	public void 置分页结束(boolean ended) {
 		checkAlive();
@@ -1409,6 +1407,10 @@ public final class 智能刷新框Impl extends 视图组件 implements 智能刷
 		} else {
 			view().setRefreshFooter(view().getRefreshFooter(), width, height);
 		}
+		// 上游复用旧布局参数时会忽略宽高实参，显式置入本次尺寸才能真正生效。
+		View target = header ? view().getRefreshHeader().getView() : view().getRefreshFooter().getView();
+		target.setLayoutParams(new com.scwang.smart.refresh.layout.SmartRefreshLayout.LayoutParams(width, height));
+		features.reapplyColors();
 	}
 
 	@Override
@@ -1484,4 +1486,12 @@ public final class 智能刷新框Impl extends 视图组件 implements 智能刷
 		checkAlive();
 		return view().nativeHeight(header);
 	}
+
+	@Override
+	public boolean 重新测量头尾(boolean header) {
+		checkAlive();
+		ensureConfigurable();
+		return view().remeasure(header);
+	}
+
 }

@@ -1,7 +1,7 @@
 {
 	"name": "CalendarView日历库",
 	"description": "年月周日历、选择、标记、收缩联动与自定义绘制。",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"authors": [
 		{
 			"name": "树先生",
@@ -50,6 +50,12 @@
 							"name": "年视图已打开",
 							"description": "年份快速选择视图是否已打开。",
 							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "年视图年份",
+							"description": "读取年视图当前显示的年份，年视图未打开时返回 0。",
+							"type": "整数型",
 							"writable": false
 						}
 					],
@@ -250,7 +256,7 @@
 						},
 						{
 							"name": "设置范围选择",
-							"description": "设置包含首尾的选择范围，要求范围选择模式；先校验边界、端点拦截及跨度，失败返回假。",
+							"description": "设置包含首尾的选择范围，要求范围选择模式；先校验边界、端点拦截及跨度，失败返回假。 最小跨度为 -1 且首尾同日时，只设置起点，不完成范围。",
 							"params": [
 								{
 									"name": "起点",
@@ -399,6 +405,21 @@
 									"description": "图片编号。"
 								}
 							]
+						},
+						{
+							"name": "定位年份",
+							"description": "在已打开的年视图中滚动到指定年份，年份必须位于允许范围内。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型"
+								},
+								{
+									"name": "平滑滚动",
+									"type": "逻辑型"
+								}
+							],
+							"return": "逻辑型"
 						}
 					],
 					"events": [
@@ -733,6 +754,42 @@
 									"description": "原因。"
 								}
 							]
+						},
+						{
+							"name": "翻页进度",
+							"description": "月／周页的实际滚动进度；页序号以当前允许范围从 0 开始，像素偏移为物理像素。",
+							"params": [
+								{
+									"name": "月视图",
+									"type": "逻辑型"
+								},
+								{
+									"name": "页序号",
+									"type": "整数型"
+								},
+								{
+									"name": "页间比例",
+									"type": "单精度小数型"
+								},
+								{
+									"name": "像素偏移",
+									"type": "整数型"
+								}
+							]
+						},
+						{
+							"name": "翻页状态改变",
+							"description": "月／周翻页状态：0 空闲、1 手指拖动、2 自动滚动。",
+							"params": [
+								{
+									"name": "月视图",
+									"type": "逻辑型"
+								},
+								{
+									"name": "状态",
+									"type": "整数型"
+								}
+							]
 						}
 					],
 					"icon": "icons/calendar-month.svg"
@@ -763,6 +820,14 @@
 							"description": "读取是否显示上方日历。",
 							"type": "逻辑型",
 							"writable": false
+						},
+						{
+							"name": "初始展开",
+							"type": "逻辑型",
+							"writable": true,
+							"description": "首次显示前设置；真为月视图、假为周视图，不改变显示模式。",
+							"editor": "simple.boolean",
+							"initializer": "真"
 						}
 					],
 					"functions": [
@@ -834,9 +899,31 @@
 							"description": "读取布局内的内容组件；尚未添加时为空引用。",
 							"params": [],
 							"return": "simple.runtime.components.可视组件"
+						},
+						{
+							"name": "启用自定义顶部判断",
+							"description": "启用特殊内容的同步顶部判断；关闭时使用内容树的真实滚动状态。",
+							"params": [
+								{
+									"name": "启用",
+									"type": "逻辑型"
+								}
+							]
 						}
 					],
-					"events": [],
+					"events": [
+						{
+							"name": "判断内容顶部",
+							"description": "同步判断内容是否位于顶部；初始值为实际滚动检查结果，回调中禁止修改布局或日历。",
+							"params": [
+								{
+									"name": "位于顶部",
+									"type": "逻辑型",
+									"byRef": true
+								}
+							]
+						}
+					],
 					"icon": "icons/calendar-week.svg"
 				}
 			]
@@ -1017,6 +1104,14 @@
 							"description": "应用附加数据；其中的对象保持引用语义。",
 							"type": "变体型"
 						}
+					],
+					"functions": [
+						{
+							"name": "复制",
+							"description": "复制标记属性；附加数据中的对象继续按引用保留。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历标记"
+						}
 					]
 				},
 				{
@@ -1057,7 +1152,7 @@
 						},
 						{
 							"name": "最小选择跨度",
-							"description": "范围选择包含首尾的最小天数。",
+							"description": "范围选择包含首尾的最小天数；-1 不限制，同日仅设置起点。",
 							"type": "整数型",
 							"initializer": "1"
 						},
@@ -1407,6 +1502,12 @@
 							"description": "取得从周日到周六排列的独立文字数组。",
 							"params": [],
 							"return": "文本型()"
+						},
+						{
+							"name": "复制",
+							"description": "复制全部配置及独立星期文字数组。",
+							"params": [],
+							"return": "simple.library.wsd.calendarview.日历配置"
 						}
 					]
 				},
@@ -2083,6 +2184,162 @@
 								}
 							],
 							"return": "simple.library.wsd.calendarview.日历日期",
+							"static": true
+						},
+						{
+							"name": "取月份高度",
+							"description": "按月份行数计算高度，输入及返回使用相同单位；不含星期栏与分隔线。",
+							"params": [
+								{
+									"name": "年",
+									"type": "整数型"
+								},
+								{
+									"name": "月",
+									"type": "整数型"
+								},
+								{
+									"name": "日项高度",
+									"type": "单精度小数型"
+								},
+								{
+									"name": "周起始",
+									"type": "整数型"
+								},
+								{
+									"name": "月份填充",
+									"type": "整数型"
+								}
+							],
+							"return": "单精度小数型",
+							"static": true
+						},
+						{
+							"name": "取月内周序号",
+							"description": "计算日期在本月排列中的周序号，1 为第一行。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期"
+								},
+								{
+									"name": "周起始",
+									"type": "整数型"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "取周前偏移",
+							"description": "计算日期前面距本周起始日的天数；周起始为 1 周日、2 周一、7 周六。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期"
+								},
+								{
+									"name": "周起始",
+									"type": "整数型"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "取周后偏移",
+							"description": "计算日期后面距本周末日的天数；周起始为 1、2 或 7。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期"
+								},
+								{
+									"name": "周起始",
+									"type": "整数型"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "取范围周数",
+							"description": "计算包含两个端点的范围跨越几周；终点不能早于起点。",
+							"params": [
+								{
+									"name": "起点",
+									"type": "simple.library.wsd.calendarview.日历日期"
+								},
+								{
+									"name": "终点",
+									"type": "simple.library.wsd.calendarview.日历日期"
+								},
+								{
+									"name": "周起始",
+									"type": "整数型"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "取范围周序号",
+							"description": "计算日期所在周相对范围起点的序号；日期不能早于范围起点。",
+							"params": [
+								{
+									"name": "日期",
+									"type": "simple.library.wsd.calendarview.日历日期"
+								},
+								{
+									"name": "范围起点",
+									"type": "simple.library.wsd.calendarview.日历日期"
+								},
+								{
+									"name": "周起始",
+									"type": "整数型"
+								}
+							],
+							"return": "整数型",
+							"static": true
+						},
+						{
+							"name": "取范围周首日",
+							"description": "取得范围中指定周的起始日期；周序号从 1 开始，结果超出公历支持范围时抛错。",
+							"params": [
+								{
+									"name": "范围起点",
+									"type": "simple.library.wsd.calendarview.日历日期"
+								},
+								{
+									"name": "周序号",
+									"type": "整数型"
+								},
+								{
+									"name": "周起始",
+									"type": "整数型"
+								}
+							],
+							"return": "simple.library.wsd.calendarview.日历日期",
+							"static": true
+						},
+						{
+							"name": "取农历月天数",
+							"description": "取得农历 1899 至 2099 年普通月或实际闰月的天数；不存在的闰月抛错。",
+							"params": [
+								{
+									"name": "农历年",
+									"type": "整数型"
+								},
+								{
+									"name": "农历月",
+									"type": "整数型"
+								},
+								{
+									"name": "是否闰月",
+									"type": "逻辑型"
+								}
+							],
+							"return": "整数型",
 							"static": true
 						}
 					]

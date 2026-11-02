@@ -130,4 +130,44 @@ public interface 扫码框 extends 可视组件 {
 	 */
 	@SimpleFunction
 	扫码配置 取得配置();
+
+	/**
+	 * 手动对焦完成，参数为设备实际报告的结果。
+	 *
+	 * @param success 成功。
+	 */
+	@SimpleEvent
+	void 对焦完成(boolean success);
+
+	/**
+	 * 解码候选点，坐标为扫码框物理像素；不代表识别成功。
+	 *
+	 * @param points 坐标。
+	 */
+	@SimpleEvent
+	void 发现识别点(float[] points);
+
+	/**
+	 * 提交一次手动对焦；真仅表示驱动接受，请通过对焦完成事件判断结果。
+	 *
+	 * @return 驱动接受请求时为真；相机未开启或不支持时为假。
+	 */
+	@SimpleFunction
+	boolean 触发对焦();
+
+	/**
+	 * 读取显示扫描框：左、上、宽、高物理像素；未布局返回空数组。
+	 *
+	 * @return 左、上、宽、高物理像素；未布局时为空数组。
+	 */
+	@SimpleFunction
+	int[] 取扫描区域();
+
+	/**
+	 * 读取当前预览解码区域：左、上、宽、高预览像素；未开启返回空数组。
+	 *
+	 * @return 左、上、宽、高定向预览像素；相机未开启时为空数组。
+	 */
+	@SimpleFunction
+	int[] 取预览识别区域();
 }

@@ -1,9 +1,9 @@
 package simple.library.wsd.xqrcode;
 
 import simple.runtime.Objects;
+import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleProperty;
-import simple.runtime.annotations.SimpleFunction;
 
 /**
  * 扫描会话的独立配置，尺寸按预览区域约束，不影响其它实例。
@@ -38,6 +38,9 @@ public final class 扫码配置 implements Cloneable {
 	private boolean returnImage;
 	private boolean onlyFrame;
 	private String charset;
+	private int themeResource;
+	private String prompt;
+	private boolean showPossiblePoints;
 	private String[] formats = new String[0];
 
 	/**
@@ -742,5 +745,90 @@ public final class 扫码配置 implements Cloneable {
 		} catch (CloneNotSupportedException exception) {
 			throw new AssertionError(exception);
 		}
+	}
+
+	/**
+	 * 返回包含独立格式数组的配置副本。
+	 *
+	 * @return 可独立修改的配置副本。
+	 */
+	@SimpleFunction
+	public 扫码配置 复制() {
+		return copy();
+	}
+
+	/**
+	 * 独立扫码页的原生Activity主题资源；0使用默认主题，内嵌框忽略此项。
+	 *
+	 * @return 当前配置值。
+	 */
+	@SimpleProperty
+	public int 主题资源() {
+		return themeResource;
+	}
+
+	/**
+	 * 独立扫码页的原生Activity主题资源；0使用默认主题，内嵌框忽略此项。
+	 *
+	 * @param value 新值。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
+		initializer = "0"
+	)
+	public void 主题资源(int value) {
+		if (value < 0) {
+			throw new 二维码错误("主题资源不能为负");
+		}
+		themeResource = value;
+	}
+
+	/**
+	 * 独立扫码页提示文字。
+	 *
+	 * @return 当前配置值。
+	 */
+	@SimpleProperty
+	public String 提示文字() {
+		return prompt;
+	}
+
+	/**
+	 * 独立扫码页提示文字。
+	 *
+	 * @param value 新值。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_STRING,
+		initializer = "\"将二维码或条码置于框内\""
+	)
+	public void 提示文字(String value) {
+		if (value == null) {
+			throw new 二维码错误("文本不能为引用空");
+		}
+		prompt = value;
+	}
+
+	/**
+	 * 显示解码器当前发现的候选定位点，不代表识别成功。
+	 *
+	 * @return 当前配置值。
+	 */
+	@SimpleProperty
+	public boolean 显示实时识别点() {
+		return showPossiblePoints;
+	}
+
+	/**
+	 * 显示解码器当前发现的候选定位点，不代表识别成功。
+	 *
+	 * @param value 新值。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
+		initializer = "True"
+	)
+	public void 显示实时识别点(boolean value) {
+		showPossiblePoints = value;
 	}
 }

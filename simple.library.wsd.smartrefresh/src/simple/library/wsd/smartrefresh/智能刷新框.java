@@ -471,7 +471,6 @@ public interface 智能刷新框 extends 可视组件, 组件容器 {
 	@SimpleFunction
 	void 重置加载状态();
 
-
 	/**
 	 * 读取内置刷新头编号 0 至 15；选择飞行前须绑定场景与图标。自定义头由设置自定义刷新头建立。
 	 *
@@ -1331,7 +1330,6 @@ public interface 智能刷新框 extends 可视组件, 组件容器 {
 	@SimpleFunction
 	void 设置尾部跟随视图(可视组件 component);
 
-
 	/**
 	 * 仅在空闲时设置是否没有更多数据，不伪造刷新或加载结果。
 	 *
@@ -1415,4 +1413,14 @@ public interface 智能刷新框 extends 可视组件, 组件容器 {
 	 */
 	@SimpleFunction
 	int 取头尾像素高度(boolean header);
+
+	/**
+	 * 空闲时重新测量适应内容高度的头尾；固定像素高度不受理。
+	 *
+	 * @param header 刷新头。
+	 * @return 请求已提交测量时为真；高度在下一次布局后更新。
+	 */
+	@SimpleFunction
+	boolean 重新测量头尾(boolean header);
+
 }

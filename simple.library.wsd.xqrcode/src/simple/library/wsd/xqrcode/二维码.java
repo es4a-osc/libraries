@@ -230,4 +230,76 @@ public interface 二维码 extends 组件 {
 	 */
 	@SimpleFunction
 	boolean 设置扫描补光(int requestId, boolean enabled);
+
+	/**
+	 * 独立扫码页手动对焦的真实完成结果。
+	 *
+	 * @param requestId 请求序号。
+	 * @param success 成功。
+	 */
+	@SimpleEvent
+	void 扫描对焦完成(int requestId, boolean success);
+
+	/**
+	 * 独立扫码页的候选点；不代表成功，坐标为预览视图物理像素。
+	 *
+	 * @param requestId 请求序号。
+	 * @param points 坐标。
+	 */
+	@SimpleEvent
+	void 扫描发现识别点(int requestId, float[] points);
+
+	/**
+	 * 提交独立扫码页手动对焦；真表示接受，完成另行通知。
+	 *
+	 * @param requestId 请求序号。
+	 * @return 实际提交成功时为真；请求过期、相机未开启或不支持时为假。
+	 */
+	@SimpleFunction
+	boolean 触发扫描对焦(int requestId);
+
+	/**
+	 * 查询独立扫码页状态，不存在时返回未开始。
+	 *
+	 * @param requestId 请求序号。
+	 * @return 当前中文状态；请求不存在时为“未开始”。
+	 */
+	@SimpleFunction
+	String 取扫描状态(int requestId);
+
+	/**
+	 * 查询独立扫码页实际补光状态。
+	 *
+	 * @param requestId 请求序号。
+	 * @return 补光实际已开启时为真。
+	 */
+	@SimpleFunction
+	boolean 取扫描补光状态(int requestId);
+
+	/**
+	 * 返回独立扫码页配置副本，请求不存在返回空引用。
+	 *
+	 * @param requestId 请求序号。
+	 * @return 可独立修改的配置；请求不存在时为空引用。
+	 */
+	@SimpleFunction
+	扫码配置 取得扫描配置(int requestId);
+
+	/**
+	 * 读取独立扫码页显示扫描框的物理像素区域。
+	 *
+	 * @param requestId 请求序号。
+	 * @return 左、上、宽、高物理像素；请求或布局不存在时为空数组。
+	 */
+	@SimpleFunction
+	int[] 取扫描区域(int requestId);
+
+	/**
+	 * 读取独立扫码页预览识别区域，相机未开启返回空数组。
+	 *
+	 * @param requestId 请求序号。
+	 * @return 左、上、宽、高定向预览像素；相机未开启时为空数组。
+	 */
+	@SimpleFunction
+	int[] 取预览识别区域(int requestId);
 }

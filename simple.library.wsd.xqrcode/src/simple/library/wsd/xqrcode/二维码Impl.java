@@ -7,11 +7,11 @@ import android.os.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import simple.runtime.android.MainActivity;
-import simple.runtime.components.组件容器;
-import simple.runtime.components.impl.组件Impl;
-import simple.runtime.events.EventDispatcher;
 import simple.library.wsd.xqrcode.internal.*;
+import simple.runtime.android.MainActivity;
+import simple.runtime.components.impl.组件Impl;
+import simple.runtime.components.组件容器;
+import simple.runtime.events.EventDispatcher;
 
 /**
  * 管理生成、图片识别和独立扫码页的请求序号及取消边界。
@@ -285,6 +285,18 @@ public final class 二维码Impl extends 组件Impl implements 二维码, MainAc
 		}
 		final int id = nextId();
 		try {
+			if (options == null) {
+				throw new 二维码错误("扫码配置为空");
+			}
+			int theme = options.主题资源();
+			try {
+				if (theme != 0
+						&& !"style".equals(context.getResources().getResourceTypeName(theme))) {
+					throw new 二维码错误("主题必须为style资源");
+				}
+			} catch (android.content.res.Resources.NotFoundException error) {
+				throw new 二维码错误("主题资源不存在：" + theme);
+			}
 			scanToken = ScanRegistry.create(id, options.copy(), this);
 			scanId = id;
 			Intent intent = new Intent(host, ScanActivity.class);
@@ -296,12 +308,15 @@ public final class 二维码Impl extends 组件Impl implements 二维码, MainAc
 				scanId = 0;
 				scanToken = "";
 			}
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					扫描失败(id, message(error));
-				}
-			});
+			handler.post(
+					new Runnable() {
+						@Override
+						public void run() {
+							if (!destroyed) {
+								扫描失败(id, message(error));
+							}
+						}
+					});
 		}
 		return id;
 	}
@@ -495,4 +510,71 @@ public final class 二维码Impl extends 组件Impl implements 二维码, MainAc
 		}
 	}
 
+	@Override
+	public void 扫描对焦完成(int requestId, boolean success) {
+		if (!destroyed) {
+			EventDispatcher.dispatchEvent(this, "扫描对焦完成", requestId, success);
+		}
+	}
+
+	@Override
+	public void 扫描发现识别点(int requestId, float[] points) {
+		if (!destroyed) {
+			EventDispatcher.dispatchEvent(this, "扫描发现识别点", requestId, points.clone());
+		}
+	}
+
+	@Override
+	public boolean 触发扫描对焦(int requestId) {
+		check();
+		return requestId != 0 && requestId == scanId && ScanRegistry.control(scanToken, 4);
+	}
+
+	@Override
+	public String 取扫描状态(int requestId) {
+		check();
+		return requestId != 0 && requestId == scanId ? ScanRegistry.state(scanToken) : "未开始";
+	}
+
+	@Override
+	public boolean 取扫描补光状态(int requestId) {
+		check();
+		return requestId != 0 && requestId == scanId && ScanRegistry.light(scanToken);
+	}
+
+	@Override
+	public 扫码配置 取得扫描配置(int requestId) {
+		check();
+		return requestId != 0 && requestId == scanId ? ScanRegistry.configuration(scanToken) : null;
+	}
+
+	@Override
+	public int[] 取扫描区域(int requestId) {
+		check();
+		return requestId != 0 && requestId == scanId
+				? ScanRegistry.bounds(scanToken, false)
+				: new int[0];
+	}
+
+	@Override
+	public int[] 取预览识别区域(int requestId) {
+		check();
+		return requestId != 0 && requestId == scanId
+				? ScanRegistry.bounds(scanToken, true)
+				: new int[0];
+	}
+
+	@Override
+	public void scanFocused(int id, boolean success) {
+		if (scanId == id) {
+			扫描对焦完成(id, success);
+		}
+	}
+
+	@Override
+	public void scanPoints(int id, float[] points) {
+		if (scanId == id) {
+			扫描发现识别点(id, points);
+		}
+	}
 }

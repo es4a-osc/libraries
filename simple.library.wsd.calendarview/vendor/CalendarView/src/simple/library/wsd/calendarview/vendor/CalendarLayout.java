@@ -1069,4 +1069,20 @@ public class CalendarLayout extends LinearLayout {
         }
         requestLayout();
     }
+
+    /**
+     * 在首次初始化之前配置原生周月默认状态。
+     *
+     * @param expanded 是否默认展开为月视图。
+     * @return 尚未初始化并接受配置时为真。
+     * @author 树先生 xhwsd@qq.com
+     */
+    public final boolean es4aDefaultStatus(boolean expanded) {
+        if (es4aInitialized) {
+            return false;
+        }
+        mDefaultStatus = expanded ? STATUS_EXPAND : STATUS_SHRINK;
+        return true;
+    }
+
 }

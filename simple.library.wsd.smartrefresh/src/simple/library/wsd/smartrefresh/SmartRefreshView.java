@@ -269,4 +269,28 @@ final class SmartRefreshView extends SmartRefreshLayout {
 		 */
 		void detached();
 	}
+
+	/**
+	 * 按当前内容尺寸重新测量适应内容的头尾。
+	 *
+	 * @param header 是否为刷新头。
+	 * @return 仅适应内容高度且已有头尾时返回真。
+	 */
+	boolean remeasure(boolean header) {
+		com.scwang.smart.refresh.layout.api.RefreshComponent component = header ? mRefreshHeader : mRefreshFooter;
+		if (component == null || component.getView().getLayoutParams().height != android.view.ViewGroup.LayoutParams.WRAP_CONTENT) {
+			return false;
+		}
+		mKernel.requestRemeasureHeightFor(component);
+		// 释放代码固定高度的优先级，下一次布局才能根据 WRAP_CONTENT 更新实际高度。
+		if (header) {
+			mHeaderHeightStatus = com.scwang.smart.refresh.layout.constant.DimensionStatus.DefaultUnNotify;
+		} else {
+			mFooterHeightStatus = com.scwang.smart.refresh.layout.constant.DimensionStatus.DefaultUnNotify;
+		}
+		component.getView().requestLayout();
+		requestLayout();
+		return true;
+	}
+
 }

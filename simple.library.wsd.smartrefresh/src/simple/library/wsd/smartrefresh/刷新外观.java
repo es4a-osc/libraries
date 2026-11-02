@@ -72,7 +72,7 @@ public final class 刷新外观 implements Cloneable {
 	}
 
 	/**
-	 * 返回-1 使用原生样式；0 平移，1 拉伸，2 固定背后，3 固定前面，4 填满布局。
+	 * 读取经典、球脉冲或自定义头尾的变换方式；-1 使用原生样式；0 平移，1 拉伸，2 固定背后，3 固定前面，4 填满布局。
 	 *
 	 * @return 当前配置值。
 	 */
@@ -82,7 +82,7 @@ public final class 刷新外观 implements Cloneable {
 	}
 
 	/**
-	 * 设置-1 使用原生样式；0 平移，1 拉伸，2 固定背后，3 固定前面，4 填满布局。
+	 * 设置经典、球脉冲或自定义头尾的变换方式；-1 使用原生样式；0 平移，1 拉伸，2 固定背后，3 固定前面，4 填满布局。
 	 *
 	 * @param value 新配置值。
 	 * @throws IllegalArgumentException 输入为空、非有限值或超出本选项的允许范围。
@@ -742,7 +742,7 @@ public final class 刷新外观 implements Cloneable {
 	}
 
 	/**
-	 * 设置Material 刷新头是否使用大号圆圈。
+	 * 设置 Material 刷新头是否使用大号圆圈。
 	 *
 	 * @param value 新配置值。
 	 */
@@ -765,7 +765,7 @@ public final class 刷新外观 implements Cloneable {
 	}
 
 	/**
-	 * 设置Material 刷新头是否显示贝塞尔波浪。
+	 * 设置 Material 刷新头是否显示贝塞尔波浪。
 	 *
 	 * @param value 新配置值。
 	 */
@@ -788,7 +788,7 @@ public final class 刷新外观 implements Cloneable {
 	}
 
 	/**
-	 * 设置Material 刷新期间是否允许内容滚动。
+	 * 设置 Material 刷新期间是否允许内容滚动。
 	 *
 	 * @param value 新配置值。
 	 */
@@ -1313,4 +1313,143 @@ public final class 刷新外观 implements Cloneable {
 	public int[] 取主题颜色() {
 		return themeColors.clone();
 	}
+
+	private boolean customTouch;
+
+	/**
+	 * 读取自定义头尾在打开或结束阶段允许内部控件接收触摸。
+	 *
+	 * @return 当前配置值。
+	 */
+	@SimpleProperty
+	public boolean 自定义接收触摸() {
+		return customTouch;
+	}
+
+	/**
+	 * 设置自定义头尾在打开或结束阶段允许内部控件接收触摸。
+	 *
+	 * @param value 新配置值。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
+		initializer = "False"
+	)
+	public void 自定义接收触摸(boolean value) {
+		customTouch = value;
+	}
+
+	private int customBackground;
+
+	/**
+	 * 读取自定义头尾拖动区域的 ARGB 背景颜色，0 不绘制背景。
+	 *
+	 * @return 当前配置值。
+	 */
+	@SimpleProperty
+	public int 自定义背景颜色() {
+		return customBackground;
+	}
+
+	/**
+	 * 设置自定义头尾拖动区域的 ARGB 背景颜色，0 不绘制背景。
+	 *
+	 * @param value 新配置值。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_COLOR,
+		initializer = "0"
+	)
+	public void 自定义背景颜色(int value) {
+		customBackground = value;
+	}
+
+	private int materialBackground;
+
+	/**
+	 * 读取 Material 圆形进度盘的 ARGB 背景颜色。
+	 *
+	 * @return 当前配置值。
+	 */
+	@SimpleProperty
+	public int Material圆背景颜色() {
+		return materialBackground;
+	}
+
+	/**
+	 * 设置 Material 圆形进度盘的 ARGB 背景颜色。
+	 *
+	 * @param value 新配置值。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_COLOR,
+		initializer = "-1"
+	)
+	public void Material圆背景颜色(int value) {
+		materialBackground = value;
+	}
+
+	private float waveShadowRadius;
+
+	/**
+	 * 读取波浪样式阴影半径，单位 DIP。
+	 *
+	 * @return 当前配置值。
+	 */
+	@SimpleProperty
+	public float 波浪阴影半径() {
+		return waveShadowRadius;
+	}
+
+	/**
+	 * 设置波浪样式阴影半径，单位 DIP。
+	 *
+	 * @param value 新配置值。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_SINGLE,
+		initializer = "0"
+	)
+	public void 波浪阴影半径(float value) {
+		if (!Float.isFinite(value) || value < 0 || value > 100) {
+			throw new IllegalArgumentException("波浪阴影半径须为 0 至 100 DIP 的有限数值");
+		}
+		waveShadowRadius = value;
+	}
+
+	private int waveShadowColor;
+
+	/**
+	 * 读取波浪样式阴影的 ARGB 颜色。
+	 *
+	 * @return 当前配置值。
+	 */
+	@SimpleProperty
+	public int 波浪阴影颜色() {
+		return waveShadowColor;
+	}
+
+	/**
+	 * 设置波浪样式阴影的 ARGB 颜色。
+	 *
+	 * @param value 新配置值。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_COLOR,
+		initializer = "-16777216"
+	)
+	public void 波浪阴影颜色(int value) {
+		waveShadowColor = value;
+	}
+
+	/**
+	 * 复制全部外观值及独立数组。
+	 *
+	 * @return 可独立修改的外观快照。
+	 */
+	@SimpleFunction
+	public 刷新外观 复制() {
+		return copy();
+	}
+
 }

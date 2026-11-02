@@ -1,0 +1,2033 @@
+{
+	"name": "字体图标库",
+	"description": "字体图标、文字混排、七类控件、自定义字体、组合动画及图片输出。",
+	"version": "0.1.0",
+	"kind": "library",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"categories": [
+		{
+			"name": "扩展可视组件",
+			"definitions": [
+				{
+					"name": "字体图标图片框",
+					"kind": "component",
+					"type": "simple.library.wsd.iconics.字体图标图片框",
+					"description": "字体图标IconicsImageView控件。",
+					"properties": [],
+					"functions": [],
+					"inherits": [
+						"simple.library.wsd.iconics.字体图标视图"
+					],
+					"icon": "icons/photo-spark.svg"
+				},
+				{
+					"name": "字体图标图片按钮",
+					"kind": "component",
+					"type": "simple.library.wsd.iconics.字体图标图片按钮",
+					"description": "字体图标IconicsImageButton控件。",
+					"properties": [],
+					"functions": [],
+					"inherits": [
+						"simple.library.wsd.iconics.字体图标视图"
+					],
+					"icon": "icons/photo-plus.svg"
+				},
+				{
+					"name": "字体图标文本框",
+					"kind": "component",
+					"type": "simple.library.wsd.iconics.字体图标文本框",
+					"description": "字体图标IconicsTextView控件。",
+					"properties": [],
+					"functions": [],
+					"inherits": [
+						"simple.library.wsd.iconics.字体图标视图"
+					],
+					"icon": "icons/text-recognition.svg"
+				},
+				{
+					"name": "字体图标按钮",
+					"kind": "component",
+					"type": "simple.library.wsd.iconics.字体图标按钮",
+					"description": "字体图标IconicsButton控件。",
+					"properties": [],
+					"functions": [],
+					"inherits": [
+						"simple.library.wsd.iconics.字体图标视图"
+					],
+					"icon": "icons/click.svg"
+				},
+				{
+					"name": "字体图标复选框",
+					"kind": "component",
+					"type": "simple.library.wsd.iconics.字体图标复选框",
+					"description": "字体图标IconicsCheckBox控件。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "是否选中",
+							"description": "取得选中状态。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置选中",
+							"description": "设置选中状态，变化时通知。",
+							"params": [
+								{
+									"name": "选中",
+									"type": "逻辑型",
+									"description": "选中。"
+								}
+							]
+						},
+						{
+							"name": "设置选中图标",
+							"description": "设置两种状态图标；空引用清除；可选文本设置起始侧。",
+							"params": [
+								{
+									"name": "选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "选中图标。"
+								},
+								{
+									"name": "未选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "未选中图标。"
+								}
+							]
+						},
+						{
+							"name": "切换选中",
+							"description": "切换当前选中状态。",
+							"params": []
+						},
+						{
+							"name": "取选中图标",
+							"description": "读取独立状态图标快照，没有时为空。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "取未选中图标",
+							"description": "读取独立状态图标快照，没有时为空。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						}
+					],
+					"inherits": [
+						"simple.library.wsd.iconics.字体图标视图"
+					],
+					"events": [
+						{
+							"name": "选中改变",
+							"description": "选中状态实际变化。",
+							"params": [
+								{
+									"name": "选中",
+									"type": "逻辑型"
+								}
+							]
+						}
+					],
+					"icon": "icons/square-check.svg"
+				},
+				{
+					"name": "字体图标可选文本框",
+					"kind": "component",
+					"type": "simple.library.wsd.iconics.字体图标可选文本框",
+					"description": "字体图标IconicsCheckableTextView控件。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "是否选中",
+							"description": "取得选中状态。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置选中",
+							"description": "设置选中状态，变化时通知。",
+							"params": [
+								{
+									"name": "选中",
+									"type": "逻辑型",
+									"description": "选中。"
+								}
+							]
+						},
+						{
+							"name": "设置选中图标",
+							"description": "设置两种状态图标；空引用清除；可选文本设置起始侧。",
+							"params": [
+								{
+									"name": "选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "选中图标。"
+								},
+								{
+									"name": "未选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "未选中图标。"
+								}
+							]
+						},
+						{
+							"name": "切换选中",
+							"description": "切换当前选中状态。",
+							"params": []
+						},
+						{
+							"name": "取选中图标",
+							"description": "读取独立状态图标快照，没有时为空。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "取未选中图标",
+							"description": "读取独立状态图标快照，没有时为空。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "设置位置选中图标",
+							"description": "分别设置指定位置两种状态；0至5，空引用清除对应图标。",
+							"params": [
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "位置。"
+								},
+								{
+									"name": "选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "选中图标。"
+								},
+								{
+									"name": "未选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "未选中图标。"
+								}
+							]
+						},
+						{
+							"name": "设置四侧选中图标",
+							"description": "统一设置四侧两种状态图标，空引用清除。",
+							"params": [
+								{
+									"name": "选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "选中图标。"
+								},
+								{
+									"name": "未选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "未选中图标。"
+								}
+							]
+						},
+						{
+							"name": "取位置选中图标",
+							"description": "读取指定侧选中图标快照，没有时为空。",
+							"params": [
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "位置。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标图像"
+						}
+					],
+					"inherits": [
+						"simple.library.wsd.iconics.字体图标视图"
+					],
+					"events": [
+						{
+							"name": "选中改变",
+							"description": "选中状态实际变化。",
+							"params": [
+								{
+									"name": "选中",
+									"type": "逻辑型"
+								}
+							]
+						}
+					],
+					"icon": "icons/text-select.svg"
+				},
+				{
+					"name": "字体图标切换按钮",
+					"kind": "component",
+					"type": "simple.library.wsd.iconics.字体图标切换按钮",
+					"description": "字体图标IconicsCompoundButton控件。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "是否选中",
+							"description": "取得选中状态。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置选中",
+							"description": "设置选中状态，变化时通知。",
+							"params": [
+								{
+									"name": "选中",
+									"type": "逻辑型",
+									"description": "选中。"
+								}
+							]
+						},
+						{
+							"name": "设置选中图标",
+							"description": "设置两种状态图标；空引用清除；可选文本设置起始侧。",
+							"params": [
+								{
+									"name": "选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "选中图标。"
+								},
+								{
+									"name": "未选中图标",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "未选中图标。"
+								}
+							]
+						},
+						{
+							"name": "切换选中",
+							"description": "切换当前选中状态。",
+							"params": []
+						},
+						{
+							"name": "取选中图标",
+							"description": "读取独立状态图标快照，没有时为空。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "取未选中图标",
+							"description": "读取独立状态图标快照，没有时为空。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						}
+					],
+					"inherits": [
+						"simple.library.wsd.iconics.字体图标视图"
+					],
+					"events": [
+						{
+							"name": "选中改变",
+							"description": "选中状态实际变化。",
+							"params": [
+								{
+									"name": "选中",
+									"type": "逻辑型"
+								}
+							]
+						}
+					],
+					"icon": "icons/toggle-right.svg"
+				}
+			]
+		},
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "图标动画",
+					"kind": "component",
+					"type": "simple.library.wsd.iconics.图标动画",
+					"description": "绑定图标动画到图片、背景或文字附图；离开窗口和后台自动暂停。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "绑定",
+							"description": "绑定目标；-2背景，-1图片，0左1上2右3下4起始5结束；更换目标清空原动画。",
+							"params": [
+								{
+									"name": "目标",
+									"type": "simple.runtime.components.可视组件",
+									"description": "目标。"
+								},
+								{
+									"name": "图像",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "图像。"
+								},
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "位置。"
+								}
+							]
+						},
+						{
+							"name": "添加",
+							"description": "复制配置并返回稳定编号；移除其他项不改变编号，清空后不复用旧编号。",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.iconics.图标动画配置",
+									"description": "配置。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "开始",
+							"description": "开始全部动画。",
+							"params": []
+						},
+						{
+							"name": "暂停",
+							"description": "暂停全部动画。",
+							"params": []
+						},
+						{
+							"name": "继续",
+							"description": "继续已暂停动画。",
+							"params": []
+						},
+						{
+							"name": "取消",
+							"description": "取消全部动画并保留当前位置。",
+							"params": []
+						},
+						{
+							"name": "结束",
+							"description": "立即到达动画终点。",
+							"params": []
+						},
+						{
+							"name": "反向",
+							"description": "反向播放全部动画。",
+							"params": []
+						},
+						{
+							"name": "清空",
+							"description": "取消并移除全部配置。",
+							"params": []
+						},
+						{
+							"name": "正在运行",
+							"description": "是否至少一个动画正在运行。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "开始单项",
+							"description": "从头启动指定动画。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							]
+						},
+						{
+							"name": "暂停单项",
+							"description": "手动暂停指定动画，返回前台不会自动恢复。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							]
+						},
+						{
+							"name": "继续单项",
+							"description": "继续指定已暂停动画。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							]
+						},
+						{
+							"name": "取消单项",
+							"description": "取消指定动画，保留当前绘制值。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							]
+						},
+						{
+							"name": "结束单项",
+							"description": "结束指定动画并到达终点。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							]
+						},
+						{
+							"name": "反向单项",
+							"description": "反向播放指定动画。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							]
+						},
+						{
+							"name": "移除",
+							"description": "移除指定动画及效果，其他编号保持不变，旧回调丢弃。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							]
+						},
+						{
+							"name": "单项正在运行",
+							"description": "指定动画是否正在运行。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "单项已开始",
+							"description": "指定动画是否已开始，包括延时或暂停。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "单项已暂停",
+							"description": "指定动画是否暂停。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取单项当前值",
+							"description": "读取当前插值结果；尚未开始时返回配置起值。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							],
+							"return": "单精度小数型"
+						},
+						{
+							"name": "取单项进度",
+							"description": "读取当前插值进度，部分插值器可能超出0至1。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							],
+							"return": "单精度小数型"
+						},
+						{
+							"name": "设置单项进度",
+							"description": "设置当前周期进度0至1，不自动开始计时。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								},
+								{
+									"name": "进度",
+									"type": "单精度小数型",
+									"description": "进度。"
+								}
+							]
+						},
+						{
+							"name": "取单项播放时间",
+							"description": "读取播放时间，单位毫秒。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "设置单项播放时间",
+							"description": "设置播放时间，单位毫秒，不自动开始计时。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								},
+								{
+									"name": "时间",
+									"type": "长整数型",
+									"description": "时间。"
+								}
+							]
+						},
+						{
+							"name": "取得单项配置",
+							"description": "返回添加时配置的独立副本。",
+							"params": [
+								{
+									"name": "编号",
+									"type": "整数型",
+									"description": "编号。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标动画配置"
+						},
+						{
+							"name": "取动画编号",
+							"description": "按添加顺序读取仍存在的稳定编号。",
+							"params": [],
+							"return": "整数型[]"
+						},
+						{
+							"name": "取动画数量",
+							"description": "读取仍存在的动画数量。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "解除绑定",
+							"description": "清空动画并释放目标引用，保留目标上的静态图像。",
+							"params": []
+						},
+						{
+							"name": "是否已绑定",
+							"description": "查询当前绑定是否仍有效。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取当前帧PNG",
+							"params": [],
+							"description": "将当前动画组合绘制为PNG，采用图标固有像素尺寸。",
+							"return": "字节型[]"
+						}
+					],
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"events": [
+						{
+							"name": "动画开始",
+							"description": "当前操作完成后在主线程异步通知；清空、重绑或销毁丢弃旧通知。",
+							"params": [
+								{
+									"name": "序号",
+									"type": "整数型"
+								}
+							]
+						},
+						{
+							"name": "动画结束",
+							"description": "当前操作完成后在主线程异步通知；清空、重绑或销毁丢弃旧通知。",
+							"params": [
+								{
+									"name": "序号",
+									"type": "整数型"
+								}
+							]
+						},
+						{
+							"name": "动画重复",
+							"description": "当前操作完成后在主线程异步通知；清空、重绑或销毁丢弃旧通知。",
+							"params": [
+								{
+									"name": "序号",
+									"type": "整数型"
+								}
+							]
+						},
+						{
+							"name": "动画取消",
+							"description": "当前操作完成后在主线程异步通知；清空、重绑或销毁丢弃旧通知。",
+							"params": [
+								{
+									"name": "序号",
+									"type": "整数型"
+								}
+							]
+						},
+						{
+							"name": "动画暂停",
+							"description": "当前操作完成后在主线程异步通知；清空、重绑或销毁丢弃旧通知。",
+							"params": [
+								{
+									"name": "序号",
+									"type": "整数型"
+								}
+							]
+						},
+						{
+							"name": "动画继续",
+							"description": "当前操作完成后在主线程异步通知；清空、重绑或销毁丢弃旧通知。",
+							"params": [
+								{
+									"name": "序号",
+									"type": "整数型"
+								}
+							]
+						}
+					],
+					"icon": "icons/player-play.svg"
+				}
+			]
+		},
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "图标错误",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标错误",
+					"description": "字体、图标、配置或目标不合法时抛出的可捕获错误。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "取说明",
+							"description": "取得失败原因。",
+							"params": [],
+							"return": "文本型"
+						}
+					],
+					"inherits": [
+						"simple.runtime.errors.运行错误"
+					]
+				},
+				{
+					"name": "图标状态颜色",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标状态颜色",
+					"description": "按添加顺序匹配状态；从图像样式取得的原生快照只读，清空后可重新配置。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "添加",
+							"description": "添加一条状态；正值表示存在，负值表示不存在。 原生快照需先清空。",
+							"params": [
+								{
+									"name": "状态",
+									"type": "整数型[]",
+									"description": "状态。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								}
+							]
+						},
+						{
+							"name": "置默认颜色",
+							"description": "设置未匹配时颜色。 原生快照需先清空。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								}
+							]
+						},
+						{
+							"name": "清空",
+							"description": "移除所有状态条目。",
+							"params": []
+						},
+						{
+							"name": "取默认颜色",
+							"description": "读取未匹配状态的默认颜色。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "取状态颜色",
+							"description": "读取指定状态实际采用的颜色。",
+							"params": [
+								{
+									"name": "状态",
+									"type": "整数型[]",
+									"description": "状态。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "是否有状态",
+							"description": "是否包含按状态变化的颜色。",
+							"params": [],
+							"return": "逻辑型"
+						}
+					]
+				},
+				{
+					"name": "图标样式",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标样式",
+					"description": "尺寸使用 DIP；应用时复制，修改配置不会改变已创建图标。",
+					"properties": [
+						{
+							"name": "宽度",
+							"type": "整数型",
+							"description": "图标宽度，DIP，必须大于零。",
+							"writable": true
+						},
+						{
+							"name": "高度",
+							"type": "整数型",
+							"description": "图标高度，DIP，必须大于零。",
+							"writable": true
+						},
+						{
+							"name": "颜色",
+							"type": "整数型",
+							"description": "图标 ARGB 颜色。",
+							"writable": true
+						},
+						{
+							"name": "透明度",
+							"type": "整数型",
+							"description": "透明度，0 至 255。",
+							"writable": true
+						},
+						{
+							"name": "内边距",
+							"type": "整数型",
+							"description": "图标内边距，DIP。",
+							"writable": true
+						},
+						{
+							"name": "描边宽度",
+							"type": "整数型",
+							"description": "图标描边宽度，DIP。",
+							"writable": true
+						},
+						{
+							"name": "描边颜色",
+							"type": "整数型",
+							"description": "图标描边颜色。",
+							"writable": true
+						},
+						{
+							"name": "背景颜色",
+							"type": "整数型",
+							"description": "背景颜色。",
+							"writable": true
+						},
+						{
+							"name": "背景描边宽度",
+							"type": "整数型",
+							"description": "背景描边宽度，DIP。",
+							"writable": true
+						},
+						{
+							"name": "背景描边颜色",
+							"type": "整数型",
+							"description": "背景描边颜色。",
+							"writable": true
+						},
+						{
+							"name": "圆角横半径",
+							"type": "单精度小数型",
+							"description": "背景横向圆角半径，DIP。",
+							"writable": true
+						},
+						{
+							"name": "圆角纵半径",
+							"type": "单精度小数型",
+							"description": "背景纵向圆角半径，DIP。",
+							"writable": true
+						},
+						{
+							"name": "横偏移",
+							"type": "整数型",
+							"description": "图标横向偏移，DIP。",
+							"writable": true
+						},
+						{
+							"name": "纵偏移",
+							"type": "整数型",
+							"description": "图标纵向偏移，DIP。",
+							"writable": true
+						},
+						{
+							"name": "阴影半径",
+							"type": "单精度小数型",
+							"description": "阴影半径，DIP。",
+							"writable": true
+						},
+						{
+							"name": "阴影横偏移",
+							"type": "单精度小数型",
+							"description": "阴影横向偏移，DIP。",
+							"writable": true
+						},
+						{
+							"name": "阴影纵偏移",
+							"type": "单精度小数型",
+							"description": "阴影纵向偏移，DIP。",
+							"writable": true
+						},
+						{
+							"name": "阴影颜色",
+							"type": "整数型",
+							"description": "阴影颜色。",
+							"writable": true
+						},
+						{
+							"name": "遵循字体边界",
+							"type": "逻辑型",
+							"description": "是否按照字体边界缩放。",
+							"writable": true
+						},
+						{
+							"name": "自动镜像",
+							"type": "逻辑型",
+							"description": "是否在 RTL 布局中镜像。",
+							"writable": true
+						},
+						{
+							"name": "绘画方式",
+							"type": "整数型",
+							"description": "0 填充，1 描边，2 填充及描边。",
+							"writable": true
+						},
+						{
+							"name": "着色模式",
+							"type": "整数型",
+							"description": "Android PorterDuff 模式序号。",
+							"writable": true
+						},
+						{
+							"name": "图标状态色",
+							"type": "simple.library.wsd.iconics.图标状态颜色",
+							"description": "图标状态色，空引用使用固定颜色。",
+							"writable": true
+						},
+						{
+							"name": "背景状态色",
+							"type": "simple.library.wsd.iconics.图标状态颜色",
+							"description": "背景状态色。",
+							"writable": true
+						},
+						{
+							"name": "描边状态色",
+							"type": "simple.library.wsd.iconics.图标状态颜色",
+							"description": "图标描边状态色。",
+							"writable": true
+						},
+						{
+							"name": "背景描边状态色",
+							"type": "simple.library.wsd.iconics.图标状态颜色",
+							"description": "背景描边状态色。",
+							"writable": true
+						},
+						{
+							"name": "着色状态色",
+							"type": "simple.library.wsd.iconics.图标状态颜色",
+							"description": "整体状态着色，空引用清除。",
+							"writable": true
+						},
+						{
+							"name": "绘制描边",
+							"type": "逻辑型",
+							"description": "是否允许绘制，描边宽度为零时仍不绘制。",
+							"writable": true
+						},
+						{
+							"name": "绘制背景描边",
+							"type": "逻辑型",
+							"description": "是否允许绘制，描边宽度为零时仍不绘制。",
+							"writable": true
+						}
+					],
+					"functions": [
+						{
+							"name": "设置颜色矩阵",
+							"description": "复制20项颜色矩阵；空数组清除滤镜。",
+							"params": [
+								{
+									"name": "矩阵",
+									"type": "单精度小数型[]",
+									"description": "矩阵。"
+								}
+							]
+						},
+						{
+							"name": "清除滤镜",
+							"description": "清除配置中的颜色滤镜。",
+							"params": []
+						},
+						{
+							"name": "复制",
+							"description": "复制样式及状态颜色，不验证尚未应用的配置。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标样式"
+						}
+					]
+				},
+				{
+					"name": "图标字体",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标字体",
+					"description": "字体及字符映射，注册后不能修改映射。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "取名称",
+							"description": "字体名称。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取前缀",
+							"description": "三个字符的前缀。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取版本",
+							"description": "字体版本。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取作者",
+							"description": "字体作者。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取网址",
+							"description": "字体网址。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取说明",
+							"description": "字体说明。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取许可证",
+							"description": "字体许可证。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取许可证网址",
+							"description": "字体许可证网址。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取图标数量",
+							"description": "字体图标数量。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "取图标名称",
+							"description": "所有图标名称。",
+							"params": [],
+							"return": "文本型[]"
+						},
+						{
+							"name": "添加映射",
+							"description": "添加字符映射，字符码限 Unicode BMP。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "名称。"
+								},
+								{
+									"name": "字符码",
+									"type": "整数型",
+									"description": "字符码。"
+								}
+							]
+						},
+						{
+							"name": "取字符码",
+							"description": "查询图标字符码。",
+							"params": [
+								{
+									"name": "图标名称",
+									"type": "文本型",
+									"description": "图标名称。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "取字体资源",
+							"description": "读取字体资源标识；资产或文件字体没有资源时返回负数。",
+							"params": [],
+							"return": "整数型"
+						}
+					]
+				},
+				{
+					"name": "图标工具",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标工具",
+					"description": "内置字体管理、图标生成与文字图标应用。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "取字体前缀",
+							"description": "取得所有已注册字体前缀。",
+							"params": [],
+							"return": "文本型[]"
+						},
+						{
+							"name": "取字体",
+							"description": "查询已注册字体。",
+							"params": [
+								{
+									"name": "前缀",
+									"type": "文本型",
+									"description": "前缀。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标字体"
+						},
+						{
+							"name": "创建资产字体",
+							"description": "从应用资产创建字体，注册前添加映射。",
+							"params": [
+								{
+									"name": "前缀",
+									"type": "文本型",
+									"description": "前缀。"
+								},
+								{
+									"name": "资产路径",
+									"type": "文本型",
+									"description": "资产路径。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标字体"
+						},
+						{
+							"name": "创建资源字体",
+							"description": "从字体资源创建字体。",
+							"params": [
+								{
+									"name": "前缀",
+									"type": "文本型",
+									"description": "前缀。"
+								},
+								{
+									"name": "字体资源",
+									"type": "整数型",
+									"description": "字体资源。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标字体"
+						},
+						{
+							"name": "注册字体",
+							"description": "注册字体，重复前缀拒绝覆盖。",
+							"params": [
+								{
+									"name": "字体",
+									"type": "simple.library.wsd.iconics.图标字体",
+									"description": "字体。"
+								}
+							]
+						},
+						{
+							"name": "图标存在",
+							"description": "检查图标是否存在。",
+							"params": [
+								{
+									"name": "图标名称",
+									"type": "文本型",
+									"description": "图标名称。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "搜索图标",
+							"description": "按名称包含关键词搜索，空文本列出全部。",
+							"params": [
+								{
+									"name": "前缀",
+									"type": "文本型",
+									"description": "前缀。"
+								},
+								{
+									"name": "关键词",
+									"type": "文本型",
+									"description": "关键词。"
+								}
+							],
+							"return": "文本型[]"
+						},
+						{
+							"name": "创建图标",
+							"description": "创建独立图标快照。",
+							"params": [
+								{
+									"name": "图标名称",
+									"type": "文本型",
+									"description": "图标名称。"
+								},
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.iconics.图标样式",
+									"description": "样式。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "应用文字图标",
+							"description": "解析文字中的 {前缀_图标名}，无效名称抛出错误。",
+							"params": [
+								{
+									"name": "目标",
+									"type": "simple.runtime.components.可视组件",
+									"description": "目标。"
+								},
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							]
+						},
+						{
+							"name": "创建文件字体",
+							"description": "从可读字体文件创建自定义字体。",
+							"params": [
+								{
+									"name": "前缀",
+									"type": "文本型",
+									"description": "前缀。"
+								},
+								{
+									"name": "字体路径",
+									"type": "文本型",
+									"description": "字体路径。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标字体"
+						},
+						{
+							"name": "创建字符图标",
+							"description": "使用字体和 BMP 字符码直接生成图标。",
+							"params": [
+								{
+									"name": "字体",
+									"type": "simple.library.wsd.iconics.图标字体",
+									"description": "字体。"
+								},
+								{
+									"name": "字符码",
+									"type": "整数型",
+									"description": "字符码。"
+								},
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.iconics.图标样式",
+									"description": "样式。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "批量创建图标",
+							"description": "按顺序创建独立图标数组，任一名称无效时拒绝整次生成。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型[]",
+									"description": "名称。"
+								},
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.iconics.图标样式",
+									"description": "样式。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标图像[]"
+						},
+						{
+							"name": "创建文字图标",
+							"description": "使用同一字体绘制短文字，不解析图标标记。",
+							"params": [
+								{
+									"name": "字体",
+									"type": "simple.library.wsd.iconics.图标字体",
+									"description": "字体。"
+								},
+								{
+									"name": "文字",
+									"type": "文本型",
+									"description": "文字。"
+								},
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.iconics.图标样式",
+									"description": "样式。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标图像"
+						}
+					]
+				},
+				{
+					"name": "图标图像",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标图像",
+					"description": "独立可绘制图标；每次应用复制，不共享状态。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "复制",
+							"description": "复制图标及样式。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "应用样式",
+							"description": "更新本图像样式，不影响已应用视图。",
+							"params": [
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.iconics.图标样式",
+									"description": "样式。"
+								}
+							]
+						},
+						{
+							"name": "应用图片",
+							"description": "应用到图片框或图片按钮。",
+							"params": [
+								{
+									"name": "目标",
+									"type": "simple.runtime.components.可视组件",
+									"description": "目标。"
+								}
+							]
+						},
+						{
+							"name": "应用背景",
+							"description": "应用为组件背景。",
+							"params": [
+								{
+									"name": "目标",
+									"type": "simple.runtime.components.可视组件",
+									"description": "目标。"
+								}
+							]
+						},
+						{
+							"name": "应用文字附图",
+							"description": "设置文字附图，0左1上2右3下4起始5结束；绝对和相对坐标切换时保留当前视觉位置。",
+							"params": [
+								{
+									"name": "目标",
+									"type": "simple.runtime.components.可视组件",
+									"description": "目标。"
+								},
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "位置。"
+								}
+							]
+						},
+						{
+							"name": "取PNG",
+							"description": "输出透明 PNG 字节。",
+							"params": [],
+							"return": "字节型[]"
+						},
+						{
+							"name": "保存PNG",
+							"description": "保存 PNG；相对路径基于应用内部目录，父目录须存在。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							]
+						},
+						{
+							"name": "设置状态",
+							"description": "设置导出图像采用的状态。",
+							"params": [
+								{
+									"name": "状态",
+									"type": "整数型[]",
+									"description": "状态。"
+								}
+							]
+						},
+						{
+							"name": "设置着色",
+							"description": "设置整体图标着色。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								}
+							]
+						},
+						{
+							"name": "取图标名称",
+							"description": "读取名称；直接字符或短文字图标返回空文本。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取图标文字",
+							"description": "读取实际绘制字符或短文字。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "设置状态着色",
+							"description": "设置整体状态着色；空引用清除着色。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "simple.library.wsd.iconics.图标状态颜色",
+									"description": "颜色。"
+								}
+							]
+						},
+						{
+							"name": "清除着色",
+							"description": "清除整体着色，恢复图标本身颜色。",
+							"params": []
+						},
+						{
+							"name": "设置颜色矩阵",
+							"description": "设置20项颜色矩阵；空数组清除滤镜。",
+							"params": [
+								{
+									"name": "矩阵",
+									"type": "单精度小数型[]",
+									"description": "矩阵。"
+								}
+							]
+						},
+						{
+							"name": "清除滤镜",
+							"description": "清除颜色滤镜。",
+							"params": []
+						},
+						{
+							"name": "取得样式",
+							"description": "读取完整样式快照；尺寸按当前密度换算为DIP。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标样式"
+						},
+						{
+							"name": "取状态",
+							"description": "读取图像状态数组副本。",
+							"params": [],
+							"return": "整数型[]"
+						},
+						{
+							"name": "取像素宽度",
+							"description": "读取实际渲染宽度，物理像素。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "取像素高度",
+							"description": "读取实际渲染高度，物理像素。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "是否有滤镜",
+							"description": "查询是否设置颜色滤镜。",
+							"params": [],
+							"return": "逻辑型"
+						}
+					]
+				},
+				{
+					"name": "字体图标视图",
+					"kind": "interface",
+					"type": "simple.library.wsd.iconics.字体图标视图",
+					"description": "图标控件共用样式、可用性及交互。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "设置图标",
+							"description": "设置主图标；文本控件设置左附图。",
+							"params": [
+								{
+									"name": "图像",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "图像。"
+								}
+							]
+						},
+						{
+							"name": "设置文字",
+							"description": "设置图标混排文字；仅文本类控件有效。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							]
+						},
+						{
+							"name": "取文字",
+							"description": "取得文本；仅文本类控件有效。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "设置字号",
+							"description": "设置文字 SP 大小；仅文本类控件有效。",
+							"params": [
+								{
+									"name": "字号",
+									"type": "单精度小数型",
+									"description": "字号。"
+								}
+							]
+						},
+						{
+							"name": "设置文字颜色",
+							"description": "设置文字颜色；仅文本类控件有效。",
+							"params": [
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "颜色。"
+								}
+							]
+						},
+						{
+							"name": "设置启用",
+							"description": "设置是否接受操作。",
+							"params": [
+								{
+									"name": "启用",
+									"type": "逻辑型",
+									"description": "启用。"
+								}
+							]
+						},
+						{
+							"name": "设置内容描述",
+							"description": "设置无障碍描述。",
+							"params": [
+								{
+									"name": "描述",
+									"type": "文本型",
+									"description": "描述。"
+								}
+							]
+						},
+						{
+							"name": "设置附图",
+							"description": "设置常态附图：0左1上2右3下4起始5结束；与选中态分别维护。",
+							"params": [
+								{
+									"name": "图像",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "图像。"
+								},
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "位置。"
+								}
+							]
+						},
+						{
+							"name": "取图标",
+							"description": "读取图片或左侧附图快照，不存在时为空引用。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "清除图标",
+							"description": "清除图片；文字视图只清除左附图。",
+							"params": []
+						},
+						{
+							"name": "清除背景",
+							"description": "清除组件背景图像。",
+							"params": []
+						},
+						{
+							"name": "取背景图标",
+							"description": "读取背景字体图标快照，没有时为空引用。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "取附图",
+							"description": "读取指定位置常态附图快照；位置0至5。",
+							"params": [
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "位置。"
+								}
+							],
+							"return": "simple.library.wsd.iconics.图标图像"
+						},
+						{
+							"name": "清除附图",
+							"description": "清除指定位置常态附图；保留选中态。",
+							"params": [
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "位置。"
+								}
+							]
+						},
+						{
+							"name": "设置四侧附图",
+							"description": "设置全部四侧常态附图；空引用清除。",
+							"params": [
+								{
+									"name": "图像",
+									"type": "simple.library.wsd.iconics.图标图像",
+									"description": "图像。"
+								}
+							]
+						},
+						{
+							"name": "设置图文间距",
+							"description": "设置图标与文本之间间距，单位DIP。",
+							"params": [
+								{
+									"name": "间距",
+									"type": "整数型",
+									"description": "间距。"
+								}
+							]
+						},
+						{
+							"name": "取图文间距",
+							"description": "读取图文间距，单位DIP。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "设置布局方向",
+							"description": "设置布局方向：0左至右，1右至左，2继承，3随文字。",
+							"params": [
+								{
+									"name": "方向",
+									"type": "整数型",
+									"description": "方向。"
+								}
+							]
+						},
+						{
+							"name": "取布局方向",
+							"description": "读取实际布局方向，0左至右，1右至左。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "是否启用",
+							"description": "读取是否接受操作。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取内容描述",
+							"description": "读取无障碍描述。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取字号",
+							"description": "读取SP字号。",
+							"params": [],
+							"return": "单精度小数型"
+						},
+						{
+							"name": "取文字颜色",
+							"description": "读取当前状态下文字颜色。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "设置图片缩放方式",
+							"description": "设置图片缩放：0矩阵1拉伸2适应起点3适应居中4适应终点5居中6裁剪7居中收缩。",
+							"params": [
+								{
+									"name": "方式",
+									"type": "整数型",
+									"description": "方式。"
+								}
+							]
+						},
+						{
+							"name": "取图片缩放方式",
+							"description": "读取图片缩放方式。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "设置保持宽高比",
+							"description": "设置图片是否按宽高比调整边界。",
+							"params": [
+								{
+									"name": "保持",
+									"type": "逻辑型",
+									"description": "保持。"
+								}
+							]
+						},
+						{
+							"name": "是否保持宽高比",
+							"description": "读取是否按宽高比调整边界。",
+							"params": [],
+							"return": "逻辑型"
+						}
+					],
+					"inherits": [
+						"simple.runtime.components.可视组件"
+					],
+					"events": [
+						{
+							"name": "被单击",
+							"params": [],
+							"description": "用户点击控件。"
+						},
+						{
+							"name": "被长按",
+							"params": [],
+							"description": "用户长按控件。"
+						},
+						{
+							"name": "焦点改变",
+							"params": [
+								{
+									"name": "有焦点",
+									"type": "逻辑型"
+								}
+							],
+							"description": "焦点状态改变。"
+						}
+					]
+				},
+				{
+					"name": "图标动画配置",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标动画配置",
+					"description": "动画配置快照；类型0旋转、1透明闪烁、2缩放。",
+					"properties": [
+						{
+							"name": "类型",
+							"type": "整数型",
+							"description": "0旋转，1透明，2缩放。",
+							"writable": true
+						},
+						{
+							"name": "时长",
+							"type": "长整数型",
+							"description": "单次动画时长，毫秒，大于零。",
+							"writable": true
+						},
+						{
+							"name": "延时",
+							"type": "长整数型",
+							"description": "开始延迟，毫秒。",
+							"writable": true
+						},
+						{
+							"name": "重复次数",
+							"type": "整数型",
+							"description": "重复次数，-1为无限。",
+							"writable": true
+						},
+						{
+							"name": "往返",
+							"type": "逻辑型",
+							"description": "是否往返重复。",
+							"writable": true
+						},
+						{
+							"name": "插值",
+							"type": "整数型",
+							"description": "0线性，1加速，2减速，3先加速后减速，4弹跳。",
+							"writable": true
+						},
+						{
+							"name": "起值",
+							"type": "单精度小数型",
+							"description": "旋转单位为度；透明度为0至255；缩放为非负比例。",
+							"writable": true
+						},
+						{
+							"name": "止值",
+							"type": "单精度小数型",
+							"description": "结束值；透明闪烁宜设255，缩放宜设1。",
+							"writable": true
+						}
+					],
+					"functions": [
+						{
+							"name": "复制",
+							"description": "复制动画配置，后续修改互不影响。",
+							"params": [],
+							"return": "simple.library.wsd.iconics.图标动画配置"
+						}
+					]
+				},
+				{
+					"name": "图标常量",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标常量",
+					"description": "状态及图标位置常量。",
+					"properties": [],
+					"functions": [],
+					"constants": [
+						{
+							"name": "状态_启用",
+							"type": "整数型",
+							"value": "16842910",
+							"description": "状态_启用。"
+						},
+						{
+							"name": "状态_按下",
+							"type": "整数型",
+							"value": "16842919",
+							"description": "状态_按下。"
+						},
+						{
+							"name": "状态_选中",
+							"type": "整数型",
+							"value": "16842912",
+							"description": "状态_选中。"
+						},
+						{
+							"name": "状态_选择",
+							"type": "整数型",
+							"value": "16842913",
+							"description": "状态_选择。"
+						},
+						{
+							"name": "状态_焦点",
+							"type": "整数型",
+							"value": "16842908",
+							"description": "状态_焦点。"
+						},
+						{
+							"name": "位置_背景",
+							"type": "整数型",
+							"value": "-2",
+							"description": "位置_背景。"
+						},
+						{
+							"name": "位置_图片",
+							"type": "整数型",
+							"value": "-1",
+							"description": "位置_图片。"
+						},
+						{
+							"name": "位置_左",
+							"type": "整数型",
+							"value": "0",
+							"description": "位置_左。"
+						},
+						{
+							"name": "位置_上",
+							"type": "整数型",
+							"value": "1",
+							"description": "位置_上。"
+						},
+						{
+							"name": "位置_右",
+							"type": "整数型",
+							"value": "2",
+							"description": "位置_右。"
+						},
+						{
+							"name": "位置_下",
+							"type": "整数型",
+							"value": "3",
+							"description": "位置_下。"
+						},
+						{
+							"name": "位置_起始",
+							"type": "整数型",
+							"value": "4",
+							"description": "位置_起始。"
+						},
+						{
+							"name": "位置_结束",
+							"type": "整数型",
+							"value": "5",
+							"description": "位置_结束。"
+						}
+					]
+				},
+				{
+					"name": "图标文字样式",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标文字样式",
+					"description": "文字内嵌图标的颜色和字符样式。",
+					"properties": [
+						{
+							"name": "颜色",
+							"type": "整数型",
+							"description": "文字图标颜色。",
+							"writable": true
+						},
+						{
+							"name": "背景颜色",
+							"type": "整数型",
+							"description": "文字图标背景颜色。",
+							"writable": true
+						},
+						{
+							"name": "字号",
+							"type": "整数型",
+							"description": "字号 SP；0保持原字号。",
+							"writable": true
+						},
+						{
+							"name": "粗体",
+							"type": "逻辑型",
+							"description": "是否加粗。",
+							"writable": true
+						},
+						{
+							"name": "斜体",
+							"type": "逻辑型",
+							"description": "是否倾斜。",
+							"writable": true
+						},
+						{
+							"name": "下划线",
+							"type": "逻辑型",
+							"description": "是否带下划线。",
+							"writable": true
+						},
+						{
+							"name": "删除线",
+							"type": "逻辑型",
+							"description": "是否带删除线。",
+							"writable": true
+						}
+					],
+					"functions": []
+				},
+				{
+					"name": "图标文字",
+					"kind": "object",
+					"type": "simple.library.wsd.iconics.图标文字",
+					"description": "文字图标统一样式及逐图标样式构造器。",
+					"properties": [],
+					"functions": [
+						{
+							"name": "统一样式",
+							"description": "添加作用于全部图标的样式快照。",
+							"params": [
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.iconics.图标文字样式",
+									"description": "样式。"
+								}
+							]
+						},
+						{
+							"name": "指定样式",
+							"description": "添加作用于指定图标的样式快照。",
+							"params": [
+								{
+									"name": "图标名称",
+									"type": "文本型",
+									"description": "图标名称。"
+								},
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.iconics.图标文字样式",
+									"description": "样式。"
+								}
+							]
+						},
+						{
+							"name": "应用",
+							"description": "处理图标标记并应用到文本控件。",
+							"params": [
+								{
+									"name": "目标",
+									"type": "simple.runtime.components.可视组件",
+									"description": "目标。"
+								},
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							]
+						},
+						{
+							"name": "清空",
+							"description": "清空构造器样式，不改变已应用文本。",
+							"params": []
+						}
+					]
+				}
+			]
+		}
+	]
+}

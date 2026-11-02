@@ -473,6 +473,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 		if (!state.equals(value)) {
 			String previous = state;
 			state = value;
+			二维码调试.log("扫描状态：" + previous + " -> " + value);
 			if (!closed && listener != null) {
 				listener.changed(previous, value);
 			}
@@ -488,104 +489,205 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 		}
 		final long token = generation;
 		try {
-			camera.frame(new LegacyCamera.FrameListener() {
-				@Override
-				public void received(byte[] bytes) {
-					if (!active || generation != token || bytes == null) {
-						return;
-					}
-					final byte[] frame = bytes.clone();
-					final 扫码配置 decodeOptions = options.copy();
-					final int width = camera.width;
-					final int height = camera.height;
-					final int angle = camera.rotation;
-					final boolean mirror = camera.mirror;
-					final int orientedWidth = angle % 180 == 0 ? width : height;
-					final int orientedHeight = angle % 180 == 0 ? height : width;
-					RectF frameRect = options.仅识别框内() ? overlay.frame() : new RectF(0, 0, getWidth(), getHeight());
-					final int[] crop = FrameGeometry.crop(orientedWidth, orientedHeight, getWidth(), getHeight(), frameRect.left, frameRect.top, frameRect.right, frameRect.bottom);
-					if (mirror) {
-						// 前摄仅显示镜像；解码保持原码方向，避免镜像的数据矩阵无法识别。
-						crop[0] = orientedWidth - crop[0] - crop[2];
-					}
-					try {
-						executor.execute(new Runnable() {
-							@Override
-							public void run() {
-								识别结果 found = null;
-								Exception failure = null;
-								try {
-									byte[] oriented = FrameGeometry.orient(frame, width, height, angle, false);
-									PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(oriented, orientedWidth, orientedHeight, crop[0], crop[1], crop[2], crop[3], false);
-									Result result = Images.decode(source, decodeOptions);
-									byte[] png = new byte[0];
-									if (decodeOptions.返回识别图像()) {
-										byte[] luminance = source.getMatrix();
-										int[] pixels = new int[luminance.length];
-										for (int i = 0; i < pixels.length; i++) {
-											int gray = luminance[i] & 255;
-											pixels[i] = 0xff000000 | gray * 0x010101;
-										}
-										Bitmap image = Bitmap.createBitmap(pixels, crop[2], crop[3], Bitmap.Config.ARGB_8888);
-										try {
-											png = Images.png(image);
-										} finally {
-											image.recycle();
-										}
-									}
-									found = 识别结果.from(result, png);
-								} catch (NotFoundException ignored) {
-									// 普通无结果帧继续取下一帧。
-								} catch (Exception error) {
-									failure = error;
-								} catch (OutOfMemoryError error) {
-									failure = new IllegalStateException("扫描图像内存不足", error);
-								}
-								final 识别结果 result = found;
-								final Exception error = failure;
-								handler.post(new Runnable() {
-									@Override
-									public void run() {
-										if (!active || generation != token || closed) {
-											return;
-										}
-										if (error != null) {
-											fail(error);
-										} else if (result == null) {
-											handler.postDelayed(nextFrame, 50);
-										} else {
-											overlay.result(result, crop, orientedWidth, orientedHeight, mirror);
-											feedback();
-											if (!active || generation != token || closed) {
-												return;
-											}
-											boolean continuous = options.连续扫描();
-											if (!continuous) {
-												desired = false;
-												release();
-											}
-											long resultGeneration = generation;
-											if (!continuous) {
-												state("已完成");
-											}
-											if (listener != null && !closed && generation == resultGeneration) {
-												listener.result(result);
-											}
-											if (continuous && active && generation == token) {
-												handler.postDelayed(nextFrame, options.连续间隔());
-											}
-										}
-									}
-								});
+			camera.frame(
+					new LegacyCamera.FrameListener() {
+						@Override
+						public void received(byte[] bytes) {
+							if (!active || generation != token || bytes == null) {
+								return;
 							}
-						});
-					} catch (RejectedExecutionException error) {
-						if (!closed) {
-							fail(error);
+							final byte[] frame = bytes.clone();
+							final 扫码配置 decodeOptions = options.copy();
+							final int width = camera.width;
+							final int height = camera.height;
+							final int angle = camera.rotation;
+							final boolean mirror = camera.mirror;
+							final int orientedWidth = angle % 180 == 0 ? width : height;
+							final int orientedHeight = angle % 180 == 0 ? height : width;
+							RectF frameRect =
+									options.仅识别框内()
+											? overlay.frame()
+											: new RectF(0, 0, getWidth(), getHeight());
+							final int[] crop =
+									FrameGeometry.crop(
+											orientedWidth,
+											orientedHeight,
+											getWidth(),
+											getHeight(),
+											frameRect.left,
+											frameRect.top,
+											frameRect.right,
+											frameRect.bottom);
+							if (mirror) {
+								// 前摄仅显示镜像；解码保持原码方向，避免镜像的数据矩阵无法识别。
+								crop[0] = orientedWidth - crop[0] - crop[2];
+							}
+							try {
+								executor.execute(
+										new Runnable() {
+											@Override
+											public void run() {
+												final java.util.List<ResultPoint> candidatePoints =
+														new java.util.ArrayList<ResultPoint>();
+												识别结果 found = null;
+												Exception failure = null;
+												try {
+													byte[] oriented =
+															FrameGeometry.orient(
+																	frame, width, height, angle,
+																	false);
+													PlanarYUVLuminanceSource source =
+															new PlanarYUVLuminanceSource(
+																	oriented,
+																	orientedWidth,
+																	orientedHeight,
+																	crop[0],
+																	crop[1],
+																	crop[2],
+																	crop[3],
+																	false);
+													Result result =
+															Images.decode(
+																	source,
+																	decodeOptions,
+																	new ResultPointCallback() {
+																		@Override
+																		public void
+																				foundPossibleResultPoint(
+																						ResultPoint
+																								point) {
+																			if (candidatePoints
+																									.size()
+																							< 64
+																					&& point
+																							!= null) {
+																				candidatePoints.add(
+																						point);
+																			}
+																		}
+																	});
+													byte[] png = new byte[0];
+													if (decodeOptions.返回识别图像()) {
+														byte[] luminance = source.getMatrix();
+														int[] pixels = new int[luminance.length];
+														for (int i = 0; i < pixels.length; i++) {
+															int gray = luminance[i] & 255;
+															pixels[i] =
+																	0xff000000 | gray * 0x010101;
+														}
+														Bitmap image =
+																Bitmap.createBitmap(
+																		pixels,
+																		crop[2],
+																		crop[3],
+																		Bitmap.Config.ARGB_8888);
+														try {
+															png = Images.png(image);
+														} finally {
+															image.recycle();
+														}
+													}
+													found = 识别结果.from(result, png);
+												} catch (NotFoundException ignored) {
+													// 普通无结果帧继续取下一帧。
+												} catch (Exception error) {
+													failure = error;
+												} catch (OutOfMemoryError error) {
+													failure =
+															new IllegalStateException(
+																	"扫描图像内存不足", error);
+												}
+												final float[] candidateSnapshot =
+														new float[candidatePoints.size() * 2];
+												for (int p = 0; p < candidatePoints.size(); p++) {
+													candidateSnapshot[p * 2] =
+															candidatePoints.get(p).getX();
+													candidateSnapshot[p * 2 + 1] =
+															candidatePoints.get(p).getY();
+												}
+												final 识别结果 result = found;
+												final Exception error = failure;
+												handler.post(
+														new Runnable() {
+															@Override
+															public void run() {
+																if (!active
+																		|| generation != token
+																		|| closed) {
+																	return;
+																}
+																overlay.candidates(
+																		candidateSnapshot,
+																		crop,
+																		orientedWidth,
+																		orientedHeight,
+																		mirror);
+																if (candidateSnapshot.length > 0
+																		&& listener != null) {
+																	listener.points(
+																			overlay.candidates
+																					.clone());
+																}
+																if (!active
+																		|| generation != token
+																		|| closed) {
+																	return;
+																}
+																if (error != null) {
+																	fail(error);
+																} else if (result == null) {
+																	handler.postDelayed(
+																			nextFrame, 50);
+																} else {
+																	overlay.result(
+																			result,
+																			crop,
+																			orientedWidth,
+																			orientedHeight,
+																			mirror);
+																	feedback();
+																	if (!active
+																			|| generation != token
+																			|| closed) {
+																		return;
+																	}
+																	boolean continuous =
+																			options.连续扫描();
+																	if (!continuous) {
+																		desired = false;
+																		release();
+																	}
+																	long resultGeneration =
+																			generation;
+																	if (!continuous) {
+																		state("已完成");
+																	}
+																	if (listener != null
+																			&& !closed
+																			&& generation
+																					== resultGeneration) {
+																		listener.result(result);
+																	}
+																	if (continuous
+																			&& active
+																			&& generation
+																					== token) {
+																		handler.postDelayed(
+																				nextFrame,
+																				options.连续间隔());
+																	}
+																}
+															}
+														});
+											}
+										});
+							} catch (RejectedExecutionException error) {
+								if (!closed) {
+									fail(error);
+								}
+							}
 						}
-					}
-				}
-			});
+					});
 		} catch (RuntimeException error) {
 			fail(error);
 		}
@@ -672,6 +774,18 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 		 * @param newState 新状态。
 		 */
 		void changed(String oldState, String newState);
+		/**
+		 * 手动对焦的真实完成结果。
+		 *
+		 * @param success 是否成功。
+		 */
+		void focused(boolean success);
+		/**
+		 * 收到候选定位点，不能替代成功结果。
+		 *
+		 * @param points 本视图物理像素坐标。
+		 */
+		void points(float[] points);
 	}
 
 	/**
@@ -681,6 +795,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 		private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		private float position;
 		private float[] points = new float[0];
+		private float[] candidates = new float[0];
 		private Bitmap image;
 
 		/**
@@ -703,6 +818,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 				image = Images.bitmap(Images.read(activity, options.扫描图像()));
 			}
 			position = 0;
+			candidates = new float[0];
 			invalidate();
 		}
 
@@ -753,6 +869,28 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 			invalidate();
 		}
 
+		/**
+		 * 将当前帧候选点转换为视图坐标并刷新。
+		 *
+		 * @param raw 候选点副本。
+		 * @param crop 解码裁剪区域。
+		 * @param width 定向后的预览宽。
+		 * @param height 定向后的预览高。
+		 * @param mirror 显示是否镜像。
+		 */
+		void candidates(float[] raw, int[] crop, int width, int height, boolean mirror) {
+			candidates = raw.clone();
+			float scale = Math.max((float) getWidth() / width, (float) getHeight() / height);
+			for (int i = 0; i < candidates.length; i += 2) {
+				float x = candidates[i] + crop[0];
+				candidates[i] =
+						(mirror ? width - 1 - x : x) * scale + (getWidth() - width * scale) / 2;
+				candidates[i + 1] =
+						(candidates[i + 1] + crop[1]) * scale + (getHeight() - height * scale) / 2;
+			}
+			invalidate();
+		}
+
 		@Override
 		protected void onDraw(Canvas canvas) {
 			super.onDraw(canvas);
@@ -793,6 +931,12 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 				}
 				postInvalidateDelayed(options.动画间隔());
 			}
+			if (active && options.显示实时识别点()) {
+				paint.setColor(options.识别点颜色());
+				for (int i = 0; i < candidates.length; i += 2) {
+					canvas.drawCircle(candidates[i], candidates[i + 1], 3 * density, paint);
+				}
+			}
 			if (options.显示结果点()) {
 				paint.setColor(options.识别点颜色());
 				for (int i = 0; i < points.length; i += 2) {
@@ -800,5 +944,68 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 				}
 			}
 		}
+	}
+
+	/**
+	 * 手动发起对焦，请求提交与完成结果分别通知。
+	 *
+	 * @return 实际请求被接受时为真。
+	 */
+	public boolean focusOnce() {
+		if (!active || closed) {
+			return false;
+		}
+		final long token = generation;
+		return camera.requestFocus(
+				new LegacyCamera.FocusListener() {
+					@Override
+					public void completed(final boolean success) {
+						handler.post(
+								new Runnable() {
+									@Override
+									public void run() {
+										if (active
+												&& !closed
+												&& generation == token
+												&& listener != null) {
+											listener.focused(success);
+										}
+									}
+								});
+					}
+				});
+	}
+	/**
+	 * 查询实际显示的扫描框。
+	 *
+	 * @return 左、上、宽、高物理像素；尚未布局时为空数组。
+	 */
+	public int[] frameBounds() {
+		if (getWidth() == 0 || getHeight() == 0) {
+			return new int[0];
+		}
+		RectF f = overlay.frame();
+		return new int[] {
+			Math.round(f.left), Math.round(f.top), Math.round(f.width()), Math.round(f.height())
+		};
+	}
+	/**
+	 * 查询预览解码区域，前摄包含镜像到解码坐标的转换。
+	 *
+	 * @return 左、上、宽、高预览像素；相机未开启时为空数组。
+	 */
+	public int[] previewBounds() {
+		if (!active) {
+			return new int[0];
+		}
+		int w = camera.rotation % 180 == 0 ? camera.width : camera.height;
+		int h = camera.rotation % 180 == 0 ? camera.height : camera.width;
+		RectF f = options.仅识别框内() ? overlay.frame() : new RectF(0, 0, getWidth(), getHeight());
+		int[] crop =
+				FrameGeometry.crop(w, h, getWidth(), getHeight(), f.left, f.top, f.right, f.bottom);
+		if (camera.mirror) {
+			crop[0] = w - crop[0] - crop[2];
+		}
+		return crop;
 	}
 }

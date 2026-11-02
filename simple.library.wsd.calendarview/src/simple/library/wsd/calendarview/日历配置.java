@@ -205,7 +205,7 @@ public final class 日历配置 implements Cloneable {
 	}
 
 	/**
-	 * 读取范围选择包含首尾的最小天数。
+	 * 读取范围选择包含首尾的最小天数；-1 不限制，同日仅设置起点。
 	 *
 	 * @return 当前配置值。
 	 */
@@ -215,7 +215,7 @@ public final class 日历配置 implements Cloneable {
 	}
 
 	/**
-	 * 设置范围选择包含首尾的最小天数。
+	 * 设置范围选择包含首尾的最小天数；-1 不限制，同日仅设置起点。
 	 *
 	 * @param value 新的配置值。
 	 */
@@ -224,7 +224,7 @@ public final class 日历配置 implements Cloneable {
 		initializer = "1"
 	)
 	public void 最小选择跨度(int value) {
-		if (value < 1 || value > 73049) {
+		if (value != -1 && (value < 1 || value > 73049)) {
 			throw new IllegalArgumentException("最小选择跨度无效");
 		}
 		rangeMin = value;
@@ -1510,6 +1510,16 @@ public final class 日历配置 implements Cloneable {
 			throw new IllegalArgumentException("默认标记文字为空或过长");
 		}
 		defaultScheme = value;
+	}
+
+	/**
+	 * 复制全部配置及独立星期文字数组。
+	 *
+	 * @return 可独立修改的配置快照。
+	 */
+	@SimpleFunction
+	public 日历配置 复制() {
+		return copy();
 	}
 
 }

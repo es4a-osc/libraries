@@ -1,7 +1,7 @@
 {
 	"name": "XQRCode二维码库",
 	"description": "二维码生成、图像识别和相机扫码，ZXing 在库内隔离。",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"authors": [
 		{
 			"name": "树先生",
@@ -203,6 +203,78 @@
 								}
 							],
 							"return": "逻辑型"
+						},
+						{
+							"name": "触发扫描对焦",
+							"description": "提交独立扫码页手动对焦；真表示接受，完成另行通知。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型",
+									"description": "请求序号。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取扫描状态",
+							"description": "查询独立扫码页状态，不存在时返回未开始。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型",
+									"description": "请求序号。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取扫描补光状态",
+							"description": "查询独立扫码页实际补光状态。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型",
+									"description": "请求序号。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取得扫描配置",
+							"description": "返回独立扫码页配置副本，请求不存在返回空引用。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型",
+									"description": "请求序号。"
+								}
+							],
+							"return": "simple.library.wsd.xqrcode.扫码配置"
+						},
+						{
+							"name": "取扫描区域",
+							"description": "读取独立扫码页显示扫描框的物理像素区域。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型",
+									"description": "请求序号。"
+								}
+							],
+							"return": "整数型[]"
+						},
+						{
+							"name": "取预览识别区域",
+							"description": "读取独立扫码页预览识别区域，相机未开启返回空数组。",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型",
+									"description": "请求序号。"
+								}
+							],
+							"return": "整数型[]"
 						}
 					],
 					"events": [
@@ -313,6 +385,34 @@
 									"type": "整数型"
 								}
 							]
+						},
+						{
+							"name": "扫描对焦完成",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "成功",
+									"type": "逻辑型"
+								}
+							],
+							"description": "独立扫码页手动对焦的真实完成结果。"
+						},
+						{
+							"name": "扫描发现识别点",
+							"params": [
+								{
+									"name": "请求序号",
+									"type": "整数型"
+								},
+								{
+									"name": "坐标",
+									"type": "单精度小数型[]"
+								}
+							],
+							"description": "独立扫码页的候选点；不代表成功，坐标为预览视图物理像素。"
 						}
 					],
 					"inherits": [
@@ -401,6 +501,24 @@
 							"description": "取得当前会话独立配置副本，修改副本不会影响进行中的扫描。",
 							"params": [],
 							"return": "simple.library.wsd.xqrcode.扫码配置"
+						},
+						{
+							"name": "触发对焦",
+							"description": "提交一次手动对焦；真仅表示驱动接受，请通过对焦完成事件判断结果。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取扫描区域",
+							"description": "读取显示扫描框：左、上、宽、高物理像素；未布局返回空数组。",
+							"params": [],
+							"return": "整数型[]"
+						},
+						{
+							"name": "取预览识别区域",
+							"description": "读取当前预览解码区域：左、上、宽、高预览像素；未开启返回空数组。",
+							"params": [],
+							"return": "整数型[]"
 						}
 					],
 					"events": [
@@ -447,6 +565,26 @@
 									"type": "文本型"
 								}
 							]
+						},
+						{
+							"name": "对焦完成",
+							"params": [
+								{
+									"name": "成功",
+									"type": "逻辑型"
+								}
+							],
+							"description": "手动对焦完成，参数为设备实际报告的结果。"
+						},
+						{
+							"name": "发现识别点",
+							"params": [
+								{
+									"name": "坐标",
+									"type": "单精度小数型[]"
+								}
+							],
+							"description": "解码候选点，坐标为扫码框物理像素；不代表识别成功。"
 						}
 					],
 					"inherits": [
@@ -583,6 +721,12 @@
 							"name": "取背景字节",
 							"return": "字节型()",
 							"params": []
+						},
+						{
+							"name": "复制",
+							"description": "返回包含独立图像字节数组的配置副本。",
+							"params": [],
+							"return": "simple.library.wsd.xqrcode.二维码配置"
 						}
 					]
 				},
@@ -747,6 +891,27 @@
 							"type": "文本型",
 							"initializer": "\"\"",
 							"description": "指定识别字符集；空文本由引擎判断。"
+						},
+						{
+							"name": "主题资源",
+							"type": "整数型",
+							"description": "独立扫码页的原生Activity主题资源；0使用默认主题，内嵌框忽略此项。",
+							"initializer": "0",
+							"writable": true
+						},
+						{
+							"name": "提示文字",
+							"type": "文本型",
+							"description": "独立扫码页提示文字。",
+							"initializer": "\"将二维码或条码置于框内\"",
+							"writable": true
+						},
+						{
+							"name": "显示实时识别点",
+							"type": "逻辑型",
+							"description": "显示解码器当前发现的候选定位点，不代表识别成功。",
+							"initializer": "真",
+							"writable": true
 						}
 					],
 					"functions": [
@@ -763,6 +928,12 @@
 							"name": "取识别格式",
 							"return": "文本型()",
 							"params": []
+						},
+						{
+							"name": "复制",
+							"description": "返回包含独立格式数组的配置副本。",
+							"params": [],
+							"return": "simple.library.wsd.xqrcode.扫码配置"
 						}
 					]
 				},
@@ -828,6 +999,47 @@
 							"type": "文本型",
 							"writable": false,
 							"description": "操作被拒绝的具体原因。"
+						}
+					]
+				},
+				{
+					"name": "二维码调试",
+					"type": "simple.library.wsd.xqrcode.二维码调试",
+					"kind": "object",
+					"description": "控制本库调试日志，默认关闭，不记录相机识别内容。",
+					"functions": [
+						{
+							"name": "开启",
+							"description": "使用默认标签ES4A-XQRCode开启日志。",
+							"params": []
+						},
+						{
+							"name": "开启",
+							"description": "开启全库调试日志；建议只在开发时启用。",
+							"params": [
+								{
+									"name": "标签",
+									"type": "文本型",
+									"description": "1 至 23 个字符的日志标签。"
+								}
+							]
+						},
+						{
+							"name": "关闭",
+							"description": "关闭本库及上游生成核心日志。",
+							"params": []
+						},
+						{
+							"name": "是否开启",
+							"description": "查询日志开关。",
+							"params": [],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取标签",
+							"description": "取得日志标签，关闭时为空文本。",
+							"params": [],
+							"return": "文本型"
 						}
 					]
 				}
