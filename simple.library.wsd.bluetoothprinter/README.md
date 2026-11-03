@@ -1,13 +1,9 @@
 # 蓝牙打印机库
 
-提供“蓝牙打印机”非可视组件，支持经典蓝牙连接，以及文本、图片和条码等 ESC/POS 打印操作。
+基于 [群索打印 SDK](https://www.qsprinter.com/download.html) 封装，提供经典蓝牙打印机连接，以及 ESC/POS 文本、图片和条码打印。
 
-使用群索（Qunsuo/QS）打印 SDK，配套打印机须支持经典蓝牙 SPP 连接及本库使用的 ESC/POS 指令。手机需支持经典蓝牙，并完成权限授权、蓝牙开启和设备配对。
-
-同一时刻只允许一个组件占用打印连接。文本按 GBK 编码；字符集、纸宽、图片、条码和切纸能力取决于实际打印机，不以厂商其它型号的功能代替本设备能力。
+需要支持蓝牙 SPP 及相应指令的打印机，并完成设备配对和权限授权。同一时刻仅允许一个组件占用连接；文本采用 GBK，纸宽、字符集、切纸等能力取决于实际打印机。
 
 ## 依赖来源
 
-- [群索（Qunsuo/QS）打印 SDK](https://www.qsprinter.com/download.html)：随库旧版驱动的具体发布版本尚未确认。
-
-[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。
+- [群索（Qunsuo/QS）打印 SDK](https://www.qsprinter.com/download.html)

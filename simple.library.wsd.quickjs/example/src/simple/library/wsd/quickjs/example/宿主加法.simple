@@ -1,0 +1,14 @@
+变量 引擎 为 simple.library.wsd.quickjs.QuickJS实例
+
+函数 处理调用(接收者 为 simple.library.wsd.quickjs.QuickJS值, 参数 为 simple.library.wsd.quickjs.QuickJS参数) 为 simple.library.wsd.quickjs.QuickJS值
+	变量 左 为 simple.library.wsd.quickjs.QuickJS值
+	变量 右 为 simple.library.wsd.quickjs.QuickJS值
+
+	左 = 参数.取值(0)
+	右 = 参数.取值(1)
+	处理调用 = 引擎.创建小数(左.到小数() + 右.到小数())
+结束 函数
+$属性
+	$资源 $对象
+	基础对象 = simple.library.wsd.quickjs.QuickJS回调
+$结束 $属性

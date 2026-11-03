@@ -1,14 +1,10 @@
 # WebSocket客户端库
 
-提供“WS客户端”非可视组件，支持 `ws://`、`wss://` 连接、文本消息收发和连接状态事件。
+基于 [OkHttp](https://github.com/square/okhttp) 封装，提供 `ws://`、`wss://` 连接、文本消息收发和连接状态事件。
 
-连接成功后再发送消息。请求头在连接前设置，修改不会影响已有连接；再次打开连接会替换旧连接。
-
-手机访问电脑上的服务时，使用电脑可被手机访问的网络地址。`wss://` 使用系统信任的证书校验，仅支持文本消息。
+仅支持文本消息，`wss://` 使用系统信任的证书校验。服务器须可从设备访问，再次打开连接会替换旧连接。
 
 ## 依赖来源
 
 - [OkHttp 3.9.0](https://github.com/square/okhttp)
 - [Okio 1.13.0](https://github.com/square/okio)
-
-[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

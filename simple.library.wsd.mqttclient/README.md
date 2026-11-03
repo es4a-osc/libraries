@@ -1,13 +1,9 @@
 # MQTT客户端
 
-适用于 Android 7.0（API 24）及以上。提供 MQTT 3.1/3.1.1 异步客户端及连接参数、消息、令牌、错误、离线缓冲和 TLS 配置对象，支持 `tcp://` 与 `ssl://`。
+基于 [Eclipse Paho Java Client](https://github.com/eclipse-paho/paho.mqtt.java) 封装，提供 MQTT 3.1/3.1.1 异步连接、发布订阅、离线缓冲、遗嘱和 TLS 配置，支持 `tcp://` 与 `ssl://`。
 
-一个组件维护一个客户端。连接、订阅、取消订阅、发布和断开通过令牌与事件确认结果；关闭完成后可连接另一服务器，销毁后组件不可再使用。方法和事件在主线程使用。
-
-持久会话及离线队列应使用稳定且唯一的客户端 ID。持久数据位于应用私有目录，补发可能重复，业务应自行去重。TLS 默认校验证书和主机名；自定义密钥库须可被应用读取。不保证系统休眠或应用退出后持续连接。
+需要 Android 7.0（API 24）及以上及可访问的 Broker，组件与事件在主线程使用。持久会话须使用稳定且唯一的客户端 ID，补发消息可能重复；不保证系统休眠或应用退出后持续连接。TLS 默认校验证书和主机名。
 
 ## 依赖来源
 
 - [Eclipse Paho Java Client 1.2.5](https://github.com/eclipse-paho/paho.mqtt.java/tree/v1.2.5)
-
-[运行示例](example/project.properties)：主窗口提供导航，连接、发布订阅、离线缓冲、遗嘱与 TLS 分页演示。需准备设备可访问的 Broker；遗嘱页提供独立观察客户端。

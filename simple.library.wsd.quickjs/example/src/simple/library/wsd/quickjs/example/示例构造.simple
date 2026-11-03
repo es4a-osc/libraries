@@ -1,0 +1,7 @@
+函数 处理构造(接收者 为 simple.library.wsd.quickjs.QuickJS对象, 新目标 为 simple.library.wsd.quickjs.QuickJS函数, 参数 为 simple.library.wsd.quickjs.QuickJS参数) 为 simple.library.wsd.quickjs.QuickJS值
+	接收者.置成员("value", 参数.取值(0))
+结束 函数
+$属性
+	$资源 $对象
+	基础对象 = simple.library.wsd.quickjs.QuickJS构造回调
+$结束 $属性

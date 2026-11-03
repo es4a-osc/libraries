@@ -1,0 +1,14 @@
+变量 拒绝次数 为 整数型
+变量 处理次数 为 整数型
+
+过程 状态改变(承诺 为 simple.library.wsd.quickjs.QuickJS承诺, 原因 为 simple.library.wsd.quickjs.QuickJS值, 已处理 为 逻辑型)
+	如果 已处理 则
+		处理次数 = 处理次数 + 1
+	否则
+		拒绝次数 = 拒绝次数 + 1
+	结束 如果
+结束 过程
+$属性
+	$资源 $对象
+	基础对象 = simple.library.wsd.quickjs.QuickJS监听
+$结束 $属性

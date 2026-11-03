@@ -1,0 +1,4 @@
+/* QuickJS 引擎 AAR、配套 Java JAR 和四种 ABI 的 JNI 补充层由本库共同交付。 */
+android {
+	namespace = 'simple.library.wsd.quickjs'
+}

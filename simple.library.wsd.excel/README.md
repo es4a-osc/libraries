@@ -1,13 +1,9 @@
 # EXCEL操作库
 
-提供“EXCEL操作”非可视组件，读写 Excel 97–2003 格式的 `.xls` 文件。
+基于 [JExcelAPI](https://jexcelapi.sourceforge.net/) 封装，读写 Excel 97–2003 格式的 `.xls` 文件，仅操作第一张工作表，不支持 `.xlsx`。
 
-仅操作第一张工作表，不支持 `.xlsx`。行、列索引从 0 开始，参数顺序为行、列。
-
-`添加工作表` 会新建并覆盖目标文件，不会向已有工作簿追加工作表；写入后须调用写出方法保存。相对路径以应用私有目录为基准，绝对路径须具备相应访问条件。
+新建工作表会覆盖目标文件，不会向已有工作簿追加工作表；文件路径须具备相应访问权限。
 
 ## 依赖来源
 
 - [JExcelAPI 2.6.3](https://jexcelapi.sourceforge.net/)
-
-[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。

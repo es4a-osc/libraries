@@ -1,0 +1,16 @@
+函数 加载模块(名称 为 文本型) 为 simple.library.wsd.quickjs.QuickJS模块
+	变量 模块 为 simple.library.wsd.quickjs.QuickJS模块
+
+	如果 名称 <> "settings" 则 退出 函数
+	模块 = 创建 simple.library.wsd.quickjs.QuickJS模块
+	模块.置源码("export const factor=2")
+	加载模块 = 模块
+结束 函数
+
+过程 初始化元信息(名称 为 文本型, 信息 为 simple.library.wsd.quickjs.QuickJS对象)
+	信息.置简单成员("custom", "ES4A")
+结束 过程
+$属性
+	$资源 $对象
+	基础对象 = simple.library.wsd.quickjs.QuickJS加载器
+$结束 $属性

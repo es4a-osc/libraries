@@ -1,13 +1,9 @@
 # ACE图表库
 
-提供 ACE饼状图、ACE柱状图和 ACE折线图三个可视组件，适合展示单组数据。
+基于 [AChartEngine](https://github.com/ddanny/achartengine) 封装，提供饼状图、柱状图和折线图，适合单组数据展示。
 
-先初始化图表、添加数据，再构建显示；追加数据后可重新构建，重新初始化会清空原数据。图表在界面线程操作。
-
-柱状图和折线图按项目添加顺序排列横轴；饼图数值须非负，非空数据的总和须大于零。
+图表在界面线程操作。横轴按项目顺序排列；饼图数值须非负，非空数据的总和须大于零。
 
 ## 依赖来源
 
 - [AChartEngine 1.0.0](https://github.com/ddanny/achartengine)
-
-[运行示例](example/project.properties)：用 ES4A 打开示例工程并构建运行。
