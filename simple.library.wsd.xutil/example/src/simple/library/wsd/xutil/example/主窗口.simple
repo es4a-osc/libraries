@@ -1,12 +1,12 @@
-''' XUtil 静态函数的本地笔记与 ZIP 归档用法；不创建工具实例，不申请存储权限。
+''' XU 静态函数的本地笔记与 ZIP 归档用法；不创建工具实例，不申请存储权限。
 ''' 小文本编码在界面线程演示；配置、缓存和文件操作放入工作线程。
-别名 文本工具 = simple.library.wsd.xutil.XUtil文本
-别名 编码工具 = simple.library.wsd.xutil.XUtil编码
-别名 摘要工具 = simple.library.wsd.xutil.XUtil摘要
-别名 配置工具 = simple.library.wsd.xutil.XUtil配置
-别名 缓存工具 = simple.library.wsd.xutil.XUtil缓存
-别名 文件工具 = simple.library.wsd.xutil.XUtil文件
-别名 压缩工具 = simple.library.wsd.xutil.XUtil压缩
+别名 文本工具 = simple.library.wsd.xutil.XU文本
+别名 编码工具 = simple.library.wsd.xutil.XU编码
+别名 摘要工具 = simple.library.wsd.xutil.XU摘要
+别名 配置工具 = simple.library.wsd.xutil.XU配置
+别名 缓存工具 = simple.library.wsd.xutil.XU缓存
+别名 文件工具 = simple.library.wsd.xutil.XU文件
+别名 压缩工具 = simple.library.wsd.xutil.XU压缩
 
 变量 忙 为 逻辑型
 变量 本轮路径 为 文本型
@@ -202,7 +202,7 @@
 $属性
 	$资源 $窗口
 	$定义 主窗口 $为 窗口
-		标题 = "XUtil 本地笔记与归档"
+		标题 = "XU工具示例"
 		布局 = 布局_线性
 		布局.方向 = 布局_方向_垂直
 		滚动 = 真
@@ -215,7 +215,7 @@ $属性
 		$定义 用途 $为 标签
 			宽度 = 长度_匹配父级
 			字体大小 = 16
-			文本 = "直接通过 XUtil 类型调用静态函数。笔记、缓存和归档都在应用私有目录；不需要额外存储权限。清理归档仅删除本轮固定目录。"
+			文本 = "直接通过 XU 类型调用静态函数。笔记、缓存和归档都在应用私有目录；不需要额外存储权限。清理归档仅删除本轮固定目录。"
 		$结束 $定义
 		$定义 输入 $为 编辑框
 			宽度 = 长度_匹配父级

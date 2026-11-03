@@ -1,6 +1,6 @@
 {
-	"name": "CalendarView日历库",
-	"description": "年月周日历、选择、标记、收缩联动与自定义绘制。",
+	"name": "CV日历库",
+	"description": "基于 CalendarView https://github.com/huanghaibin-dev/CalendarView 封装，提供年月周日历、日期选择与标记、收缩联动、公农历转换及自定义绘制。",
 	"version": "0.2.0",
 	"authors": [
 		{
@@ -14,9 +14,9 @@
 			"name": "扩展可视组件",
 			"definitions": [
 				{
-					"name": "日历框",
+					"name": "CV日历框",
 					"kind": "component",
-					"type": "simple.library.wsd.calendarview.日历框",
+					"type": "simple.library.wsd.calendarview.CV日历框",
 					"inherits": [
 						"simple.runtime.components.可视组件"
 					],
@@ -25,7 +25,7 @@
 						{
 							"name": "当前选择",
 							"description": "当前焦点日期快照；范围及多选模式的完整选择请读取相应日期数组，尚未选择时为空引用。",
-							"type": "simple.library.wsd.calendarview.日历日期",
+							"type": "simple.library.wsd.calendarview.CV日历日期",
 							"writable": false
 						},
 						{
@@ -66,7 +66,7 @@
 							"params": [
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.calendarview.日历配置",
+									"type": "simple.library.wsd.calendarview.CV日历配置",
 									"description": "配置。"
 								}
 							]
@@ -75,7 +75,7 @@
 							"name": "取得配置",
 							"description": "取得当前配置副本，后续修改副本不改变现有日历。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历配置"
+							"return": "simple.library.wsd.calendarview.CV日历配置"
 						},
 						{
 							"name": "设置日期范围",
@@ -83,12 +83,12 @@
 							"params": [
 								{
 									"name": "最小日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "最小日期。"
 								},
 								{
 									"name": "最大日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "最大日期。"
 								}
 							]
@@ -97,13 +97,13 @@
 							"name": "取最小日期",
 							"description": "读取允许浏览和选择的最小公历日期。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期"
+							"return": "simple.library.wsd.calendarview.CV日历日期"
 						},
 						{
 							"name": "取最大日期",
 							"description": "读取允许浏览和选择的最大公历日期。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期"
+							"return": "simple.library.wsd.calendarview.CV日历日期"
 						},
 						{
 							"name": "跳转日期",
@@ -111,7 +111,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -191,31 +191,31 @@
 							"name": "取当前月日期",
 							"description": "读取当前月视图中的日期快照，包括该显示方式的填充日期。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期()"
+							"return": "simple.library.wsd.calendarview.CV日历日期()"
 						},
 						{
 							"name": "取当前周日期",
 							"description": "读取当前周视图的七个日期快照。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期()"
+							"return": "simple.library.wsd.calendarview.CV日历日期()"
 						},
 						{
 							"name": "取多选日期",
 							"description": "按公历顺序读取全部多选日期。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期()"
+							"return": "simple.library.wsd.calendarview.CV日历日期()"
 						},
 						{
 							"name": "取范围日期",
 							"description": "读取当前完整范围中未被拦截的日期；未完成范围选择时为空数组。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期()"
+							"return": "simple.library.wsd.calendarview.CV日历日期()"
 						},
 						{
 							"name": "取全部标记日期",
 							"description": "按公历顺序读取全部标记日期及其独立标记副本。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期()"
+							"return": "simple.library.wsd.calendarview.CV日历日期()"
 						},
 						{
 							"name": "加入多选",
@@ -223,7 +223,7 @@
 							"params": [
 								{
 									"name": "日期数组",
-									"type": "simple.library.wsd.calendarview.日历日期()",
+									"type": "simple.library.wsd.calendarview.CV日历日期()",
 									"description": "日期数组。"
 								}
 							]
@@ -234,7 +234,7 @@
 							"params": [
 								{
 									"name": "日期数组",
-									"type": "simple.library.wsd.calendarview.日历日期()",
+									"type": "simple.library.wsd.calendarview.CV日历日期()",
 									"description": "日期数组。"
 								}
 							]
@@ -260,12 +260,12 @@
 							"params": [
 								{
 									"name": "起点",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "起点。"
 								},
 								{
 									"name": "终点",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "终点。"
 								}
 							],
@@ -277,7 +277,7 @@
 							"params": [
 								{
 									"name": "起点",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "起点。"
 								}
 							],
@@ -289,7 +289,7 @@
 							"params": [
 								{
 									"name": "终点",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "终点。"
 								}
 							],
@@ -301,7 +301,7 @@
 							"params": [
 								{
 									"name": "标记日期",
-									"type": "simple.library.wsd.calendarview.日历日期()",
+									"type": "simple.library.wsd.calendarview.CV日历日期()",
 									"description": "标记日期。"
 								}
 							]
@@ -312,7 +312,7 @@
 							"params": [
 								{
 									"name": "标记日期",
-									"type": "simple.library.wsd.calendarview.日历日期()",
+									"type": "simple.library.wsd.calendarview.CV日历日期()",
 									"description": "标记日期。"
 								}
 							]
@@ -323,7 +323,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								}
 							]
@@ -339,7 +339,7 @@
 							"params": [
 								{
 									"name": "日期数组",
-									"type": "simple.library.wsd.calendarview.日历日期()",
+									"type": "simple.library.wsd.calendarview.CV日历日期()",
 									"description": "日期数组。"
 								}
 							]
@@ -348,7 +348,7 @@
 							"name": "取禁用日期",
 							"description": "按公历顺序读取禁用日期的副本数组。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期()"
+							"return": "simple.library.wsd.calendarview.CV日历日期()"
 						},
 						{
 							"name": "启用日期拦截",
@@ -429,7 +429,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -445,7 +445,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								}
 							]
@@ -456,7 +456,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -472,7 +472,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -488,7 +488,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -514,7 +514,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -530,7 +530,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								}
 							]
@@ -541,7 +541,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								}
 							]
@@ -552,7 +552,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -569,7 +569,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -612,7 +612,7 @@
 							"params": [
 								{
 									"name": "本周日期",
-									"type": "simple.library.wsd.calendarview.日历日期()",
+									"type": "simple.library.wsd.calendarview.CV日历日期()",
 									"description": "本周日期。"
 								}
 							]
@@ -660,7 +660,7 @@
 								},
 								{
 									"name": "相邻日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "相邻日期。"
 								}
 							]
@@ -671,12 +671,12 @@
 							"params": [
 								{
 									"name": "绘图",
-									"type": "simple.library.wsd.calendarview.日历绘图",
+									"type": "simple.library.wsd.calendarview.CV日历绘图",
 									"description": "绘图。"
 								},
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -713,7 +713,7 @@
 							"params": [
 								{
 									"name": "绘图",
-									"type": "simple.library.wsd.calendarview.日历绘图",
+									"type": "simple.library.wsd.calendarview.CV日历绘图",
 									"description": "绘图。"
 								},
 								{
@@ -800,9 +800,9 @@
 			"name": "扩展组件容器",
 			"definitions": [
 				{
-					"name": "日历布局",
+					"name": "CV日历布局",
 					"kind": "component",
-					"type": "simple.library.wsd.calendarview.日历布局",
+					"type": "simple.library.wsd.calendarview.CV日历布局",
 					"inherits": [
 						"simple.runtime.components.可视组件",
 						"simple.runtime.components.组件容器"
@@ -892,7 +892,7 @@
 							"name": "取得日历",
 							"description": "读取布局内的日历组件；尚未添加时为空引用。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历框"
+							"return": "simple.library.wsd.calendarview.CV日历框"
 						},
 						{
 							"name": "取得内容",
@@ -932,9 +932,9 @@
 			"name": "扩展对象",
 			"definitions": [
 				{
-					"name": "日历日期",
+					"name": "CV日历日期",
 					"kind": "object",
-					"type": "simple.library.wsd.calendarview.日历日期",
+					"type": "simple.library.wsd.calendarview.CV日历日期",
 					"description": "日期及农历、标记信息的独立只读快照。未选择时相关接口可返回空引用。",
 					"properties": [
 						{
@@ -1069,14 +1069,14 @@
 							"name": "取全部标记",
 							"description": "读取当日全部标记的独立副本数组。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历标记()"
+							"return": "simple.library.wsd.calendarview.CV日历标记()"
 						}
 					]
 				},
 				{
-					"name": "日历标记",
+					"name": "CV日历标记",
 					"kind": "object",
-					"type": "simple.library.wsd.calendarview.日历标记",
+					"type": "simple.library.wsd.calendarview.CV日历标记",
 					"description": "日历事务标记；颜色为 ARGB，附加数据中的对象按引用保留。",
 					"properties": [
 						{
@@ -1110,13 +1110,13 @@
 							"name": "复制",
 							"description": "复制标记属性；附加数据中的对象继续按引用保留。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历标记"
+							"return": "simple.library.wsd.calendarview.CV日历标记"
 						}
 					]
 				},
 				{
-					"name": "日历配置",
-					"type": "simple.library.wsd.calendarview.日历配置",
+					"name": "CV日历配置",
+					"type": "simple.library.wsd.calendarview.CV日历配置",
 					"kind": "object",
 					"description": "日历行为与外观的独立配置快照；几何尺寸用 DIP，字体用 SP。",
 					"properties": [
@@ -1507,14 +1507,14 @@
 							"name": "复制",
 							"description": "复制全部配置及独立星期文字数组。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历配置"
+							"return": "simple.library.wsd.calendarview.CV日历配置"
 						}
 					]
 				},
 				{
-					"name": "日历绘图",
+					"name": "CV日历绘图",
 					"kind": "object",
-					"type": "simple.library.wsd.calendarview.日历绘图",
+					"type": "simple.library.wsd.calendarview.CV日历绘图",
 					"description": "仅同步绘制回调内有效；原点位于单元左上角，坐标为 DIP，字号为 SP，回调结束后拒绝绘制。",
 					"properties": [
 						{
@@ -1935,9 +1935,9 @@
 					]
 				},
 				{
-					"name": "日历工具",
+					"name": "CV日历工具",
 					"kind": "object",
-					"type": "simple.library.wsd.calendarview.日历工具",
+					"type": "simple.library.wsd.calendarview.CV日历工具",
 					"description": "公历输入限定 1900 至 2099 年，农历转换按真实闰月校验。",
 					"functions": [
 						{
@@ -1960,14 +1960,14 @@
 									"description": "日。"
 								}
 							],
-							"return": "simple.library.wsd.calendarview.日历日期",
+							"return": "simple.library.wsd.calendarview.CV日历日期",
 							"static": true
 						},
 						{
 							"name": "取今天",
 							"description": "读取系统本地日期并生成包含农历信息的快照。",
 							"params": [],
-							"return": "simple.library.wsd.calendarview.日历日期",
+							"return": "simple.library.wsd.calendarview.CV日历日期",
 							"static": true
 						},
 						{
@@ -1976,7 +1976,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
@@ -1985,7 +1985,7 @@
 									"description": "天数。"
 								}
 							],
-							"return": "simple.library.wsd.calendarview.日历日期",
+							"return": "simple.library.wsd.calendarview.CV日历日期",
 							"static": true
 						},
 						{
@@ -1994,12 +1994,12 @@
 							"params": [
 								{
 									"name": "第一日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "第一日期。"
 								},
 								{
 									"name": "第二日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "第二日期。"
 								}
 							],
@@ -2012,12 +2012,12 @@
 							"params": [
 								{
 									"name": "第一日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "第一日期。"
 								},
 								{
 									"name": "第二日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "第二日期。"
 								}
 							],
@@ -2030,12 +2030,12 @@
 							"params": [
 								{
 									"name": "第一日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "第一日期。"
 								},
 								{
 									"name": "第二日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "第二日期。"
 								}
 							],
@@ -2079,7 +2079,7 @@
 							"params": [
 								{
 									"name": "公历日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "公历日期。"
 								}
 							],
@@ -2111,7 +2111,7 @@
 									"description": "是否闰月。"
 								}
 							],
-							"return": "simple.library.wsd.calendarview.日历日期",
+							"return": "simple.library.wsd.calendarview.CV日历日期",
 							"static": true
 						},
 						{
@@ -2174,16 +2174,16 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期",
+									"type": "simple.library.wsd.calendarview.CV日历日期",
 									"description": "日期。"
 								},
 								{
 									"name": "标记数组",
-									"type": "simple.library.wsd.calendarview.日历标记()",
+									"type": "simple.library.wsd.calendarview.CV日历标记()",
 									"description": "标记数组。"
 								}
 							],
-							"return": "simple.library.wsd.calendarview.日历日期",
+							"return": "simple.library.wsd.calendarview.CV日历日期",
 							"static": true
 						},
 						{
@@ -2220,7 +2220,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期"
+									"type": "simple.library.wsd.calendarview.CV日历日期"
 								},
 								{
 									"name": "周起始",
@@ -2236,7 +2236,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期"
+									"type": "simple.library.wsd.calendarview.CV日历日期"
 								},
 								{
 									"name": "周起始",
@@ -2252,7 +2252,7 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期"
+									"type": "simple.library.wsd.calendarview.CV日历日期"
 								},
 								{
 									"name": "周起始",
@@ -2268,11 +2268,11 @@
 							"params": [
 								{
 									"name": "起点",
-									"type": "simple.library.wsd.calendarview.日历日期"
+									"type": "simple.library.wsd.calendarview.CV日历日期"
 								},
 								{
 									"name": "终点",
-									"type": "simple.library.wsd.calendarview.日历日期"
+									"type": "simple.library.wsd.calendarview.CV日历日期"
 								},
 								{
 									"name": "周起始",
@@ -2288,11 +2288,11 @@
 							"params": [
 								{
 									"name": "日期",
-									"type": "simple.library.wsd.calendarview.日历日期"
+									"type": "simple.library.wsd.calendarview.CV日历日期"
 								},
 								{
 									"name": "范围起点",
-									"type": "simple.library.wsd.calendarview.日历日期"
+									"type": "simple.library.wsd.calendarview.CV日历日期"
 								},
 								{
 									"name": "周起始",
@@ -2308,7 +2308,7 @@
 							"params": [
 								{
 									"name": "范围起点",
-									"type": "simple.library.wsd.calendarview.日历日期"
+									"type": "simple.library.wsd.calendarview.CV日历日期"
 								},
 								{
 									"name": "周序号",
@@ -2319,7 +2319,7 @@
 									"type": "整数型"
 								}
 							],
-							"return": "simple.library.wsd.calendarview.日历日期",
+							"return": "simple.library.wsd.calendarview.CV日历日期",
 							"static": true
 						},
 						{
@@ -2345,9 +2345,9 @@
 					]
 				},
 				{
-					"name": "日历错误",
+					"name": "CV日历错误",
 					"kind": "object",
-					"type": "simple.library.wsd.calendarview.日历错误",
+					"type": "simple.library.wsd.calendarview.CV日历错误",
 					"inherits": [
 						"simple.runtime.errors.运行错误"
 					],

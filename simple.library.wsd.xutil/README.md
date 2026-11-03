@@ -1,8 +1,8 @@
-# XUtil工具库
+# XU工具库
 
 基于 XUtil 2.0.0 https://github.com/xuexiangjys/XUtil 封装的 AndroidX 静态函数集，提供文本、正则、编码、摘要、日期、文件、压缩、配置、缓存、网络、设备及常用附加工具。
 
-通过类型调用，例如 `simple.library.wsd.xutil.XUtil文本.反转("示例")`；无需创建实例。最低 API 24，使用 JDK 11、API 30 编译。
+通过类型调用，例如 `simple.library.wsd.xutil.XU文本.反转("示例")`；无需创建实例。最低 API 24，使用 JDK 11、API 30 编译。
 
 权限按引用的函数集收集：网络状态需要 `ACCESS_NETWORK_STATE`，域名解析需要 `INTERNET`，直接通话需要 `CALL_PHONE`。危险权限仍须通过运行库权限请求组件取得系统授权。类库不会自行弹出授权框。
 

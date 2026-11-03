@@ -1,6 +1,6 @@
 {
-	"name": "XQRCode二维码库",
-	"description": "二维码生成、图像识别和相机扫码，ZXing 在库内隔离。",
+	"name": "XQRC二维码库",
+	"description": "基于 XQRCode https://github.com/xuexiangjys/XQRCode 和 ZXing https://github.com/zxing/zxing 封装，提供二维码生成、图像识别、独立扫码页及内嵌相机预览；ZXing 在库内隔离。",
 	"version": "0.2.0",
 	"authors": [
 		{
@@ -14,9 +14,9 @@
 			"name": "扩展组件",
 			"definitions": [
 				{
-					"name": "二维码",
+					"name": "XQRC二维码",
 					"kind": "component",
-					"type": "simple.library.wsd.xqrcode.二维码",
+					"type": "simple.library.wsd.xqrcode.XQRC二维码",
 					"description": "二维码生成、图片识别与独立相机扫码。所有成员在主线程调用，任务失败通过事件报告。",
 					"properties": [
 						{
@@ -43,7 +43,7 @@
 								},
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.二维码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC二维码配置"
 								}
 							],
 							"return": "字节型()"
@@ -58,7 +58,7 @@
 								},
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.二维码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC二维码配置"
 								}
 							],
 							"return": "整数型"
@@ -73,10 +73,10 @@
 								},
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.扫码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC扫码配置"
 								}
 							],
-							"return": "simple.library.wsd.xqrcode.识别结果"
+							"return": "simple.library.wsd.xqrcode.XQRC识别结果"
 						},
 						{
 							"name": "识别字节图片",
@@ -88,10 +88,10 @@
 								},
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.扫码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC扫码配置"
 								}
 							],
-							"return": "simple.library.wsd.xqrcode.识别结果"
+							"return": "simple.library.wsd.xqrcode.XQRC识别结果"
 						},
 						{
 							"name": "异步识别图片",
@@ -103,7 +103,7 @@
 								},
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.扫码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC扫码配置"
 								}
 							],
 							"return": "整数型"
@@ -118,7 +118,7 @@
 								},
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.扫码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC扫码配置"
 								}
 							],
 							"return": "整数型"
@@ -129,7 +129,7 @@
 							"params": [
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.扫码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC扫码配置"
 								}
 							],
 							"return": "整数型"
@@ -151,7 +151,7 @@
 							"params": [
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.扫码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC扫码配置"
 								}
 							],
 							"return": "整数型"
@@ -250,7 +250,7 @@
 									"description": "请求序号。"
 								}
 							],
-							"return": "simple.library.wsd.xqrcode.扫码配置"
+							"return": "simple.library.wsd.xqrcode.XQRC扫码配置"
 						},
 						{
 							"name": "取扫描区域",
@@ -302,7 +302,7 @@
 								},
 								{
 									"name": "结果",
-									"type": "simple.library.wsd.xqrcode.识别结果"
+									"type": "simple.library.wsd.xqrcode.XQRC识别结果"
 								}
 							]
 						},
@@ -358,7 +358,7 @@
 								},
 								{
 									"name": "结果",
-									"type": "simple.library.wsd.xqrcode.识别结果"
+									"type": "simple.library.wsd.xqrcode.XQRC识别结果"
 								}
 							]
 						},
@@ -431,9 +431,9 @@
 			"name": "扩展可视组件",
 			"definitions": [
 				{
-					"name": "扫码框",
+					"name": "XQRC扫码框",
 					"kind": "component",
-					"type": "simple.library.wsd.xqrcode.扫码框",
+					"type": "simple.library.wsd.xqrcode.XQRC扫码框",
 					"description": "可嵌入 Simple 窗口的扫码预览；自动处理相机权限和前后台释放。",
 					"properties": [
 						{
@@ -462,7 +462,7 @@
 							"params": [
 								{
 									"name": "配置",
-									"type": "simple.library.wsd.xqrcode.扫码配置"
+									"type": "simple.library.wsd.xqrcode.XQRC扫码配置"
 								}
 							],
 							"return": "逻辑型"
@@ -500,7 +500,7 @@
 							"name": "取得配置",
 							"description": "取得当前会话独立配置副本，修改副本不会影响进行中的扫描。",
 							"params": [],
-							"return": "simple.library.wsd.xqrcode.扫码配置"
+							"return": "simple.library.wsd.xqrcode.XQRC扫码配置"
 						},
 						{
 							"name": "触发对焦",
@@ -533,7 +533,7 @@
 							"params": [
 								{
 									"name": "结果",
-									"type": "simple.library.wsd.xqrcode.识别结果"
+									"type": "simple.library.wsd.xqrcode.XQRC识别结果"
 								}
 							]
 						},
@@ -603,9 +603,9 @@
 			"name": "扩展对象",
 			"definitions": [
 				{
-					"name": "二维码配置",
+					"name": "XQRC二维码配置",
 					"kind": "object",
-					"type": "simple.library.wsd.xqrcode.二维码配置",
+					"type": "simple.library.wsd.xqrcode.XQRC二维码配置",
 					"description": "提交时复制的独立配置快照。",
 					"properties": [
 						{
@@ -726,14 +726,14 @@
 							"name": "复制",
 							"description": "返回包含独立图像字节数组的配置副本。",
 							"params": [],
-							"return": "simple.library.wsd.xqrcode.二维码配置"
+							"return": "simple.library.wsd.xqrcode.XQRC二维码配置"
 						}
 					]
 				},
 				{
-					"name": "扫码配置",
+					"name": "XQRC扫码配置",
 					"kind": "object",
-					"type": "simple.library.wsd.xqrcode.扫码配置",
+					"type": "simple.library.wsd.xqrcode.XQRC扫码配置",
 					"description": "提交时复制的独立配置快照。",
 					"properties": [
 						{
@@ -933,14 +933,14 @@
 							"name": "复制",
 							"description": "返回包含独立格式数组的配置副本。",
 							"params": [],
-							"return": "simple.library.wsd.xqrcode.扫码配置"
+							"return": "simple.library.wsd.xqrcode.XQRC扫码配置"
 						}
 					]
 				},
 				{
-					"name": "识别结果",
+					"name": "XQRC识别结果",
 					"kind": "object",
-					"type": "simple.library.wsd.xqrcode.识别结果",
+					"type": "simple.library.wsd.xqrcode.XQRC识别结果",
 					"description": "一次成功识别的独立快照。",
 					"properties": [
 						{
@@ -986,9 +986,9 @@
 					]
 				},
 				{
-					"name": "二维码错误",
+					"name": "XQRC二维码错误",
 					"kind": "object",
-					"type": "simple.library.wsd.xqrcode.二维码错误",
+					"type": "simple.library.wsd.xqrcode.XQRC二维码错误",
 					"inherits": [
 						"simple.runtime.errors.运行错误"
 					],
@@ -1003,8 +1003,8 @@
 					]
 				},
 				{
-					"name": "二维码调试",
-					"type": "simple.library.wsd.xqrcode.二维码调试",
+					"name": "XQRC二维码调试",
+					"type": "simple.library.wsd.xqrcode.XQRC二维码调试",
 					"kind": "object",
 					"description": "控制本库调试日志，默认关闭，不记录相机识别内容。",
 					"functions": [

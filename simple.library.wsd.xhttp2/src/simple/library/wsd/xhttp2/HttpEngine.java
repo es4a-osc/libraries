@@ -71,7 +71,7 @@ final class HttpEngine {
 	private final Context context;
 	private final SessionState session;
 	private final ClientSettings settings;
-	private final XHttp请求 request;
+	private final XH请求 request;
 	private final TransferControl control;
 	private final String id;
 	private final long started = SystemClock.elapsedRealtime();
@@ -80,7 +80,7 @@ final class HttpEngine {
 	private long cacheSeconds;
 	private HttpUrl url;
 
-	HttpEngine(Context context, SessionState session, ClientSettings settings, XHttp请求 request, TransferControl control, String id) {
+	HttpEngine(Context context, SessionState session, ClientSettings settings, XH请求 request, TransferControl control, String id) {
 		this.context = context;
 		this.session = session;
 		this.settings = settings;
@@ -92,10 +92,10 @@ final class HttpEngine {
 	/**
 	 * defer 保证文件、缓存和证书处理在订阅线程执行；每次重试仍由 Retrofit 克隆真实调用。
 	 */
-	Observable<XHttp响应> execute() {
-		return Observable.defer(new Callable<ObservableSource<XHttp响应>>() {
+	Observable<XH响应> execute() {
+		return Observable.defer(new Callable<ObservableSource<XH响应>>() {
 			@Override
-			public ObservableSource<XHttp响应> call() throws Exception {
+			public ObservableSource<XH响应> call() throws Exception {
 				control.check();
 				prepare();
 				Observable<WireReply> remote = remote();
@@ -107,9 +107,9 @@ final class HttpEngine {
 					throw new TransferFailure("缓存", "读取响应缓存失败。", failure);
 				}
 				return strategy(cacheMode).execute(memory, cacheKey, -1, remote, WireReply.class)
-					.map(new Function<CacheResult<WireReply>, XHttp响应>() {
+					.map(new Function<CacheResult<WireReply>, XH响应>() {
 						@Override
-						public XHttp响应 apply(CacheResult<WireReply> result) throws Exception {
+						public XH响应 apply(CacheResult<WireReply> result) throws Exception {
 							control.check();
 							return result.data.response(id, cacheKey, SystemClock.elapsedRealtime() - started,
 								result.isFromCache || result.data.httpCache);

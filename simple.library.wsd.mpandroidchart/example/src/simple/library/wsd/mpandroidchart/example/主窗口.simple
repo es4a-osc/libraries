@@ -1,10 +1,10 @@
 ''' 数据组、左右轴和组合图参考上游官方示例，并按当前分类索引接口组织数据。
 ''' https://github.com/PhilJay/MPAndroidChart/wiki/Setting-Data
 ''' 图表必须在界面线程操作；这里用短小固定数据展示九类图形。
-变量 图表列表 为 simple.library.wsd.mpandroidchart.图表(9)
-变量 坐标列表 为 simple.library.wsd.mpandroidchart.坐标图表(9)
-变量 当前图表 为 simple.library.wsd.mpandroidchart.图表
-变量 当前坐标 为 simple.library.wsd.mpandroidchart.坐标图表
+变量 图表列表 为 simple.library.wsd.mpandroidchart.MPAC图表(9)
+变量 坐标列表 为 simple.library.wsd.mpandroidchart.MPAC坐标图表(9)
+变量 当前图表 为 simple.library.wsd.mpandroidchart.MPAC图表
+变量 当前坐标 为 simple.library.wsd.mpandroidchart.MPAC坐标图表
 变量 当前编号 为 整数型
 变量 图名 为 文本型()
 
@@ -33,10 +33,10 @@
 ''' 先初始化，再设置分类名称、添加等长数据组，最后统一构建；双轴折线两组分别绑定左右轴。
 过程 准备数据()
 	变量 编号 为 整数型
-	变量 图表 为 simple.library.wsd.mpandroidchart.图表
+	变量 图表 为 simple.library.wsd.mpandroidchart.MPAC图表
 	循环 编号 = 0 至 8
 		图表 = 图表列表(编号)
-		图表.初始化图表("MPAndroidChart", 12, 颜色_白)
+		图表.初始化图表("MPAC图表示例", 12, 颜色_白)
 		图表.动画时间 = 300
 		图表.显示图例 = 真
 		图表.显示数值 = 真
@@ -95,7 +95,7 @@
 
 过程 显示图表(编号 为 整数型)
 	变量 索引 为 整数型
-	变量 项 为 simple.library.wsd.mpandroidchart.图表
+	变量 项 为 simple.library.wsd.mpandroidchart.MPAC图表
 	循环 索引 = 0 至 8
 		项 = 图表列表(索引)
 		项.可视 = 索引 = 编号
@@ -283,14 +283,14 @@
 $属性
 	$资源 $窗口
 	$定义 主窗口 $为 窗口
-		标题 = "MPAndroidChart 使用示例"
+		标题 = "MPAC图表示例"
 		布局 = 布局_线性
 		布局.方向 = 布局_方向_垂直
 		滚动 = 假
 		$定义 标题 $为 标签
 			宽度 = 长度_匹配父级
 			字体大小 = 22
-			文本 = "九类图表与交互"
+			文本 = "MPAC图表示例"
 			字体加粗 = 真
 		$结束 $定义
 		$定义 说明 $为 标签
@@ -328,47 +328,47 @@ $属性
 			文本 = "正在准备图表。"
 			字体加粗 = 真
 		$结束 $定义
-		$定义 线图 $为 simple.library.wsd.mpandroidchart.折线图
+		$定义 线图 $为 simple.library.wsd.mpandroidchart.MPAC折线图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 真
 		$结束 $定义
-		$定义 柱图 $为 simple.library.wsd.mpandroidchart.柱状图
+		$定义 柱图 $为 simple.library.wsd.mpandroidchart.MPAC柱状图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 假
 		$结束 $定义
-		$定义 横图 $为 simple.library.wsd.mpandroidchart.横向柱状图
+		$定义 横图 $为 simple.library.wsd.mpandroidchart.MPAC横向柱状图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 假
 		$结束 $定义
-		$定义 饼图 $为 simple.library.wsd.mpandroidchart.饼状图
+		$定义 饼图 $为 simple.library.wsd.mpandroidchart.MPAC饼状图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 假
 		$结束 $定义
-		$定义 散图 $为 simple.library.wsd.mpandroidchart.散点图
+		$定义 散图 $为 simple.library.wsd.mpandroidchart.MPAC散点图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 假
 		$结束 $定义
-		$定义 泡图 $为 simple.library.wsd.mpandroidchart.气泡图
+		$定义 泡图 $为 simple.library.wsd.mpandroidchart.MPAC气泡图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 假
 		$结束 $定义
-		$定义 雷图 $为 simple.library.wsd.mpandroidchart.雷达图
+		$定义 雷图 $为 simple.library.wsd.mpandroidchart.MPAC雷达图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 假
 		$结束 $定义
-		$定义 烛图 $为 simple.library.wsd.mpandroidchart.蜡烛图
+		$定义 烛图 $为 simple.library.wsd.mpandroidchart.MPAC蜡烛图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 假
 		$结束 $定义
-		$定义 组图 $为 simple.library.wsd.mpandroidchart.组合图
+		$定义 组图 $为 simple.library.wsd.mpandroidchart.MPAC组合图
 			宽度 = 长度_匹配父级
 			高度 = "280dp"
 			可视 = 假

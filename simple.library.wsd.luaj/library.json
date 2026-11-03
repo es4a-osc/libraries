@@ -1,0 +1,948 @@
+{
+	"name": "LuaJ脚本库",
+	"description": "基于 LuaJ https://github.com/luaj/luaj 封装，提供 Lua 5.1 脚本执行、值与表、函数、多返回值、协程、缓冲区及 Simple 同步回调；不依赖原生库。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "LuaJ实例",
+					"description": "Lua 5.1 脚本环境；加载不执行，执行和调用保留全部返回值。同步操作由调用线程执行，耗时脚本须放在后台。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ实例",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "加载代码",
+							"description": "编译代码并返回未执行的函数。",
+							"return": "simple.library.wsd.luaj.LuaJ函数",
+							"params": [
+								{
+									"name": "代码",
+									"type": "文本型",
+									"description": "完整的 Lua 5.1 代码。"
+								},
+								{
+									"name": "来源名称",
+									"type": "文本型",
+									"description": "供错误信息定位的名称，例如 script。"
+								}
+							]
+						},
+						{
+							"name": "执行代码",
+							"description": "加载并执行代码，保留中间及末尾 nil。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "代码",
+									"type": "文本型",
+									"description": "完整的 Lua 5.1 代码。"
+								}
+							]
+						},
+						{
+							"name": "加载文件",
+							"description": "按指定编码编译文件，不立即执行。相对路径以应用私有 files 目录为基准。",
+							"return": "simple.library.wsd.luaj.LuaJ函数",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "可读取的绝对或应用私有相对文件路径。"
+								},
+								{
+									"name": "编码",
+									"type": "文本型",
+									"description": "有效字符集名称，例如 UTF-8。"
+								}
+							]
+						},
+						{
+							"name": "执行文件",
+							"description": "按指定编码读取并执行文件，保留全部返回值。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "可读取的绝对或应用私有相对文件路径。"
+								},
+								{
+									"name": "编码",
+									"type": "文本型",
+									"description": "有效字符集名称，例如 UTF-8。"
+								}
+							]
+						},
+						{
+							"name": "取全局",
+							"description": "按单个名称读取原始全局字段；不存在时返回 nil 值。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "单个全局名称，不解析点号路径。"
+								}
+							]
+						},
+						{
+							"name": "置全局",
+							"description": "按单个名称设置原始全局字段；设置 nil 删除字段。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "单个全局名称，不解析点号路径。"
+								},
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "基本值、字节集、Java 对象或同一实例的 LuaJ值；空值表示 nil。"
+								}
+							]
+						},
+						{
+							"name": "取函数",
+							"description": "取得指定全局函数；目标不是函数时抛出错误。",
+							"return": "simple.library.wsd.luaj.LuaJ函数",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "单个全局名称，不解析点号路径。"
+								}
+							]
+						},
+						{
+							"name": "创建值",
+							"description": "转换 Simple 值；字节集复制为 Lua 字符串，长整数按双精度表示，可能丢失精度。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "基本值、字节集、Java 对象或同一实例的 LuaJ值；空值表示 nil。"
+								}
+							]
+						},
+						{
+							"name": "创建参数",
+							"description": "建立参数列表，空元素和末尾 nil 保留位置。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "参数",
+									"type": "变体型()",
+									"description": "按顺序传入的参数；空引用或空数组表示没有参数，空元素保留为 nil。"
+								}
+							]
+						},
+						{
+							"name": "创建表",
+							"description": "创建空表。",
+							"return": "simple.library.wsd.luaj.LuaJ表"
+						},
+						{
+							"name": "创建弱表",
+							"description": "创建使用弱键或弱值的表；条目的保留由垃圾回收决定。",
+							"return": "simple.library.wsd.luaj.LuaJ表",
+							"params": [
+								{
+									"name": "弱键",
+									"type": "逻辑型",
+									"description": "是否使用弱键。"
+								},
+								{
+									"name": "弱值",
+									"type": "逻辑型",
+									"description": "是否使用弱值。"
+								}
+							]
+						},
+						{
+							"name": "创建协程",
+							"description": "以同一实例的函数创建协程，恢复时才开始执行；挂起后应由调用者继续恢复至结束。",
+							"return": "simple.library.wsd.luaj.LuaJ协程",
+							"params": [
+								{
+									"name": "函数",
+									"type": "simple.library.wsd.luaj.LuaJ函数",
+									"description": "同一实例的非空函数。"
+								}
+							]
+						},
+						{
+							"name": "创建缓冲区",
+							"description": "创建用于串接文本及原始字节的缓冲区。",
+							"return": "simple.library.wsd.luaj.LuaJ缓冲区"
+						},
+						{
+							"name": "注册函数",
+							"description": "注册同步 Simple 宿主回调，同名全局值被替换；回调在实际 Lua 执行线程调用，不能创建或重入其它实例。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "单个全局名称，不解析点号路径。"
+								},
+								{
+									"name": "回调",
+									"type": "simple.library.wsd.luaj.LuaJ回调",
+									"description": "继承 LuaJ回调并覆写处理调用的非空对象。"
+								}
+							]
+						},
+						{
+							"name": "取错误信息",
+							"description": "取得本实例最近一次失败的说明；成功操作不会清除，清除错误方法可显式重置。",
+							"return": "文本型"
+						},
+						{
+							"name": "清除错误",
+							"description": "清除本实例保存的最近失败说明。"
+						}
+					]
+				},
+				{
+					"name": "LuaJ值",
+					"description": "同一 LuaJ 实例拥有的值；nil 是有效值对象。表、函数和协程以对应子类返回。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ值",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "取类型",
+							"description": "取得 Lua 类型编号，对应 LuaJ常量。",
+							"return": "整数型"
+						},
+						{
+							"name": "取类型名",
+							"description": "取得 Lua 类型名称。",
+							"return": "文本型"
+						},
+						{
+							"name": "是否为空",
+							"description": "判断是否为 Lua nil。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否逻辑",
+							"description": "判断是否为逻辑类型。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否数值",
+							"description": "判断能否按 LuaJ 规则作为数值使用，包含可转换的数值文本。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否整数",
+							"description": "判断是否可作为 32 位整数使用。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否文本",
+							"description": "判断能否按 LuaJ 规则作为字符串使用，包含数值。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否为表",
+							"description": "判断是否为表。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否函数",
+							"description": "判断是否为函数。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否协程",
+							"description": "判断是否为 Lua 协程。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否用户数据",
+							"description": "判断是否为 Java 用户数据。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "到逻辑",
+							"description": "按 Lua 真值规则转换：只有 nil 和 false 为假。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "到整数",
+							"description": "按 LuaJ 整数转换规则读取数值；不能转换时抛出错误。",
+							"return": "整数型"
+						},
+						{
+							"name": "到长整数",
+							"description": "按 LuaJ 规则读取长整数；Lua 数值是双精度，大整数可能丢失精度。",
+							"return": "长整数型"
+						},
+						{
+							"name": "到小数",
+							"description": "读取双精度数值；不能转换时抛出错误。",
+							"return": "双精度小数型"
+						},
+						{
+							"name": "到文本",
+							"description": "取得文本表示；nil 显示为 nil，表和函数显示其 Lua 表示。",
+							"return": "文本型"
+						},
+						{
+							"name": "到字节集",
+							"description": "取得字符串原始字节副本，保留零字节；目标须可作为字符串使用。",
+							"return": "字节型()"
+						},
+						{
+							"name": "到对象",
+							"description": "取得 Java 用户数据；目标不是用户数据时抛出错误。",
+							"return": "对象"
+						},
+						{
+							"name": "作为表",
+							"description": "取得表包装；类型错误时抛出错误。",
+							"return": "simple.library.wsd.luaj.LuaJ表"
+						},
+						{
+							"name": "作为函数",
+							"description": "取得函数包装；类型错误时抛出错误。",
+							"return": "simple.library.wsd.luaj.LuaJ函数"
+						},
+						{
+							"name": "作为协程",
+							"description": "取得协程包装；类型错误时抛出错误。",
+							"return": "simple.library.wsd.luaj.LuaJ协程"
+						},
+						{
+							"name": "取长度",
+							"description": "取得 Lua 字符串或表的长度；含空洞表不以字段数量解释。",
+							"return": "整数型"
+						},
+						{
+							"name": "取元表",
+							"description": "读取元表；没有元表时返回 nil 包装。",
+							"return": "simple.library.wsd.luaj.LuaJ值"
+						},
+						{
+							"name": "取环境",
+							"description": "读取函数或线程环境；目标不支持时抛出错误。",
+							"return": "simple.library.wsd.luaj.LuaJ值"
+						},
+						{
+							"name": "取相反数",
+							"description": "执行 Lua 一元负号运算，支持对应元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值"
+						},
+						{
+							"name": "取字段",
+							"description": "读取字段，允许触发 __index 元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "字段",
+									"type": "变体型",
+									"description": "文本、数值或同一实例的 LuaJ值；不能为 nil。"
+								}
+							]
+						},
+						{
+							"name": "置字段",
+							"description": "设置字段，允许触发 __newindex 元方法。",
+							"params": [
+								{
+									"name": "字段",
+									"type": "变体型",
+									"description": "文本、数值或同一实例的 LuaJ值；不能为 nil。"
+								},
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "基本值、字节集、Java 对象或同一实例的 LuaJ值；空值表示 nil。"
+								}
+							]
+						},
+						{
+							"name": "原样取字段",
+							"description": "直接读取表字段，不触发元方法；目标须为表。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "字段",
+									"type": "变体型",
+									"description": "文本、数值或同一实例的 LuaJ值；不能为 nil。"
+								}
+							]
+						},
+						{
+							"name": "原样置字段",
+							"description": "直接设置表字段，不触发元方法；nil 删除字段。",
+							"params": [
+								{
+									"name": "字段",
+									"type": "变体型",
+									"description": "文本、数值或同一实例的 LuaJ值；不能为 nil。"
+								},
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "基本值、字节集、Java 对象或同一实例的 LuaJ值；空值表示 nil。"
+								}
+							]
+						},
+						{
+							"name": "置元表",
+							"description": "设置或移除元表；必须使用返回对象，弱表模式变化可能返回另一张表。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "基本值、字节集、Java 对象或同一实例的 LuaJ值；空值表示 nil。"
+								}
+							]
+						},
+						{
+							"name": "置环境",
+							"description": "设置函数或线程环境，目标和环境须来自同一实例。",
+							"params": [
+								{
+									"name": "环境",
+									"type": "simple.library.wsd.luaj.LuaJ表",
+									"description": "同一实例的非空环境表。"
+								}
+							]
+						},
+						{
+							"name": "相加",
+							"description": "执行 Lua 相加运算，遵循对应元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "相减",
+							"description": "执行 Lua 相减运算，遵循对应元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "相乘",
+							"description": "执行 Lua 相乘运算，遵循对应元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "相除",
+							"description": "执行 Lua 相除运算，遵循对应元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "求余",
+							"description": "执行 Lua 求余运算，遵循对应元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "求次方",
+							"description": "执行 Lua 求次方运算，遵循对应元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "连接",
+							"description": "执行 Lua 连接运算，遵循对应元方法。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "是否相等",
+							"description": "按 Lua 相等规则比较，可触发 __eq。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "是否原样相等",
+							"description": "不触发元方法比较。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "是否小于",
+							"description": "按 Lua 小于规则比较，可触发元方法。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						},
+						{
+							"name": "是否不大于",
+							"description": "按 Lua 小于等于规则比较，可触发元方法。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "另一值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的另一操作数。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "LuaJ表",
+					"description": "Lua 表对象，支持原始字段、元表、顺序数组与键遍历。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ表",
+					"icon": "icons/text-caption.svg",
+					"inherits": [
+						"simple.library.wsd.luaj.LuaJ值"
+					],
+					"functions": [
+						{
+							"name": "取字段数",
+							"description": "取得当前非 nil 字段总数，不等同于顺序数组长度。",
+							"return": "整数型"
+						},
+						{
+							"name": "取全部键",
+							"description": "取得当前键快照，顺序未指定；遍历期间不反映后续增删。",
+							"return": "simple.library.wsd.luaj.LuaJ值()"
+						},
+						{
+							"name": "取下一项",
+							"description": "按 next 语义遍历；nil 键从头开始，结果包含键和值，结束时数量为零。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "字段",
+									"type": "变体型",
+									"description": "上一项的键；nil 从头开始，非 nil 键须来自当前表。"
+								}
+							]
+						},
+						{
+							"name": "插入",
+							"description": "在顺序数组位置插入值并移动后续成员；位置从 1 开始。",
+							"params": [
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "1 到当前长度加 1。"
+								},
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "基本值、字节集、Java 对象或同一实例的 LuaJ值；空值表示 nil。"
+								}
+							]
+						},
+						{
+							"name": "删除",
+							"description": "删除顺序数组的指定项并移动后续成员；位置从 1 开始。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "1 到当前顺序数组长度。"
+								}
+							]
+						},
+						{
+							"name": "排序",
+							"description": "按 Lua 默认小于规则对顺序数组排序。"
+						},
+						{
+							"name": "自定义排序",
+							"description": "使用同一实例的比较函数排序；比较函数接收两个值并返回逻辑值。",
+							"params": [
+								{
+									"name": "比较函数",
+									"type": "simple.library.wsd.luaj.LuaJ函数",
+									"description": "同一实例的比较函数。"
+								}
+							]
+						},
+						{
+							"name": "连接文本",
+							"description": "把指定顺序范围内的文本或数值连接为字符串。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "分隔符",
+									"type": "文本型",
+									"description": "成员间分隔文本。"
+								},
+								{
+									"name": "开始位置",
+									"type": "整数型",
+									"description": "从 1 开始的首项。"
+								},
+								{
+									"name": "结束位置",
+									"type": "整数型",
+									"description": "包含该项；不得超出顺序数组长度。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "LuaJ函数",
+					"description": "同一实例拥有的 Lua 函数或已编译代码块，调用保留全部返回值。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ函数",
+					"icon": "icons/text-caption.svg",
+					"inherits": [
+						"simple.library.wsd.luaj.LuaJ值"
+					],
+					"functions": [
+						{
+							"name": "调用",
+							"description": "不传参数调用函数，保留全部结果。",
+							"return": "simple.library.wsd.luaj.LuaJ参数"
+						},
+						{
+							"name": "带参调用",
+							"description": "传入 Simple 参数并调用，保留全部结果及 nil 位置。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "参数",
+									"type": "变体型()",
+									"description": "按顺序传入的参数；空引用或空数组表示没有参数，空元素保留为 nil。"
+								}
+							]
+						},
+						{
+							"name": "使用参数调用",
+							"description": "使用同一实例的参数列表调用，保留全部结果。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "参数",
+									"type": "simple.library.wsd.luaj.LuaJ参数",
+									"description": "同一实例的参数列表；空引用表示无参数。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "LuaJ参数",
+					"description": "函数参数或多返回值的不可变列表快照；索引从 1 开始，中间及末尾 nil 均计数。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ参数",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "取数量",
+							"description": "取得参数或返回值数量，计入所有 nil。",
+							"return": "整数型"
+						},
+						{
+							"name": "取值",
+							"description": "按位置读取；超出已有数量时返回 nil，位置必须大于零。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "从 1 开始的位置。"
+								}
+							]
+						},
+						{
+							"name": "取全部",
+							"description": "按顺序取得全部值包装，不丢弃 nil。",
+							"return": "simple.library.wsd.luaj.LuaJ值()"
+						},
+						{
+							"name": "从位置取",
+							"description": "取得从指定位置开始的子列表；末项之后的位置返回空列表。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "位置",
+									"type": "整数型",
+									"description": "1 到数量加 1。"
+								}
+							]
+						},
+						{
+							"name": "生成",
+							"description": "以当前实例转换一组 Simple 值，可用于构造宿主回调结果。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "参数",
+									"type": "变体型()",
+									"description": "按顺序传入的参数；空引用或空数组表示没有参数，空元素保留为 nil。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "LuaJ协程",
+					"description": "Lua 协程对象；恢复返回的首项为成功逻辑，后续为让出值、结束值或错误说明。挂起协程须继续恢复至结束。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ协程",
+					"icon": "icons/text-caption.svg",
+					"inherits": [
+						"simple.library.wsd.luaj.LuaJ值"
+					],
+					"functions": [
+						{
+							"name": "取状态",
+							"description": "取得上游协程状态，例如 suspended、running 或 dead。",
+							"return": "文本型"
+						},
+						{
+							"name": "恢复",
+							"description": "开始或继续协程；首个结果为成功逻辑，后续为让出值或结束值，失败时为错误说明。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "参数",
+									"type": "变体型()",
+									"description": "按顺序传入的参数；空引用或空数组表示没有参数，空元素保留为 nil。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "LuaJ缓冲区",
+					"description": "同一实例的文本及二进制串接缓冲区，取得结果时复制原始字节。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ缓冲区",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "添加文本",
+							"description": "把 UTF-8 文本追加到末尾。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "待追加文本。"
+								}
+							]
+						},
+						{
+							"name": "添加字节集",
+							"description": "把原始字节追加到末尾，不进行文本解码。",
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型()",
+									"description": "非空字节数组。"
+								}
+							]
+						},
+						{
+							"name": "添加值",
+							"description": "追加同一实例的文本或数值，遵循 Lua 串接规则。",
+							"params": [
+								{
+									"name": "值",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同一实例的值。"
+								}
+							]
+						},
+						{
+							"name": "插入首部",
+							"description": "把 UTF-8 文本插入首部。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "待插入文本。"
+								}
+							]
+						},
+						{
+							"name": "取值",
+							"description": "取得当前 Lua 字符串结果。",
+							"return": "simple.library.wsd.luaj.LuaJ值"
+						},
+						{
+							"name": "到文本",
+							"description": "按 UTF-8 取得当前文本。",
+							"return": "文本型"
+						},
+						{
+							"name": "到字节集",
+							"description": "取得当前原始字节副本，保留零字节。",
+							"return": "字节型()"
+						},
+						{
+							"name": "清空",
+							"description": "移除全部缓冲内容。"
+						}
+					]
+				},
+				{
+					"name": "LuaJ回调",
+					"description": "由 Simple 对象继承并覆写的同步宿主函数；接收完整参数并返回完整结果列表。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ回调",
+					"icon": "icons/text-caption.svg",
+					"functions": [
+						{
+							"name": "处理调用",
+							"description": "处理 Lua 对宿主函数的调用；在实际执行线程调用，不能创建或重入其它实例。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "参数",
+									"type": "simple.library.wsd.luaj.LuaJ参数",
+									"description": "本次调用的完整参数；可用生成方法构造同一实例的返回值。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "LuaJ错误",
+					"description": "LuaJ 加载、执行、转换及调用失败，可在 Simple 错误分支捕获。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ错误",
+					"icon": "icons/text-caption.svg",
+					"inherits": [
+						"simple.runtime.errors.运行错误"
+					]
+				},
+				{
+					"name": "LuaJ常量",
+					"description": "Lua 5.1 类型编号；整数仍属于数值类型。",
+					"kind": "object",
+					"type": "simple.library.wsd.luaj.LuaJ常量",
+					"icon": "icons/text-caption.svg",
+					"constants": [
+						{
+							"name": "类型_空值",
+							"type": "整数型",
+							"value": "0",
+							"description": "空值类型编号。"
+						},
+						{
+							"name": "类型_逻辑",
+							"type": "整数型",
+							"value": "1",
+							"description": "逻辑类型编号。"
+						},
+						{
+							"name": "类型_数值",
+							"type": "整数型",
+							"value": "3",
+							"description": "数值类型编号。"
+						},
+						{
+							"name": "类型_文本",
+							"type": "整数型",
+							"value": "4",
+							"description": "文本类型编号。"
+						},
+						{
+							"name": "类型_表",
+							"type": "整数型",
+							"value": "5",
+							"description": "表类型编号。"
+						},
+						{
+							"name": "类型_函数",
+							"type": "整数型",
+							"value": "6",
+							"description": "函数类型编号。"
+						},
+						{
+							"name": "类型_用户数据",
+							"type": "整数型",
+							"value": "7",
+							"description": "用户数据类型编号。"
+						},
+						{
+							"name": "类型_协程",
+							"type": "整数型",
+							"value": "8",
+							"description": "协程类型编号。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

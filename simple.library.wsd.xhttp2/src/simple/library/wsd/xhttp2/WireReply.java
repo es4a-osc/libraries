@@ -23,8 +23,8 @@ final class WireReply {
 	boolean httpCache;
 	List<String[]> headers = new ArrayList<String[]>();
 
-	XHttp响应 response(String id, String key, long elapsed, boolean cached) {
-		XHttp响应 result = new XHttp响应();
+	XH响应 response(String id, String key, long elapsed, boolean cached) {
+		XH响应 result = new XH响应();
 		result.id = id;
 		result.address = url;
 		result.status = status;

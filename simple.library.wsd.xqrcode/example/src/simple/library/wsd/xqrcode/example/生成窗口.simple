@@ -1,8 +1,8 @@
 ''' 生成成功的 PNG 存入私有目录；通过完整路径交给图片框，不要求存储权限。
 
 变量 来源 为 主窗口
-变量 配置 为 simple.library.wsd.xqrcode.二维码配置
-变量 识别配置 为 simple.library.wsd.xqrcode.扫码配置
+变量 配置 为 simple.library.wsd.xqrcode.XQRC二维码配置
+变量 识别配置 为 simple.library.wsd.xqrcode.XQRC扫码配置
 变量 当前请求 为 整数型
 变量 图片数据 为 字节型()
 变量 完成次数 为 整数型
@@ -11,8 +11,8 @@
 变量 当前文件 为 文本型
 
 事件 生成窗口.初始化()
-	配置 = 创建 simple.library.wsd.xqrcode.二维码配置
-	识别配置 = 创建 simple.library.wsd.xqrcode.扫码配置
+	配置 = 创建 simple.library.wsd.xqrcode.XQRC二维码配置
+	识别配置 = 创建 simple.library.wsd.xqrcode.XQRC扫码配置
 	更新计数()
 结束 事件
 
@@ -21,7 +21,7 @@
 结束 过程
 
 过程 准备配置(样式 为 整数型)
-	配置 = 创建 simple.library.wsd.xqrcode.二维码配置
+	配置 = 创建 simple.library.wsd.xqrcode.XQRC二维码配置
 	配置.尺寸 = 480
 	如果 样式 = 1 则 配置.图标图片 = "logo.png"
 	如果 样式 = 2 则
@@ -134,7 +134,7 @@
 	结束 如果
 结束 过程
 
-事件 编码器.识别完成(请求序号 为 整数型, 结果 为 simple.library.wsd.xqrcode.识别结果)
+事件 编码器.识别完成(请求序号 为 整数型, 结果 为 simple.library.wsd.xqrcode.XQRC识别结果)
 	反馈.文本 = "识别 #" & 请求序号 & "：" & 结果.格式 & "\n" & 结果.内容 & "\n有效位=" & 结果.有效位数 & "；坐标数=" & 取数组成员数(结果.识别点)
 	更新计数()
 结束 事件
@@ -318,7 +318,7 @@ $属性
 			高度 = "280dp"
 			显示方式 = simple.runtime.components.图片组件.显示方式_居中缩放
 		$结束 $定义
-		$定义 编码器 $为 simple.library.wsd.xqrcode.二维码
+		$定义 编码器 $为 simple.library.wsd.xqrcode.XQRC二维码
 		$结束 $定义
 	$结束 $定义
 $结束 $属性

@@ -1,10 +1,10 @@
-别名 更新信息 = simple.library.wsd.xupdate.更新信息
+别名 XU更新信息 = simple.library.wsd.xupdate.XU更新信息
 
 事件 返回.被单击()
 	切换窗口(创建 simple.library.wsd.xupdate.example.主窗口)
 结束 事件
 
-变量 待更新 为 更新信息
+变量 待更新 为 XU更新信息
 变量 业务解析器 为 业务解析
 
 事件 流程定制.初始化()
@@ -28,7 +28,7 @@
 	更新.检查更新("business://version")
 结束 事件
 
-过程 显示业务信息(信息 为 更新信息)
+过程 显示业务信息(信息 为 XU更新信息)
 	待更新 = 信息
 	业务版本.文本 = 信息.版本名
 	业务内容.文本 = 信息.更新内容
@@ -62,7 +62,7 @@ $属性
 		背景颜色 = -1
 		布局 = 布局_线性
 		布局.方向 = 布局_方向_垂直
-		$定义 更新 $为 simple.library.wsd.xupdate.更新器
+		$定义 更新 $为 simple.library.wsd.xupdate.XU更新器
 		$结束 $定义
 		$定义 导航 $为 面板
 			宽度 = 长度_匹配父级

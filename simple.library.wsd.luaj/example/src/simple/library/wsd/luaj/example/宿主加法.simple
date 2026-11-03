@@ -1,0 +1,15 @@
+''' 同步宿主回调：返回计算结果、中间 nil 以及说明文本。
+函数 处理调用(参数 为 simple.library.wsd.luaj.LuaJ参数) 为 simple.library.wsd.luaj.LuaJ参数
+	变量 返回值 为 变体型(3)
+	变量 数值一 为 simple.library.wsd.luaj.LuaJ值
+	变量 数值二 为 simple.library.wsd.luaj.LuaJ值
+	数值一 = 参数.取值(1)
+	数值二 = 参数.取值(2)
+	返回值(0) = 数值一.到小数() + 数值二.到小数()
+	返回值(2) = "来自 Simple 的加法"
+	处理调用 = 参数.生成(返回值)
+结束 函数
+$属性
+	$资源 $对象
+	基础对象 = simple.library.wsd.luaj.LuaJ回调
+$结束 $属性

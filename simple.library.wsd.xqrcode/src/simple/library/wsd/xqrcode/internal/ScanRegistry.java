@@ -26,7 +26,7 @@ public final class ScanRegistry {
 	 * @param owner 组件接收者。
 	 * @return 随机会话标识。
 	 */
-	public static String create(int id, 扫码配置 options, Listener owner) {
+	public static String create(int id, XQRC扫码配置 options, Listener owner) {
 		if (current != null && current.owner.get() != null) {
 			throw new IllegalStateException("独立扫码页已有未结束的请求");
 		}
@@ -92,7 +92,7 @@ public final class ScanRegistry {
 	static final class Session {
 		final String token = UUID.randomUUID().toString();
 		final int id;
-		final 扫码配置 options;
+		final XQRC扫码配置 options;
 		final WeakReference<Listener> owner;
 		ScanActivity page;
 		boolean paused;
@@ -104,7 +104,7 @@ public final class ScanRegistry {
 		 * @param config 配置。
 		 * @param listener 接收者。
 		 */
-		Session(int requestId, 扫码配置 config, Listener listener) {
+		Session(int requestId, XQRC扫码配置 config, Listener listener) {
 			id = requestId;
 			options = config.copy();
 			owner = new WeakReference<>(listener);
@@ -126,10 +126,10 @@ public final class ScanRegistry {
 		 * 识别完成通知。
 		 *
 		 * @param id 请求编号。
-		 * @param result 识别结果。
+		 * @param result XQRC识别结果。
 		 * @param finished 是否为单次扫描并已结束。
 		 */
-		void scanResult(int id, 识别结果 result, boolean finished);
+		void scanResult(int id, XQRC识别结果 result, boolean finished);
 
 		/**
 		 * 错误通知。
@@ -190,7 +190,7 @@ public final class ScanRegistry {
 	 * @param token 会话标识。
 	 * @return 配置或空。
 	 */
-	public static 扫码配置 configuration(String token) {
+	public static XQRC扫码配置 configuration(String token) {
 		Session s = get(token);
 		return s == null ? null : s.options.copy();
 	}

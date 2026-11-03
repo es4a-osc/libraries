@@ -1,5 +1,5 @@
 {
-	"name": "CityPicker城市选择库",
+	"name": "CP城市选择库",
 	"description": "基于 CityPicker https://github.com/xuexiangjys/CityPicker 封装，提供城市搜索、字母索引、热门城市、样式设置及定位结果回填。",
 	"version": "0.1.0",
 	"kind": "library",
@@ -14,9 +14,9 @@
 			"name": "扩展组件",
 			"definitions": [
 				{
-					"name": "城市选择器",
+					"name": "CP城市选择器",
 					"kind": "component",
-					"type": "simple.library.wsd.citypicker.城市选择器",
+					"type": "simple.library.wsd.citypicker.CP城市选择器",
 					"icon": "icons/map-search.svg",
 					"description": "整页弹出城市选择界面，界面线程调用，切换所属窗口时自动关闭；定位由应用提供，不包含定位 SDK。",
 					"inherits": [

@@ -1,6 +1,6 @@
 package simple.library.wsd.grouplist;
 
-import simple.runtime.components.impl.android.视图组件;
+import simple.runtime.components.impl.android.列表视图组件;
 import simple.runtime.components.组件容器;
 import simple.runtime.components.impl.android.util.ViewUtil;
 import simple.runtime.android.MainActivity;
@@ -31,7 +31,7 @@ import android.widget.TextView;
  *
  * @author 树先生 xhwsd@qq.com
  */
-public class 分组列表框Impl extends 视图组件 implements 分组列表框 {
+public class 分组列表框Impl extends 列表视图组件 implements 分组列表框 {
 
 	/*
 	ExpandableListView

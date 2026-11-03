@@ -40,10 +40,10 @@ import simple.runtime.components.impl.android.util.ImageUtil;
  * @author 树先生 xhwsd@qq.com
  */
 final class RefreshFeatures {
-	private final 智能刷新框Impl owner;
+	private final SRL下拉刷新框Impl owner;
 	private final SmartRefreshView view;
-	private 刷新外观 headerAppearance = new 刷新外观();
-	private 刷新外观 footerAppearance = new 刷新外观();
+	private SRL刷新外观 headerAppearance = new SRL刷新外观();
+	private SRL刷新外观 footerAppearance = new SRL刷新外观();
 	private int headerType;
 	private int footerType;
 	private RefreshHeader baseHeader;
@@ -68,7 +68,7 @@ final class RefreshFeatures {
 	 * @param owner 事件及设置的拥有者。
 	 * @param view 原生刷新容器。
 	 */
-	RefreshFeatures(智能刷新框Impl owner, SmartRefreshView view) {
+	RefreshFeatures(SRL下拉刷新框Impl owner, SmartRefreshView view) {
 		this.owner = owner;
 		this.view = view;
 		footerAppearance.拉动提示("上拉加载更多");
@@ -83,7 +83,7 @@ final class RefreshFeatures {
 	 * @param header 是否读取刷新头。
 	 * @return 外观副本。
 	 */
-	刷新外观 appearance(boolean header) {
+	SRL刷新外观 appearance(boolean header) {
 		return (header ? headerAppearance : footerAppearance).copy();
 	}
 
@@ -93,11 +93,11 @@ final class RefreshFeatures {
 	 * @param header 是否应用刷新头。
 	 * @param value 配置快照。
 	 */
-	void apply(boolean header, 刷新外观 value) {
+	void apply(boolean header, SRL刷新外观 value) {
 		if (value == null) {
 			throw new IllegalArgumentException("外观不能为空引用。");
 		}
-		刷新外观 next = value.copy();
+		SRL刷新外观 next = value.copy();
 		drawable(next.箭头图片());
 		drawable(next.进度图片());
 		if (header) {
@@ -120,7 +120,7 @@ final class RefreshFeatures {
 			throw new IllegalArgumentException("头尾样式编号无效。");
 		}
 		if (header && type == 8 && (flyScene == null || flyImage == null)) {
-			throw new 刷新错误("选择飞行样式前，请先绑定飞行场景和飞行图标。");
+			throw new SRL刷新错误("选择飞行样式前，请先绑定飞行场景和飞行图标。");
 		}
 		if (header) {
 			if (customHeader != null) {
@@ -274,7 +274,7 @@ final class RefreshFeatures {
 	 */
 	void game(int state) {
 		if (!(baseHeader instanceof FunGameView) || state < 0 || state > 4) {
-			throw new 刷新错误("请先选择游戏样式，并使用 0 至 4 的状态。");
+			throw new SRL刷新错误("请先选择游戏样式，并使用 0 至 4 的状态。");
 		}
 		((FunGameView) baseHeader).postStatus(state);
 	}
@@ -284,7 +284,7 @@ final class RefreshFeatures {
 	 */
 	void finishFlight() {
 		if (!(baseHeader instanceof FlyRefreshHeader)) {
-			throw new 刷新错误("当前不是飞行样式。");
+			throw new SRL刷新错误("当前不是飞行样式。");
 		}
 		((FlyRefreshHeader) baseHeader).finishRefresh();
 	}
@@ -529,7 +529,7 @@ final class RefreshFeatures {
 	 * @param appearance 外观快照。
 	 * @return 独立的非空颜色数组。
 	 */
-	private static int[] animationColors(刷新外观 appearance) {
+	private static int[] animationColors(SRL刷新外观 appearance) {
 		int[] values = appearance.取动画颜色();
 		return values.length == 0 ? new int[] { appearance.强调颜色() } : values;
 	}
@@ -541,7 +541,7 @@ final class RefreshFeatures {
 	 * @param appearance 本实例外观。
 	 */
 	@SuppressWarnings("deprecation")
-	private static void applyColors(RefreshComponent component, 刷新外观 appearance) {
+	private static void applyColors(RefreshComponent component, SRL刷新外观 appearance) {
 		// 上游仅将框架回调标为弃用；没有可以逐个设置所有样式颜色的等价新接口。
 		int[] theme = appearance.取主题颜色();
 		component.setPrimaryColors(theme.length == 0 ? new int[] { appearance.主颜色(), appearance.强调颜色() } : theme);
@@ -592,7 +592,7 @@ final class RefreshFeatures {
 	 * @param component 经典组件。
 	 * @param appearance 外观快照。
 	 */
-	private static void classic(ClassicsAbstract<?> component, 刷新外观 appearance) {
+	private static void classic(ClassicsAbstract<?> component, SRL刷新外观 appearance) {
 		component.setPrimaryColor(appearance.主颜色()).setAccentColor(appearance.强调颜色());
 		component.setTextSizeTitle(appearance.标题字号()).setFinishDuration(appearance.完成停留时间());
 		component.setDrawableArrowSize(appearance.箭头尺寸()).setDrawableProgressSize(appearance.进度尺寸());
@@ -615,7 +615,7 @@ final class RefreshFeatures {
 		 * @param context 当前活动。
 		 * @param appearance 外观快照。
 		 */
-		ConfiguredHeader(Context context, 刷新外观 appearance) {
+		ConfiguredHeader(Context context, SRL刷新外观 appearance) {
 			super(context);
 			mTextPulling = appearance.拉动提示();
 			mTextRelease = appearance.释放提示();
@@ -649,7 +649,7 @@ final class RefreshFeatures {
 		 * @param context 当前活动。
 		 * @param appearance 外观快照。
 		 */
-		ConfiguredFooter(Context context, 刷新外观 appearance) {
+		ConfiguredFooter(Context context, SRL刷新外观 appearance) {
 			super(context);
 			mTextPulling = appearance.拉动提示();
 			mTextRelease = appearance.释放提示();
@@ -768,7 +768,7 @@ final class RefreshFeatures {
 		 * @param context 当前活动。
 		 * @param appearance 外观快照。
 		 */
-		ConfiguredBattle(Context context, 刷新外观 appearance) {
+		ConfiguredBattle(Context context, SRL刷新外观 appearance) {
 			super(context);
 			mMaskViewTop.setText(appearance.游戏拉动提示());
 			mMaskViewBottom.setText(appearance.游戏操作提示());
@@ -785,7 +785,7 @@ final class RefreshFeatures {
 		 * @param context 当前活动。
 		 * @param appearance 外观快照。
 		 */
-		ConfiguredBlock(Context context, 刷新外观 appearance) {
+		ConfiguredBlock(Context context, SRL刷新外观 appearance) {
 			super(context);
 			mMaskViewTop.setText(appearance.游戏拉动提示());
 			mMaskViewBottom.setText(appearance.游戏操作提示());
@@ -887,7 +887,7 @@ final class RefreshFeatures {
 		 * @param context 所属活动。
 		 * @param appearance 已复制的外观。
 		 */
-		ConfiguredWave(Context context, 刷新外观 appearance) {
+		ConfiguredWave(Context context, SRL刷新外观 appearance) {
 			super(context);
 			mWaveView.setShadow(SmartUtil.dp2px(appearance.波浪阴影半径()), appearance.波浪阴影颜色());
 		}

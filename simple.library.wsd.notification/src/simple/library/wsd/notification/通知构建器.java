@@ -221,7 +221,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 设置锁屏内容可见性；API 21 以下不支持此设置。
+	 * 设置锁屏内容可见性。
 	 *
 	 * @param visibility 使用本对象的公开范围常量
 	 */
@@ -248,7 +248,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 设置展开后的长文本样式；需要 API 16。
+	 * 设置展开后的长文本样式。
 	 *
 	 * @param longText 展开后显示的正文
 	 */
@@ -260,7 +260,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 设置展开后的多行样式；需要 API 16。
+	 * 设置展开后的多行样式。
 	 *
 	 * @param lines 各行内容，不能为 null
 	 */
@@ -283,7 +283,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 设置展开后的大图片样式；需要 API 16。
+	 * 设置展开后的大图片样式。
 	 *
 	 * @param imageResource 可解码为位图的图片资源编号
 	 */
@@ -328,7 +328,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 添加内联回复操作；需要 API 24。
+	 * 添加内联回复操作。
 	 *
 	 * @param title 回复按钮的文字
 	 * @param mark 区分不同回复操作的自定义标记
@@ -341,7 +341,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 添加带图标的内联回复操作；需要 API 24。
+	 * 添加带图标的内联回复操作。
 	 *
 	 * @param iconResource 回复按钮图标资源编号，0 表示使用内置回复图标
 	 * @param title 回复按钮的文字

@@ -5,7 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-import simple.library.wsd.xqrcode.识别结果;
+import simple.library.wsd.xqrcode.XQRC识别结果;
 
 /**
  * 不要求 Simple 宿主继承 FragmentActivity 的普通扫码页。
@@ -84,7 +84,7 @@ public final class ScanActivity extends Activity {
 					}
 
 					@Override
-					public void result(识别结果 result) {
+					public void result(XQRC识别结果 result) {
 						ScanRegistry.Listener owner = owner();
 						if (owner != null) {
 							boolean finished = !session.options.连续扫描();

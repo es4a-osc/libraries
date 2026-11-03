@@ -1,7 +1,7 @@
 {
-	"name": "跨程序辅助库",
-	"description": "提供无障碍节点读取、操作及事件监听，使用前需在系统设置中启用无障碍服务。",
-	"version": "0.1.0",
+	"name": "无障碍服务库",
+	"description": "系统无障碍服务、类型化节点与窗口、事件、手势、控制器及字幕设置。需用户手动启用服务，能力受系统与设备支持限制。",
+	"version": "0.2.0",
 	"authors": [
 		{
 			"name": "树先生",
@@ -14,566 +14,3205 @@
 			"name": "扩展组件",
 			"definitions": [
 				{
-					"name": "跨程序辅助",
-					"description": "订阅系统无障碍事件，读取和操作当前活动窗口中的节点；须先取得系统授权并连接服务。节点离开原窗口后可能失效，应重新读取。",
-					"icon": "icons/accessible.svg",
+					"name": "无障碍服务",
+					"description": "系统无障碍服务的非可视入口。需用户手动启用服务；启用不等于连接。组件与控制器在主线程使用，回调也在主线程触发。销毁组件只注销订阅，不撤销系统授权。",
 					"kind": "component",
-					"type": "simple.library.wsd.accessibility.跨程序辅助",
+					"type": "simple.library.wsd.accessibility.无障碍服务",
 					"inherits": [
 						"simple.runtime.components.组件"
 					],
+					"icon": "icons/accessible.svg",
 					"functions": [
 						{
 							"name": "打开设置",
-							"description": "打开系统无障碍设置，由用户决定是否启用本应用服务；打开页面不表示已经授权或连接。",
+							"description": "打开系统无障碍设置，由用户手动授权。",
 							"return": "逻辑型"
 						},
 						{
-							"name": "是否已开启",
-							"description": "判断本应用的无障碍服务是否已在系统设置中启用；不保证服务已连接。",
-							"return": "逻辑型"
+							"name": "取根节点",
+							"description": "取得当前活动窗口的根节点，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
 						},
 						{
-							"name": "取当前类名",
-							"description": "取得最近一次窗口切换事件报告的界面类名。",
-							"return": "文本型"
+							"name": "取窗口列表",
+							"description": "取得可交互窗口列表，使用后释放；需在服务配置中保留访问交互窗口标志。",
+							"return": "simple.library.wsd.accessibility.无障碍窗口列表"
+						},
+						{
+							"name": "查找焦点",
+							"description": "在系统允许访问的窗口中查找焦点，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点",
+							"params": [
+								{
+									"name": "焦点类型",
+									"type": "整数型",
+									"description": "输入焦点或无障碍焦点常量"
+								}
+							]
 						},
 						{
 							"name": "执行全局动作",
-							"description": "执行无障碍服务的全局操作并返回是否被接受；动作是全局操作编号，不是键盘按键码。",
+							"description": "执行系统全局操作，动作编号不是键盘键码。",
+							"return": "逻辑型",
 							"params": [
 								{
 									"name": "动作",
 									"type": "整数型",
-									"description": "无障碍服务的全局操作编号。"
+									"description": "全局动作常量；锁屏和截图需要 API 28"
 								}
-							],
+							]
+						},
+						{
+							"name": "禁用服务",
+							"description": "请求禁用当前服务；此后须由用户回到设置页重新启用。",
 							"return": "逻辑型"
+						},
+						{
+							"name": "取服务信息",
+							"description": "读取当前服务的配置快照。",
+							"return": "simple.library.wsd.accessibility.无障碍服务信息"
+						},
+						{
+							"name": "应用配置",
+							"description": "提交可动态修改的服务配置。静态能力仍由 XML 决定；多个组件共用同一系统服务，后提交者生效。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.accessibility.无障碍服务信息",
+									"description": "由当前服务取得并修改的快照"
+								}
+							]
+						},
+						{
+							"name": "取已安装服务",
+							"description": "列出系统报告的已安装无障碍服务。",
+							"return": "simple.library.wsd.accessibility.无障碍服务信息[]"
+						},
+						{
+							"name": "取已启用服务",
+							"description": "列出系统报告的已启用无障碍服务。",
+							"return": "simple.library.wsd.accessibility.无障碍服务信息[]"
+						},
+						{
+							"name": "中断所有反馈",
+							"description": "请求中断系统当前启用的无障碍反馈，不禁用服务。"
+						},
+						{
+							"name": "发送事件",
+							"description": "向系统提交无障碍事件副本；系统可能按事件内容与权限过滤，不保证其它服务收到。",
+							"params": [
+								{
+									"name": "事件",
+									"type": "simple.library.wsd.accessibility.无障碍事件",
+									"description": "仍然有效的事件；通常来自复制事件"
+								}
+							]
 						},
 						{
 							"name": "打开最近通知",
-							"description": "触发最近一次收到的通知的内容操作；没有可用操作或操作失效时返回假。",
+							"description": "触发本组件最近收到通知中的内容操作。",
 							"return": "逻辑型"
 						},
 						{
-							"name": "取根控件",
-							"description": "取得当前活动窗口的根无障碍节点；服务未连接或没有活动根节点时返回空值。",
-							"return": "对象"
+							"name": "取软键盘控制器",
+							"description": "取得控制器，改变事件由本组件报告。",
+							"return": "simple.library.wsd.accessibility.无障碍软键盘控制器"
 						},
 						{
-							"name": "取父控件",
-							"description": "取得指定节点的父节点。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "对象"
+							"name": "取放大控制器",
+							"description": "取得控制器，改变事件由本组件报告。",
+							"return": "simple.library.wsd.accessibility.无障碍放大控制器"
 						},
 						{
-							"name": "取子控件数",
-							"description": "取得指定节点的直接子节点数量。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "整数型"
+							"name": "取辅助按钮控制器",
+							"description": "取得控制器，改变事件由本组件报告。需要 API 26 及以上。",
+							"return": "simple.library.wsd.accessibility.无障碍按钮控制器"
 						},
 						{
-							"name": "取子控件",
-							"description": "按从零开始的索引取得直接子节点；索引无效时返回空值。",
+							"name": "取指纹控制器",
+							"description": "取得控制器，改变事件由本组件报告。需要 API 26 及以上。",
+							"return": "simple.library.wsd.accessibility.无障碍指纹控制器"
+						},
+						{
+							"name": "派发手势",
+							"description": "向屏幕提交手势。提交成功后由手势完成或手势取消事件报告结果；新手势可能取消正在执行的手势。",
+							"return": "逻辑型",
 							"params": [
 								{
-									"name": "索引",
+									"name": "手势",
+									"type": "simple.library.wsd.accessibility.无障碍手势",
+									"description": "至少含一笔的手势描述"
+								},
+								{
+									"name": "请求编号",
 									"type": "整数型",
-									"description": "从零开始的节点索引。"
-								},
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "对象"
-						},
-						{
-							"name": "保存控件",
-							"description": "按名称保存当前窗口的节点引用；窗口切换时自动清除。",
-							"params": [
-								{
-									"name": "名称",
-									"type": "文本型",
-									"description": "保存或查找节点所用的名称。"
-								},
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
+									"description": "由调用者指定，用于关联完成或取消事件"
 								}
 							]
 						},
 						{
-							"name": "读取控件",
-							"description": "按名称读取此前保存的节点引用。",
-							"params": [
-								{
-									"name": "名称",
-									"type": "文本型",
-									"description": "保存或查找节点所用的名称。"
-								}
-							],
-							"return": "对象"
+							"name": "取字幕样式",
+							"description": "取得系统字幕首选样式快照。",
+							"return": "simple.library.wsd.accessibility.无障碍字幕样式"
+						}
+					],
+					"properties": [
+						{
+							"name": "已启用",
+							"description": "本应用服务是否在系统中启用，不表示已连接。",
+							"type": "逻辑型",
+							"writable": false
 						},
 						{
-							"name": "设置标记",
-							"description": "把标记保存到节点的附加信息；仅 Android API 19 及以上有效。",
-							"params": [
-								{
-									"name": "标记",
-									"type": "文本型",
-									"description": "保存到节点附加信息中的文本。"
-								},
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							]
+							"name": "已连接",
+							"description": "本应用的无障碍服务是否已连接并可执行操作。",
+							"type": "逻辑型",
+							"writable": false
 						},
 						{
-							"name": "取标记",
-							"description": "取得节点附加信息中的标记；不存在时返回空文本。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "文本型"
+							"name": "系统无障碍已启用",
+							"description": "系统是否启用了任意无障碍服务。",
+							"type": "逻辑型",
+							"writable": false
 						},
 						{
-							"name": "是否可点击",
-							"description": "判断节点是否声明可点击。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
+							"name": "触摸探索已启用",
+							"description": "系统是否已启用触摸探索。",
+							"type": "逻辑型",
+							"writable": false
 						},
 						{
-							"name": "是否可滑动",
-							"description": "判断节点是否声明可滚动。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
+							"name": "事件监听",
+							"description": "本组件是否订阅事件，关闭不影响服务连接和主动查询。",
+							"type": "逻辑型",
+							"writable": true,
+							"initializer": "真"
 						},
 						{
-							"name": "是否可长按",
-							"description": "判断节点是否声明可长按。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
+							"name": "字幕已启用",
+							"description": "系统字幕首选项是否启用，不代表应用自动绘制字幕。",
+							"type": "逻辑型",
+							"writable": false
 						},
 						{
-							"name": "正向滑动控件",
-							"description": "对节点执行向前滚动操作，并返回是否被接受。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
+							"name": "字幕字体比例",
+							"description": "系统字幕字体比例，1 表示默认字号。",
+							"type": "单精度小数型",
+							"writable": false
 						},
 						{
-							"name": "反向滑动控件",
-							"description": "对节点执行向后滚动操作，并返回是否被接受。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "单击父控件",
-							"description": "对指定节点的父节点执行点击操作，并返回是否执行成功。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "单击控件",
-							"description": "直接对指定节点执行点击操作，并返回是否执行成功。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "长按父控件",
-							"description": "对指定节点的父节点执行长按操作，并返回是否被接受。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "长按控件",
-							"description": "直接对指定节点执行长按操作，并返回是否被接受。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "获取控件焦点",
-							"description": "对指定节点执行获取焦点操作，并返回是否被接受。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "置控件内容",
-							"description": "设置节点文本并返回是否被接受；仅 Android API 21 及以上有效。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								},
-								{
-									"name": "内容",
-									"type": "文本型",
-									"description": "要设置或查找的文本。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "粘贴",
-							"description": "对节点执行粘贴操作并返回是否被接受；仅 Android API 18 及以上有效。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "复制",
-							"description": "对节点执行复制操作并返回是否被接受；仅 Android API 18 及以上有效。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "逻辑型"
-						},
-						{
-							"name": "清空所有编辑框",
-							"description": "遍历当前活动窗口的后代节点并清空可编辑内容；仅 Android API 21 及以上有效。"
-						},
-						{
-							"name": "尝试长按所有控件",
-							"description": "遍历当前活动窗口的节点，逐个触发长按并记录结果；会实际操作界面。"
-						},
-						{
-							"name": "按内容描述查找控件",
-							"description": "深度优先搜索起点的后代节点，返回内容描述包含指定文本的节点列表；不包含起点。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								},
-								{
-									"name": "内容",
-									"type": "文本型",
-									"description": "要设置或查找的文本。"
-								}
-							],
-							"return": "对象"
-						},
-						{
-							"name": "按资源ID查找控件",
-							"description": "按视图资源 ID 搜索当前活动窗口中的节点；根节点不可用或 Android API 低于 18 时返回空值。",
-							"params": [
-								{
-									"name": "资源ID",
-									"type": "文本型",
-									"description": "要匹配的视图资源 ID。"
-								}
-							],
-							"return": "对象"
-						},
-						{
-							"name": "按文本查找控件",
-							"description": "按文本搜索当前活动窗口中的节点；根节点不可用时返回空值。",
-							"params": [
-								{
-									"name": "文本",
-									"type": "文本型",
-									"description": "要搜索的节点文本。"
-								}
-							],
-							"return": "对象"
-						},
-						{
-							"name": "在控件内按资源ID查找控件",
-							"description": "按视图资源 ID 搜索指定节点及其子树中的节点；节点为空或 Android API 低于 18 时返回空值。",
-							"params": [
-								{
-									"name": "资源ID",
-									"type": "文本型",
-									"description": "要匹配的视图资源 ID。"
-								},
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "对象"
-						},
-						{
-							"name": "取控件集合项目数",
-							"description": "取得节点列表中的项目数量；列表为空时返回零。",
-							"params": [
-								{
-									"name": "控件集合",
-									"type": "对象",
-									"description": "无障碍节点列表对象（List<AccessibilityNodeInfo>）。"
-								}
-							],
-							"return": "整数型"
-						},
-						{
-							"name": "取控件",
-							"description": "按从零开始的索引取得节点列表中的节点；无效时返回空值。",
-							"params": [
-								{
-									"name": "索引",
-									"type": "整数型",
-									"description": "从零开始的节点索引。"
-								},
-								{
-									"name": "控件集合",
-									"type": "对象",
-									"description": "无障碍节点列表对象（List<AccessibilityNodeInfo>）。"
-								}
-							],
-							"return": "对象"
-						},
-						{
-							"name": "取控件资源ID",
-							"description": "取得节点的视图资源 ID；节点无 ID 或 Android API 低于 18 时返回空文本。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "文本型"
-						},
-						{
-							"name": "取控件内容描述",
-							"description": "取得节点的内容描述。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "文本型"
-						},
-						{
-							"name": "取控件内容",
-							"description": "取得节点显示的文本。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "文本型"
-						},
-						{
-							"name": "取控件坐标",
-							"description": "取得节点在屏幕上的边界矩形，返回 Android Rect 对象。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "对象"
-						},
-						{
-							"name": "取左边界",
-							"description": "取得边界矩形的左边界坐标。",
-							"params": [
-								{
-									"name": "坐标",
-									"type": "对象",
-									"description": "取控件坐标返回的边界矩形对象（Rect）。"
-								}
-							],
-							"return": "整数型"
-						},
-						{
-							"name": "取上边界",
-							"description": "取得边界矩形的上边界坐标。",
-							"params": [
-								{
-									"name": "坐标",
-									"type": "对象",
-									"description": "取控件坐标返回的边界矩形对象（Rect）。"
-								}
-							],
-							"return": "整数型"
-						},
-						{
-							"name": "取右边界",
-							"description": "取得边界矩形的右边界坐标。",
-							"params": [
-								{
-									"name": "坐标",
-									"type": "对象",
-									"description": "取控件坐标返回的边界矩形对象（Rect）。"
-								}
-							],
-							"return": "整数型"
-						},
-						{
-							"name": "取下边界",
-							"description": "取得边界矩形的下边界坐标。",
-							"params": [
-								{
-									"name": "坐标",
-									"type": "对象",
-									"description": "取控件坐标返回的边界矩形对象（Rect）。"
-								}
-							],
-							"return": "整数型"
-						},
-						{
-							"name": "取控件信息",
-							"description": "将指定节点的信息编码为 JSON 文本；节点为空时返回空文本。",
-							"params": [
-								{
-									"name": "控件",
-									"type": "对象",
-									"description": "要读取或操作的无障碍节点对象（AccessibilityNodeInfo）。"
-								}
-							],
-							"return": "文本型"
-						},
-						{
-							"name": "取所有控件信息",
-							"description": "将当前活动窗口后代节点的信息编码为 JSON 数组文本。",
-							"return": "文本型"
+							"name": "字幕语言",
+							"description": "系统字幕首选语言的 BCP 47 标签，未指定时为空文本。",
+							"type": "文本型",
+							"writable": false
 						}
 					],
 					"events": [
 						{
-							"name": "控件被滑动",
-							"description": "无障碍服务收到节点滚动事件时触发。"
-						},
-						{
-							"name": "控件被单击",
-							"description": "无障碍服务收到节点点击事件时触发。"
-						},
-						{
-							"name": "控件被长按",
-							"description": "无障碍服务收到节点长按事件时触发。"
-						},
-						{
-							"name": "音量被改变",
-							"description": "无障碍服务收到音量键按下事件时触发。",
+							"name": "连接改变",
+							"description": "系统服务连接状态变化时触发，不以设置页启用状态代替连接状态。",
 							"params": [
 								{
-									"name": "增大",
+									"name": "已连接",
 									"type": "逻辑型",
-									"description": "真表示按下音量增大键，假表示按下音量减小键。"
+									"description": "真表示已连接，假表示已断开"
 								}
 							]
 						},
 						{
-							"name": "窗口被切换",
-							"description": "无障碍服务收到窗口状态变化事件时触发。"
+							"name": "服务被中断",
+							"description": "系统要求中断当前无障碍反馈时触发，不表示服务解绑。"
 						},
 						{
-							"name": "窗口发生变化",
-							"description": "无障碍服务收到窗口内容变化事件时触发。"
-						},
-						{
-							"name": "通知栏消息被改变",
-							"description": "无障碍服务收到通知状态变化事件时触发。",
+							"name": "收到事件",
+							"description": "系统收到无障碍事件时触发；事件处理内持续修改界面可能引起反馈循环。",
 							"params": [
 								{
-									"name": "消息",
-									"type": "文本型",
-									"description": "通知中的消息文本。"
+									"name": "事件",
+									"type": "simple.library.wsd.accessibility.无障碍事件",
+									"description": "仅在该次回调中有效；保留时先复制事件"
+								}
+							]
+						},
+						{
+							"name": "收到按键",
+							"description": "系统允许过滤按键时触发。默认不拦截，不影响音量等原始行为。",
+							"params": [
+								{
+									"name": "键码",
+									"type": "整数型",
+									"description": "Android 按键代码"
 								},
 								{
-									"name": "包名",
-									"type": "文本型",
-									"description": "发送通知的应用包名。"
+									"name": "动作",
+									"type": "整数型",
+									"description": "按下为 0，抬起为 1"
+								},
+								{
+									"name": "消费",
+									"type": "逻辑型",
+									"description": "设为真表示拦截本次按键，默认假",
+									"byRef": true
 								}
 							]
+						},
+						{
+							"name": "收到触摸手势",
+							"description": "收到系统触摸探索手势时触发；需要用户启用触摸探索及服务配置请求相应模式。",
+							"params": [
+								{
+									"name": "手势编号",
+									"type": "整数型",
+									"description": "系统识别的触摸探索手势编号"
+								},
+								{
+									"name": "消费",
+									"type": "逻辑型",
+									"description": "设为真表示处理本次手势，默认假",
+									"byRef": true
+								}
+							]
+						},
+						{
+							"name": "手势完成",
+							"description": "提交的手势执行完成。",
+							"params": [
+								{
+									"name": "请求编号",
+									"type": "整数型",
+									"description": "派发时指定的编号"
+								}
+							]
+						},
+						{
+							"name": "手势取消",
+							"description": "已提交的手势执行被取消。",
+							"params": [
+								{
+									"name": "请求编号",
+									"type": "整数型",
+									"description": "派发时指定的编号"
+								}
+							]
+						},
+						{
+							"name": "软键盘模式改变",
+							"description": "软键盘显示策略改变。",
+							"params": [
+								{
+									"name": "模式",
+									"type": "整数型",
+									"description": "当前显示策略"
+								}
+							]
+						},
+						{
+							"name": "放大状态改变",
+							"description": "系统放大区域、比例或中心改变；区域参数是外接矩形。",
+							"params": [
+								{
+									"name": "区域边界",
+									"type": "simple.library.wsd.accessibility.无障碍边界",
+									"description": "可放大区域的屏幕像素外接矩形"
+								},
+								{
+									"name": "比例",
+									"type": "单精度小数型",
+									"description": "当前倍率"
+								},
+								{
+									"name": "中心X",
+									"type": "单精度小数型",
+									"description": "未缩放屏幕像素横坐标"
+								},
+								{
+									"name": "中心Y",
+									"type": "单精度小数型",
+									"description": "未缩放屏幕像素纵坐标"
+								}
+							]
+						},
+						{
+							"name": "辅助按钮被单击",
+							"description": "辅助按钮被单击，需要 API 26 及以上。"
+						},
+						{
+							"name": "辅助按钮可用性改变",
+							"description": "辅助按钮可用性改变，需要 API 26 及以上。",
+							"params": [
+								{
+									"name": "可用",
+									"type": "逻辑型",
+									"description": "当前是否可用"
+								}
+							]
+						},
+						{
+							"name": "收到指纹手势",
+							"description": "指纹传感器报告手势，需要 API 26 及受支持硬件。",
+							"params": [
+								{
+									"name": "手势编号",
+									"type": "整数型",
+									"description": "指纹滑动方向常量"
+								}
+							]
+						},
+						{
+							"name": "指纹手势可用性改变",
+							"description": "指纹手势可用性变化，需要 API 26 及受支持硬件。",
+							"params": [
+								{
+									"name": "可用",
+									"type": "逻辑型",
+									"description": "当前是否可用"
+								}
+							]
+						},
+						{
+							"name": "系统启用状态改变",
+							"description": "任意系统无障碍服务启用状态改变。",
+							"params": [
+								{
+									"name": "启用",
+									"type": "逻辑型",
+									"description": "系统无障碍是否启用"
+								}
+							]
+						},
+						{
+							"name": "触摸探索状态改变",
+							"description": "系统触摸探索启用状态改变。",
+							"params": [
+								{
+									"name": "启用",
+									"type": "逻辑型",
+									"description": "是否启用触摸探索"
+								}
+							]
+						},
+						{
+							"name": "字幕设置改变",
+							"description": "系统字幕启用、语言、字号或样式改变后触发，通过属性重新读取。"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "无障碍边界",
+					"description": "屏幕像素坐标中的矩形快照；不随节点后续移动自动变化。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍边界",
+					"properties": [
+						{
+							"name": "左边",
+							"description": "左边缘像素坐标。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "上边",
+							"description": "上边缘像素坐标。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "右边",
+							"description": "右边缘像素坐标，不包含该边缘。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "下边",
+							"description": "下边缘像素坐标，不包含该边缘。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "宽度",
+							"description": "矩形像素宽度。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "高度",
+							"description": "矩形像素高度。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "中心X",
+							"description": "水平中心像素坐标。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "中心Y",
+							"description": "垂直中心像素坐标。",
+							"type": "整数型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍集合信息",
+					"description": "节点的集合信息只读描述；仅表达元数据，不修改真实界面。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍集合信息",
+					"properties": [
+						{
+							"name": "行数",
+							"description": "行数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "列数",
+							"description": "列数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "层级结构",
+							"description": "层级结构。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "选择模式",
+							"description": "选择模式。",
+							"type": "整数型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍集合项",
+					"description": "节点的集合项只读描述；仅表达元数据，不修改真实界面。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍集合项",
+					"properties": [
+						{
+							"name": "行索引",
+							"description": "行索引；索引从零开始，范围类型及选择模式见无障碍常量。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "列索引",
+							"description": "列索引；索引从零开始，范围类型及选择模式见无障碍常量。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "行跨度",
+							"description": "行跨度。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "列跨度",
+							"description": "列跨度。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "标题项",
+							"description": "标题项。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "已选中",
+							"description": "已选中。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍范围",
+					"description": "节点的范围只读描述；仅表达元数据，不修改真实界面。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍范围",
+					"properties": [
+						{
+							"name": "类型",
+							"description": "类型。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "最小值",
+							"description": "最小值。",
+							"type": "单精度小数型",
+							"writable": false
+						},
+						{
+							"name": "最大值",
+							"description": "最大值。",
+							"type": "单精度小数型",
+							"writable": false
+						},
+						{
+							"name": "当前值",
+							"description": "当前值。",
+							"type": "单精度小数型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍动作",
+					"description": "节点的动作只读描述；仅表达元数据，不修改真实界面。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍动作",
+					"properties": [
+						{
+							"name": "编号",
+							"description": "编号。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "标签",
+							"description": "标签。",
+							"type": "文本型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍节点列表",
+					"description": "固定成员的无障碍节点列表，索引从零开始。取项目返回独立副本；使用后释放列表和取得的项目。仅可串行使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍节点列表",
+					"properties": [
+						{
+							"name": "数量",
+							"description": "列表中的项目数；已释放时拒绝读取。",
+							"type": "整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取项目",
+							"description": "取得独立项目副本，使用后单独释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的有效索引"
+								}
+							]
+						},
+						{
+							"name": "释放",
+							"description": "释放列表持有的原生项目，可重复调用。已经取出的项目副本不受影响。"
+						}
+					]
+				},
+				{
+					"name": "无障碍窗口列表",
+					"description": "固定成员的无障碍窗口列表，索引从零开始。取项目返回独立副本；使用后释放列表和取得的项目。仅可串行使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍窗口列表",
+					"properties": [
+						{
+							"name": "数量",
+							"description": "列表中的项目数；已释放时拒绝读取。",
+							"type": "整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取项目",
+							"description": "取得独立项目副本，使用后单独释放。",
+							"return": "simple.library.wsd.accessibility.无障碍窗口",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的有效索引"
+								}
+							]
+						},
+						{
+							"name": "释放",
+							"description": "释放列表持有的原生项目，可重复调用。已经取出的项目副本不受影响。"
+						}
+					]
+				},
+				{
+					"name": "无障碍动作参数",
+					"description": "节点动作参数包。只对声明支持相应动作的节点有效；创建后按动作填写参数。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍动作参数",
+					"functions": [
+						{
+							"name": "设置文本",
+							"description": "设置替换文本动作的参数。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "替换节点内容的文本，不为空"
+								}
+							]
+						},
+						{
+							"name": "设置选择区",
+							"description": "设置文本选择区动作的参数。",
+							"params": [
+								{
+									"name": "起始位置",
+									"type": "整数型",
+									"description": "从零开始的起始字符索引"
+								},
+								{
+									"name": "结束位置",
+									"type": "整数型",
+									"description": "结束字符索引，不包含该字符"
+								}
+							]
+						},
+						{
+							"name": "设置滚动位置",
+							"description": "设置滚动到集合行列位置的参数。",
+							"params": [
+								{
+									"name": "行索引",
+									"type": "整数型",
+									"description": "从零开始的行索引"
+								},
+								{
+									"name": "列索引",
+									"type": "整数型",
+									"description": "从零开始的列索引"
+								}
+							]
+						},
+						{
+							"name": "设置进度",
+							"description": "设置进度动作的参数，不替调用者推定节点范围。",
+							"params": [
+								{
+									"name": "进度",
+									"type": "单精度小数型",
+									"description": "节点范围允许的有限数值"
+								}
+							]
+						},
+						{
+							"name": "设置移动粒度",
+							"description": "设置按粒度移动文本的参数。",
+							"params": [
+								{
+									"name": "粒度",
+									"type": "整数型",
+									"description": "字符、单词、行等移动粒度常量"
+								},
+								{
+									"name": "扩展选择",
+									"type": "逻辑型",
+									"description": "是否在移动时扩展选择区"
+								}
+							]
+						},
+						{
+							"name": "设置HTML元素",
+							"description": "设置网页元素导航动作的参数。",
+							"params": [
+								{
+									"name": "元素名称",
+									"type": "文本型",
+									"description": "HTML 元素名称，例如 BUTTON"
+								}
+							]
+						},
+						{
+							"name": "设置窗口位置",
+							"description": "设置移动窗口动作的目标位置。",
+							"params": [
+								{
+									"name": "横坐标",
+									"type": "整数型",
+									"description": "目标屏幕像素横坐标"
+								},
+								{
+									"name": "纵坐标",
+									"type": "整数型",
+									"description": "目标屏幕像素纵坐标"
+								}
+							]
+						},
+						{
+							"name": "清空",
+							"description": "移除已填写的全部参数。"
+						}
+					]
+				},
+				{
+					"name": "无障碍节点",
+					"description": "无障碍服务取得的节点视图。界面变化后可能失效，刷新失败应重新查询。仅可串行使用，完成后释放；修改界面使用动作，不直接改写节点元数据。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍节点",
+					"properties": [
+						{
+							"name": "子节点数",
+							"description": "子节点数；系统未报告时保留 Android 原始值。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "包名",
+							"description": "包名。文本不存在时为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "类名",
+							"description": "类名。文本不存在时为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "文本",
+							"description": "文本。文本不存在时为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "内容描述",
+							"description": "内容描述。文本不存在时为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "资源ID",
+							"description": "资源ID。文本不存在时为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "错误文本",
+							"description": "错误文本。文本不存在时为空文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "可点击",
+							"description": "可点击；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可长按",
+							"description": "可长按；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可滚动",
+							"description": "可滚动；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可编辑",
+							"description": "可编辑；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "已启用",
+							"description": "已启用；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可见",
+							"description": "可见；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可获得焦点",
+							"description": "可获得焦点；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "已获得输入焦点",
+							"description": "已获得输入焦点；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "已获得无障碍焦点",
+							"description": "已获得无障碍焦点；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可勾选",
+							"description": "可勾选；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "已勾选",
+							"description": "已勾选；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "已选择",
+							"description": "已选择；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "密码字段",
+							"description": "密码字段；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "多行",
+							"description": "多行；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可弹出窗口",
+							"description": "可弹出窗口；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可关闭",
+							"description": "可关闭；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "上下文可点击",
+							"description": "上下文可点击；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "内容无效",
+							"description": "内容无效；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "重要视图",
+							"description": "重要视图；系统未报告时保留 Android 原始值。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "最大文本长度",
+							"description": "最大文本长度；系统未报告时保留 Android 原始值。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "选择区起点",
+							"description": "选择区起点；系统未报告时保留 Android 原始值。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "选择区终点",
+							"description": "选择区终点；系统未报告时保留 Android 原始值。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "移动粒度",
+							"description": "移动粒度；系统未报告时保留 Android 原始值。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "输入类型",
+							"description": "输入类型；系统未报告时保留 Android 原始值。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "绘制顺序",
+							"description": "绘制顺序；系统未报告时保留 Android 原始值。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "窗口编号",
+							"description": "窗口编号；系统未报告时保留 Android 原始值。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "提示文本",
+							"description": "提示文本，需要 Android API 26 及以上。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "显示提示文本",
+							"description": "显示提示文本，需要 Android API 26 及以上。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "工具提示",
+							"description": "工具提示，需要 Android API 28 及以上。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "窗格标题",
+							"description": "窗格标题，需要 Android API 28 及以上。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "标题节点",
+							"description": "节点是否声明为标题；旧系统依据集合项的标题信息判断。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "屏幕阅读器焦点",
+							"description": "屏幕阅读器焦点，需要 Android API 28 及以上。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "状态描述",
+							"description": "状态描述，需要 Android API 30 及以上。",
+							"type": "文本型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取父节点",
+							"description": "取得对应节点的独立引用，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "取标签目标",
+							"description": "取得对应节点的独立引用，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "取标签节点",
+							"description": "取得对应节点的独立引用，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "取前序节点",
+							"description": "取得对应节点的独立引用，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "取后序节点",
+							"description": "取得对应节点的独立引用，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "取子节点",
+							"description": "取得直接子节点，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的直接子节点索引"
+								}
+							]
+						},
+						{
+							"name": "取屏幕边界",
+							"description": "取得节点的像素矩形快照。",
+							"return": "simple.library.wsd.accessibility.无障碍边界"
+						},
+						{
+							"name": "取父内边界",
+							"description": "取得父视图内的像素边界；无障碍父节点可能不是实际父视图，结果受放大影响，屏幕定位使用取屏幕边界。",
+							"return": "simple.library.wsd.accessibility.无障碍边界"
+						},
+						{
+							"name": "取窗口",
+							"description": "取得节点关联的窗口。使用后释放窗口。",
+							"return": "simple.library.wsd.accessibility.无障碍窗口"
+						},
+						{
+							"name": "取集合信息",
+							"description": "取得节点关联的集合信息。",
+							"return": "simple.library.wsd.accessibility.无障碍集合信息"
+						},
+						{
+							"name": "取集合项",
+							"description": "取得节点关联的集合项。",
+							"return": "simple.library.wsd.accessibility.无障碍集合项"
+						},
+						{
+							"name": "取范围",
+							"description": "取得节点关联的范围。",
+							"return": "simple.library.wsd.accessibility.无障碍范围"
+						},
+						{
+							"name": "按文本查找",
+							"description": "在当前节点及其后代中查询，结果列表使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点列表",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "非空查询文本；资源 ID 使用 包名:id/名称"
+								}
+							]
+						},
+						{
+							"name": "按资源ID查找",
+							"description": "在当前节点及其后代中查询，结果列表使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点列表",
+							"params": [
+								{
+									"name": "资源ID",
+									"type": "文本型",
+									"description": "非空查询文本；资源 ID 使用 包名:id/名称"
+								}
+							]
+						},
+						{
+							"name": "按描述查找",
+							"description": "在当前节点及其后代中按内容描述查找。遍历上限为一万个节点，超限抛出异常，结果列表使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点列表",
+							"params": [
+								{
+									"name": "描述",
+									"type": "文本型",
+									"description": "非空内容描述"
+								},
+								{
+									"name": "完全匹配",
+									"type": "逻辑型",
+									"description": "真为完整匹配，假为包含匹配"
+								}
+							]
+						},
+						{
+							"name": "查找焦点",
+							"description": "查找焦点节点，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点",
+							"params": [
+								{
+									"name": "类型",
+									"type": "整数型",
+									"description": "焦点类型或焦点方向，见无障碍常量"
+								}
+							]
+						},
+						{
+							"name": "沿方向查找焦点",
+							"description": "查找焦点节点，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点",
+							"params": [
+								{
+									"name": "方向",
+									"type": "整数型",
+									"description": "焦点类型或焦点方向，见无障碍常量"
+								}
+							]
+						},
+						{
+							"name": "取动作列表",
+							"description": "取得节点当前声明支持的动作描述数组。",
+							"return": "simple.library.wsd.accessibility.无障碍动作[]"
+						},
+						{
+							"name": "执行动作",
+							"description": "向节点发送无参数动作；返回值表示目标接受动作，不保证界面已完成更新。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "动作编号",
+									"type": "整数型",
+									"description": "节点动作常量或取动作列表所得编号"
+								}
+							]
+						},
+						{
+							"name": "带参执行动作",
+							"description": "向节点发送带参数动作。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "动作编号",
+									"type": "整数型",
+									"description": "节点动作编号"
+								},
+								{
+									"name": "参数",
+									"type": "simple.library.wsd.accessibility.无障碍动作参数",
+									"description": "对应动作的参数包"
+								}
+							]
+						},
+						{
+							"name": "单击",
+							"description": "请求节点单击。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "长按",
+							"description": "请求节点长按。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "向前滚动",
+							"description": "请求节点向前滚动。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "向后滚动",
+							"description": "请求节点向后滚动。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "复制",
+							"description": "请求节点复制。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "粘贴",
+							"description": "请求节点粘贴。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "剪切",
+							"description": "请求节点剪切。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "选择",
+							"description": "请求节点选择。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "取消选择",
+							"description": "请求节点取消选择。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "获取输入焦点",
+							"description": "请求节点获取输入焦点。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "清除输入焦点",
+							"description": "请求节点清除输入焦点。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "获取无障碍焦点",
+							"description": "请求节点获取无障碍焦点。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "清除无障碍焦点",
+							"description": "请求节点清除无障碍焦点。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "展开",
+							"description": "请求节点展开。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "折叠",
+							"description": "请求节点折叠。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "关闭",
+							"description": "请求节点关闭。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "设置文本",
+							"description": "使用设置文本动作替换真实控件内容，空文本表示请求清空。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "替换后的文本，不为空引用"
+								}
+							]
+						},
+						{
+							"name": "刷新",
+							"description": "从界面刷新当前节点快照。失败后应释放并重新查询。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "复制节点",
+							"description": "复制当前节点引用，两个包装对象独立释放，不复制真实界面。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "释放",
+							"description": "释放原生节点，可重复调用；随后除释放外的操作均拒绝。"
+						}
+					]
+				},
+				{
+					"name": "无障碍窗口",
+					"description": "可交互窗口的只读视图，不代表系统中的所有窗口。使用后释放，界面变化后应重新查询。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍窗口",
+					"properties": [
+						{
+							"name": "编号",
+							"description": "编号。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "类型",
+							"description": "类型。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "层次",
+							"description": "层次。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "子窗口数",
+							"description": "子窗口数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "标题",
+							"description": "标题。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "活动",
+							"description": "活动。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "输入焦点",
+							"description": "输入焦点。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "无障碍焦点",
+							"description": "无障碍焦点。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "画中画",
+							"description": "窗口是否处于画中画，需要 API 26 及以上。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取根节点",
+							"description": "取得关联引用，使用后单独释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "取锚节点",
+							"description": "取得关联引用，使用后单独释放。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "取父窗口",
+							"description": "取得关联引用，使用后单独释放。",
+							"return": "simple.library.wsd.accessibility.无障碍窗口"
+						},
+						{
+							"name": "取子窗口",
+							"description": "按索引取得子窗口，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍窗口",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的子窗口索引"
+								}
+							]
+						},
+						{
+							"name": "取屏幕边界",
+							"description": "取得屏幕像素边界快照。",
+							"return": "simple.library.wsd.accessibility.无障碍边界"
+						},
+						{
+							"name": "释放",
+							"description": "释放原生窗口，可重复调用。"
+						}
+					]
+				},
+				{
+					"name": "无障碍记录",
+					"description": "无障碍事件中的只读记录。独立取出的记录使用后释放；从记录取得的节点也须单独释放。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍记录",
+					"properties": [
+						{
+							"name": "类名",
+							"description": "类名。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "内容描述",
+							"description": "内容描述。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "更改前文本",
+							"description": "更改前文本。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "窗口编号",
+							"description": "窗口编号；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "增加字符数",
+							"description": "增加字符数；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "减少字符数",
+							"description": "减少字符数；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "项目数",
+							"description": "项目数；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "当前索引",
+							"description": "当前索引；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "首可见索引",
+							"description": "首可见索引；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "尾可见索引",
+							"description": "尾可见索引；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "水平滚动量",
+							"description": "水平滚动量；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "垂直滚动量",
+							"description": "垂直滚动量；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "最大水平滚动量",
+							"description": "最大水平滚动量；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "最大垂直滚动量",
+							"description": "最大垂直滚动量；索引、数量和滚动值保留系统原始值，未提供时可能为负数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "已启用",
+							"description": "已启用。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "已勾选",
+							"description": "已勾选。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "全屏",
+							"description": "全屏。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "密码字段",
+							"description": "密码字段。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "可滚动",
+							"description": "可滚动。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取文本",
+							"description": "取得记录中的文本数组快照。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "取源节点",
+							"description": "取得触发记录的节点，使用后释放。受监听包、系统授权和目标窗口变化影响。",
+							"return": "simple.library.wsd.accessibility.无障碍节点"
+						},
+						{
+							"name": "复制记录",
+							"description": "取得独立记录副本，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍记录"
+						},
+						{
+							"name": "释放",
+							"description": "释放记录或事件，可重复调用。事件派发者在回调结束后也会自动释放回调事件。"
+						}
+					]
+				},
+				{
+					"name": "无障碍事件",
+					"description": "系统无障碍事件的只读视图。收到事件回调的参数仅在该次回调中有效；需保存时复制事件，并在用完副本后释放。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍事件",
+					"inherits": [
+						"simple.library.wsd.accessibility.无障碍记录"
+					],
+					"properties": [
+						{
+							"name": "事件类型",
+							"description": "事件类型。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "动作编号",
+							"description": "动作编号。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "内容变化类型",
+							"description": "内容变化类型。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "时间",
+							"description": "时间。时间以开机以来的毫秒表示。",
+							"type": "长整数型",
+							"writable": false
+						},
+						{
+							"name": "移动粒度",
+							"description": "移动粒度。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "包名",
+							"description": "包名。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "记录数",
+							"description": "记录数。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "窗口变化类型",
+							"description": "窗口变化掩码，需要 API 28 及以上。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "水平滚动增量",
+							"description": "水平滚动增量，需要 API 28 及以上，单位为像素。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "垂直滚动增量",
+							"description": "垂直滚动增量，需要 API 28 及以上，单位为像素。",
+							"type": "整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取记录",
+							"description": "取得独立记录副本，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍记录",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的记录索引"
+								}
+							]
+						},
+						{
+							"name": "复制事件",
+							"description": "复制事件，用于回调结束后保留数据，使用后释放。",
+							"return": "simple.library.wsd.accessibility.无障碍事件"
+						}
+					]
+				},
+				{
+					"name": "无障碍服务信息",
+					"description": "无障碍服务信息快照。仅事件类型、反馈类型、标志、通知间隔及监听包名可动态修改；修改后由服务的应用配置方法提交。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍服务信息",
+					"properties": [
+						{
+							"name": "事件类型",
+							"description": "事件类型掩码，见无障碍常量。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "反馈类型",
+							"description": "反馈类型掩码，见无障碍常量。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "标志",
+							"description": "标志掩码，见无障碍常量。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "通知间隔",
+							"description": "通知间隔；通知间隔单位为毫秒。",
+							"type": "长整数型",
+							"writable": false
+						},
+						{
+							"name": "编号",
+							"description": "编号，属于服务的静态描述。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "设置界面",
+							"description": "设置界面，属于服务的静态描述。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "能力",
+							"description": "能力，属于服务的静态描述。",
+							"type": "整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "设置事件类型",
+							"description": "修改快照的事件类型；尚未提交到运行中的服务。",
+							"params": [
+								{
+									"name": "事件类型",
+									"type": "整数型",
+									"description": "事件类型值"
+								}
+							]
+						},
+						{
+							"name": "设置反馈类型",
+							"description": "修改快照的反馈类型；尚未提交到运行中的服务。",
+							"params": [
+								{
+									"name": "反馈类型",
+									"type": "整数型",
+									"description": "反馈类型值"
+								}
+							]
+						},
+						{
+							"name": "设置标志",
+							"description": "修改快照的标志；尚未提交到运行中的服务。",
+							"params": [
+								{
+									"name": "标志",
+									"type": "整数型",
+									"description": "标志值"
+								}
+							]
+						},
+						{
+							"name": "设置通知间隔",
+							"description": "修改快照的通知间隔；尚未提交到运行中的服务。",
+							"params": [
+								{
+									"name": "通知间隔",
+									"type": "长整数型",
+									"description": "通知间隔值"
+								}
+							]
+						},
+						{
+							"name": "取说明",
+							"description": "加载服务的本地化说明文本。",
+							"return": "文本型"
+						},
+						{
+							"name": "取摘要",
+							"description": "加载服务摘要，需要 API 26 及以上。",
+							"return": "文本型"
+						},
+						{
+							"name": "取监听包名",
+							"description": "取得当前限制的应用包名。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "设置监听包名",
+							"description": "修改监听包名快照。空数组表示监听全部应用；不会授予额外权限。",
+							"params": [
+								{
+									"name": "包名",
+									"type": "文本型[]",
+									"description": "包名数组；不得含空项"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "无障碍手势路径",
+					"description": "以屏幕像素构造单轮廓笔画。先设置起点，再添加线段或曲线；坐标须为非负有限数。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍手势路径",
+					"functions": [
+						{
+							"name": "设置起点",
+							"description": "清除既有路径并设置起点；只有起点的路径可用于点击。",
+							"params": [
+								{
+									"name": "横坐标",
+									"type": "单精度小数型",
+									"description": "目标屏幕像素横坐标"
+								},
+								{
+									"name": "纵坐标",
+									"type": "单精度小数型",
+									"description": "目标屏幕像素纵坐标"
+								}
+							]
+						},
+						{
+							"name": "添加直线",
+							"description": "从当前点添加直线。",
+							"params": [
+								{
+									"name": "横坐标",
+									"type": "单精度小数型",
+									"description": "目标屏幕像素横坐标"
+								},
+								{
+									"name": "纵坐标",
+									"type": "单精度小数型",
+									"description": "目标屏幕像素纵坐标"
+								}
+							]
+						},
+						{
+							"name": "添加曲线",
+							"description": "添加三次贝塞尔曲线，单位为屏幕像素。",
+							"params": [
+								{
+									"name": "控制点一X",
+									"type": "单精度小数型",
+									"description": "第一控制点横坐标"
+								},
+								{
+									"name": "控制点一Y",
+									"type": "单精度小数型",
+									"description": "第一控制点纵坐标"
+								},
+								{
+									"name": "控制点二X",
+									"type": "单精度小数型",
+									"description": "第二控制点横坐标"
+								},
+								{
+									"name": "控制点二Y",
+									"type": "单精度小数型",
+									"description": "第二控制点纵坐标"
+								},
+								{
+									"name": "横坐标",
+									"type": "单精度小数型",
+									"description": "目标屏幕像素横坐标"
+								},
+								{
+									"name": "纵坐标",
+									"type": "单精度小数型",
+									"description": "目标屏幕像素纵坐标"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "无障碍笔画",
+					"description": "不可变手势笔画。路径采用屏幕像素，开始时间与持续时间采用毫秒；创建后不受路径后续修改影响。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍笔画",
+					"functions": [
+						{
+							"name": "创建",
+							"description": "创建手势笔画。",
+							"static": true,
+							"return": "simple.library.wsd.accessibility.无障碍笔画",
+							"params": [
+								{
+									"name": "路径",
+									"type": "simple.library.wsd.accessibility.无障碍手势路径",
+									"description": "已设置起点的单轮廓路径"
+								},
+								{
+									"name": "开始时间",
+									"type": "长整数型",
+									"description": "相对该次手势的非负毫秒偏移"
+								},
+								{
+									"name": "持续时间",
+									"type": "长整数型",
+									"description": "正数毫秒，结束时间不能超过时限"
+								}
+							]
+						},
+						{
+							"name": "创建可续接",
+							"description": "创建手势笔画。需要 API 26 及以上。",
+							"static": true,
+							"return": "simple.library.wsd.accessibility.无障碍笔画",
+							"params": [
+								{
+									"name": "路径",
+									"type": "simple.library.wsd.accessibility.无障碍手势路径",
+									"description": "已设置起点的单轮廓路径"
+								},
+								{
+									"name": "开始时间",
+									"type": "长整数型",
+									"description": "相对该次手势的非负毫秒偏移"
+								},
+								{
+									"name": "持续时间",
+									"type": "长整数型",
+									"description": "正数毫秒，结束时间不能超过时限"
+								},
+								{
+									"name": "继续触摸",
+									"type": "逻辑型",
+									"description": "下一次派发续接笔画前是否保持触摸"
+								}
+							]
+						},
+						{
+							"name": "续接",
+							"description": "从已声明保持触摸的笔画创建续接笔画；新起点须等于原终点，需要 API 26 及以上。",
+							"return": "simple.library.wsd.accessibility.无障碍笔画",
+							"params": [
+								{
+									"name": "路径",
+									"type": "simple.library.wsd.accessibility.无障碍手势路径",
+									"description": "已设置起点的单轮廓路径"
+								},
+								{
+									"name": "开始时间",
+									"type": "长整数型",
+									"description": "相对该次手势的非负毫秒偏移"
+								},
+								{
+									"name": "持续时间",
+									"type": "长整数型",
+									"description": "正数毫秒，结束时间不能超过时限"
+								},
+								{
+									"name": "继续触摸",
+									"type": "逻辑型",
+									"description": "是否继续保持触摸"
+								}
+							]
+						}
+					],
+					"properties": [
+						{
+							"name": "开始时间",
+							"description": "开始时间，单位为毫秒。",
+							"type": "长整数型",
+							"writable": false
+						},
+						{
+							"name": "持续时间",
+							"description": "持续时间，单位为毫秒。",
+							"type": "长整数型",
+							"writable": false
+						},
+						{
+							"name": "继续触摸",
+							"description": "是否在下一次派发前保留触摸，需要 API 26 及以上。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍手势",
+					"description": "一个或多个笔画组成的手势，支持多点同时操作。派发可能因新手势、用户触摸或其它服务而被取消。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍手势",
+					"properties": [
+						{
+							"name": "笔画数",
+							"description": "当前笔画数量。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "笔画上限",
+							"description": "系统允许的最大笔画数量。",
+							"static": true,
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "时长上限",
+							"description": "单次手势允许的最大结束时间，单位为毫秒。",
+							"static": true,
+							"type": "长整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "添加笔画",
+							"description": "添加一笔，时间可与其它笔画重叠。",
+							"params": [
+								{
+									"name": "笔画",
+									"type": "simple.library.wsd.accessibility.无障碍笔画",
+									"description": "不可变笔画"
+								}
+							]
+						},
+						{
+							"name": "取笔画",
+							"description": "按索引取得不可变笔画。",
+							"return": "simple.library.wsd.accessibility.无障碍笔画",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的有效索引"
+								}
+							]
+						},
+						{
+							"name": "清空",
+							"description": "移除全部笔画，不取消已经派发的手势。"
+						}
+					]
+				},
+				{
+					"name": "无障碍软键盘控制器",
+					"description": "查询及修改软键盘显示策略。改变事件由无障碍服务组件报告。控制器仅在取得它的服务连接存续期间有效，必须在主线程使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍软键盘控制器",
+					"properties": [
+						{
+							"name": "显示模式",
+							"description": "当前软键盘显示策略，见无障碍常量。",
+							"type": "整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "设置显示模式",
+							"description": "请求切换软键盘显示策略，不表示输入法窗口已显示或隐藏。忽略硬键盘模式需要 API 29。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "模式",
+									"type": "整数型",
+									"description": "自动、隐藏或忽略硬键盘模式"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "无障碍放大控制器",
+					"description": "查询及修改系统显示放大状态。改变事件由无障碍服务组件报告。控制器仅在取得它的服务连接存续期间有效，必须在主线程使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍放大控制器",
+					"properties": [
+						{
+							"name": "中心X",
+							"description": "中心X；中心以未缩放屏幕像素表示，未放大时比例为 1。",
+							"type": "单精度小数型",
+							"writable": false
+						},
+						{
+							"name": "中心Y",
+							"description": "中心Y；中心以未缩放屏幕像素表示，未放大时比例为 1。",
+							"type": "单精度小数型",
+							"writable": false
+						},
+						{
+							"name": "比例",
+							"description": "比例；中心以未缩放屏幕像素表示，未放大时比例为 1。",
+							"type": "单精度小数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取区域边界",
+							"description": "取得可放大区域的外接矩形，不表示矩形中每一点均可放大。",
+							"return": "simple.library.wsd.accessibility.无障碍边界"
+						},
+						{
+							"name": "区域包含",
+							"description": "检查像素点是否在可放大区域内。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "横坐标",
+									"type": "整数型",
+									"description": "屏幕像素横坐标"
+								},
+								{
+									"name": "纵坐标",
+									"type": "整数型",
+									"description": "屏幕像素纵坐标"
+								}
+							]
+						},
+						{
+							"name": "设置比例",
+							"description": "请求修改系统放大比例，仍受系统允许范围限制。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "比例",
+									"type": "单精度小数型",
+									"description": "不小于 1 的有限倍率"
+								},
+								{
+									"name": "动画",
+									"type": "逻辑型",
+									"description": "是否使用过渡动画"
+								}
+							]
+						},
+						{
+							"name": "设置中心",
+							"description": "请求改变放大中心。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "横坐标",
+									"type": "单精度小数型",
+									"description": "未缩放屏幕像素横坐标"
+								},
+								{
+									"name": "纵坐标",
+									"type": "单精度小数型",
+									"description": "未缩放屏幕像素纵坐标"
+								},
+								{
+									"name": "动画",
+									"type": "逻辑型",
+									"description": "是否使用过渡动画"
+								}
+							]
+						},
+						{
+							"name": "重置",
+							"description": "恢复默认放大比例和中心。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "动画",
+									"type": "逻辑型",
+									"description": "是否使用过渡动画"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "无障碍按钮控制器",
+					"description": "查询辅助按钮可用性，需要 API 26 及以上，并受导航模式限制。改变事件由无障碍服务组件报告。控制器仅在取得它的服务连接存续期间有效，必须在主线程使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍按钮控制器",
+					"properties": [
+						{
+							"name": "可用",
+							"description": "系统当前是否允许使用该控制器的能力。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍指纹控制器",
+					"description": "查询指纹手势可用性，需要 API 26、USE_FINGERPRINT 权限及支持手势的硬件。改变事件由无障碍服务组件报告。控制器仅在取得它的服务连接存续期间有效，必须在主线程使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍指纹控制器",
+					"properties": [
+						{
+							"name": "可用",
+							"description": "系统当前是否允许使用该控制器的能力。",
+							"type": "逻辑型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍字幕样式",
+					"description": "系统字幕首选样式快照。颜色使用 Android ARGB 整数，自定义状态与颜色分别报告。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍字幕样式",
+					"properties": [
+						{
+							"name": "背景色",
+							"description": "背景色。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "前景色",
+							"description": "前景色。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "窗口颜色",
+							"description": "窗口颜色。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "边缘颜色",
+							"description": "边缘颜色。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "边缘类型",
+							"description": "边缘类型。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "自定义背景色",
+							"description": "自定义背景色。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "自定义前景色",
+							"description": "自定义前景色。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "自定义窗口颜色",
+							"description": "自定义窗口颜色。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "自定义边缘颜色",
+							"description": "自定义边缘颜色。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "自定义边缘",
+							"description": "自定义边缘。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "字体样式",
+							"description": "首选字体样式编号，0 普通、1 粗体、2 斜体、3 粗斜体；未指定字体时为 0。",
+							"type": "整数型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "无障碍常量",
+					"description": "无障碍事件、节点动作、全局动作和配置的常量。常量存在不表示当前设备支持该能力；API 条件见各项说明。",
+					"kind": "object",
+					"type": "simple.library.wsd.accessibility.无障碍常量",
+					"constants": [
+						{
+							"name": "全局_返回",
+							"type": "整数型",
+							"value": "1",
+							"description": "返回。",
+							"static": true
+						},
+						{
+							"name": "全局_桌面",
+							"type": "整数型",
+							"value": "2",
+							"description": "桌面。",
+							"static": true
+						},
+						{
+							"name": "全局_最近任务",
+							"type": "整数型",
+							"value": "3",
+							"description": "最近任务。",
+							"static": true
+						},
+						{
+							"name": "全局_通知栏",
+							"type": "整数型",
+							"value": "4",
+							"description": "通知栏。",
+							"static": true
+						},
+						{
+							"name": "全局_快捷设置",
+							"type": "整数型",
+							"value": "5",
+							"description": "快捷设置。",
+							"static": true
+						},
+						{
+							"name": "全局_电源菜单",
+							"type": "整数型",
+							"value": "6",
+							"description": "电源菜单。",
+							"static": true
+						},
+						{
+							"name": "全局_切换分屏",
+							"type": "整数型",
+							"value": "7",
+							"description": "切换分屏。",
+							"static": true
+						},
+						{
+							"name": "全局_锁屏",
+							"type": "整数型",
+							"value": "8",
+							"description": "锁屏。需要 API 28 及以上。",
+							"static": true
+						},
+						{
+							"name": "全局_截图",
+							"type": "整数型",
+							"value": "9",
+							"description": "截图。需要 API 28 及以上。",
+							"static": true
+						},
+						{
+							"name": "事件_全部",
+							"type": "整数型",
+							"value": "-1",
+							"description": "全部。",
+							"static": true
+						},
+						{
+							"name": "事件_单击",
+							"type": "整数型",
+							"value": "1",
+							"description": "单击。",
+							"static": true
+						},
+						{
+							"name": "事件_长按",
+							"type": "整数型",
+							"value": "2",
+							"description": "长按。",
+							"static": true
+						},
+						{
+							"name": "事件_选中",
+							"type": "整数型",
+							"value": "4",
+							"description": "选中。",
+							"static": true
+						},
+						{
+							"name": "事件_输入焦点",
+							"type": "整数型",
+							"value": "8",
+							"description": "输入焦点。",
+							"static": true
+						},
+						{
+							"name": "事件_文本改变",
+							"type": "整数型",
+							"value": "16",
+							"description": "文本改变。",
+							"static": true
+						},
+						{
+							"name": "事件_窗口状态改变",
+							"type": "整数型",
+							"value": "32",
+							"description": "窗口状态改变。",
+							"static": true
+						},
+						{
+							"name": "事件_通知改变",
+							"type": "整数型",
+							"value": "64",
+							"description": "通知改变。",
+							"static": true
+						},
+						{
+							"name": "事件_悬停进入",
+							"type": "整数型",
+							"value": "128",
+							"description": "悬停进入。",
+							"static": true
+						},
+						{
+							"name": "事件_悬停退出",
+							"type": "整数型",
+							"value": "256",
+							"description": "悬停退出。",
+							"static": true
+						},
+						{
+							"name": "事件_窗口内容改变",
+							"type": "整数型",
+							"value": "2048",
+							"description": "窗口内容改变。",
+							"static": true
+						},
+						{
+							"name": "事件_滚动",
+							"type": "整数型",
+							"value": "4096",
+							"description": "滚动。",
+							"static": true
+						},
+						{
+							"name": "事件_文本选择改变",
+							"type": "整数型",
+							"value": "8192",
+							"description": "文本选择改变。",
+							"static": true
+						},
+						{
+							"name": "事件_公告",
+							"type": "整数型",
+							"value": "16384",
+							"description": "公告。",
+							"static": true
+						},
+						{
+							"name": "事件_无障碍焦点",
+							"type": "整数型",
+							"value": "32768",
+							"description": "无障碍焦点。",
+							"static": true
+						},
+						{
+							"name": "事件_清除无障碍焦点",
+							"type": "整数型",
+							"value": "65536",
+							"description": "清除无障碍焦点。",
+							"static": true
+						},
+						{
+							"name": "事件_按粒度移动",
+							"type": "整数型",
+							"value": "131072",
+							"description": "按粒度移动。",
+							"static": true
+						},
+						{
+							"name": "事件_触摸探索开始",
+							"type": "整数型",
+							"value": "512",
+							"description": "触摸探索开始。",
+							"static": true
+						},
+						{
+							"name": "事件_触摸探索结束",
+							"type": "整数型",
+							"value": "1024",
+							"description": "触摸探索结束。",
+							"static": true
+						},
+						{
+							"name": "事件_手势检测开始",
+							"type": "整数型",
+							"value": "262144",
+							"description": "手势检测开始。",
+							"static": true
+						},
+						{
+							"name": "事件_手势检测结束",
+							"type": "整数型",
+							"value": "524288",
+							"description": "手势检测结束。",
+							"static": true
+						},
+						{
+							"name": "事件_触摸开始",
+							"type": "整数型",
+							"value": "1048576",
+							"description": "触摸开始。",
+							"static": true
+						},
+						{
+							"name": "事件_触摸结束",
+							"type": "整数型",
+							"value": "2097152",
+							"description": "触摸结束。",
+							"static": true
+						},
+						{
+							"name": "事件_窗口列表改变",
+							"type": "整数型",
+							"value": "4194304",
+							"description": "窗口列表改变。",
+							"static": true
+						},
+						{
+							"name": "事件_上下文单击",
+							"type": "整数型",
+							"value": "8388608",
+							"description": "上下文单击。",
+							"static": true
+						},
+						{
+							"name": "事件_读取上下文",
+							"type": "整数型",
+							"value": "16777216",
+							"description": "读取上下文。",
+							"static": true
+						},
+						{
+							"name": "节点动作_输入焦点",
+							"type": "整数型",
+							"value": "1",
+							"description": "输入焦点。",
+							"static": true
+						},
+						{
+							"name": "节点动作_清除输入焦点",
+							"type": "整数型",
+							"value": "2",
+							"description": "清除输入焦点。",
+							"static": true
+						},
+						{
+							"name": "节点动作_选择",
+							"type": "整数型",
+							"value": "4",
+							"description": "选择。",
+							"static": true
+						},
+						{
+							"name": "节点动作_取消选择",
+							"type": "整数型",
+							"value": "8",
+							"description": "取消选择。",
+							"static": true
+						},
+						{
+							"name": "节点动作_单击",
+							"type": "整数型",
+							"value": "16",
+							"description": "单击。",
+							"static": true
+						},
+						{
+							"name": "节点动作_长按",
+							"type": "整数型",
+							"value": "32",
+							"description": "长按。",
+							"static": true
+						},
+						{
+							"name": "节点动作_无障碍焦点",
+							"type": "整数型",
+							"value": "64",
+							"description": "无障碍焦点。",
+							"static": true
+						},
+						{
+							"name": "节点动作_清除无障碍焦点",
+							"type": "整数型",
+							"value": "128",
+							"description": "清除无障碍焦点。",
+							"static": true
+						},
+						{
+							"name": "节点动作_下一粒度",
+							"type": "整数型",
+							"value": "256",
+							"description": "下一粒度。",
+							"static": true
+						},
+						{
+							"name": "节点动作_上一粒度",
+							"type": "整数型",
+							"value": "512",
+							"description": "上一粒度。",
+							"static": true
+						},
+						{
+							"name": "节点动作_下一HTML元素",
+							"type": "整数型",
+							"value": "1024",
+							"description": "下一HTML元素。",
+							"static": true
+						},
+						{
+							"name": "节点动作_上一HTML元素",
+							"type": "整数型",
+							"value": "2048",
+							"description": "上一HTML元素。",
+							"static": true
+						},
+						{
+							"name": "节点动作_向前滚动",
+							"type": "整数型",
+							"value": "4096",
+							"description": "向前滚动。",
+							"static": true
+						},
+						{
+							"name": "节点动作_向后滚动",
+							"type": "整数型",
+							"value": "8192",
+							"description": "向后滚动。",
+							"static": true
+						},
+						{
+							"name": "节点动作_复制",
+							"type": "整数型",
+							"value": "16384",
+							"description": "复制。",
+							"static": true
+						},
+						{
+							"name": "节点动作_粘贴",
+							"type": "整数型",
+							"value": "32768",
+							"description": "粘贴。",
+							"static": true
+						},
+						{
+							"name": "节点动作_剪切",
+							"type": "整数型",
+							"value": "65536",
+							"description": "剪切。",
+							"static": true
+						},
+						{
+							"name": "节点动作_选择文本",
+							"type": "整数型",
+							"value": "131072",
+							"description": "选择文本。",
+							"static": true
+						},
+						{
+							"name": "节点动作_展开",
+							"type": "整数型",
+							"value": "262144",
+							"description": "展开。",
+							"static": true
+						},
+						{
+							"name": "节点动作_折叠",
+							"type": "整数型",
+							"value": "524288",
+							"description": "折叠。",
+							"static": true
+						},
+						{
+							"name": "节点动作_关闭",
+							"type": "整数型",
+							"value": "1048576",
+							"description": "关闭。",
+							"static": true
+						},
+						{
+							"name": "节点动作_设置文本",
+							"type": "整数型",
+							"value": "2097152",
+							"description": "设置文本。",
+							"static": true
+						},
+						{
+							"name": "节点动作_显示到屏幕",
+							"type": "整数型",
+							"value": "16908342",
+							"description": "显示到屏幕。",
+							"static": true
+						},
+						{
+							"name": "节点动作_滚动到位置",
+							"type": "整数型",
+							"value": "16908343",
+							"description": "滚动到位置。",
+							"static": true
+						},
+						{
+							"name": "节点动作_向上滚动",
+							"type": "整数型",
+							"value": "16908344",
+							"description": "向上滚动。",
+							"static": true
+						},
+						{
+							"name": "节点动作_向下滚动",
+							"type": "整数型",
+							"value": "16908346",
+							"description": "向下滚动。",
+							"static": true
+						},
+						{
+							"name": "节点动作_向左滚动",
+							"type": "整数型",
+							"value": "16908345",
+							"description": "向左滚动。",
+							"static": true
+						},
+						{
+							"name": "节点动作_向右滚动",
+							"type": "整数型",
+							"value": "16908347",
+							"description": "向右滚动。",
+							"static": true
+						},
+						{
+							"name": "节点动作_上下文单击",
+							"type": "整数型",
+							"value": "16908348",
+							"description": "上下文单击。",
+							"static": true
+						},
+						{
+							"name": "节点动作_设置进度",
+							"type": "整数型",
+							"value": "16908349",
+							"description": "设置进度。",
+							"static": true
+						},
+						{
+							"name": "节点动作_移动窗口",
+							"type": "整数型",
+							"value": "16908354",
+							"description": "移动窗口。需要 API 26 及以上。",
+							"static": true
+						},
+						{
+							"name": "节点动作_显示工具提示",
+							"type": "整数型",
+							"value": "16908356",
+							"description": "显示工具提示。需要 API 28 及以上。",
+							"static": true
+						},
+						{
+							"name": "节点动作_隐藏工具提示",
+							"type": "整数型",
+							"value": "16908357",
+							"description": "隐藏工具提示。需要 API 28 及以上。",
+							"static": true
+						},
+						{
+							"name": "反馈_全部",
+							"type": "整数型",
+							"value": "-1",
+							"description": "全部。",
+							"static": true
+						},
+						{
+							"name": "反馈_语音",
+							"type": "整数型",
+							"value": "1",
+							"description": "语音。",
+							"static": true
+						},
+						{
+							"name": "反馈_触觉",
+							"type": "整数型",
+							"value": "2",
+							"description": "触觉。",
+							"static": true
+						},
+						{
+							"name": "反馈_声音",
+							"type": "整数型",
+							"value": "4",
+							"description": "声音。",
+							"static": true
+						},
+						{
+							"name": "反馈_视觉",
+							"type": "整数型",
+							"value": "8",
+							"description": "视觉。",
+							"static": true
+						},
+						{
+							"name": "反馈_通用",
+							"type": "整数型",
+							"value": "16",
+							"description": "通用。",
+							"static": true
+						},
+						{
+							"name": "反馈_盲文",
+							"type": "整数型",
+							"value": "32",
+							"description": "盲文。",
+							"static": true
+						},
+						{
+							"name": "标志_默认",
+							"type": "整数型",
+							"value": "1",
+							"description": "默认。",
+							"static": true
+						},
+						{
+							"name": "标志_包含非重要视图",
+							"type": "整数型",
+							"value": "2",
+							"description": "包含非重要视图。",
+							"static": true
+						},
+						{
+							"name": "标志_请求触摸探索",
+							"type": "整数型",
+							"value": "4",
+							"description": "请求触摸探索。",
+							"static": true
+						},
+						{
+							"name": "标志_报告资源ID",
+							"type": "整数型",
+							"value": "16",
+							"description": "报告资源ID。",
+							"static": true
+						},
+						{
+							"name": "标志_过滤按键",
+							"type": "整数型",
+							"value": "32",
+							"description": "过滤按键。",
+							"static": true
+						},
+						{
+							"name": "标志_读取交互窗口",
+							"type": "整数型",
+							"value": "64",
+							"description": "读取交互窗口。",
+							"static": true
+						},
+						{
+							"name": "标志_无障碍音量",
+							"type": "整数型",
+							"value": "128",
+							"description": "无障碍音量。需要 API 26 及以上。",
+							"static": true
+						},
+						{
+							"name": "标志_请求辅助按钮",
+							"type": "整数型",
+							"value": "256",
+							"description": "请求辅助按钮。需要 API 26 及以上。",
+							"static": true
+						},
+						{
+							"name": "标志_请求指纹手势",
+							"type": "整数型",
+							"value": "512",
+							"description": "请求指纹手势。需要 API 26 及以上。",
+							"static": true
+						},
+						{
+							"name": "能力_读取窗口",
+							"type": "整数型",
+							"value": "1",
+							"description": "读取窗口。",
+							"static": true
+						},
+						{
+							"name": "能力_触摸探索",
+							"type": "整数型",
+							"value": "2",
+							"description": "触摸探索。",
+							"static": true
+						},
+						{
+							"name": "能力_过滤按键",
+							"type": "整数型",
+							"value": "8",
+							"description": "过滤按键。",
+							"static": true
+						},
+						{
+							"name": "能力_控制放大",
+							"type": "整数型",
+							"value": "16",
+							"description": "控制放大。",
+							"static": true
+						},
+						{
+							"name": "能力_派发手势",
+							"type": "整数型",
+							"value": "32",
+							"description": "派发手势。",
+							"static": true
+						},
+						{
+							"name": "能力_指纹手势",
+							"type": "整数型",
+							"value": "64",
+							"description": "指纹手势。需要 API 26 及以上。",
+							"static": true
+						},
+						{
+							"name": "焦点_输入",
+							"type": "整数型",
+							"value": "1",
+							"description": "输入。",
+							"static": true
+						},
+						{
+							"name": "焦点_无障碍",
+							"type": "整数型",
+							"value": "2",
+							"description": "无障碍。",
+							"static": true
+						},
+						{
+							"name": "焦点方向_向后",
+							"type": "整数型",
+							"value": "1",
+							"description": "向后。",
+							"static": true
+						},
+						{
+							"name": "焦点方向_向前",
+							"type": "整数型",
+							"value": "2",
+							"description": "向前。",
+							"static": true
+						},
+						{
+							"name": "焦点方向_向左",
+							"type": "整数型",
+							"value": "17",
+							"description": "向左。",
+							"static": true
+						},
+						{
+							"name": "焦点方向_向上",
+							"type": "整数型",
+							"value": "33",
+							"description": "向上。",
+							"static": true
+						},
+						{
+							"name": "焦点方向_向右",
+							"type": "整数型",
+							"value": "66",
+							"description": "向右。",
+							"static": true
+						},
+						{
+							"name": "焦点方向_向下",
+							"type": "整数型",
+							"value": "130",
+							"description": "向下。",
+							"static": true
+						},
+						{
+							"name": "粒度_字符",
+							"type": "整数型",
+							"value": "1",
+							"description": "字符。",
+							"static": true
+						},
+						{
+							"name": "粒度_单词",
+							"type": "整数型",
+							"value": "2",
+							"description": "单词。",
+							"static": true
+						},
+						{
+							"name": "粒度_行",
+							"type": "整数型",
+							"value": "4",
+							"description": "行。",
+							"static": true
+						},
+						{
+							"name": "粒度_段落",
+							"type": "整数型",
+							"value": "8",
+							"description": "段落。",
+							"static": true
+						},
+						{
+							"name": "粒度_页",
+							"type": "整数型",
+							"value": "16",
+							"description": "页。",
+							"static": true
+						},
+						{
+							"name": "软键盘_自动",
+							"type": "整数型",
+							"value": "0",
+							"description": "自动。",
+							"static": true
+						},
+						{
+							"name": "软键盘_隐藏",
+							"type": "整数型",
+							"value": "1",
+							"description": "隐藏。",
+							"static": true
+						},
+						{
+							"name": "软键盘_忽略硬键盘",
+							"type": "整数型",
+							"value": "2",
+							"description": "忽略硬键盘。需要 API 29 及以上。",
+							"static": true
+						},
+						{
+							"name": "窗口_应用",
+							"type": "整数型",
+							"value": "1",
+							"description": "应用。",
+							"static": true
+						},
+						{
+							"name": "窗口_输入法",
+							"type": "整数型",
+							"value": "2",
+							"description": "输入法。",
+							"static": true
+						},
+						{
+							"name": "窗口_系统",
+							"type": "整数型",
+							"value": "3",
+							"description": "系统。",
+							"static": true
+						},
+						{
+							"name": "窗口_无障碍覆盖",
+							"type": "整数型",
+							"value": "4",
+							"description": "无障碍覆盖。",
+							"static": true
+						},
+						{
+							"name": "窗口_分屏分隔",
+							"type": "整数型",
+							"value": "5",
+							"description": "分屏分隔。",
+							"static": true
+						},
+						{
+							"name": "指纹手势_向上",
+							"type": "整数型",
+							"value": "4",
+							"description": "向上。需要 API 26 及受支持硬件。",
+							"static": true
+						},
+						{
+							"name": "指纹手势_向下",
+							"type": "整数型",
+							"value": "8",
+							"description": "向下。需要 API 26 及受支持硬件。",
+							"static": true
+						},
+						{
+							"name": "指纹手势_向左",
+							"type": "整数型",
+							"value": "2",
+							"description": "向左。需要 API 26 及受支持硬件。",
+							"static": true
+						},
+						{
+							"name": "指纹手势_向右",
+							"type": "整数型",
+							"value": "1",
+							"description": "向右。需要 API 26 及受支持硬件。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_向上",
+							"type": "整数型",
+							"value": "1",
+							"description": "向上。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_向下",
+							"type": "整数型",
+							"value": "2",
+							"description": "向下。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_向左",
+							"type": "整数型",
+							"value": "3",
+							"description": "向左。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_向右",
+							"type": "整数型",
+							"value": "4",
+							"description": "向右。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先上后下",
+							"type": "整数型",
+							"value": "7",
+							"description": "先上后下。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先下后上",
+							"type": "整数型",
+							"value": "8",
+							"description": "先下后上。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先左后右",
+							"type": "整数型",
+							"value": "5",
+							"description": "先左后右。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先右后左",
+							"type": "整数型",
+							"value": "6",
+							"description": "先右后左。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先上后左",
+							"type": "整数型",
+							"value": "13",
+							"description": "先上后左。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先上后右",
+							"type": "整数型",
+							"value": "14",
+							"description": "先上后右。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先下后左",
+							"type": "整数型",
+							"value": "15",
+							"description": "先下后左。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先下后右",
+							"type": "整数型",
+							"value": "16",
+							"description": "先下后右。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先左后上",
+							"type": "整数型",
+							"value": "9",
+							"description": "先左后上。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先左后下",
+							"type": "整数型",
+							"value": "10",
+							"description": "先左后下。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先右后上",
+							"type": "整数型",
+							"value": "11",
+							"description": "先右后上。",
+							"static": true
+						},
+						{
+							"name": "触摸手势_先右后下",
+							"type": "整数型",
+							"value": "12",
+							"description": "先右后下。",
+							"static": true
+						},
+						{
+							"name": "集合选择_无",
+							"type": "整数型",
+							"value": "0",
+							"description": "无。",
+							"static": true
+						},
+						{
+							"name": "集合选择_单选",
+							"type": "整数型",
+							"value": "1",
+							"description": "单选。",
+							"static": true
+						},
+						{
+							"name": "集合选择_多选",
+							"type": "整数型",
+							"value": "2",
+							"description": "多选。",
+							"static": true
+						},
+						{
+							"name": "范围_整数",
+							"type": "整数型",
+							"value": "0",
+							"description": "整数。",
+							"static": true
+						},
+						{
+							"name": "范围_小数",
+							"type": "整数型",
+							"value": "1",
+							"description": "小数。",
+							"static": true
+						},
+						{
+							"name": "范围_百分比",
+							"type": "整数型",
+							"value": "2",
+							"description": "百分比。",
+							"static": true
+						},
+						{
+							"name": "字幕边缘_无",
+							"type": "整数型",
+							"value": "0",
+							"description": "无。",
+							"static": true
+						},
+						{
+							"name": "字幕边缘_轮廓",
+							"type": "整数型",
+							"value": "1",
+							"description": "轮廓。",
+							"static": true
+						},
+						{
+							"name": "字幕边缘_阴影",
+							"type": "整数型",
+							"value": "2",
+							"description": "阴影。",
+							"static": true
+						},
+						{
+							"name": "字幕边缘_凸起",
+							"type": "整数型",
+							"value": "3",
+							"description": "凸起。",
+							"static": true
+						},
+						{
+							"name": "字幕边缘_凹下",
+							"type": "整数型",
+							"value": "4",
+							"description": "凹下。",
+							"static": true
+						},
+						{
+							"name": "字幕边缘_未指定",
+							"type": "整数型",
+							"value": "-1",
+							"description": "未指定。",
+							"static": true
 						}
 					]
 				}

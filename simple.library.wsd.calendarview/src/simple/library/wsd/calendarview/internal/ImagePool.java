@@ -90,7 +90,7 @@ public final class ImagePool {
 		long size = (long) image.getWidth() * image.getHeight();
 		if (images.size() >= 64 || pixels + size > 16777216L) {
 			image.recycle();
-			throw new simple.library.wsd.calendarview.日历错误("绘制图片集合已满，请先释放不用的图片");
+			throw new simple.library.wsd.calendarview.CV日历错误("绘制图片集合已满，请先释放不用的图片");
 		}
 		sequence = Math.incrementExact(sequence);
 		images.put(sequence, image);

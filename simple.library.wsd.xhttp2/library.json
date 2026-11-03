@@ -1,6 +1,6 @@
 {
-	"name": "XHttp2网络库",
-	"description": "基于 XHttp2 2.0.4 https://github.com/xuexiangjys/XHttp2 的 AndroidX 网络扩展库，提供请求、上传下载、缓存、Cookie 和证书配置。",
+	"name": "XH2网络库",
+	"description": "基于 XHttp2 https://github.com/xuexiangjys/XHttp2 封装，提供 AndroidX 网络请求、上传下载、缓存、Cookie 和证书配置。",
 	"version": "0.1.0",
 	"kind": "library",
 	"authors": [
@@ -14,9 +14,9 @@
 			"name": "扩展组件",
 			"definitions": [
 				{
-					"name": "XHttp客户端",
+					"name": "XH客户端",
 					"kind": "component",
-					"type": "simple.library.wsd.xhttp2.XHttp客户端",
+					"type": "simple.library.wsd.xhttp2.XH客户端",
 					"inherits": [
 						"simple.runtime.components.组件"
 					],
@@ -135,7 +135,7 @@
 							"params": [
 								{
 									"name": "请求",
-									"type": "simple.library.wsd.xhttp2.XHttp请求",
+									"type": "simple.library.wsd.xhttp2.XH请求",
 									"description": "将复制保存的请求。"
 								}
 							],
@@ -147,11 +147,11 @@
 							"params": [
 								{
 									"name": "请求",
-									"type": "simple.library.wsd.xhttp2.XHttp请求",
+									"type": "simple.library.wsd.xhttp2.XH请求",
 									"description": "请求配置。"
 								}
 							],
-							"return": "simple.library.wsd.xhttp2.XHttp响应"
+							"return": "simple.library.wsd.xhttp2.XH响应"
 						},
 						{
 							"name": "批量发送",
@@ -159,7 +159,7 @@
 							"params": [
 								{
 									"name": "请求列表",
-									"type": "simple.library.wsd.xhttp2.XHttp请求[]",
+									"type": "simple.library.wsd.xhttp2.XH请求[]",
 									"description": "非空请求数组。"
 								},
 								{
@@ -447,7 +447,7 @@
 							"params": [
 								{
 									"name": "请求",
-									"type": "simple.library.wsd.xhttp2.XHttp请求",
+									"type": "simple.library.wsd.xhttp2.XH请求",
 									"description": "可修改的本次请求副本；请求标识不可在此改变。"
 								}
 							]
@@ -474,7 +474,7 @@
 								},
 								{
 									"name": "响应",
-									"type": "simple.library.wsd.xhttp2.XHttp响应",
+									"type": "simple.library.wsd.xhttp2.XH响应",
 									"description": "只读响应。"
 								}
 							]
@@ -490,7 +490,7 @@
 								},
 								{
 									"name": "响应",
-									"type": "simple.library.wsd.xhttp2.XHttp响应",
+									"type": "simple.library.wsd.xhttp2.XH响应",
 									"description": "只读响应。"
 								}
 							]
@@ -506,7 +506,7 @@
 								},
 								{
 									"name": "响应",
-									"type": "simple.library.wsd.xhttp2.XHttp响应",
+									"type": "simple.library.wsd.xhttp2.XH响应",
 									"description": "失败响应。"
 								}
 							]
@@ -570,12 +570,12 @@
 								},
 								{
 									"name": "响应",
-									"type": "simple.library.wsd.xhttp2.XHttp响应",
+									"type": "simple.library.wsd.xhttp2.XH响应",
 									"description": "原始 HTTP 响应。"
 								},
 								{
 									"name": "结果",
-									"type": "simple.library.wsd.xhttp2.XHttp解析结果",
+									"type": "simple.library.wsd.xhttp2.XH解析结果",
 									"description": "供事件填写的业务结果。"
 								}
 							]
@@ -586,7 +586,7 @@
 							"params": [
 								{
 									"name": "结果",
-									"type": "simple.library.wsd.xhttp2.XHttp批结果",
+									"type": "simple.library.wsd.xhttp2.XH批结果",
 									"description": "包含失败、取消及提前停止的结果。"
 								}
 							]
@@ -617,12 +617,12 @@
 			]
 		},
 		{
-			"name": "网络对象",
+			"name": "扩展对象",
 			"definitions": [
 				{
-					"name": "XHttp请求",
+					"name": "XH请求",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XHttp请求",
+					"type": "simple.library.wsd.xhttp2.XH请求",
 					"description": "可复用的请求配置；发送前复制独立快照，后续修改不影响已经发出的请求。",
 					"properties": [
 						{
@@ -939,7 +939,7 @@
 						{
 							"name": "复制",
 							"description": "复制配置、请求字段和字节文件；文件路径仍引用同一来源。",
-							"return": "simple.library.wsd.xhttp2.XHttp请求"
+							"return": "simple.library.wsd.xhttp2.XH请求"
 						},
 						{
 							"name": "删除查询参数",
@@ -1082,9 +1082,9 @@
 					]
 				},
 				{
-					"name": "XHttp解析结果",
+					"name": "XH解析结果",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XHttp解析结果",
+					"type": "simple.library.wsd.xhttp2.XH解析结果",
 					"description": "自定义解析事件的结果；事件内明确设置成功状态，未处理不会被视为成功。",
 					"properties": [
 						{
@@ -1114,9 +1114,9 @@
 					]
 				},
 				{
-					"name": "XHttp响应",
+					"name": "XH响应",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XHttp响应",
+					"type": "simple.library.wsd.xhttp2.XH响应",
 					"description": "单次响应的只读快照；非成功 HTTP 状态仍保留响应头和响应体，网络错误的状态码为零。",
 					"properties": [
 						{
@@ -1261,9 +1261,9 @@
 					]
 				},
 				{
-					"name": "XHttp批结果",
+					"name": "XH批结果",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XHttp批结果",
+					"type": "simple.library.wsd.xhttp2.XH批结果",
 					"description": "一组请求的只读完成结果，按输入顺序保存每个请求的最终响应；缓存双发时取该请求最后一份响应。",
 					"properties": [
 						{
@@ -1274,7 +1274,7 @@
 						},
 						{
 							"name": "响应列表",
-							"type": "simple.library.wsd.xhttp2.XHttp响应[]",
+							"type": "simple.library.wsd.xhttp2.XH响应[]",
 							"description": "按输入顺序保存的响应快照，取消或提前停止的项目为取消响应。",
 							"writable": false
 						},
@@ -1297,16 +1297,11 @@
 							"writable": false
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "网络函数集",
-			"definitions": [
+				},
 				{
-					"name": "XHttp工具",
+					"name": "XH工具",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XHttp工具",
+					"type": "simple.library.wsd.xhttp2.XH工具",
 					"description": "网络数据的编码、摘要、签名及 JSON 路径函数集，不访问网络。",
 					"functions": [
 						{

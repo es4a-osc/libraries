@@ -1,5 +1,5 @@
 {
-	"name": "MPAndroidChart图表库",
+	"name": "MPAC图表库",
 	"description": "基于 MPAndroidChart https://github.com/PhilJay/MPAndroidChart 封装，提供折线、柱状、横向柱状、饼状、散点、气泡、雷达、蜡烛及组合图。",
 	"version": "0.1.0",
 	"authors": [
@@ -11,13 +11,12 @@
 	"kind": "library",
 	"categories": [
 		{
-			"name": "图表公共接口",
-			"hidden": true,
+			"name": "扩展可视组件",
 			"definitions": [
 				{
-					"name": "图表",
+					"name": "MPAC图表",
 					"kind": "interface",
-					"type": "simple.library.wsd.mpandroidchart.图表",
+					"type": "simple.library.wsd.mpandroidchart.MPAC图表",
 					"inherits": [
 						"simple.runtime.components.可视组件"
 					],
@@ -120,11 +119,11 @@
 					]
 				},
 				{
-					"name": "坐标图表",
+					"name": "MPAC坐标图表",
 					"kind": "interface",
-					"type": "simple.library.wsd.mpandroidchart.坐标图表",
+					"type": "simple.library.wsd.mpandroidchart.MPAC坐标图表",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.图表"
+						"simple.library.wsd.mpandroidchart.MPAC图表"
 					],
 					"description": "具有分类横轴和左右数值轴的图表公共接口。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"functions": [
@@ -179,20 +178,15 @@
 							"initializer": "真"
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "扩展可视组件",
-			"definitions": [
+				},
 				{
-					"name": "折线图",
+					"name": "MPAC折线图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.折线图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC折线图",
 					"description": "多组折线，支持左右轴及平滑曲线。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-dots.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.坐标图表"
+						"simple.library.wsd.mpandroidchart.MPAC坐标图表"
 					],
 					"functions": [
 						{
@@ -234,13 +228,13 @@
 					]
 				},
 				{
-					"name": "柱状图",
+					"name": "MPAC柱状图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.柱状图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC柱状图",
 					"description": "按分类展示多组并列柱状数据。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-bar-popular.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.坐标图表"
+						"simple.library.wsd.mpandroidchart.MPAC坐标图表"
 					],
 					"functions": [
 						{
@@ -272,13 +266,13 @@
 					]
 				},
 				{
-					"name": "横向柱状图",
+					"name": "MPAC横向柱状图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.横向柱状图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC横向柱状图",
 					"description": "横向展示多组柱状数据；数值轴沿水平方向。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-bar-horizontal.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.坐标图表"
+						"simple.library.wsd.mpandroidchart.MPAC坐标图表"
 					],
 					"functions": [
 						{
@@ -310,13 +304,13 @@
 					]
 				},
 				{
-					"name": "饼状图",
+					"name": "MPAC饼状图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.饼状图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC饼状图",
 					"description": "展示非负数据占比，非空图表至少有一个正数。\n\n\n仅在界面线程操作；依次初始化、添加扇区并构建图表。",
 					"icon": "icons/chart-pie-2.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.图表"
+						"simple.library.wsd.mpandroidchart.MPAC图表"
 					],
 					"functions": [
 						{
@@ -343,13 +337,13 @@
 					]
 				},
 				{
-					"name": "散点图",
+					"name": "MPAC散点图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.散点图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC散点图",
 					"description": "按分类索引展示离散点；横轴不是任意连续数值。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-scatter.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.坐标图表"
+						"simple.library.wsd.mpandroidchart.MPAC坐标图表"
 					],
 					"functions": [
 						{
@@ -381,13 +375,13 @@
 					]
 				},
 				{
-					"name": "气泡图",
+					"name": "MPAC气泡图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.气泡图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC气泡图",
 					"description": "按分类索引展示数值和非负气泡大小。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-bubble.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.坐标图表"
+						"simple.library.wsd.mpandroidchart.MPAC坐标图表"
 					],
 					"functions": [
 						{
@@ -424,13 +418,13 @@
 					]
 				},
 				{
-					"name": "雷达图",
+					"name": "MPAC雷达图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.雷达图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC雷达图",
 					"description": "至少三个分类项目，展示多组非负指标。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-radar.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.图表"
+						"simple.library.wsd.mpandroidchart.MPAC图表"
 					],
 					"functions": [
 						{
@@ -468,13 +462,13 @@
 					]
 				},
 				{
-					"name": "蜡烛图",
+					"name": "MPAC蜡烛图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.蜡烛图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC蜡烛图",
 					"description": "按分类展示开盘、最高、最低和收盘；上涨空心、下跌实心。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-candle.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.坐标图表"
+						"simple.library.wsd.mpandroidchart.MPAC坐标图表"
 					],
 					"functions": [
 						{
@@ -521,13 +515,13 @@
 					]
 				},
 				{
-					"name": "组合图",
+					"name": "MPAC组合图",
 					"kind": "component",
-					"type": "simple.library.wsd.mpandroidchart.组合图",
+					"type": "simple.library.wsd.mpandroidchart.MPAC组合图",
 					"description": "组合折线、柱状、散点、气泡和蜡烛数据，按添加顺序编号。\n\n\n仅在界面线程操作；依次初始化、设置项目名称、添加数据并构建图表。",
 					"icon": "icons/chart-covariate.svg",
 					"inherits": [
-						"simple.library.wsd.mpandroidchart.坐标图表"
+						"simple.library.wsd.mpandroidchart.MPAC坐标图表"
 					],
 					"functions": [
 						{

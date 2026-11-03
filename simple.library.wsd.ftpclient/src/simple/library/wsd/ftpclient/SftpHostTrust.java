@@ -8,11 +8,15 @@ import java.util.Locale;
 
 /**
  * 首次及变更公钥必须经用户确认；已保存的信任按主机与端口隔离。
+ *
+ * @author 树先生 xhwsd@qq.com
  */
 final class SftpHostTrust {
 
 	/**
 	 * 服务器公钥指纹的持久化访问接口。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	interface Store {
 
@@ -36,6 +40,8 @@ final class SftpHostTrust {
 
 	/**
 	 * 向用户请求确认服务器公钥的接口。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	interface Confirmation {
 
@@ -49,7 +55,8 @@ final class SftpHostTrust {
 		 * @param previous 之前保存的服务器指纹
 		 * @return 操作成功时为 {@code true}，失败时为 {@code false}
 		 */
-		boolean confirm(String host, int port, String algorithm, String fingerprint, String previous);
+		boolean confirm(
+				String host, int port, String algorithm, String fingerprint, String previous);
 	}
 
 	private static final Object SAVE_LOCK = new Object();
@@ -57,6 +64,12 @@ final class SftpHostTrust {
 	private final Confirmation confirmation;
 	private String lastError = "";
 
+	/**
+	 * 建立服务器信任校验策略。
+	 *
+	 * @param store 应用内信任记录存储。
+	 * @param confirmation 服务器身份确认回调。
+	 */
 	SftpHostTrust(Store store, Confirmation confirmation) {
 		this.store = store;
 		this.confirmation = confirmation;
@@ -80,7 +93,9 @@ final class SftpHostTrust {
 	 */
 	private static String digest(byte[] value) {
 		try {
-			return Base64.getEncoder().withoutPadding().encodeToString(MessageDigest.getInstance("SHA-256").digest(value));
+			return Base64.getEncoder()
+					.withoutPadding()
+					.encodeToString(MessageDigest.getInstance("SHA-256").digest(value));
 		} catch (NoSuchAlgorithmException impossible) {
 			throw new IllegalStateException(impossible);
 		}
@@ -97,13 +112,20 @@ final class SftpHostTrust {
 	 */
 	boolean verify(String host, int port, String algorithm, byte[] publicKey) {
 		lastError = "";
-		String key = digest((host.trim().toLowerCase(Locale.ROOT) + ":" + port).getBytes(StandardCharsets.UTF_8));
+		String key =
+				digest(
+						(host.trim().toLowerCase(Locale.ROOT) + ":" + port)
+								.getBytes(StandardCharsets.UTF_8));
 		String actual = fingerprint(publicKey);
 
 		try {
 			String previous = store.read(key);
-			if (previous == null) previous = "";
-			if (actual.equals(previous)) return true;
+			if (previous == null) {
+				previous = "";
+			}
+			if (actual.equals(previous)) {
+				return true;
+			}
 			if (!confirmation.confirm(host, port, algorithm, actual, previous)) {
 				lastError = previous.length() == 0 ? "尚未信任服务器公钥，已取消连接。" : "服务器公钥已变化，未确认更新信任，已拒绝连接。";
 				return false;
@@ -112,14 +134,20 @@ final class SftpHostTrust {
 			// 用户确认期间信任记录可能被其他会话更新，保存前在锁内重新核对。
 			synchronized (SAVE_LOCK) {
 				String current = store.read(key);
-				if (current == null) current = "";
-				if (actual.equals(current)) return true;
+				if (current == null) {
+					current = "";
+				}
+				if (actual.equals(current)) {
+					return true;
+				}
 				if (!previous.equals(current)) {
 					lastError = "服务器信任记录已变化，请重新登录。";
 					return false;
 				}
 
-				if (store.write(key, actual)) return true;
+				if (store.write(key, actual)) {
+					return true;
+				}
 			}
 
 			lastError = "无法保存服务器信任记录，已拒绝连接。";

@@ -146,11 +146,11 @@ public final class UpdateBackgroundService extends Service {
 		long total = task.total();
 		int percent = total > 0 ? (int) Math.min(100, task.received() * 100.0 / total) : 0;
 		NotificationCompat.Builder progress = builder().setContentTitle("正在下载更新")
-				.setContentText(task.state() == 更新器.状态_暂停 ? "下载已暂停" : "后台任务：" + TASKS.size())
+				.setContentText(task.state() == XU更新器.状态_暂停 ? "下载已暂停" : "后台任务：" + TASKS.size())
 				.setOngoing(true).setProgress(100, percent, total <= 0);
 		int id = TASKS.get(task);
 		progress.addAction(0, "取消", action(id, "cancel"));
-		if (task.state() == 更新器.状态_暂停) {
+		if (task.state() == XU更新器.状态_暂停) {
 			progress.addAction(0, "继续", action(id, "resume"));
 		}
 		((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(FOREGROUND, progress.build());

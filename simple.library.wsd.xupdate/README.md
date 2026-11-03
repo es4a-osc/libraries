@@ -1,15 +1,15 @@
-# XUpdate更新库
+# XU更新库
 
 基于 [XUpdate](https://github.com/xuexiangjys/XUpdate) 和 [XUpdateAPI](https://github.com/xuexiangjys/XUpdateAPI) 的 AndroidX 应用更新扩展库。两套上游能力统一交付，使用时只需引入本扩展库。
 
 - XUpdate：`simple.library.wsd.xupdate`，提供基础更新流程及各环节定制。
-- XUpdateAPI：`simple.library.wsd.xupdateapi`，提供快捷更新器与 Aria 暂停续传适配。
+- XUpdateAPI：`simple.library.wsd.xupdateapi`，提供 XU快捷更新器与 Aria 暂停续传适配。
 
 初次使用从下方的基础用法开始，不需要先了解另一套入口或实现定制接口。内部保留两部分的包名与职责。
 
 ## 基本使用
 
-在窗口中放置名为“更新”的 `simple.library.wsd.xupdate.更新器` 组件，下面通过按钮发起检查：
+在窗口中放置名为“更新”的 `simple.library.wsd.xupdate.XU更新器` 组件，下面通过按钮发起检查：
 
 ```simple
 事件 检查按钮.被单击()
@@ -79,9 +79,9 @@
 
 默认离开窗口取消任务；调用“转入后台”后由带通知的前台服务继续。后台完成通过通知请求用户安装，不在后台强行打开界面；进程被结束后不保证自动恢复。
 
-需要暂停续传时，可改用同库的 `simple.library.wsd.xupdateapi.快捷更新器`，在空闲时将“断点续传”设为真。更新信息必须提供真实 APK MD5；调用“暂停下载”并等待“已暂停”事件后，再调用“继续下载”。服务器不支持 Range 时重新完整下载，不保证进程结束后自动恢复。
+需要暂停续传时，可改用同库的 `simple.library.wsd.xupdateapi.XU快捷更新器`，在空闲时将“断点续传”设为真。更新信息必须提供真实 APK MD5；调用“暂停下载”并等待“已暂停”事件后，再调用“继续下载”。服务器不支持 Range 时重新完整下载，不保证进程结束后自动恢复。
 
-也可将 `simple.library.wsd.xupdateapi.Aria下载器` 对象通过“置下载器”接入基础更新器；这是可选的组合方式，基础用法不需要创建它。显式设置其它下载器会替换当前策略。
+也可将 `simple.library.wsd.xupdateapi.XUAria下载器` 对象通过“置下载器”接入基础更新器；这是可选的组合方式，基础用法不需要创建它。显式设置其它下载器会替换当前策略。
 
 ## APK 与运行条件
 

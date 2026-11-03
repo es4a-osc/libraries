@@ -1,6 +1,6 @@
-# AgentWeb浏览器库
+# AW浏览器库
 
-基于 AgentWeb 的增强网页浏览器扩展库，可嵌入 Simple 窗口，支持导航、进度及错误、JavaScript 消息、Cookie、文件选择上传、指定位置下载和网页视频全屏。
+`AW浏览器` 基于 AgentWeb，可嵌入 Simple 窗口，支持导航、进度及错误、JavaScript 消息、Cookie、文件选择上传、指定位置下载和网页视频全屏。
 
 使用 JDK 11、Android API 30 编译，最低 API 24，采用 AndroidX；宿主主题使用 AppCompat 主题。所有组件操作在界面线程调用。切换窗口时暂停浏览、退出全屏、取消文件选择和本实例未完成的下载；销毁后不再派发异步事件。
 

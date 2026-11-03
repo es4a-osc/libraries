@@ -1,6 +1,6 @@
 {
-	"name": "XUtil工具库",
-	"description": "基于 XUtil 2.0.0 https://github.com/xuexiangjys/XUtil 的 AndroidX 工具扩展库，按函数集提供文本、文件、缓存、编码、网络及设备等能力，权限随实际引用的函数集收集。",
+	"name": "XU工具库",
+	"description": "基于 XUtil https://github.com/xuexiangjys/XUtil 封装，按函数集提供文本、文件、缓存、编码、网络及设备等能力，权限随实际引用的函数集收集。",
 	"version": "0.1.0",
 	"kind": "library",
 	"authors": [
@@ -14,10 +14,10 @@
 			"name": "函数集",
 			"definitions": [
 				{
-					"name": "XUtil文本",
+					"name": "XU文本",
 					"description": "文本判空、整理、转换及版本名称比较。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil文本",
+					"type": "simple.library.wsd.xutil.XU文本",
 					"functions": [
 						{
 							"name": "是否空",
@@ -204,10 +204,10 @@
 					"icon": "icons/text-spellcheck.svg"
 				},
 				{
-					"name": "XUtil正则",
+					"name": "XU正则",
 					"description": "正则匹配、提取、分割与替换。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil正则",
+					"type": "simple.library.wsd.xutil.XU正则",
 					"functions": [
 						{
 							"name": "匹配",
@@ -378,10 +378,10 @@
 					"icon": "icons/regex.svg"
 				},
 				{
-					"name": "XUtil编码",
+					"name": "XU编码",
 					"description": "UTF-8 文本、Base64、URL 与 HTML 编解码。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil编码",
+					"type": "simple.library.wsd.xutil.XU编码",
 					"functions": [
 						{
 							"name": "文本到字节集",
@@ -491,10 +491,10 @@
 					"icon": "icons/binary.svg"
 				},
 				{
-					"name": "XUtil摘要",
+					"name": "XU摘要",
 					"description": "文本及文件摘要和 HMAC；MD5、SHA1 仅用于既有协议或内容校验。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil摘要",
+					"type": "simple.library.wsd.xutil.XU摘要",
 					"functions": [
 						{
 							"name": "MD5",
@@ -601,10 +601,10 @@
 					"icon": "icons/fingerprint.svg"
 				},
 				{
-					"name": "XUtil日期",
+					"name": "XU日期",
 					"description": "毫秒时间戳、格式转换、日期判断与星期查询。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil日期",
+					"type": "simple.library.wsd.xutil.XU日期",
 					"functions": [
 						{
 							"name": "取当前时间",
@@ -702,10 +702,10 @@
 					"icon": "icons/calendar.svg"
 				},
 				{
-					"name": "XUtil颜色",
+					"name": "XU颜色",
 					"description": "颜色明暗、透明比例与文本转换。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil颜色",
+					"type": "simple.library.wsd.xutil.XU颜色",
 					"functions": [
 						{
 							"name": "到文本",
@@ -804,10 +804,10 @@
 					"icon": "icons/palette.svg"
 				},
 				{
-					"name": "XUtil尺寸",
+					"name": "XU尺寸",
 					"description": "设备显示密度、屏幕尺寸及 DIP、SP、像素转换。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil尺寸",
+					"type": "simple.library.wsd.xutil.XU尺寸",
 					"functions": [
 						{
 							"name": "DP到像素",
@@ -886,10 +886,10 @@
 					"icon": "icons/ruler-measure.svg"
 				},
 				{
-					"name": "XUtil配置",
+					"name": "XU配置",
 					"description": "按配置名读写应用私有 SharedPreferences，不需要存储权限。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil配置",
+					"type": "simple.library.wsd.xutil.XU配置",
 					"functions": [
 						{
 							"name": "写文本",
@@ -1174,10 +1174,10 @@
 					"icon": "icons/adjustments-horizontal.svg"
 				},
 				{
-					"name": "XUtil缓存",
+					"name": "XU缓存",
 					"description": "应用私有磁盘缓存，支持文本、字节集和秒级有效期。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil缓存",
+					"type": "simple.library.wsd.xutil.XU缓存",
 					"functions": [
 						{
 							"name": "写文本",
@@ -1340,10 +1340,10 @@
 					"icon": "icons/database.svg"
 				},
 				{
-					"name": "XUtil文件",
+					"name": "XU文件",
 					"description": "文件路径、文本读写和目录操作；仅能访问应用实际有权访问的路径。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil文件",
+					"type": "simple.library.wsd.xutil.XU文件",
 					"functions": [
 						{
 							"name": "取私有目录",
@@ -1502,10 +1502,10 @@
 					"icon": "icons/folder.svg"
 				},
 				{
-					"name": "XUtil压缩",
+					"name": "XU压缩",
 					"description": "ZIP 压缩、目录索引与受路径边界约束的解压。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil压缩",
+					"type": "simple.library.wsd.xutil.XU压缩",
 					"functions": [
 						{
 							"name": "压缩",
@@ -1565,10 +1565,10 @@
 					"icon": "icons/file-zip.svg"
 				},
 				{
-					"name": "XUtil设备",
+					"name": "XU设备",
 					"description": "Android 公开设备信息与应用范围标识，不读取受限 IMEI、IMSI 或硬件 MAC。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil设备",
+					"type": "simple.library.wsd.xutil.XU设备",
 					"functions": [
 						{
 							"name": "取品牌",
@@ -1623,10 +1623,10 @@
 					"icon": "icons/device-mobile.svg"
 				},
 				{
-					"name": "XUtil应用",
+					"name": "XU应用",
 					"description": "当前应用版本、包名及可见应用信息；Android 11 起查询受包可见性限制。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil应用",
+					"type": "simple.library.wsd.xutil.XU应用",
 					"functions": [
 						{
 							"name": "取包名",
@@ -1687,10 +1687,10 @@
 					"icon": "icons/apps.svg"
 				},
 				{
-					"name": "XUtil网络",
+					"name": "XU网络",
 					"description": "查询默认网络的连接、互联网验证和传输类型。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil网络",
+					"type": "simple.library.wsd.xutil.XU网络",
 					"functions": [
 						{
 							"name": "是否已连接",
@@ -1745,10 +1745,10 @@
 					"icon": "icons/network.svg"
 				},
 				{
-					"name": "XUtil域名",
+					"name": "XU域名",
 					"description": "域名与本机 IP 查询；可能阻塞，必须在工作线程调用。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil域名",
+					"type": "simple.library.wsd.xutil.XU域名",
 					"functions": [
 						{
 							"name": "解析",
@@ -1780,10 +1780,10 @@
 					"icon": "icons/world-search.svg"
 				},
 				{
-					"name": "XUtil资源",
+					"name": "XU资源",
 					"description": "读取当前应用资源和资产文本。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil资源",
+					"type": "simple.library.wsd.xutil.XU资源",
 					"functions": [
 						{
 							"name": "取标识",
@@ -1872,10 +1872,10 @@
 					"icon": "icons/box.svg"
 				},
 				{
-					"name": "XUtil剪贴板",
+					"name": "XU剪贴板",
 					"description": "前台窗口的系统文本剪贴板；界面线程调用。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil剪贴板",
+					"type": "simple.library.wsd.xutil.XU剪贴板",
 					"functions": [
 						{
 							"name": "写文本",
@@ -1900,10 +1900,10 @@
 					"icon": "icons/clipboard.svg"
 				},
 				{
-					"name": "XUtil键盘",
+					"name": "XU键盘",
 					"description": "操作当前 Simple 窗口的软键盘；界面线程调用。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil键盘",
+					"type": "simple.library.wsd.xutil.XU键盘",
 					"functions": [
 						{
 							"name": "显示",
@@ -1928,10 +1928,10 @@
 					"icon": "icons/keyboard.svg"
 				},
 				{
-					"name": "XUtil随机",
+					"name": "XU随机",
 					"description": "一般用途随机数和随机文本，不用于密码或安全令牌。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil随机",
+					"type": "simple.library.wsd.xutil.XU随机",
 					"functions": [
 						{
 							"name": "取整数",
@@ -2020,10 +2020,10 @@
 					"icon": "icons/dice.svg"
 				},
 				{
-					"name": "XUtil大数",
+					"name": "XU大数",
 					"description": "十进制文本运算及金额格式化，避免小数通过二进制浮点输入丢失精度。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil大数",
+					"type": "simple.library.wsd.xutil.XU大数",
 					"functions": [
 						{
 							"name": "加",
@@ -2160,10 +2160,10 @@
 					"icon": "icons/math.svg"
 				},
 				{
-					"name": "XUtil身份证",
+					"name": "XU身份证",
 					"description": "中国居民身份证本地格式与校验位检查、生日及脱敏，不代替联网实名核验。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil身份证",
+					"type": "simple.library.wsd.xutil.XU身份证",
 					"functions": [
 						{
 							"name": "校验",
@@ -2234,10 +2234,10 @@
 					"icon": "icons/id.svg"
 				},
 				{
-					"name": "XUtil字节集",
+					"name": "XU字节集",
 					"description": "字节数组拼接、查找与切片。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil字节集",
+					"type": "simple.library.wsd.xutil.XU字节集",
 					"functions": [
 						{
 							"name": "拼接",
@@ -2320,10 +2320,10 @@
 					"icon": "icons/file-code.svg"
 				},
 				{
-					"name": "XUtilBCD",
+					"name": "XUBCD",
 					"description": "十进制数字文本与压缩 BCD 字节集转换。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtilBCD",
+					"type": "simple.library.wsd.xutil.XUBCD",
 					"functions": [
 						{
 							"name": "编码",
@@ -2355,10 +2355,10 @@
 					"icon": "icons/barcode.svg"
 				},
 				{
-					"name": "XUtil几何",
+					"name": "XU几何",
 					"description": "二维点的距离、中点和插值。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil几何",
+					"type": "simple.library.wsd.xutil.XU几何",
 					"functions": [
 						{
 							"name": "距离",
@@ -2453,10 +2453,10 @@
 					"icon": "icons/ruler-2.svg"
 				},
 				{
-					"name": "XUtil电话",
+					"name": "XU电话",
 					"description": "查询电话及 SIM 类型或打开拨号界面；不读取设备受限标识。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil电话",
+					"type": "simple.library.wsd.xutil.XU电话",
 					"functions": [
 						{
 							"name": "是否电话设备",
@@ -2503,10 +2503,10 @@
 					"icon": "icons/phone.svg"
 				},
 				{
-					"name": "XUtil通话",
+					"name": "XU通话",
 					"description": "直接拨号，必须先取得 CALL_PHONE 运行时授权；界面线程调用。",
 					"kind": "object",
-					"type": "simple.library.wsd.xutil.XUtil通话",
+					"type": "simple.library.wsd.xutil.XU通话",
 					"functions": [
 						{
 							"name": "是否已授权",

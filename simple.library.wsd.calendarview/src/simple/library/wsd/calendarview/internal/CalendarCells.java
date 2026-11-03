@@ -378,7 +378,7 @@ public final class CalendarCells {
 			if (!owner.draw(canvas, date, stage + (yearView ? 3 : 0), selected, previous, next, x, y, width, height)) {
 				return;
 			}
-			日历配置 config = owner.style();
+			CV日历配置 config = owner.style();
 			float density = view.getResources().getDisplayMetrics().density;
 			float scaled = view.getResources().getDisplayMetrics().scaledDensity;
 			float cx = x + width / 2;
@@ -485,7 +485,7 @@ public final class CalendarCells {
 			if (owner == null || !owner.heading(canvas, year, month, stage, week, x, y, width, height)) {
 				return;
 			}
-			日历配置 config = owner.style();
+			CV日历配置 config = owner.style();
 			paint.setStyle(Paint.Style.FILL);
 			paint.setFakeBoldText(stage == 0);
 			paint.setColor(stage == 0 ? config.年月份颜色() : stage == 1 ? config.年星期颜色() : config.周栏文字颜色());

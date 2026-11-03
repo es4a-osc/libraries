@@ -14,7 +14,7 @@ import simple.library.wsd.calendarview.vendor.Calendar;
  * @author 树先生 xhwsd@qq.com
  */
 public final class NativeCalendar extends CalendarView {
-	private 日历配置 options = new 日历配置();
+	private CV日历配置 options = new CV日历配置();
 	private final ImagePool images = new ImagePool();
 	private final Handler handler = new Handler(Looper.getMainLooper());
 	private Listener listener;
@@ -50,11 +50,11 @@ public final class NativeCalendar extends CalendarView {
 	 *
 	 * @param config 待复制的配置。
 	 */
-	public void configure(日历配置 config) {
+	public void configure(CV日历配置 config) {
 		if (config == null) {
 			throw new IllegalArgumentException("日历配置不能为空");
 		}
-		日历配置 snapshot = config.copy();
+		CV日历配置 snapshot = config.copy();
 		if (snapshot.最大选择跨度() != -1 && snapshot.最大选择跨度() < snapshot.最小选择跨度()) {
 			throw new IllegalArgumentException("最大选择跨度不能小于最小选择跨度");
 		}
@@ -117,7 +117,7 @@ public final class NativeCalendar extends CalendarView {
 	 *
 	 * @return 配置快照。
 	 */
-	public 日历配置 configuration() {
+	public CV日历配置 configuration() {
 		return options.copy();
 	}
 
@@ -126,7 +126,7 @@ public final class NativeCalendar extends CalendarView {
 	 *
 	 * @return 本实例的样式配置。
 	 */
-	日历配置 style() {
+	CV日历配置 style() {
 		return options;
 	}
 
@@ -167,10 +167,10 @@ public final class NativeCalendar extends CalendarView {
 		if (disposed || listener == null || !options.启用绘制事件()) {
 			return true;
 		}
-		日历绘图 drawing = scope(canvas, x, y, width, height);
+		CV日历绘图 drawing = scope(canvas, x, y, width, height);
 		drawingDepth++;
 		try {
-			return listener.draw(drawing, 日历日期.from(date), stage, selected, previous, next);
+			return listener.draw(drawing, CV日历日期.from(date), stage, selected, previous, next);
 		} catch (RuntimeException error) {
 			report(error);
 			return true;
@@ -198,7 +198,7 @@ public final class NativeCalendar extends CalendarView {
 		if (disposed || listener == null || !options.启用绘制事件()) {
 			return true;
 		}
-		日历绘图 drawing = scope(canvas, x, y, width, height);
+		CV日历绘图 drawing = scope(canvas, x, y, width, height);
 		drawingDepth++;
 		try {
 			return listener.heading(drawing, year, month, stage, week);
@@ -221,9 +221,9 @@ public final class NativeCalendar extends CalendarView {
 	 * @param height 高度像素。
 	 * @return 本回调专用上下文。
 	 */
-	private 日历绘图 scope(Canvas canvas, float x, float y, float width, float height) {
+	private CV日历绘图 scope(Canvas canvas, float x, float y, float width, float height) {
 		android.util.DisplayMetrics metrics = getResources().getDisplayMetrics();
-		return 日历绘图.begin(canvas, images, x, y, width, height, metrics.density, metrics.scaledDensity);
+		return CV日历绘图.begin(canvas, images, x, y, width, height, metrics.density, metrics.scaledDensity);
 	}
 
 	/**
@@ -341,7 +341,7 @@ public final class NativeCalendar extends CalendarView {
 		 * @param next 后项是否选中。
 		 * @return 是否继续默认绘制。
 		 */
-		boolean draw(日历绘图 drawing, 日历日期 date, int stage, boolean selected, boolean previous, boolean next);
+		boolean draw(CV日历绘图 drawing, CV日历日期 date, int stage, boolean selected, boolean previous, boolean next);
 
 		/**
 		 * 执行同步标题绘制。
@@ -353,7 +353,7 @@ public final class NativeCalendar extends CalendarView {
 		 * @param week 星期编号。
 		 * @return 是否继续默认绘制。
 		 */
-		boolean heading(日历绘图 drawing, int year, int month, int stage, int week);
+		boolean heading(CV日历绘图 drawing, int year, int month, int stage, int week);
 
 		/**
 		 * 报告绘制失败。

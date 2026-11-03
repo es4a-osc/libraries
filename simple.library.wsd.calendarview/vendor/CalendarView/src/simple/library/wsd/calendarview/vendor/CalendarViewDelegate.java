@@ -1196,7 +1196,7 @@ final class CalendarViewDelegate {
      * @param context 尺寸换算上下文。
      * @author 树先生 xhwsd@qq.com
      */
-    void es4aConfigure(simple.library.wsd.calendarview.日历配置 options, Context context) {
+    void es4aConfigure(simple.library.wsd.calendarview.CV日历配置 options, Context context) {
         float density = context.getResources().getDisplayMetrics().density;
         float scaledDensity = context.getResources().getDisplayMetrics().scaledDensity;
         mCurDayTextColor = options.今日文字颜色();

@@ -1,0 +1,6 @@
+/*
+ * MQTT 类库仅依赖 Paho Java Client，本地 JAR 与源码包由 libs/ 提供。
+ */
+android {
+	namespace = 'simple.library.wsd.mqttclient'
+}

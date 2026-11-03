@@ -111,7 +111,7 @@ final class UpdateTransport implements IUpdateHttpService {
 			@Override
 			public void run() {
 				try {
-					更新信息 info = new 更新信息();
+					XU更新信息 info = new XU更新信息();
 					info.下载地址(url);
 					File directory = new File(path);
 					if (!directory.isDirectory() && !directory.mkdirs()) {
@@ -308,7 +308,7 @@ final class UpdateTransport implements IUpdateHttpService {
 	 * @return 已完成校验的文件。
 	 * @throws IOException 下载、大小校验或 MD5 校验失败。
 	 */
-	static File download(Task task, 更新信息 info, File target, Map<String, String> headers,
+	static File download(Task task, XU更新信息 info, File target, Map<String, String> headers,
 			int timeout, Progress progress) throws IOException {
 		File temporary = new File(target.getPath() + ".part");
 		HttpURLConnection connection = open(task, url(info.下载地址()), headers, timeout);
@@ -372,7 +372,7 @@ final class UpdateTransport implements IUpdateHttpService {
 	 * @param file 已关闭写入的文件。
 	 * @throws IOException 文件为空、长度或摘要不符，或已经取消。
 	 */
-	static void verify(Task task, 更新信息 info, File file) throws IOException {
+	static void verify(Task task, XU更新信息 info, File file) throws IOException {
 		task.check();
 		if (!file.isFile() || file.length() == 0 || (info.文件大小() > 0 && file.length() != info.文件大小())) {
 			throw new IOException("APK 长度与版本信息不符。");
@@ -439,7 +439,7 @@ final class UpdateTransport implements IUpdateHttpService {
 		try {
 			return MessageDigest.getInstance("MD5");
 		} catch (NoSuchAlgorithmException exception) {
-			throw new IOException("无法创建 MD5 校验器。", exception);
+			throw new IOException("无法创建 MD5 XU校验器。", exception);
 		}
 	}
 

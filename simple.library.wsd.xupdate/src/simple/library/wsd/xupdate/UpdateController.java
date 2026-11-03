@@ -1,16 +1,16 @@
 package simple.library.wsd.xupdate;
 
-import static simple.library.wsd.xupdate.更新器.状态_空闲;
-import static simple.library.wsd.xupdate.更新器.状态_检查;
-import static simple.library.wsd.xupdate.更新器.状态_提示;
-import static simple.library.wsd.xupdate.更新器.状态_下载;
-import static simple.library.wsd.xupdate.更新器.状态_就绪;
-import static simple.library.wsd.xupdate.更新器.状态_授权;
-import static simple.library.wsd.xupdate.更新器.状态_安装;
-import static simple.library.wsd.xupdate.更新器.状态_暂停;
-import static simple.library.wsd.xupdate.更新器.阶段_检查;
-import static simple.library.wsd.xupdate.更新器.阶段_下载;
-import static simple.library.wsd.xupdate.更新器.阶段_安装;
+import static simple.library.wsd.xupdate.XU更新器.状态_空闲;
+import static simple.library.wsd.xupdate.XU更新器.状态_检查;
+import static simple.library.wsd.xupdate.XU更新器.状态_提示;
+import static simple.library.wsd.xupdate.XU更新器.状态_下载;
+import static simple.library.wsd.xupdate.XU更新器.状态_就绪;
+import static simple.library.wsd.xupdate.XU更新器.状态_授权;
+import static simple.library.wsd.xupdate.XU更新器.状态_安装;
+import static simple.library.wsd.xupdate.XU更新器.状态_暂停;
+import static simple.library.wsd.xupdate.XU更新器.阶段_检查;
+import static simple.library.wsd.xupdate.XU更新器.阶段_下载;
+import static simple.library.wsd.xupdate.XU更新器.阶段_安装;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,13 +72,13 @@ public abstract class UpdateController extends 组件Impl implements
 
 	private static boolean initialized;
 	private UpdateStages stages;
-	private 检查器 customChecker;
-	private 解析器 parser;
-	private 提示器 prompter;
-	private 下载器 downloader;
-	private 网络服务 network;
-	private 校验器 verifier;
-	private 安装器 installer;
+	private XU检查器 customChecker;
+	private XU解析器 parser;
+	private XU提示器 prompter;
+	private XU下载器 downloader;
+	private XU网络服务 network;
+	private XU校验器 verifier;
+	private XU安装器 installer;
 	private boolean autoDownload;
 	private boolean post = false;
 	private boolean postJson;
@@ -100,7 +100,7 @@ public abstract class UpdateController extends 组件Impl implements
 	private View owner;
 	private UpdateDialog dialog;
 	private UpdateTransport.Task task;
-	private 更新信息 current;
+	private XU更新信息 current;
 	private File readyFile;
 	private File pendingInstall;
 	private long sequence;
@@ -159,15 +159,15 @@ public abstract class UpdateController extends 组件Impl implements
 		stages.response(response);
 	}
 
-	public void 显示更新(更新信息 info) {
+	public void 显示更新(XU更新信息 info) {
 		checkIdle();
-		更新信息 snapshot = validate(info);
+		XU更新信息 snapshot = validate(info);
 		begin(状态_提示);
 		current = snapshot;
 		showPrompt(sequence);
 	}
 
-	public void 下载更新(更新信息 info) {
+	public void 下载更新(XU更新信息 info) {
 		checkIdle();
 		current = validateDownload(info);
 		UpdateTransport.Task active = begin(状态_下载);
@@ -339,8 +339,8 @@ public abstract class UpdateController extends 组件Impl implements
 	 * @return 由官方接口组合的更新调度器。
 	 */
 	private UpdateStages createStages(String address, final long token, UpdateTransport.Task active) {
-		final 解析器 selectedParser = parser;
-		final 网络服务 selectedNetwork = network;
+		final XU解析器 selectedParser = parser;
+		final XU网络服务 selectedNetwork = network;
 		final Map<String, Object> params = new LinkedHashMap<String, Object>();
 		params.putAll(parameters);
 		final IUpdateHttpService defaults = new UpdateTransport(main, executor, active, headers, timeout, postJson);
@@ -362,14 +362,14 @@ public abstract class UpdateController extends 组件Impl implements
 				/** 仅传递快照，第三方网络请求通过标准回调返回。 */
 				private void send(boolean post, String url, Map<String, Object> values, final Callback callback) {
 					selectedNetwork.请求(post, requestJson, url, new JSONObject(values).toString(), requestHeaders,
-							new 检查回调(new 检查回调.Result() {
+							new XU检查回调(new XU检查回调.Result() {
 						@Override
 						public void response(String value) {
 							callback.onSuccess(value);
 						}
 
 						@Override
-						public void information(更新信息 value) {
+						public void information(XU更新信息 value) {
 							callback.onError(new IOException("网络服务应提交原始响应；直接更新信息请使用检查器。"));
 						}
 
@@ -401,11 +401,11 @@ public abstract class UpdateController extends 组件Impl implements
 			@Override
 			public UpdateEntity parse(String response) throws Exception {
 				if (selectedParser != null) {
-					更新信息 result = selectedParser.解析(response);
+					XU更新信息 result = selectedParser.解析(response);
 					return result == null ? null : UpdateStages.toEntity(result);
 				}
 				if (customParser) {
-					更新信息 result = new 更新信息();
+					XU更新信息 result = new XU更新信息();
 					解析响应(response, result);
 					return UpdateStages.toEntity(result);
 				}
@@ -420,7 +420,7 @@ public abstract class UpdateController extends 组件Impl implements
 			}
 
 			@Override
-			public void found(更新信息 info) {
+			public void found(XU更新信息 info) {
 				task = null;
 				current = validate(info);
 				state = 状态_就绪;
@@ -449,7 +449,7 @@ public abstract class UpdateController extends 组件Impl implements
 			}
 
 			@Override
-			public void download(更新信息 info, OnFileDownloadListener listener) {
+			public void download(XU更新信息 info, OnFileDownloadListener listener) {
 				if (accepts()) {
 					current = validateDownload(info);
 					UpdateController.this.download(token, listener);
@@ -467,7 +467,7 @@ public abstract class UpdateController extends 组件Impl implements
 			}
 
 			@Override
-			public boolean ignored(更新信息 info) {
+			public boolean ignored(XU更新信息 info) {
 				return !info.强制更新() && info.允许忽略() && UpdateUtils.isIgnoreVersion(activity, info.版本名());
 			}
 		});
@@ -480,7 +480,7 @@ public abstract class UpdateController extends 组件Impl implements
 	 * @return 不与调用方共享修改的数据。
 	 * @throws IllegalArgumentException 信息缺失或字段不合法。
 	 */
-	private 更新信息 validate(更新信息 info) {
+	private XU更新信息 validate(XU更新信息 info) {
 		if (info == null || !info.有更新() || info.版本名().isEmpty()) {
 			throw new IllegalArgumentException("请提供有效的更新信息和版本名称。");
 		}
@@ -488,7 +488,7 @@ public abstract class UpdateController extends 组件Impl implements
 	}
 
 	/** 下载只验证文件信息，不与更新状态或本机版本绑定。 */
-	private 更新信息 validateDownload(更新信息 info) {
+	private XU更新信息 validateDownload(XU更新信息 info) {
 		if (info == null || info.文件大小() < 0 || (verifier == null && !info.MD5().isEmpty()
 				&& !info.MD5().matches("[0-9A-Fa-f]{32}"))) {
 			throw new IllegalArgumentException("下载信息、文件大小或摘要格式无效。");
@@ -1005,37 +1005,37 @@ public abstract class UpdateController extends 组件Impl implements
 	}
 
 
-	public void 置检查器(检查器 value) {
+	public void 置检查器(XU检查器 value) {
 		checkConfiguration();
 		customChecker = value;
 	}
 
-	public void 置解析器(解析器 value) {
+	public void 置解析器(XU解析器 value) {
 		checkConfiguration();
 		parser = value;
 	}
 
-	public void 置提示器(提示器 value) {
+	public void 置提示器(XU提示器 value) {
 		checkConfiguration();
 		prompter = value;
 	}
 
-	public void 置下载器(下载器 value) {
+	public void 置下载器(XU下载器 value) {
 		checkConfiguration();
 		downloader = value;
 	}
 
-	public void 置网络服务(网络服务 value) {
+	public void 置网络服务(XU网络服务 value) {
 		checkConfiguration();
 		network = value;
 	}
 
-	public void 置校验器(校验器 value) {
+	public void 置校验器(XU校验器 value) {
 		checkConfiguration();
 		verifier = value;
 	}
 
-	public void 置安装器(安装器 value) {
+	public void 置安装器(XU安装器 value) {
 		checkConfiguration();
 		installer = value;
 	}
@@ -1127,11 +1127,11 @@ public abstract class UpdateController extends 组件Impl implements
 		EventDispatcher.dispatchEvent(this, "检查开始");
 	}
 
-	public void 解析响应(String response, 更新信息 info) {
+	public void 解析响应(String response, XU更新信息 info) {
 		EventDispatcher.dispatchEvent(this, "解析响应" , response, info);
 	}
 
-	public void 发现更新(更新信息 info) {
+	public void 发现更新(XU更新信息 info) {
 		EventDispatcher.dispatchEvent(this, "发现更新" , info);
 	}
 

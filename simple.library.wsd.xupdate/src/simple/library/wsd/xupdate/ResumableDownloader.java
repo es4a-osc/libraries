@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @author 树先生 xhwsd@qq.com
  */
-public interface ResumableDownloader extends 下载器 {
+public interface ResumableDownloader extends XU下载器 {
 
 	/**
 	 * 固定本次任务的私有文件和请求配置；在首次下载前调用。

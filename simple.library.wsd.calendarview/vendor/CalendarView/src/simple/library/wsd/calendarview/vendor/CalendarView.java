@@ -1922,7 +1922,7 @@ public class CalendarView extends FrameLayout {
      * @param options 独立配置快照。
      * @author 树先生 xhwsd@qq.com
      */
-    public final void es4aConfigure(simple.library.wsd.calendarview.日历配置 options) {
+    public final void es4aConfigure(simple.library.wsd.calendarview.CV日历配置 options) {
         mDelegate.es4aConfigure(options, getContext());
         mMonthPager.updateStyle();
         mWeekPager.updateStyle();

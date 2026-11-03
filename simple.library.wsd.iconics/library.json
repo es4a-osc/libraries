@@ -1,6 +1,6 @@
 {
 	"name": "字体图标库",
-	"description": "字体图标、文字混排、七类控件、自定义字体、组合动画及图片输出。",
+	"description": "基于 Android-Iconics https://github.com/mikepenz/Android-Iconics 封装，提供字体图标、文字混排、图标控件、自定义字体、组合动画及图片输出。",
 	"version": "0.1.0",
 	"kind": "library",
 	"authors": [

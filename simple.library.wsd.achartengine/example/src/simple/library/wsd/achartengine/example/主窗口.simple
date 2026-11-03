@@ -212,14 +212,14 @@
 $属性
 	$资源 $窗口
 	$定义 主窗口 $为 窗口
-		标题 = "AChartEngine 使用示例"
+		标题 = "ACE图表示例"
 		布局 = 布局_线性
 		布局.方向 = 布局_方向_垂直
 		滚动 = 真
 		$定义 标题 $为 标签
 			宽度 = 长度_匹配父级
 			字体大小 = 23
-			文本 = "三种单组数据图表"
+			文本 = "ACE图表示例"
 			字体加粗 = 真
 		$结束 $定义
 		$定义 概况 $为 标签
@@ -256,17 +256,17 @@ $属性
 			宽度 = 长度_匹配父级
 			高度 = "300dp"
 			布局 = 布局_单帧
-			$定义 饼图 $为 simple.library.wsd.achartengine.饼状图
+			$定义 饼图 $为 simple.library.wsd.achartengine.ACE饼状图
 				宽度 = 长度_匹配父级
 				高度 = 长度_匹配父级
 				可视 = 真
 			$结束 $定义
-			$定义 柱图 $为 simple.library.wsd.achartengine.柱状图
+			$定义 柱图 $为 simple.library.wsd.achartengine.ACE柱状图
 				宽度 = 长度_匹配父级
 				高度 = 长度_匹配父级
 				可视 = 假
 			$结束 $定义
-			$定义 线图 $为 simple.library.wsd.achartengine.折线图
+			$定义 线图 $为 simple.library.wsd.achartengine.ACE折线图
 				宽度 = 长度_匹配父级
 				高度 = 长度_匹配父级
 				可视 = 假

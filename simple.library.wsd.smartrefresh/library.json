@@ -1,6 +1,6 @@
 {
-	"name": "智能刷新框库",
-	"description": "基于 SmartRefreshLayout 的单内容刷新容器，支持全部内置头尾、二楼、自定义外观、阶段事件及独立请求序号。",
+	"name": "SRL下拉刷新框库",
+	"description": "基于 SmartRefreshLayout https://github.com/scwang90/SmartRefreshLayout 封装，提供单内容刷新容器，支持内置头尾、二楼、自定义外观、阶段事件及独立请求序号。",
 	"version": "0.3.0",
 	"authors": [
 		{
@@ -14,9 +14,9 @@
 			"name": "扩展组件容器",
 			"definitions": [
 				{
-					"name": "智能刷新框",
+					"name": "SRL下拉刷新框",
 					"kind": "component",
-					"type": "simple.library.wsd.smartrefresh.智能刷新框",
+					"type": "simple.library.wsd.smartrefresh.SRL下拉刷新框",
 					"icon": "icons/arrows-down-up.svg",
 					"description": "支持全部内置及自定义头尾、二楼、阶段事件和独立请求序号的单内容刷新容器。所有成员在主线程调用。",
 					"inherits": [
@@ -646,7 +646,7 @@
 							"name": "取刷新头外观",
 							"description": "返回独立配置快照；修改后必须调用应用外观。",
 							"params": [],
-							"return": "simple.library.wsd.smartrefresh.刷新外观"
+							"return": "simple.library.wsd.smartrefresh.SRL刷新外观"
 						},
 						{
 							"name": "应用刷新头外观",
@@ -654,7 +654,7 @@
 							"params": [
 								{
 									"name": "外观",
-									"type": "simple.library.wsd.smartrefresh.刷新外观"
+									"type": "simple.library.wsd.smartrefresh.SRL刷新外观"
 								}
 							]
 						},
@@ -672,7 +672,7 @@
 							"name": "取加载尾外观",
 							"description": "返回独立配置快照；修改后必须调用应用外观。",
 							"params": [],
-							"return": "simple.library.wsd.smartrefresh.刷新外观"
+							"return": "simple.library.wsd.smartrefresh.SRL刷新外观"
 						},
 						{
 							"name": "应用加载尾外观",
@@ -680,7 +680,7 @@
 							"params": [
 								{
 									"name": "外观",
-									"type": "simple.library.wsd.smartrefresh.刷新外观"
+									"type": "simple.library.wsd.smartrefresh.SRL刷新外观"
 								}
 							]
 						},
@@ -784,7 +784,7 @@
 							"params": [
 								{
 									"name": "场景",
-									"type": "simple.library.wsd.smartrefresh.飞行场景"
+									"type": "simple.library.wsd.smartrefresh.SRL飞行场景"
 								},
 								{
 									"name": "图标",
@@ -1230,9 +1230,9 @@
 			"name": "扩展可视组件",
 			"definitions": [
 				{
-					"name": "飞行场景",
+					"name": "SRL飞行场景",
 					"kind": "component",
-					"type": "simple.library.wsd.smartrefresh.飞行场景",
+					"type": "simple.library.wsd.smartrefresh.SRL飞行场景",
 					"icon": "icons/mountain.svg",
 					"description": "配合飞行刷新头使用的山丘场景。",
 					"inherits": [
@@ -1267,9 +1267,9 @@
 			"name": "扩展对象",
 			"definitions": [
 				{
-					"name": "刷新外观",
+					"name": "SRL刷新外观",
 					"kind": "object",
-					"type": "simple.library.wsd.smartrefresh.刷新外观",
+					"type": "simple.library.wsd.smartrefresh.SRL刷新外观",
 					"description": "纯数据配置；取得后修改，再调用智能刷新框的应用刷新头外观或应用加载尾外观。",
 					"properties": [
 						{
@@ -1626,14 +1626,14 @@
 							"name": "复制",
 							"description": "复制全部外观值及独立数组。",
 							"params": [],
-							"return": "simple.library.wsd.smartrefresh.刷新外观"
+							"return": "simple.library.wsd.smartrefresh.SRL刷新外观"
 						}
 					]
 				},
 				{
-					"name": "刷新错误",
+					"name": "SRL刷新错误",
 					"kind": "object",
-					"type": "simple.library.wsd.smartrefresh.刷新错误",
+					"type": "simple.library.wsd.smartrefresh.SRL刷新错误",
 					"inherits": [
 						"simple.runtime.errors.运行错误"
 					],

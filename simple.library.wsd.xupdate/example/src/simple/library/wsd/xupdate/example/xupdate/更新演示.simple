@@ -1,4 +1,4 @@
-别名 更新信息 = simple.library.wsd.xupdate.更新信息
+别名 XU更新信息 = simple.library.wsd.xupdate.XU更新信息
 
 事件 返回.被单击()
 	切换窗口(创建 simple.library.wsd.xupdate.example.主窗口)
@@ -68,7 +68,7 @@
 	反馈.文本 = "正在查询版本信息……"
 结束 事件
 
-事件 更新.发现更新(信息 为 更新信息)
+事件 更新.发现更新(信息 为 XU更新信息)
 	反馈.文本 = "发现版本：" & 信息.版本名
 结束 事件
 
@@ -95,7 +95,7 @@ $属性
 		背景颜色 = -1
 		布局 = 布局_线性
 		布局.方向 = 布局_方向_垂直
-		$定义 更新 $为 simple.library.wsd.xupdate.更新器
+		$定义 更新 $为 simple.library.wsd.xupdate.XU更新器
 		$结束 $定义
 		$定义 导航 $为 面板
 			宽度 = 长度_匹配父级

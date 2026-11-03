@@ -32,12 +32,12 @@ final class UpdateFileTask {
 	}
 
 	private final Context context;
-	private final 更新信息 information;
+	private final XU更新信息 information;
 	private final Map<String, String> headers;
 	private final int timeout;
 	private final File target;
-	private final 下载器 downloader;
-	private final 校验器 verifier;
+	private final XU下载器 downloader;
+	private final XU校验器 verifier;
 	private final Handler main = new Handler(Looper.getMainLooper());
 	private final ExecutorService worker = Executors.newSingleThreadExecutor();
 	private final boolean resumable;
@@ -53,8 +53,8 @@ final class UpdateFileTask {
 	private boolean pauseReady;
 
 	/** 固定单次任务的数据和策略，后台任务不读取更新器的可变配置。 */
-	UpdateFileTask(Context context, File directory, 更新信息 information, Map<String, String> headers,
-			int timeout, 下载器 downloader, 校验器 verifier, Listener listener) {
+	UpdateFileTask(Context context, File directory, XU更新信息 information, Map<String, String> headers,
+			int timeout, XU下载器 downloader, XU校验器 verifier, Listener listener) {
 		this.context = context.getApplicationContext();
 		this.information = information.copy();
 		this.headers = new LinkedHashMap<String, String>(headers);
@@ -73,7 +73,7 @@ final class UpdateFileTask {
 	/** 开始或恢复传输，实际完成必须经过文件校验。 */
 	void start() {
 		final long token = ++sequence;
-		state = 更新器.状态_下载;
+		state = XU更新器.状态_下载;
 		pauseReady = false;
 		operation = new UpdateTransport.Task();
 		final UpdateTransport.Task active = operation;
@@ -108,7 +108,7 @@ final class UpdateFileTask {
 				throw new IOException("无法创建任务下载目录。");
 			}
 			if (downloader != null) {
-				downloader.下载(information.copy(), new 下载回调(result, new 下载回调.Progress() {
+				downloader.下载(information.copy(), new XU下载回调(result, new XU下载回调.Progress() {
 					@Override
 					public void received(long count, long length) {
 						if (accepts(token)) {
@@ -121,7 +121,7 @@ final class UpdateFileTask {
 					@Override
 					public void run() {
 						try {
-							更新信息 transferInfo = information.copy();
+							XU更新信息 transferInfo = information.copy();
 							if (verifier != null) {
 								transferInfo.MD5("");
 								transferInfo.文件大小(0);
@@ -164,17 +164,17 @@ final class UpdateFileTask {
 
 	/** @return 当前传输是否可以请求暂停。 */
 	boolean canPause() {
-		return resumable && state == 更新器.状态_下载;
+		return resumable && state == XU更新器.状态_下载;
 	}
 
 	/** 请求暂停；只在收到下载器的实际停止确认后允许恢复。 */
 	void pause() {
-		if (resumableDownloader == null || state != 更新器.状态_下载) {
+		if (resumableDownloader == null || state != XU更新器.状态_下载) {
 			throw new IllegalArgumentException("只有接入可暂停下载器的任务可以暂停。");
 		}
 		sequence++;
 		operation.cancel();
-		state = 更新器.状态_暂停;
+		state = XU更新器.状态_暂停;
 		resumableDownloader.pause(new Runnable() {
 			@Override
 			public void run() {
@@ -190,7 +190,7 @@ final class UpdateFileTask {
 
 	/** 已暂停或网络失败后恢复同一个文件和请求快照。 */
 	void resume() {
-		if (state != 更新器.状态_暂停 || !pauseReady || resumableDownloader == null) {
+		if (state != XU更新器.状态_暂停 || !pauseReady || resumableDownloader == null) {
 			throw new IllegalArgumentException("请等待暂停完成或可恢复的失败后继续。");
 		}
 		start();
@@ -205,10 +205,10 @@ final class UpdateFileTask {
 		if (downloader != null) {
 			downloader.取消();
 		}
-		if (state != 更新器.状态_就绪) {
+		if (state != XU更新器.状态_就绪) {
 			target.delete();
 		}
-		state = 更新器.状态_空闲;
+		state = XU更新器.状态_空闲;
 		worker.shutdownNow();
 		UpdateBackgroundService.finished(this, null, null);
 	}
@@ -223,7 +223,7 @@ final class UpdateFileTask {
 
 	/** 进入带通知的后台执行，默认传输不再依赖窗口生命周期。 */
 	void background() {
-		if (state != 更新器.状态_下载) {
+		if (state != XU更新器.状态_下载) {
 			throw new IllegalArgumentException("请在下载过程中转入后台。");
 		}
 		UpdateBackgroundService.attach(context, this);
@@ -285,11 +285,11 @@ final class UpdateFileTask {
 									failure(token, exception, false);
 									return;
 								}
-								state = 更新器.状态_就绪;
+								state = XU更新器.状态_就绪;
 								try {
 									report(file.length(), file.length(), 100);
 									// 进度事件可显式取消；取消后不继续发送完成或生成安装通知。
-									if (sequence == token && state == 更新器.状态_就绪) {
+									if (sequence == token && state == XU更新器.状态_就绪) {
 										Listener observer = listener.get();
 										if (observer != null) {
 											observer.completed(file);
@@ -323,7 +323,7 @@ final class UpdateFileTask {
 	/** 在单一终止边界更新状态与通知，不伪造下载完成。 */
 	private void failure(long token, Exception error, boolean recoverable) {
 		if (accepts(token)) {
-			state = recoverable ? 更新器.状态_暂停 : 更新器.状态_空闲;
+			state = recoverable ? XU更新器.状态_暂停 : XU更新器.状态_空闲;
 			pauseReady = recoverable;
 			if (!recoverable) {
 				if (downloader != null) {
@@ -345,7 +345,7 @@ final class UpdateFileTask {
 
 	/** 只接受仍在传输或校验中的本次回调。 */
 	private boolean accepts(long token) {
-		return token == sequence && state == 更新器.状态_下载;
+		return token == sequence && state == XU更新器.状态_下载;
 	}
 
 	/** 主线程统一发布进度。 */

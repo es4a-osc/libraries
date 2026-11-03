@@ -1,5 +1,5 @@
 {
-	"name": "AChartEngine图表库",
+	"name": "ACE图表库",
 	"description": "基于 AChartEngine https://github.com/ddanny/achartengine 封装，提供饼状图、柱状图和折线图。",
 	"version": "0.1.0",
 	"authors": [
@@ -14,11 +14,11 @@
 			"name": "扩展可视组件",
 			"definitions": [
 				{
-					"name": "饼状图",
+					"name": "ACE饼状图",
 					"description": "展示非负数值占比；非空图表至少包含一个正数。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
 					"icon": "icons/chart-pie.svg",
 					"kind": "component",
-					"type": "simple.library.wsd.achartengine.饼状图",
+					"type": "simple.library.wsd.achartengine.ACE饼状图",
 					"inherits": [
 						"simple.runtime.components.可视组件"
 					],
@@ -77,11 +77,11 @@
 					]
 				},
 				{
-					"name": "柱状图",
+					"name": "ACE柱状图",
 					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
 					"icon": "icons/chart-bar.svg",
 					"kind": "component",
-					"type": "simple.library.wsd.achartengine.柱状图",
+					"type": "simple.library.wsd.achartengine.ACE柱状图",
 					"inherits": [
 						"simple.runtime.components.可视组件"
 					],
@@ -150,11 +150,11 @@
 					]
 				},
 				{
-					"name": "折线图",
+					"name": "ACE折线图",
 					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
 					"icon": "icons/chart-line.svg",
 					"kind": "component",
-					"type": "simple.library.wsd.achartengine.折线图",
+					"type": "simple.library.wsd.achartengine.ACE折线图",
 					"inherits": [
 						"simple.runtime.components.可视组件"
 					],

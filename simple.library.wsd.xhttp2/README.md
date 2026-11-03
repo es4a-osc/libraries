@@ -1,4 +1,4 @@
-# XHttp2网络库
+# XH2网络库
 
 将 XHttp2 的请求、重试和缓存能力接入 Simple，提供独立客户端、可复用请求、响应快照、上传下载、Cookie、证书配置和批量请求。类型位于 `simple.library.wsd.xhttp2`。
 

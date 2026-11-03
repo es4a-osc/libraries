@@ -156,7 +156,7 @@ public final class Images {
 	 * @return PNG 图像。
 	 * @throws IOException 附加图片读取失败。
 	 */
-	public static byte[] generate(Context context, String text, 二维码配置 options) throws IOException {
+	public static byte[] generate(Context context, String text, XQRC二维码配置 options) throws IOException {
 		if (text == null || text.isEmpty() || text.length() > 16000) {
 			throw new IllegalArgumentException("二维码内容为空或过长");
 		}
@@ -210,7 +210,7 @@ public final class Images {
 	 * @param options 独立扫描配置。
 	 * @return 本次使用的提示表。
 	 */
-	public static Map<DecodeHintType, Object> hints(扫码配置 options) {
+	public static Map<DecodeHintType, Object> hints(XQRC扫码配置 options) {
 		Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
 		String[] names = options.取识别格式();
 		if (names.length == 0) {
@@ -233,10 +233,10 @@ public final class Images {
 	 *
 	 * @param source 亮度数据。
 	 * @param options 本次格式配置。
-	 * @return ZXing 识别结果。
+	 * @return ZXing XQRC识别结果。
 	 * @throws NotFoundException 图像中没有可识别的码。
 	 */
-	public static Result decode(LuminanceSource source, 扫码配置 options) throws NotFoundException {
+	public static Result decode(LuminanceSource source, XQRC扫码配置 options) throws NotFoundException {
 		return decode(source, options, null);
 	}
 
@@ -249,7 +249,7 @@ public final class Images {
 	 * @return 成功的解码结果。
 	 * @throws NotFoundException 没有识别到码。
 	 */
-	public static Result decode(LuminanceSource source, 扫码配置 options, ResultPointCallback callback)
+	public static Result decode(LuminanceSource source, XQRC扫码配置 options, ResultPointCallback callback)
 			throws NotFoundException {
 		Map<DecodeHintType, Object> decodeHints = hints(options);
 		if (callback != null) {
@@ -275,7 +275,7 @@ public final class Images {
 	 * @return 成功识别结果。
 	 * @throws Exception 图片无效或未找到码。
 	 */
-	public static 识别结果 recognize(byte[] bytes, 扫码配置 options) throws Exception {
+	public static XQRC识别结果 recognize(byte[] bytes, XQRC扫码配置 options) throws Exception {
 		Bitmap image = bitmap(bytes);
 		try {
 			for (int rotation = 0; rotation < 4; rotation++) {
@@ -285,7 +285,7 @@ public final class Images {
 				image.getPixels(pixels, 0, width, 0, 0, width, height);
 				try {
 					Result result = decode(new RGBLuminanceSource(width, height, pixels), options);
-					return 识别结果.from(result, options.返回识别图像() ? png(image) : new byte[0]);
+					return XQRC识别结果.from(result, options.返回识别图像() ? png(image) : new byte[0]);
 				} catch (NotFoundException error) {
 					if (rotation == 3) {
 						throw new IOException("没有识别到所选格式的条码或二维码", error);

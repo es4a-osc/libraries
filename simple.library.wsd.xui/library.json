@@ -1,6 +1,6 @@
 {
 	"name": "XUI界面库",
-	"description": "基于 XUI https://github.com/xuexiangjys/XUI 的 AndroidX 界面扩展库，提供可视组件、对话框、菜单、消息提示及常用界面工具。",
+	"description": "基于 XUI https://github.com/xuexiangjys/XUI 封装，提供 AndroidX 可视组件、对话框、菜单、消息提示及常用界面工具。",
 	"version": "0.1.0",
 	"authors": [
 		{

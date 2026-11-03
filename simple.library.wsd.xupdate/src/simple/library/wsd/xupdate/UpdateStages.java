@@ -27,17 +27,17 @@ final class UpdateStages {
 		boolean accepts();
 		UpdateEntity parse(String response) throws Exception;
 		void checked();
-		void found(更新信息 info);
+		void found(XU更新信息 info);
 		void none();
 		void failure(Exception error);
-		void download(更新信息 info, OnFileDownloadListener listener);
+		void download(XU更新信息 info, OnFileDownloadListener listener);
 		void cancelDownload();
 		void background();
-		boolean ignored(更新信息 info);
+		boolean ignored(XU更新信息 info);
 	}
 
 	private final Host host;
-	private final 检查器 checker;
+	private final XU检查器 checker;
 	private final Map<String, Object> parameters;
 	private final UpdateManager manager;
 
@@ -54,7 +54,7 @@ final class UpdateStages {
 	 * @param host 本次流程的事件和生命周期边界。
 	 */
 	UpdateStages(UpdateManager.Builder builder, String address, boolean post, String directory,
-			IUpdateHttpService transport, Map<String, Object> parameters, 检查器 checker, Host host) {
+			IUpdateHttpService transport, Map<String, Object> parameters, XU检查器 checker, Host host) {
 		this.host = host;
 		this.checker = checker;
 		this.parameters = parameters;
@@ -82,9 +82,9 @@ final class UpdateStages {
 	/**
 	 * 直接提交已经解析的信息，不执行默认解析器的本机版本判断。
 	 *
-	 * @param info 更新信息。
+	 * @param info XU更新信息。
 	 */
-	void information(更新信息 info) {
+	void information(XU更新信息 info) {
 		if (!host.accepts()) {
 			return;
 		}
@@ -114,7 +114,7 @@ final class UpdateStages {
 	 * @param info 独立的更新信息。
 	 * @return 提示和下载接口使用的原生对象。
 	 */
-	static UpdateEntity toEntity(更新信息 info) {
+	static UpdateEntity toEntity(XU更新信息 info) {
 		return new Entity(info).setHasUpdate(info.有更新()).setVersionCode(info.版本号())
 				.setVersionName(info.版本名()).setUpdateContent(info.更新内容())
 				.setDownloadUrl(info.下载地址()).setSize(info.文件大小() / 1024)
@@ -129,20 +129,20 @@ final class UpdateStages {
 	 *
 	 * @param info 下载地址与校验信息。
 	 */
-	void download(更新信息 info) {
+	void download(XU更新信息 info) {
 		manager.startDownload(toEntity(info), null);
 	}
 
 	/** 保留 Simple 以字节表示的精确大小，不从官方界面使用的 KB 反向恢复。 */
-	private static 更新信息 snapshot(UpdateEntity entity) {
-		return entity instanceof Entity ? ((Entity) entity).information.copy() : 更新信息.fromEntity(entity);
+	private static XU更新信息 snapshot(UpdateEntity entity) {
+		return entity instanceof Entity ? ((Entity) entity).information.copy() : XU更新信息.fromEntity(entity);
 	}
 
 	/** 原生通信媒介携带精确快照，内部类型不导出。 */
 	private static final class Entity extends UpdateEntity {
-		private final 更新信息 information;
+		private final XU更新信息 information;
 
-		Entity(更新信息 information) {
+		Entity(XU更新信息 information) {
 			this.information = information.copy();
 		}
 	}
@@ -151,7 +151,7 @@ final class UpdateStages {
 	private final class Checker extends DefaultUpdateChecker {
 		@Override
 		public void checkVersion(boolean isGet, String url, Map<String, Object> values, final IUpdateProxy proxy) {
-			final 检查回调 result = new 检查回调(new 检查回调.Result() {
+			final XU检查回调 result = new XU检查回调(new XU检查回调.Result() {
 				@Override
 				public void response(String value) {
 					if (host.accepts()) {
@@ -161,7 +161,7 @@ final class UpdateStages {
 				}
 
 				@Override
-				public void information(更新信息 value) {
+				public void information(XU更新信息 value) {
 					if (host.accepts()) {
 						proxy.onAfterCheck();
 						UpdateStages.this.information(value);

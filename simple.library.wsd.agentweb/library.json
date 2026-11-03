@@ -1,5 +1,5 @@
 {
-	"name": "AgentWeb浏览器库",
+	"name": "AW浏览器库",
 	"description": "基于 AgentWeb https://github.com/Justson/AgentWeb 封装，提供网页导航、JavaScript 交互、文件上传、下载及视频全屏。",
 	"version": "0.1.0",
 	"kind": "library",
@@ -14,9 +14,9 @@
 			"name": "扩展可视组件",
 			"definitions": [
 				{
-					"name": "浏览器",
+					"name": "AW浏览器",
 					"kind": "component",
-					"type": "simple.library.wsd.agentweb.浏览器",
+					"type": "simple.library.wsd.agentweb.AW浏览器",
 					"description": "基于 AgentWeb 的系统 WebView 可视组件；界面线程调用，支持导航、脚本、上传下载和视频全屏。",
 					"icon": "icons/browser-plus.svg",
 					"inherits": [

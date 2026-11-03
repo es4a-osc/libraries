@@ -2,7 +2,7 @@
 	切换窗口(创建 simple.library.wsd.xupdate.example.主窗口)
 结束 事件
 
-变量 信息 为 simple.library.wsd.xupdate.更新信息
+变量 信息 为 simple.library.wsd.xupdate.XU更新信息
 
 事件 读取.被单击()
 	如果 地址.文本 = "" 则
@@ -15,7 +15,7 @@
 	更新.检查更新(地址.文本)
 结束 事件
 
-事件 更新.发现更新(结果 为 simple.library.wsd.xupdate.更新信息)
+事件 更新.发现更新(结果 为 simple.library.wsd.xupdate.XU更新信息)
 	信息 = 结果
 	下载地址.文本 = 信息.下载地址
 	摘要.文本 = 信息.MD5
@@ -32,7 +32,7 @@
 		退出 事件
 	结束 如果
 	更新.取消()
-	信息 = 创建 simple.library.wsd.xupdate.更新信息
+	信息 = 创建 simple.library.wsd.xupdate.XU更新信息
 	信息.下载地址 = 下载地址.文本
 	信息.MD5 = 摘要.文本
 	更新.下载后安装 = 假
@@ -82,7 +82,7 @@ $属性
 		背景颜色 = -1
 		布局 = 布局_线性
 		布局.方向 = 布局_方向_垂直
-		$定义 更新 $为 simple.library.wsd.xupdateapi.快捷更新器
+		$定义 更新 $为 simple.library.wsd.xupdateapi.XU快捷更新器
 		$结束 $定义
 		$定义 导航 $为 面板
 			宽度 = 长度_匹配父级

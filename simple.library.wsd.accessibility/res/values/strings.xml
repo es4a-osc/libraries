@@ -1,3 +1,3 @@
 <resources>
-	<string name="app_name">跨程序辅助服务</string>
+	<string name="es4a_accessibility_description">读取可访问窗口与节点，接收界面事件，并按用户操作执行辅助动作。</string>
 </resources>

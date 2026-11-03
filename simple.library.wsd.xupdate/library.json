@@ -1,6 +1,6 @@
 {
-	"name": "XUpdate更新库",
-	"description": "基于 XUpdate 2.1.5 https://github.com/xuexiangjys/XUpdate 与 XUpdateAPI 1.0.1 https://github.com/xuexiangjys/XUpdateAPI 的应用更新扩展库，提供基础更新、便捷入口、暂停续传及流程定制。",
+	"name": "XU更新库",
+	"description": "基于 XUpdate https://github.com/xuexiangjys/XUpdate 和 XUpdateAPI https://github.com/xuexiangjys/XUpdateAPI 封装，提供应用更新、便捷入口、暂停续传及流程定制。",
 	"version": "0.1.0",
 	"kind": "library",
 	"authors": [
@@ -14,8 +14,8 @@
 			"name": "扩展组件",
 			"definitions": [
 				{
-					"name": "更新器",
-					"type": "simple.library.wsd.xupdate.更新器",
+					"name": "XU更新器",
+					"type": "simple.library.wsd.xupdate.XU更新器",
 					"kind": "component",
 					"description": "通过默认实现完成一键更新，也可分别替换检查、解析、提示、下载、网络、校验和安装；支持独立下载、本地安装及带通知的后台下载。",
 					"inherits": [
@@ -51,7 +51,7 @@
 							"params": [
 								{
 									"name": "信息",
-									"type": "simple.library.wsd.xupdate.更新信息",
+									"type": "simple.library.wsd.xupdate.XU更新信息",
 									"description": "包含版本名称、下载地址和更新内容的更新信息。"
 								}
 							]
@@ -62,7 +62,7 @@
 							"params": [
 								{
 									"name": "信息",
-									"type": "simple.library.wsd.xupdate.更新信息",
+									"type": "simple.library.wsd.xupdate.XU更新信息",
 									"description": "具有下载地址和可选校验信息的版本信息。"
 								}
 							]
@@ -177,7 +177,7 @@
 							"params": [
 								{
 									"name": "实现",
-									"type": "simple.library.wsd.xupdate.检查器",
+									"type": "simple.library.wsd.xupdate.XU检查器",
 									"description": "自定义检查器。"
 								}
 							]
@@ -188,7 +188,7 @@
 							"params": [
 								{
 									"name": "实现",
-									"type": "simple.library.wsd.xupdate.解析器",
+									"type": "simple.library.wsd.xupdate.XU解析器",
 									"description": "自定义解析器。"
 								}
 							]
@@ -199,7 +199,7 @@
 							"params": [
 								{
 									"name": "实现",
-									"type": "simple.library.wsd.xupdate.提示器",
+									"type": "simple.library.wsd.xupdate.XU提示器",
 									"description": "自定义提示器。"
 								}
 							]
@@ -210,7 +210,7 @@
 							"params": [
 								{
 									"name": "实现",
-									"type": "simple.library.wsd.xupdate.下载器",
+									"type": "simple.library.wsd.xupdate.XU下载器",
 									"description": "自定义下载器。"
 								}
 							]
@@ -221,7 +221,7 @@
 							"params": [
 								{
 									"name": "实现",
-									"type": "simple.library.wsd.xupdate.网络服务",
+									"type": "simple.library.wsd.xupdate.XU网络服务",
 									"description": "自定义网络服务。"
 								}
 							]
@@ -232,7 +232,7 @@
 							"params": [
 								{
 									"name": "实现",
-									"type": "simple.library.wsd.xupdate.校验器",
+									"type": "simple.library.wsd.xupdate.XU校验器",
 									"description": "自定义校验器。"
 								}
 							]
@@ -243,7 +243,7 @@
 							"params": [
 								{
 									"name": "实现",
-									"type": "simple.library.wsd.xupdate.安装器",
+									"type": "simple.library.wsd.xupdate.XU安装器",
 									"description": "自定义安装器。"
 								}
 							]
@@ -341,7 +341,7 @@
 								},
 								{
 									"name": "信息",
-									"type": "simple.library.wsd.xupdate.更新信息",
+									"type": "simple.library.wsd.xupdate.XU更新信息",
 									"description": "在本事件内填写；事件返回后读取其快照。"
 								}
 							]
@@ -352,7 +352,7 @@
 							"params": [
 								{
 									"name": "信息",
-									"type": "simple.library.wsd.xupdate.更新信息",
+									"type": "simple.library.wsd.xupdate.XU更新信息",
 									"description": "独立的版本信息，修改不影响当前提示或下载。"
 								}
 							]
@@ -523,13 +523,13 @@
 					]
 				},
 				{
-					"name": "快捷更新器",
-					"type": "simple.library.wsd.xupdateapi.快捷更新器",
+					"name": "XU快捷更新器",
+					"type": "simple.library.wsd.xupdateapi.XU快捷更新器",
 					"kind": "component",
 					"description": "通过 EasyUpdate 发起更新，沿用核心更新器的配置与事件，可直接启用 Aria 断点续传。",
 					"icon": "icons/refresh-dot.svg",
 					"inherits": [
-						"simple.library.wsd.xupdate.更新器"
+						"simple.library.wsd.xupdate.XU更新器"
 					],
 					"properties": [
 						{
@@ -547,8 +547,8 @@
 			"name": "扩展对象",
 			"definitions": [
 				{
-					"name": "更新信息",
-					"type": "simple.library.wsd.xupdate.更新信息",
+					"name": "XU更新信息",
+					"type": "simple.library.wsd.xupdate.XU更新信息",
 					"kind": "object",
 					"description": "可创建、修改的版本信息；提交更新器后使用独立快照，大小单位为字节。",
 					"icon": "icons/file-info.svg",
@@ -608,16 +608,11 @@
 							"writable": true
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "高级定制（可选）",
-			"definitions": [
+				},
 				{
-					"name": "检查器",
+					"name": "XU检查器",
 					"description": "替换版本检查过程；通过回调提交原始响应或已经解析的更新信息。",
-					"type": "simple.library.wsd.xupdate.检查器",
+					"type": "simple.library.wsd.xupdate.XU检查器",
 					"kind": "interface",
 					"functions": [
 						{
@@ -631,7 +626,7 @@
 								},
 								{
 									"name": "回调",
-									"type": "simple.library.wsd.xupdate.检查回调",
+									"type": "simple.library.wsd.xupdate.XU检查回调",
 									"description": "本次检查的单次结果回调。"
 								}
 							]
@@ -644,9 +639,9 @@
 					]
 				},
 				{
-					"name": "解析器",
+					"name": "XU解析器",
 					"description": "将业务协议转换为更新信息；自定义解析结果自行决定是否存在更新。",
-					"type": "simple.library.wsd.xupdate.解析器",
+					"type": "simple.library.wsd.xupdate.XU解析器",
 					"kind": "interface",
 					"functions": [
 						{
@@ -659,14 +654,14 @@
 									"description": "原始响应文本。"
 								}
 							],
-							"return": "simple.library.wsd.xupdate.更新信息"
+							"return": "simple.library.wsd.xupdate.XU更新信息"
 						}
 					]
 				},
 				{
-					"name": "提示器",
+					"name": "XU提示器",
 					"description": "接管更新提示界面；调用方可使用自己的组件展示信息并决定何时下载。",
-					"type": "simple.library.wsd.xupdate.提示器",
+					"type": "simple.library.wsd.xupdate.XU提示器",
 					"kind": "interface",
 					"functions": [
 						{
@@ -675,7 +670,7 @@
 							"params": [
 								{
 									"name": "信息",
-									"type": "simple.library.wsd.xupdate.更新信息",
+									"type": "simple.library.wsd.xupdate.XU更新信息",
 									"description": "与活动流程隔离的更新信息。"
 								}
 							]
@@ -683,9 +678,9 @@
 					]
 				},
 				{
-					"name": "下载器",
+					"name": "XU下载器",
 					"description": "替换 APK 下载实现；进度、结果及错误必须通过本次下载回调返回。",
-					"type": "simple.library.wsd.xupdate.下载器",
+					"type": "simple.library.wsd.xupdate.XU下载器",
 					"kind": "interface",
 					"functions": [
 						{
@@ -694,12 +689,12 @@
 							"params": [
 								{
 									"name": "信息",
-									"type": "simple.library.wsd.xupdate.更新信息",
+									"type": "simple.library.wsd.xupdate.XU更新信息",
 									"description": "地址、大小和校验信息。"
 								},
 								{
 									"name": "回调",
-									"type": "simple.library.wsd.xupdate.下载回调",
+									"type": "simple.library.wsd.xupdate.XU下载回调",
 									"description": "本次下载的结果回调。"
 								}
 							]
@@ -717,9 +712,9 @@
 					]
 				},
 				{
-					"name": "网络服务",
+					"name": "XU网络服务",
 					"description": "替换版本检查的网络传输；请求配置以 JSON 对象文本传递，值为文本。",
-					"type": "simple.library.wsd.xupdate.网络服务",
+					"type": "simple.library.wsd.xupdate.XU网络服务",
 					"kind": "interface",
 					"functions": [
 						{
@@ -753,7 +748,7 @@
 								},
 								{
 									"name": "回调",
-									"type": "simple.library.wsd.xupdate.检查回调",
+									"type": "simple.library.wsd.xupdate.XU检查回调",
 									"description": "本次请求的结果回调。"
 								}
 							]
@@ -766,9 +761,9 @@
 					]
 				},
 				{
-					"name": "校验器",
+					"name": "XU校验器",
 					"description": "替换下载文件的最终校验；只有通过后才报告下载完成和允许后续安装。",
-					"type": "simple.library.wsd.xupdate.校验器",
+					"type": "simple.library.wsd.xupdate.XU校验器",
 					"kind": "interface",
 					"functions": [
 						{
@@ -782,7 +777,7 @@
 								},
 								{
 									"name": "信息",
-									"type": "simple.library.wsd.xupdate.更新信息",
+									"type": "simple.library.wsd.xupdate.XU更新信息",
 									"description": "预期大小及校验信息。"
 								}
 							],
@@ -791,9 +786,9 @@
 					]
 				},
 				{
-					"name": "安装器",
+					"name": "XU安装器",
 					"description": "接管 APK 安装请求；返回值只表示是否接管，不能表示系统已经安装成功。",
-					"type": "simple.library.wsd.xupdate.安装器",
+					"type": "simple.library.wsd.xupdate.XU安装器",
 					"kind": "interface",
 					"functions": [
 						{
@@ -811,9 +806,9 @@
 					]
 				},
 				{
-					"name": "检查回调",
+					"name": "XU检查回调",
 					"description": "一次检查的异步结果；首个提交生效，取消或新任务开始后旧结果不再进入流程。",
-					"type": "simple.library.wsd.xupdate.检查回调",
+					"type": "simple.library.wsd.xupdate.XU检查回调",
 					"kind": "object",
 					"functions": [
 						{
@@ -833,7 +828,7 @@
 							"params": [
 								{
 									"name": "信息",
-									"type": "simple.library.wsd.xupdate.更新信息",
+									"type": "simple.library.wsd.xupdate.XU更新信息",
 									"description": "更新信息；提交时固定其值。"
 								}
 							]
@@ -852,9 +847,9 @@
 					]
 				},
 				{
-					"name": "下载回调",
+					"name": "XU下载回调",
 					"description": "自定义下载器的进度与终止回调；完成后仍由更新流程执行最终文件校验。",
-					"type": "simple.library.wsd.xupdate.下载回调",
+					"type": "simple.library.wsd.xupdate.XU下载回调",
 					"kind": "object",
 					"functions": [
 						{
@@ -896,20 +891,15 @@
 							]
 						}
 					]
-				}
-			]
-		},
-		{
-			"name": "下载适配",
-			"definitions": [
+				},
 				{
-					"name": "Aria下载器",
+					"name": "XUAria下载器",
 					"kind": "object",
-					"type": "simple.library.wsd.xupdateapi.Aria下载器",
+					"type": "simple.library.wsd.xupdateapi.XUAria下载器",
 					"description": "可设置到 XUpdate 更新器的 Aria 续传策略，配合核心的暂停、继续、校验及后台通知使用。",
 					"icon": "icons/refresh-dot.svg",
 					"inherits": [
-						"simple.library.wsd.xupdate.下载器"
+						"simple.library.wsd.xupdate.XU下载器"
 					]
 				}
 			]

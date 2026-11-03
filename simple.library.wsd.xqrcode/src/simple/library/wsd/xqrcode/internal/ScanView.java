@@ -39,7 +39,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 	private final LegacyCamera camera = new LegacyCamera();
 	private final int permissionCode = PERMISSIONS.getAndIncrement();
 	private Listener listener;
-	private 扫码配置 options = new 扫码配置();
+	private XQRC扫码配置 options = new XQRC扫码配置();
 	private boolean desired;
 	private boolean resumed = true;
 	private boolean paused;
@@ -102,7 +102,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 	 * @param config 调用方配置。
 	 * @return 接受本次请求时为真，不代表已取得权限或解码成功。
 	 */
-	public boolean start(扫码配置 config) {
+	public boolean start(XQRC扫码配置 config) {
 		if (closed || desired || config == null) {
 			return false;
 		}
@@ -230,7 +230,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 	 *
 	 * @return 可独立修改的快照。
 	 */
-	public 扫码配置 configuration() {
+	public XQRC扫码配置 configuration() {
 		return options.copy();
 	}
 
@@ -473,7 +473,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 		if (!state.equals(value)) {
 			String previous = state;
 			state = value;
-			二维码调试.log("扫描状态：" + previous + " -> " + value);
+			XQRC二维码调试.log("扫描状态：" + previous + " -> " + value);
 			if (!closed && listener != null) {
 				listener.changed(previous, value);
 			}
@@ -497,7 +497,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 								return;
 							}
 							final byte[] frame = bytes.clone();
-							final 扫码配置 decodeOptions = options.copy();
+							final XQRC扫码配置 decodeOptions = options.copy();
 							final int width = camera.width;
 							final int height = camera.height;
 							final int angle = camera.rotation;
@@ -529,7 +529,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 											public void run() {
 												final java.util.List<ResultPoint> candidatePoints =
 														new java.util.ArrayList<ResultPoint>();
-												识别结果 found = null;
+												XQRC识别结果 found = null;
 												Exception failure = null;
 												try {
 													byte[] oriented =
@@ -587,7 +587,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 															image.recycle();
 														}
 													}
-													found = 识别结果.from(result, png);
+													found = XQRC识别结果.from(result, png);
 												} catch (NotFoundException ignored) {
 													// 普通无结果帧继续取下一帧。
 												} catch (Exception error) {
@@ -605,7 +605,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 													candidateSnapshot[p * 2 + 1] =
 															candidatePoints.get(p).getY();
 												}
-												final 识别结果 result = found;
+												final XQRC识别结果 result = found;
 												final Exception error = failure;
 												handler.post(
 														new Runnable() {
@@ -753,7 +753,7 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 		 *
 		 * @param result 独立结果。
 		 */
-		void result(识别结果 result);
+		void result(XQRC识别结果 result);
 
 		/**
 		 * 通知设备或权限问题，终止问题使状态变为失败，补光问题不终止扫描。
@@ -852,13 +852,13 @@ public final class ScanView extends FrameLayout implements SurfaceHolder.Callbac
 		/**
 		 * 将识别图像坐标转换为覆盖层坐标。
 		 *
-		 * @param result 识别结果。
+		 * @param result XQRC识别结果。
 		 * @param crop 裁剪区域。
 		 * @param width 全预览图像宽。
 		 * @param height 全预览图像高。
 		 * @param mirror 预览是否水平镜像。
 		 */
-		void result(识别结果 result, int[] crop, int width, int height, boolean mirror) {
+		void result(XQRC识别结果 result, int[] crop, int width, int height, boolean mirror) {
 			points = result.识别点();
 			float scale = Math.max((float) getWidth() / width, (float) getHeight() / height);
 			for (int i = 0; i < points.length; i += 2) {

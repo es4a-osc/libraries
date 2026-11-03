@@ -70,7 +70,7 @@ import simple.runtime.events.EventDispatcher;
  *
  * @author 树先生 xhwsd@qq.com
  */
-abstract class ChartComponent extends 视图组件 implements 图表, OnChartValueSelectedListener {
+abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChartValueSelectedListener {
 
 	private final ChartModel model = new ChartModel();
 	private final IdentityHashMap<Entry, int[]> entryLocations = new IdentityHashMap<Entry, int[]>();

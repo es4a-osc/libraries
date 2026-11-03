@@ -1,125 +1,69 @@
 package simple.library.wsd.ftpclient;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Build;
-import android.content.Context;
-import android.content.SharedPreferences;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import simple.runtime.android.MainActivity;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import simple.runtime.components.组件容器;
-import simple.runtime.components.impl.组件Impl;
-import simple.runtime.events.EventDispatcher;
 
 /**
- * 主线程通知传输结果；同步方法和传输共用一个串行会话。
+ * 参考火山 commons_ftp 的独立 FTP 客户端；同步网络方法须在后台线程调用，后台任务结果回到界面线程。
+ *
+ * @author 树先生 xhwsd@qq.com
  */
-public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
-
-	private final Object operations = new Object();
-	private TransferSession session = new FtpSession();
-	private volatile int protocol = 协议_FTP;
-	private volatile String fingerprint = "";
-	private volatile String lastError = "";
-	private final Handler handler = new Handler(Looper.getMainLooper());
-	private final MainActivity activity;
-	private final SftpHostTrust hostTrust;
-	private final SftpHostConfirmation hostConfirmation;
-	private volatile boolean destroyed;
-	private boolean transferring;
-	private final MainActivity.OnDestroyListener destroyListener = new MainActivity.OnDestroyListener() {
-
-		@Override
-		public void onDestroy() {
-			dispose(false);
-			EventDispatcher.unregisterEvent(FTP客户端Impl.this);
-		}
-	};
-
-	public FTP客户端Impl(组件容器 container) {
-		super(container);
-		activity = MainActivity.getContext();
-		if (Build.VERSION.SDK_INT >= 26) {
-			hostConfirmation = new SftpHostConfirmation(activity);
-			final SharedPreferences trustedHosts = activity.getSharedPreferences("simple.library.wsd.ftpclient.hosts", Context.MODE_PRIVATE);
-			hostTrust = new SftpHostTrust(new SftpHostTrust.Store() {
-
-				@Override
-				public String read(String key) {
-					return trustedHosts.getString(key, "");
-				}
-
-				@Override
-				public boolean write(String key, String value) {
-					return trustedHosts.edit().putString(key, value).commit();
-				}
-			}, hostConfirmation);
-		} else {
-			hostConfirmation = null;
-			hostTrust = null;
-		}
-
-		activity.addOnDestroyListener(destroyListener);
-	}
+public final class FTP客户端Impl extends ClientCore implements FTP客户端 {
+	private final FtpSession ftp;
+	private boolean commands;
+	private int controlTimeout = 10000;
 
 	/**
-	 * 按当前协议使用默认端口登录：FTP 为 21，SFTP 为 22；保留原有认证及主机公钥校验。
+	 * 建立当前协议组件。
 	 *
-	 * <p>阻塞调用线程，应在后台调用。</p>
-	 *
-	 * @param host 主机名或 IP，不含协议前缀。
-	 * @param username 登录用户名。
-	 * @param password 登录密码。
-	 * @return 是否登录成功。
+	 * @param container 所属窗口容器。
 	 */
-	@Override
-	public boolean 登录服务器(String host, String username, String password) {
-		return 登录服务器(host, 协议() == 协议_SFTP ? 22 : 21, username, password);
+	public FTP客户端Impl(组件容器 container) {
+		super(container, new FtpSession());
+		ftp = (FtpSession) remote;
+		ftp.client.addProtocolCommandListener(
+				new org.apache.commons.net.ProtocolCommandListener() {
+					@Override
+					public void protocolCommandSent(
+							org.apache.commons.net.ProtocolCommandEvent record) {
+						if (!commands) {
+							return;
+						}
+						String command = FtpSession.text(record.getCommand());
+						String message =
+								command.equalsIgnoreCase("PASS") || command.equalsIgnoreCase("ACCT")
+										? command + " ******"
+										: FtpSession.text(record.getMessage());
+						event("传输命令", command, message, 0, false);
+					}
+
+					@Override
+					public void protocolReplyReceived(
+							org.apache.commons.net.ProtocolCommandEvent record) {
+						if (commands) {
+							event(
+									"传输命令",
+									"",
+									FtpSession.text(record.getMessage()),
+									record.getReplyCode(),
+									true);
+						}
+					}
+				});
 	}
 
 	@Override
-	public boolean 登录服务器(String host, int port, String username, String password) {
-		synchronized (operations) {
-			if (destroyed) return false;
-
-			session.disconnect();
-			int selected = protocol;
-			if (selected == 协议_SFTP && Build.VERSION.SDK_INT < 26) {
-				lastError = "SFTP 需要 Android 8.0 或以上版本。";
-				return false;
-			}
-
-			session = selected == 协议_SFTP ? new SftpSession(fingerprint, hostTrust) : new FtpSession();
-			boolean result = session.login(host, port, username, password);
-			if (destroyed) {
-				session.disconnect();
-				return false;
-			}
-
-			return result(result);
-		}
+	public boolean 已连接() {
+		return !disposed.get() && remote.connected();
 	}
 
 	@Override
-	public int 协议() {
-		return protocol;
-	}
-
-	@Override
-	public void 协议(int value) {
-		if (value != 协议_FTP && value != 协议_SFTP) throw new IllegalArgumentException("未知传输协议。");
-
-		protocol = value;
-	}
-
-	@Override
-	public String 服务器公钥指纹() {
-		return fingerprint;
-	}
-
-	@Override
-	public void 服务器公钥指纹(String value) {
-		fingerprint = value == null ? "" : value.trim();
+	public boolean 忙() {
+		return occupied.get();
 	}
 
 	@Override
@@ -127,243 +71,923 @@ public final class FTP客户端Impl extends 组件Impl implements FTP客户端 {
 		return lastError;
 	}
 
-	/**
-	 * 按操作结果更新组件错误状态。
-	 *
-	 * @param success 本次操作是否成功
-	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
-	 */
-	private boolean result(boolean success) {
-		lastError = success ? "" : session.error();
-		if (!success && lastError.length() == 0) lastError = "操作失败，请检查连接、路径和访问权限。";
-		return success;
+	@Override
+	public long 当前任务编号() {
+		Task task = active;
+		return task == null ? 0 : task.id;
+	}
+
+	@Override
+	public int 传输缓冲区() {
+		return bufferSize;
+	}
+
+	@Override
+	public void 传输缓冲区(int value) {
+		if (value < 4096 || value > 1048576) {
+			throw new FTP错误("缓冲区须为 4096 至 1048576 字节。");
+		}
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						bufferSize = value;
+						return null;
+					}
+				});
 	}
 
 	@Override
 	public String 取工作目录() {
-		synchronized (operations) {
-			if (destroyed) return "";
+		return operation(
+				new ClientCore.Action<String>() {
+					@Override
+					public String run() throws Exception {
+						return remote.pwd();
+					}
+				});
+	}
 
-			String path = session.workingDirectory();
-			lastError = session.error();
-			return path;
+	@Override
+	public void 置工作目录(String directory) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						remote.cwd(text(directory));
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public FTP远程文件[] 取文件列表(String directory) {
+		return operation(
+				new ClientCore.Action<FTP远程文件[]>() {
+					@Override
+					public FTP远程文件[] run() throws Exception {
+						return remote.list(text(directory));
+					}
+				});
+	}
+
+	@Override
+	public FTP远程文件 取文件信息(String file) {
+		return operation(
+				new ClientCore.Action<FTP远程文件>() {
+					@Override
+					public FTP远程文件 run() throws Exception {
+						return remote.stat(text(file));
+					}
+				});
+	}
+
+	@Override
+	public void 创建目录(String path) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						remote.mutate("mkdir", text(path), "");
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 删除目录(String path) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						remote.mutate("rmdir", text(path), "");
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 删除文件(String path) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						remote.mutate("delete", text(path), "");
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 重命名(String source, String target) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						remote.mutate("rename", text(source), text(target));
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public byte[] 下载字节(String file, int limit) {
+		return operation(
+				new ClientCore.Action<byte[]>() {
+					@Override
+					public byte[] run() throws Exception {
+						if (limit < 1 || limit > 8388608) {
+							throw new FTP错误("接收上限须为 1 至 8388608。");
+						}
+						try (InputStream input = remote.read(text(file), 0);
+								ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+							byte[] buffer = new byte[Math.min(65536, limit)];
+							int count;
+							while ((count = input.read(buffer)) >= 0) {
+								if ((long) output.size() + count > limit) {
+									throw new IOException("文件超出接收上限。");
+								}
+								output.write(buffer, 0, count);
+							}
+							input.close();
+							remote.finish();
+							return output.toByteArray();
+						} catch (Exception error) {
+							closeNetwork();
+							throw error;
+						}
+					}
+				});
+	}
+
+	@Override
+	public void 上传字节(String file, byte[] bytes) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (bytes == null || bytes.length > 8388608) {
+							throw new FTP错误("字节数组不能为空对象或超过 8 MiB。");
+						}
+						try (OutputStream output = remote.write(text(file), 0)) {
+							output.write(bytes);
+						} catch (Exception error) {
+							closeNetwork();
+							throw error;
+						}
+						remote.finish();
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public long 上传文件(String local, String remotePath, long offset) {
+		text(local);
+		text(remotePath);
+		if (offset < 0) {
+			throw new FTP错误("偏移不能为负。");
 		}
-	}
-
-	/**
-	 * 列出服务器当前工作目录，沿用完整方法的列表格式及错误信息。
-	 *
-	 * <p>阻塞调用线程，应在后台调用。</p>
-	 *
-	 * @return 列表文本；空目录或失败返回空文本。
-	 */
-	@Override
-	public String 取文件列表() {
-		return 取文件列表("");
+		return begin(
+				1,
+				local,
+				remotePath,
+				new ClientCore.Job() {
+					@Override
+					public void run(ClientCore.Task task) throws Exception {
+						upload(task, localFile(local), remotePath, offset);
+					}
+				});
 	}
 
 	@Override
-	public String 取文件列表(String remoteDirectory) {
-		synchronized (operations) {
-			if (destroyed) return "";
-
-			String listing = session.list(remoteDirectory);
-			lastError = session.error();
-			return listing;
+	public long 下载文件(String remotePath, String local, long offset) {
+		text(local);
+		text(remotePath);
+		if (offset < 0) {
+			throw new FTP错误("偏移不能为负。");
 		}
+		return begin(
+				0,
+				remotePath,
+				local,
+				new ClientCore.Job() {
+					@Override
+					public void run(ClientCore.Task task) throws Exception {
+						download(task, remotePath, localFile(local), offset);
+					}
+				});
 	}
 
 	@Override
-	public boolean 创建目录(String remoteDirectory, String name) {
-		return mutate(remoteDirectory, name, null, 0);
+	public long 上传目录(String local, String remotePath) {
+		text(local);
+		text(remotePath);
+		return begin(
+				1,
+				local,
+				remotePath,
+				new ClientCore.Job() {
+					@Override
+					public void run(ClientCore.Task task) throws Exception {
+						uploadTree(task, localFile(local), remotePath, 0);
+					}
+				});
 	}
 
 	@Override
-	public boolean 重命名(String remoteDirectory, String oldName, String newName) {
-		return mutate(remoteDirectory, oldName, newName, 1);
+	public long 下载目录(String remotePath, String local) {
+		text(local);
+		text(remotePath);
+		return begin(
+				0,
+				remotePath,
+				local,
+				new ClientCore.Job() {
+					@Override
+					public void run(ClientCore.Task task) throws Exception {
+						downloadTree(task, remotePath, localFile(local), 0);
+					}
+				});
 	}
 
 	@Override
-	public boolean 删除目录(String remoteDirectory, String name) {
-		return mutate(remoteDirectory, name, null, 2);
+	public long 取下载偏移(String local) {
+		return downloadOffset(text(local));
 	}
 
 	@Override
-	public boolean 删除文件(String remoteDirectory, String name) {
-		return mutate(remoteDirectory, name, null, 3);
-	}
-
-	/**
-	 * 按指定模式修改远程文件或目录。
-	 *
-	 * @param directory 远程目录
-	 * @param name 要操作的名称
-	 * @param newName 修改后的名称
-	 * @param mode 操作模式
-	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
-	 */
-	private boolean mutate(String directory, String name, String newName, int mode) {
-		synchronized (operations) {
-			return !destroyed && result(session.mutate(directory, name, newName, mode));
-		}
-	}
-
-	/**
-	 * 校验并取得本地传输目录。
-	 *
-	 * @param path 文件或目录路径
-	 * @return 校验通过的本地目录
-	 */
-	private File localDirectory(String path) {
-		if (path == null) {
-			return null;
-		}
-
-		File directory = new File(path);
-		return directory.isAbsolute() ? directory : new File(activity.getFilesDir(), path);
+	public void 清理下载断点(String local) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						File part = partials.remove(localFile(local).toString());
+						if (part != null) {
+							LocalFiles.deleteIfExists(part);
+						}
+						return null;
+					}
+				});
 	}
 
 	@Override
-	public boolean 上传文件(String localDirectory, String localName, String remoteDirectory) {
-		synchronized (operations) {
-			return !destroyed && result(session.upload(localDirectory(localDirectory), localName, remoteDirectory));
-		}
-	}
-
-	@Override
-	public boolean 下载文件(String remoteDirectory, String remoteName, String localDirectory) {
-		synchronized (operations) {
-			return !destroyed && result(session.download(remoteDirectory, remoteName, localDirectory(localDirectory)));
-		}
+	public boolean 取消传输() {
+		return cancel();
 	}
 
 	@Override
 	public void 断开连接() {
-		synchronized (operations) {
-			session.disconnect();
-			lastError = "";
-		}
-	}
-
-	@Override
-	public boolean 取连接状态() {
-		synchronized (operations) {
-			return !destroyed && session.connected();
-		}
-	}
-
-	@Override
-	public boolean 开始上传(String localDirectory, String localName, String remoteDirectory) {
-		return transfer(true, localDirectory, localName, remoteDirectory);
-	}
-
-	@Override
-	public boolean 开始下载(String remoteDirectory, String remoteName, String localDirectory) {
-		return transfer(false, localDirectory, remoteName, remoteDirectory);
-	}
-
-	/**
-	 * 安排上传或下载任务并分发传输结果。
-	 *
-	 * @param upload 是否执行上传
-	 * @param localDirectory 本地传输目录
-	 * @param name 要操作的名称
-	 * @param remoteDirectory 远程传输目录
-	 * @return 操作成功时为 {@code true}，失败时为 {@code false}
-	 */
-	private synchronized boolean transfer(final boolean upload, final String localDirectory,
-			final String name, final String remoteDirectory) {
-		if (destroyed || transferring) {
-			return false;
-		}
-
-		transferring = true;
-		Thread worker = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				boolean result = false;
-
-				try {
-					result = upload ? 上传文件(localDirectory, name, remoteDirectory)
-						: 下载文件(remoteDirectory, name, localDirectory);
-				} catch (RuntimeException ignored) {
-					// 本地访问异常与网络失败均通过完成事件返回，不泄漏凭据或路径日志。
-					lastError = "传输失败，请检查本地访问权限及连接状态。";
-				}
-
-				final boolean succeeded = result;
-				handler.post(new Runnable() {
-
+		operation(
+				new ClientCore.Action<Object>() {
 					@Override
-					public void run() {
-						synchronized (FTP客户端Impl.this) {
-							transferring = false;
-							if (destroyed) {
-								return;
-							}
-						}
-
-						if (upload) {
-							上传完毕(succeeded);
-						} else {
-							下载完毕(succeeded);
-						}
+					public Object run() throws Exception {
+						remote.disconnect();
+						return null;
 					}
 				});
-			}
-		}, "Simple-FTP-transfer");
-
-		try {
-			worker.start();
-			return true;
-		} catch (RuntimeException ex) {
-			transferring = false;
-			return false;
-		}
 	}
 
 	@Override
-	public void 上传完毕(boolean succeeded) {
-		EventDispatcher.dispatchEvent(this, "上传完毕", succeeded);
+	public void 连接完成(long id, boolean success, String message) {
+		event("连接完成", id, success, message);
 	}
 
 	@Override
-	public void 下载完毕(boolean succeeded) {
-		EventDispatcher.dispatchEvent(this, "下载完毕", succeeded);
+	public void 传输进度(
+			long id, int direction, String source, String target, long completed, long total) {
+		event("传输进度", id, direction, source, target, completed, total);
 	}
 
 	@Override
-	public void 销毁() {
-		dispose(true);
-		super.销毁();
+	public void 传输完成(
+			long id,
+			int direction,
+			String source,
+			String target,
+			boolean success,
+			boolean cancelled,
+			String message) {
+		event("传输完成", id, direction, source, target, success, cancelled, message);
 	}
 
-	/**
-	 * 释放连接、线程及按要求移除生命周期监听器。
-	 *
-	 * @param removeListener 是否移除生命周期监听器
-	 */
-	private synchronized void dispose(boolean removeListener) {
-		if (destroyed) {
-			return;
+	@Override
+	public boolean 已登录() {
+		return ftp.loggedIn && ftp.connected();
+	}
+
+	@Override
+	public boolean 启用命令事件() {
+		return commands;
+	}
+
+	@Override
+	public void 启用命令事件(boolean value) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						commands = value;
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public int 连接超时() {
+		return ftp.client.getConnectTimeout();
+	}
+
+	@Override
+	public void 连接超时(int value) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						timeout(value);
+						if (remote.connected()) {
+							throw new FTP错误("连接超时须在连接前设置。");
+						}
+						ftp.client.setConnectTimeout(value);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public int 控制超时() {
+		return controlTimeout;
+	}
+
+	@Override
+	public void 控制超时(int value) {
+		if (remote.connected()) {
+			background();
 		}
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						timeout(value);
+						controlTimeout = value;
+						ftp.client.setDefaultTimeout(value);
+						if (remote.connected()) {
+							ftp.client.setSoTimeout(value);
+						}
+						return null;
+					}
+				});
+	}
 
-		destroyed = true;
-		if (hostConfirmation != null) hostConfirmation.close();
-		if (removeListener) {
-			activity.removeOnDestroyListener(destroyListener);
+	@Override
+	public int 数据超时() {
+		return ftp.dataTimeout;
+	}
+
+	@Override
+	public void 数据超时(int value) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						timeout(value);
+						ftp.dataTimeout = value;
+						ftp.client.setDataTimeout(value);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public String 编码() {
+		return ftp.client.getControlEncoding();
+	}
+
+	@Override
+	public void 编码(String value) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (remote.connected()) {
+							throw new FTP错误("编码须在连接前设置。");
+						}
+						java.nio.charset.Charset.forName(value);
+						ftp.client.setControlEncoding(value);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public boolean 自动检测编码() {
+		return ftp.client.getAutodetectUTF8();
+	}
+
+	@Override
+	public void 自动检测编码(boolean value) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (remote.connected()) {
+							throw new FTP错误("自动检测须在连接前设置。");
+						}
+						ftp.client.setAutodetectUTF8(value);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public boolean 包含隐藏文件() {
+		return ftp.client.getListHiddenFiles();
+	}
+
+	@Override
+	public void 包含隐藏文件(boolean value) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.client.setListHiddenFiles(value);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public int 数据接收缓冲区尺寸() {
+		return ftp.client.getReceiveDataSocketBufferSize();
+	}
+
+	@Override
+	public void 数据接收缓冲区尺寸(int value) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (value < 0) {
+							throw new FTP错误("缓冲区不能为负。");
+						}
+						ftp.client.setReceieveDataSocketBufferSize(value);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public int 数据发送缓冲区尺寸() {
+		return ftp.client.getSendDataSocketBufferSize();
+	}
+
+	@Override
+	public void 数据发送缓冲区尺寸(int value) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (value < 0) {
+							throw new FTP错误("缓冲区不能为负。");
+						}
+						ftp.client.setSendDataSocketBufferSize(value);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public int 文件类型() {
+		return ftp.fileType;
+	}
+
+	@Override
+	public void 文件类型(int value) {
+		if (remote.connected()) {
+			background();
 		}
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (!(value >= 0 && value <= 3)) {
+							throw new FTP错误("参数不在有效范围。");
+						}
+						if (ftp.loggedIn) {
+							ftp.require(ftp.client.setFileType(value));
+						}
+						ftp.fileType = value;
+						return null;
+					}
+				});
+	}
 
-		handler.removeCallbacksAndMessages(null);
-		new Thread(new Runnable() {
+	@Override
+	public int 文件结构() {
+		return ftp.structure;
+	}
 
-			@Override
-			public void run() {
-				synchronized (operations) {
-					session.disconnect();
-				}
-			}
-		}, "Simple-FTP-close").start();
+	@Override
+	public void 文件结构(int value) {
+		if (remote.connected()) {
+			background();
+		}
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (!(value >= 7 && value <= 9)) {
+							throw new FTP错误("参数不在有效范围。");
+						}
+						if (ftp.loggedIn) {
+							ftp.require(ftp.client.setFileStructure(value));
+						}
+						ftp.structure = value;
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public int 传输模式() {
+		return ftp.transferMode;
+	}
+
+	@Override
+	public void 传输模式(int value) {
+		if (remote.connected()) {
+			background();
+		}
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (!(value >= 10 && value <= 12)) {
+							throw new FTP错误("参数不在有效范围。");
+						}
+						if (ftp.loggedIn) {
+							ftp.require(ftp.client.setFileTransferMode(value));
+						}
+						ftp.transferMode = value;
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 连接(String host, int port) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						address(host, port);
+						ftp.connect(host, port);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public long 开始连接(String host, int port) {
+		address(host, port);
+		return begin(
+				-1,
+				host,
+				"",
+				new ClientCore.Job() {
+					@Override
+					public void run(ClientCore.Task task) throws Exception {
+						ftp.connect(host, port);
+					}
+				});
+	}
+
+	@Override
+	public void 登录(String user, String password) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.login(text(user), text(password));
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 退出登录() {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.require(ftp.client.logout());
+						ftp.loggedIn = false;
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 保持连接() {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.require(ftp.client.sendNoOp());
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 主动模式() {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.client.enterLocalActiveMode();
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 被动模式() {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.client.enterLocalPassiveMode();
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 置主动端口范围(int minimum, int maximum) {
+		setting(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						if (minimum < 1 || maximum < minimum || maximum > 65535) {
+							throw new FTP错误("主动端口范围无效。");
+						}
+						ftp.client.setActivePortRange(minimum, maximum);
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 置主动外部地址(String host) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.client.setActiveExternalIPAddress(text(host));
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public String 取被动主机地址() {
+		return FtpSession.text(ftp.client.getPassiveHost());
+	}
+
+	@Override
+	public int 取被动主机端口() {
+		return ftp.client.getPassivePort();
+	}
+
+	@Override
+	public int 取答复码() {
+		return ftp.client.getReplyCode();
+	}
+
+	@Override
+	public String 取答复文本() {
+		return FtpSession.text(ftp.client.getReplyString());
+	}
+
+	@Override
+	public String[] 取答复文本数组() {
+		return ftp.client.getReplyStrings().clone();
+	}
+
+	@Override
+	public boolean 检查答复码(int code) {
+		return org.apache.commons.net.ftp.FTPReply.isPositiveCompletion(code);
+	}
+
+	@Override
+	public boolean 检查支持功能(String feature) {
+		return operation(
+				new ClientCore.Action<Boolean>() {
+					@Override
+					public Boolean run() throws Exception {
+						return ftp.client.hasFeature(text(feature));
+					}
+				});
+	}
+
+	@Override
+	public String 取系统类型() {
+		return operation(
+				new ClientCore.Action<String>() {
+					@Override
+					public String run() throws Exception {
+						return ftp.client.getSystemType();
+					}
+				});
+	}
+
+	@Override
+	public String 取状态(String path) {
+		return operation(
+				new ClientCore.Action<String>() {
+					@Override
+					public String run() throws Exception {
+						String result =
+								path.isEmpty()
+										? ftp.client.getStatus()
+										: ftp.client.getStatus(text(path));
+						ftp.require(result != null);
+						return result;
+					}
+				});
+	}
+
+	@Override
+	public String 取帮助() {
+		return operation(
+				new ClientCore.Action<String>() {
+					@Override
+					public String run() throws Exception {
+						String result = ftp.client.listHelp();
+						ftp.require(result != null);
+						return result;
+					}
+				});
+	}
+
+	@Override
+	public void 发送特定命令(String command) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.require(ftp.client.sendSiteCommand(text(command)));
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public String[] 发送命令(String command, String arguments) {
+		return operation(
+				new ClientCore.Action<String[]>() {
+					@Override
+					public String[] run() throws Exception {
+						int code = ftp.client.sendCommand(text(command), text(arguments));
+						if (code >= 100 && code < 200) {
+							closeNetwork();
+							throw new IOException("请使用数据流或文件传输接口执行数据命令。");
+						}
+						return ftp.client.getReplyStrings().clone();
+					}
+				});
+	}
+
+	@Override
+	public void 置文件修改时间(String file, String time) {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.require(ftp.client.setModificationTime(text(file), text(time)));
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public String 取文件修改时间(String file) {
+		return operation(
+				new ClientCore.Action<String>() {
+					@Override
+					public String run() throws Exception {
+						String result = ftp.client.getModificationTime(text(file));
+						ftp.require(result != null);
+						return result;
+					}
+				});
+	}
+
+	@Override
+	public void 切换到父目录() {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.require(ftp.client.changeToParentDirectory());
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public void 重置登录状态() {
+		operation(
+				new ClientCore.Action<Object>() {
+					@Override
+					public Object run() throws Exception {
+						ftp.require(ftp.client.reinitialize());
+						ftp.loggedIn = false;
+						return null;
+					}
+				});
+	}
+
+	@Override
+	public FTP远程文件[] 取目录列表(String directory) {
+		return operation(
+				new ClientCore.Action<FTP远程文件[]>() {
+					@Override
+					public FTP远程文件[] run() throws Exception {
+						org.apache.commons.net.ftp.FTPFile[] result =
+								ftp.client.listDirectories(
+										directory.isEmpty() ? null : text(directory));
+						ftp.require(
+								org.apache.commons.net.ftp.FTPReply.isPositiveCompletion(
+										ftp.client.getReplyCode()));
+						return FtpSession.files(result);
+					}
+				});
+	}
+
+	@Override
+	public FTP远程文件[] 取机器目录列表(String directory) {
+		return operation(
+				new ClientCore.Action<FTP远程文件[]>() {
+					@Override
+					public FTP远程文件[] run() throws Exception {
+						org.apache.commons.net.ftp.FTPFile[] result =
+								ftp.client.mlistDir(directory.isEmpty() ? null : text(directory));
+						ftp.require(
+								org.apache.commons.net.ftp.FTPReply.isPositiveCompletion(
+										ftp.client.getReplyCode()));
+						return FtpSession.files(result);
+					}
+				});
+	}
+
+	@Override
+	public String[] 取文件名列表(String directory) {
+		return operation(
+				new ClientCore.Action<String[]>() {
+					@Override
+					public String[] run() throws Exception {
+						String[] result =
+								ftp.client.listNames(directory.isEmpty() ? null : text(directory));
+						ftp.require(
+								org.apache.commons.net.ftp.FTPReply.isPositiveCompletion(
+										ftp.client.getReplyCode()));
+						return result == null ? new String[0] : result;
+					}
+				});
+	}
+
+	@Override
+	public FTP分页列表 取分页文件(String directory) {
+		return operation(
+				new ClientCore.Action<FTP分页列表>() {
+					@Override
+					public FTP分页列表 run() throws Exception {
+						org.apache.commons.net.ftp.FTPListParseEngine result =
+								directory.isEmpty()
+										? ftp.client.initiateListParsing()
+										: ftp.client.initiateListParsing(text(directory));
+						ftp.require(
+								org.apache.commons.net.ftp.FTPReply.isPositiveCompletion(
+										ftp.client.getReplyCode()));
+						return new FTP分页列表(result);
+					}
+				});
+	}
+
+	@Override
+	public FTP输入流 取文件输入流(String file, long offset) {
+		return openInput(text(file), offset);
+	}
+
+	@Override
+	public FTP输出流 取文件输出流(String file, long offset) {
+		return openOutput(text(file), offset);
+	}
+
+	@Override
+	public void 传输命令(String command, String message, int code, boolean received) {
+		event("传输命令", command, message, code, received);
 	}
 }

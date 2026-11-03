@@ -1,0 +1,790 @@
+{
+	"name": "MQTT客户端库",
+	"description": "基于 Eclipse Paho Java Client https://github.com/eclipse-paho/paho.mqtt.java 封装，提供 MQTT 3.1/3.1.1 异步连接、消息收发、令牌、TLS 配置、离线缓冲及主线程事件。",
+	"version": "0.2.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展组件",
+			"definitions": [
+				{
+					"name": "MQTT客户端",
+					"description": "基于 Eclipse Paho 的 MQTT 3.1/3.1.1 非可视客户端。一个组件维护一个客户端，方法和事件均在主线程使用；连接不保证在应用退出或系统休眠后维持。",
+					"kind": "component",
+					"type": "simple.library.wsd.mqttclient.MQTT客户端",
+					"inherits": [
+						"simple.runtime.components.组件"
+					],
+					"permissions": [
+						"android.permission.INTERNET"
+					],
+					"icon": "icons/mqtt.svg",
+					"properties": [
+						{
+							"name": "已连接",
+							"description": "是否实际连接到服务器。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "已创建",
+							"description": "是否持有客户端；关闭完成后为假，可创建另一客户端。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "状态",
+							"description": "当前客户端状态，见 MQTT常量。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "服务器地址",
+							"description": "创建客户端使用的服务器地址，未创建时为空。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "客户端ID",
+							"description": "实际使用的客户端 ID，未创建时为空。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "缓冲数量",
+							"description": "当前离线缓冲消息条数，未配置缓冲时为 0。",
+							"type": "整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "连接",
+							"description": "异步连接。首次调用创建客户端；重复连接须使用相同地址、ID 和持久存储选项，切换客户端前先关闭。ID 留空时生成随机 ID，持久会话应明确指定稳定 ID。",
+							"return": "simple.library.wsd.mqttclient.MQTT令牌",
+							"params": [
+								{
+									"name": "服务器地址",
+									"type": "文本型",
+									"description": "tcp:// 或 ssl:// 地址"
+								},
+								{
+									"name": "客户端ID",
+									"type": "文本型",
+									"description": "客户端 ID，空文本生成随机 ID"
+								},
+								{
+									"name": "参数",
+									"type": "simple.library.wsd.mqttclient.MQTT连接参数",
+									"description": "连接参数"
+								},
+								{
+									"name": "标记",
+									"type": "文本型",
+									"description": "关联标记"
+								}
+							]
+						},
+						{
+							"name": "订阅",
+							"description": "异步订阅主题过滤器；成功事件中的令牌提供服务端授权 QoS。",
+							"return": "simple.library.wsd.mqttclient.MQTT令牌",
+							"params": [
+								{
+									"name": "主题",
+									"type": "文本型",
+									"description": "主题过滤器，允许 + 和 #"
+								},
+								{
+									"name": "QoS",
+									"type": "整数型",
+									"description": "0、1 或 2"
+								},
+								{
+									"name": "标记",
+									"type": "文本型",
+									"description": "关联标记"
+								}
+							]
+						},
+						{
+							"name": "批量订阅",
+							"description": "异步订阅多个主题；主题和 QoS 数组长度须一致，拒绝项的授权 QoS 为 128。",
+							"return": "simple.library.wsd.mqttclient.MQTT令牌",
+							"params": [
+								{
+									"name": "主题列表",
+									"type": "文本型[]",
+									"description": "非空主题过滤器数组"
+								},
+								{
+									"name": "QoS列表",
+									"type": "整数型[]",
+									"description": "与主题一一对应的服务质量"
+								},
+								{
+									"name": "标记",
+									"type": "文本型",
+									"description": "关联标记"
+								}
+							]
+						},
+						{
+							"name": "取消订阅",
+							"description": "异步取消订阅，通过操作成功或失败事件确认实际结果。",
+							"return": "simple.library.wsd.mqttclient.MQTT令牌",
+							"params": [
+								{
+									"name": "主题",
+									"type": "文本型",
+									"description": "主题过滤器"
+								},
+								{
+									"name": "标记",
+									"type": "文本型",
+									"description": "关联标记"
+								}
+							]
+						},
+						{
+							"name": "发布",
+							"description": "异步发布消息；离线缓冲启用且连接曾成功时可离线排队。发布完成不表示订阅者已经处理。",
+							"return": "simple.library.wsd.mqttclient.MQTT发送令牌",
+							"params": [
+								{
+									"name": "主题",
+									"type": "文本型",
+									"description": "不含通配符的发布主题"
+								},
+								{
+									"name": "消息",
+									"type": "simple.library.wsd.mqttclient.MQTT消息",
+									"description": "发送时复制内容和属性"
+								},
+								{
+									"name": "标记",
+									"type": "文本型",
+									"description": "关联标记"
+								}
+							]
+						},
+						{
+							"name": "设置离线缓冲",
+							"description": "设置离线缓冲；队列非空时拒绝修改，避免静默丢弃消息。持久缓冲要求连接参数启用持久存储。",
+							"params": [
+								{
+									"name": "选项",
+									"type": "simple.library.wsd.mqttclient.MQTT缓冲选项",
+									"description": "缓冲选项"
+								}
+							]
+						},
+						{
+							"name": "取缓冲消息",
+							"description": "返回指定离线缓冲消息的独立副本，索引从 0 开始。",
+							"return": "simple.library.wsd.mqttclient.MQTT消息",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "缓冲索引"
+								}
+							]
+						},
+						{
+							"name": "删除缓冲消息",
+							"description": "删除尚未发送的指定缓冲消息，对应发布令牌以失败结束。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从 0 开始的缓冲索引"
+								}
+							]
+						},
+						{
+							"name": "断开",
+							"description": "停止自动重连并异步正常断开，保留客户端供再次连接；等待时间为毫秒。",
+							"return": "simple.library.wsd.mqttclient.MQTT令牌",
+							"params": [
+								{
+									"name": "等待毫秒",
+									"type": "长整数型",
+									"description": "等待未完成消息的毫秒数，非负"
+								},
+								{
+									"name": "标记",
+									"type": "文本型",
+									"description": "关联标记"
+								}
+							]
+						},
+						{
+							"name": "强制断开",
+							"description": "停止自动重连并在后台强制断开；不发送断开报文时可能触发遗嘱，客户端可再次连接。",
+							"return": "simple.library.wsd.mqttclient.MQTT令牌",
+							"params": [
+								{
+									"name": "等待毫秒",
+									"type": "长整数型",
+									"description": "等待未完成消息的毫秒数，非负"
+								},
+								{
+									"name": "断开超时毫秒",
+									"type": "长整数型",
+									"description": "等待断开报文的毫秒数，非负"
+								},
+								{
+									"name": "发送断开报文",
+									"type": "逻辑型",
+									"description": "是否尝试发送正常断开报文"
+								},
+								{
+									"name": "标记",
+									"type": "文本型",
+									"description": "关联标记"
+								}
+							]
+						},
+						{
+							"name": "关闭",
+							"description": "在后台停止重连、断开并释放客户端；关闭完成后可重新连接，组件销毁后不可使用。未完成发布将以失败结束。",
+							"return": "simple.library.wsd.mqttclient.MQTT令牌",
+							"params": [
+								{
+									"name": "标记",
+									"type": "文本型",
+									"description": "关联标记"
+								}
+							]
+						}
+					],
+					"events": [
+						{
+							"name": "操作成功",
+							"description": "一次异步操作成功时触发；通过令牌的操作和标记区分请求。",
+							"params": [
+								{
+									"name": "令牌",
+									"type": "simple.library.wsd.mqttclient.MQTT令牌",
+									"description": "已完成的操作令牌"
+								}
+							]
+						},
+						{
+							"name": "操作失败",
+							"description": "一次异步操作失败时触发，令牌中包含错误代码及说明。",
+							"params": [
+								{
+									"name": "令牌",
+									"type": "simple.library.wsd.mqttclient.MQTT令牌",
+									"description": "失败的操作令牌"
+								}
+							]
+						},
+						{
+							"name": "连接完成",
+							"description": "初次连接或重连完成时触发；干净会话的订阅须由应用重新建立。",
+							"params": [
+								{
+									"name": "重连",
+									"type": "逻辑型",
+									"description": "是否为连接曾成功后的再次连接"
+								},
+								{
+									"name": "服务器地址",
+									"type": "文本型",
+									"description": "实际连接地址"
+								}
+							]
+						},
+						{
+							"name": "连接丢失",
+							"description": "连接意外丢失时触发，开启自动重连后组件会继续尝试；主动断开不触发。",
+							"params": [
+								{
+									"name": "错误",
+									"type": "simple.library.wsd.mqttclient.MQTT错误",
+									"description": "连接丢失原因"
+								}
+							]
+						},
+						{
+							"name": "收到消息",
+							"description": "收到消息时触发；消息为独立副本，可在事件结束后保留。",
+							"params": [
+								{
+									"name": "主题",
+									"type": "文本型",
+									"description": "消息主题"
+								},
+								{
+									"name": "消息",
+									"type": "simple.library.wsd.mqttclient.MQTT消息",
+									"description": "独立消息副本"
+								}
+							]
+						},
+						{
+							"name": "发送完成",
+							"description": "Paho 完成本条消息的交付流程时触发；QoS 0 不包含服务器确认。",
+							"params": [
+								{
+									"name": "令牌",
+									"type": "simple.library.wsd.mqttclient.MQTT发送令牌",
+									"description": "本次发布的关联令牌"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "MQTT常量",
+					"description": "MQTT 服务质量、协议版本和客户端状态常量。",
+					"kind": "object",
+					"type": "simple.library.wsd.mqttclient.MQTT常量",
+					"constants": [
+						{
+							"name": "QoS_最多一次",
+							"type": "整数型",
+							"value": "0",
+							"description": "最多传递一次，不提供送达确认。"
+						},
+						{
+							"name": "QoS_至少一次",
+							"type": "整数型",
+							"value": "1",
+							"description": "至少传递一次，可能重复。"
+						},
+						{
+							"name": "QoS_仅一次",
+							"type": "整数型",
+							"value": "2",
+							"description": "在协议参与方之间按仅一次语义传递，不代表业务只处理一次。"
+						},
+						{
+							"name": "协议_自动",
+							"type": "整数型",
+							"value": "0",
+							"description": "优先 MQTT 3.1.1，失败时按底层规则尝试 3.1。"
+						},
+						{
+							"name": "协议_3_1",
+							"type": "整数型",
+							"value": "3",
+							"description": "MQTT 3.1。"
+						},
+						{
+							"name": "协议_3_1_1",
+							"type": "整数型",
+							"value": "4",
+							"description": "MQTT 3.1.1。"
+						},
+						{
+							"name": "状态_未创建",
+							"type": "整数型",
+							"value": "0",
+							"description": "尚未创建客户端。"
+						},
+						{
+							"name": "状态_已断开",
+							"type": "整数型",
+							"value": "1",
+							"description": "客户端存在但未连接。"
+						},
+						{
+							"name": "状态_连接中",
+							"type": "整数型",
+							"value": "2",
+							"description": "正在连接。"
+						},
+						{
+							"name": "状态_已连接",
+							"type": "整数型",
+							"value": "3",
+							"description": "已连接。"
+						},
+						{
+							"name": "状态_断开中",
+							"type": "整数型",
+							"value": "4",
+							"description": "正在断开。"
+						},
+						{
+							"name": "状态_关闭中",
+							"type": "整数型",
+							"value": "5",
+							"description": "正在关闭并释放客户端。"
+						},
+						{
+							"name": "状态_已销毁",
+							"type": "整数型",
+							"value": "6",
+							"description": "组件已销毁。"
+						}
+					]
+				},
+				{
+					"name": "MQTT错误",
+					"description": "异步操作或连接丢失的错误信息快照，不包含账号和密码。",
+					"kind": "object",
+					"type": "simple.library.wsd.mqttclient.MQTT错误",
+					"properties": [
+						{
+							"name": "代码",
+							"description": "Paho 错误代码，非 Paho 异常为 -1。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "说明",
+							"description": "错误说明。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "原因类型",
+							"description": "底层异常类型名称。",
+							"type": "文本型",
+							"writable": false
+						}
+					]
+				},
+				{
+					"name": "MQTT消息",
+					"description": "MQTT 消息的独立副本。内容是原始字节，可用于空消息或二进制；保留标志与重复标志分别表示不同语义。",
+					"kind": "object",
+					"type": "simple.library.wsd.mqttclient.MQTT消息",
+					"properties": [
+						{
+							"name": "内容",
+							"description": "消息的原始字节，读取和设置均复制数组。",
+							"type": "字节型[]",
+							"writable": true
+						},
+						{
+							"name": "QoS",
+							"description": "服务质量，取值 0、1 或 2。",
+							"type": "整数型",
+							"writable": true
+						},
+						{
+							"name": "保留",
+							"description": "是否请求服务器保留最后一条消息；收到时表示本消息的保留标志。",
+							"type": "逻辑型",
+							"writable": true
+						},
+						{
+							"name": "重复",
+							"description": "本消息是否被标记为重复传递。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "消息编号",
+							"description": "协议消息编号，未分配时为 0。",
+							"type": "整数型",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "置文本",
+							"description": "使用 UTF-8 设置文本内容。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "消息文本，可为空文本"
+								}
+							]
+						},
+						{
+							"name": "取文本",
+							"description": "按 UTF-8 读取内容；二进制消息应直接读取内容属性。",
+							"return": "文本型"
+						},
+						{
+							"name": "清空内容",
+							"description": "将消息内容清空为零字节。"
+						}
+					]
+				},
+				{
+					"name": "MQTTTLS配置",
+					"description": "TLS 属性配置。默认使用系统信任证书并校验服务器主机名；自定义密钥库文件位于应用可访问路径，类型须由设备支持。",
+					"kind": "object",
+					"type": "simple.library.wsd.mqttclient.MQTTTLS配置",
+					"properties": [
+						{
+							"name": "协议",
+							"description": "TLS 协议，默认为 TLS。",
+							"type": "文本型",
+							"writable": true
+						},
+						{
+							"name": "密钥库路径",
+							"description": "客户端密钥库路径。",
+							"type": "文本型",
+							"writable": true
+						},
+						{
+							"name": "密钥库密码",
+							"description": "客户端密钥库密码。",
+							"type": "文本型",
+							"writable": true
+						},
+						{
+							"name": "密钥库类型",
+							"description": "客户端密钥库类型，例如 PKCS12。",
+							"type": "文本型",
+							"writable": true
+						},
+						{
+							"name": "信任库路径",
+							"description": "受信任证书库路径。",
+							"type": "文本型",
+							"writable": true
+						},
+						{
+							"name": "信任库密码",
+							"description": "受信任证书库密码。",
+							"type": "文本型",
+							"writable": true
+						},
+						{
+							"name": "信任库类型",
+							"description": "信任库类型，需由当前设备支持。",
+							"type": "文本型",
+							"writable": true
+						},
+						{
+							"name": "密码套件",
+							"description": "以英文逗号分隔的密码套件名称，空文本使用系统默认。",
+							"type": "文本型",
+							"writable": true
+						}
+					]
+				},
+				{
+					"name": "MQTT连接参数",
+					"description": "连接参数。时间均按属性注明的单位传入；连接时复制参数，之后修改不影响已经提交的连接。",
+					"kind": "object",
+					"type": "simple.library.wsd.mqttclient.MQTT连接参数",
+					"properties": [
+						{
+							"name": "账号",
+							"description": "登录账号，空文本表示未设置。",
+							"type": "文本型",
+							"writable": true
+						},
+						{
+							"name": "心跳间隔",
+							"description": "心跳间隔，单位秒，范围 0 至 65535；0 表示不发送心跳。",
+							"type": "整数型",
+							"writable": true
+						},
+						{
+							"name": "连接超时",
+							"description": "连接超时，单位秒，范围 1 至 300。",
+							"type": "整数型",
+							"writable": true
+						},
+						{
+							"name": "最大在途消息数",
+							"description": "同时进行协议交付的消息数，必须大于 0。",
+							"type": "整数型",
+							"writable": true
+						},
+						{
+							"name": "清理会话",
+							"description": "是否清理服务器保存的订阅和会话；持久会话须使用稳定且唯一的客户端 ID。",
+							"type": "逻辑型",
+							"writable": true
+						},
+						{
+							"name": "自动重连",
+							"description": "连接曾经成功后意外断开时是否自动重连；主动断开或关闭会停止重连。",
+							"type": "逻辑型",
+							"writable": true
+						},
+						{
+							"name": "协议版本",
+							"description": "协议版本，使用 MQTT常量中的协议值。",
+							"type": "整数型",
+							"writable": true
+						},
+						{
+							"name": "持久存储",
+							"description": "是否在应用私有目录持久保存协议和离线数据；同一客户端关闭前不能改变。",
+							"type": "逻辑型",
+							"writable": true
+						}
+					],
+					"functions": [
+						{
+							"name": "设置密码",
+							"description": "设置登录密码；不提供读取接口。",
+							"params": [
+								{
+									"name": "密码",
+									"type": "文本型",
+									"description": "服务器密码，空文本表示清空"
+								}
+							]
+						},
+						{
+							"name": "设置遗嘱",
+							"description": "设置异常掉线时由服务器发布的遗嘱消息；正常发送断开报文不会触发遗嘱。",
+							"params": [
+								{
+									"name": "主题",
+									"type": "文本型",
+									"description": "不含通配符的发布主题"
+								},
+								{
+									"name": "消息",
+									"type": "simple.library.wsd.mqttclient.MQTT消息",
+									"description": "遗嘱内容、QoS 和保留标志"
+								}
+							]
+						},
+						{
+							"name": "设置TLS",
+							"description": "使用独立副本设置 TLS 属性，服务器地址须使用 ssl://。",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.mqttclient.MQTTTLS配置",
+									"description": "TLS 配置"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "MQTT缓冲选项",
+					"description": "离线发布缓冲配置。连接至少成功过一次后使用；持久缓冲需要客户端启用持久存储。补发可能重复，业务应去重。改变配置前须清空队列。",
+					"kind": "object",
+					"type": "simple.library.wsd.mqttclient.MQTT缓冲选项",
+					"properties": [
+						{
+							"name": "启用",
+							"description": "是否缓冲离线期间的发布。",
+							"type": "逻辑型",
+							"writable": true
+						},
+						{
+							"name": "容量",
+							"description": "最多缓冲的消息条数，必须大于 0。",
+							"type": "整数型",
+							"writable": true
+						},
+						{
+							"name": "持久化",
+							"description": "是否将缓冲消息保存在应用私有目录。",
+							"type": "逻辑型",
+							"writable": true
+						},
+						{
+							"name": "淘汰最旧消息",
+							"description": "队列已满时是否移除最旧消息；关闭时本次发布失败。",
+							"type": "逻辑型",
+							"writable": true
+						}
+					]
+				},
+				{
+					"name": "MQTT令牌",
+					"description": "一次异步操作的结果。提交不表示成功；通过操作成功或操作失败事件读取完成结果，不在主线程等待。",
+					"kind": "object",
+					"type": "simple.library.wsd.mqttclient.MQTT令牌",
+					"properties": [
+						{
+							"name": "操作编号",
+							"description": "本组件内唯一的操作编号。",
+							"type": "长整数型",
+							"writable": false
+						},
+						{
+							"name": "操作",
+							"description": "操作名称，例如连接、订阅、取消订阅、发布、断开或关闭。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "标记",
+							"description": "调用方提交的关联标记。",
+							"type": "文本型",
+							"writable": false
+						},
+						{
+							"name": "已完成",
+							"description": "异步操作是否已经结束。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "成功",
+							"description": "操作已完成且成功时为真。",
+							"type": "逻辑型",
+							"writable": false
+						},
+						{
+							"name": "消息编号",
+							"description": "协议消息编号，不适用或尚未分配时为 0。",
+							"type": "整数型",
+							"writable": false
+						},
+						{
+							"name": "错误",
+							"description": "失败时的错误快照，尚未失败时为空。",
+							"type": "simple.library.wsd.mqttclient.MQTT错误",
+							"writable": false
+						}
+					],
+					"functions": [
+						{
+							"name": "取主题",
+							"description": "返回本次操作的主题副本。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "取授权QoS",
+							"description": "返回订阅确认的实际 QoS，非订阅操作返回空数组；128 表示该项被拒绝。",
+							"return": "整数型[]"
+						}
+					]
+				},
+				{
+					"name": "MQTT发送令牌",
+					"description": "一次发布操作的令牌及发送消息快照；发送完成事件不代表业务接收方已经处理。",
+					"kind": "object",
+					"type": "simple.library.wsd.mqttclient.MQTT发送令牌",
+					"inherits": [
+						"simple.library.wsd.mqttclient.MQTT令牌"
+					],
+					"properties": [
+						{
+							"name": "消息",
+							"description": "发布时的消息独立副本。",
+							"type": "simple.library.wsd.mqttclient.MQTT消息",
+							"writable": false
+						}
+					]
+				}
+			]
+		}
+	]
+}

@@ -5,17 +5,22 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Looper;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 网络线程等待用户确认，主线程只显示对话框；超时及组件销毁均释放等待者。
+ *
+ * @author 树先生 xhwsd@qq.com
  */
 final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 
 	/**
 	 * 保存服务器身份确认弹窗及等待结果的状态。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	private static final class Request {
 		final CountDownLatch signal = new CountDownLatch(1);
@@ -41,76 +46,115 @@ final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 	private volatile boolean closed;
 	private Request pending;
 
+	/**
+	 * 将服务器公钥确认对话框绑定到当前 Activity。
+	 *
+	 * @param activity 当前 Android 宿主。
+	 */
 	SftpHostConfirmation(Activity activity) {
 		this.activity = activity;
 	}
 
 	@Override
-	public boolean confirm(final String host, final int port, final String algorithm,
-			final String fingerprint, final String previous) {
-		if (Looper.myLooper() == Looper.getMainLooper()) return false;
+	public boolean confirm(
+			final String host,
+			final int port,
+			final String algorithm,
+			final String fingerprint,
+			final String previous) {
+		if (Looper.myLooper() == Looper.getMainLooper()) {
+			return false;
+		}
 
 		final Request request = new Request();
 
 		synchronized (this) {
-			if (closed || pending != null) return false;
+			if (closed || pending != null) {
+				return false;
+			}
 
 			pending = request;
 		}
 
 		try {
-			if (!handler.post(new Runnable() {
+			if (!handler.post(
+					new Runnable() {
 
-				@Override
-				public void run() {
-					if (closed || request.completed.get() || activity.isFinishing()) {
-						request.finish(false);
-						return;
-					}
+						@Override
+						public void run() {
+							if (closed || request.completed.get() || activity.isFinishing()) {
+								request.finish(false);
+								return;
+							}
 
-					boolean changed = previous.length() > 0;
-					String message = "服务器：" + host + ":" + port + "\n公钥类型：" + algorithm
-						+ "\n公钥指纹：\n" + fingerprint;
-					if (changed) {
-						message += "\n\n原指纹：\n" + previous + "\n\n服务器身份与已保存记录不同，请向管理员核实后再更新信任。";
-					} else {
-						message += "\n\n首次连接，请核对服务器身份。确认后保存在本应用中，后续自动校验。";
-					}
+							boolean changed = previous.length() > 0;
+							String message =
+									"服务器："
+											+ host
+											+ ":"
+											+ port
+											+ "\n公钥类型："
+											+ algorithm
+											+ "\n公钥指纹：\n"
+											+ fingerprint;
+							if (changed) {
+								message +=
+										"\n\n原指纹：\n"
+												+ previous
+												+ "\n\n服务器身份与已保存记录不同，请向管理员核实后再更新信任。";
+							} else {
+								message += "\n\n首次连接，请核对服务器身份。确认后保存在本应用中，后续自动校验。";
+							}
 
-					try {
-						request.dialog = new AlertDialog.Builder(activity)
-							.setTitle(changed ? "服务器公钥已变化" : "首次连接 SFTP 服务器")
-							.setMessage(message)
-							.setPositiveButton(changed ? "更新信任并连接" : "信任并连接", new DialogInterface.OnClickListener() {
+							try {
+								request.dialog =
+										new AlertDialog.Builder(activity)
+												.setTitle(changed ? "服务器公钥已变化" : "首次连接 SFTP 服务器")
+												.setMessage(message)
+												.setPositiveButton(
+														changed ? "更新信任并连接" : "信任并连接",
+														new DialogInterface.OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									request.finish(true);
-								}
-							})
-							.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+															@Override
+															public void onClick(
+																	DialogInterface dialog,
+																	int which) {
+																request.finish(true);
+															}
+														})
+												.setNegativeButton(
+														"取消",
+														new DialogInterface.OnClickListener() {
 
-								@Override
-								public void onClick(DialogInterface dialog, int which) {
-									request.finish(false);
-								}
-							})
-							.setOnCancelListener(new DialogInterface.OnCancelListener() {
+															@Override
+															public void onClick(
+																	DialogInterface dialog,
+																	int which) {
+																request.finish(false);
+															}
+														})
+												.setOnCancelListener(
+														new DialogInterface.OnCancelListener() {
 
-								@Override
-								public void onCancel(DialogInterface dialog) {
-									request.finish(false);
-								}
-							})
-							.create();
-						request.dialog.setCanceledOnTouchOutside(false);
-						request.dialog.show();
-					} catch (RuntimeException ex) {
-						request.finish(false);
-					}
-				}
-			})) request.finish(false);
-			if (!request.signal.await(60, TimeUnit.SECONDS)) request.finish(false);
+															@Override
+															public void onCancel(
+																	DialogInterface dialog) {
+																request.finish(false);
+															}
+														})
+												.create();
+								request.dialog.setCanceledOnTouchOutside(false);
+								request.dialog.show();
+							} catch (RuntimeException ex) {
+								request.finish(false);
+							}
+						}
+					})) {
+				request.finish(false);
+			}
+			if (!request.signal.await(60, TimeUnit.SECONDS)) {
+				request.finish(false);
+			}
 			return request.accepted && !closed;
 		} catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
@@ -119,7 +163,11 @@ final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 		} finally {
 			dismiss(request);
 
-			synchronized (this) { if (pending == request) pending = null; }
+			synchronized (this) {
+				if (pending == request) {
+					pending = null;
+				}
+			}
 		}
 	}
 
@@ -129,13 +177,16 @@ final class SftpHostConfirmation implements SftpHostTrust.Confirmation {
 	 * @param request 当前请求对象
 	 */
 	private void dismiss(final Request request) {
-		handler.post(new Runnable() {
+		handler.post(
+				new Runnable() {
 
-			@Override
-			public void run() {
-				if (request.dialog != null) request.dialog.dismiss();
-			}
-		});
+					@Override
+					public void run() {
+						if (request.dialog != null) {
+							request.dialog.dismiss();
+						}
+					}
+				});
 	}
 
 	/**
