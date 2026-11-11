@@ -17,8 +17,7 @@ import com.download.library.Extra;
 import com.download.library.ResourceRequest;
 
 /**
- * 管理单个浏览器拥有的下载，不取消其它组件或应用任务。
- * 下载库按网址识别任务，同网址已有任务时明确拒绝，不抢占已有任务。
+ * 管理单个浏览器拥有的下载，不取消其它组件或应用任务。 下载库按网址识别任务，同网址已有任务时明确拒绝，不抢占已有任务。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -26,22 +25,24 @@ final class DownloadTasks {
 
 	/**
 	 * 将下载结果统一交给界面线程上的组件。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	interface Listener {
 		/**
 		 * 下载进度变化。
 		 *
-		 * @param url 下载网址。
+		 * @param url      下载网址。
 		 * @param received 已接收字节数。
-		 * @param total 总字节数。
+		 * @param total    总字节数。
 		 */
 		void progress(String url, long received, long total);
 
 		/**
 		 * 下载已结束。
 		 *
-		 * @param url 下载网址。
-		 * @param path 目标路径。
+		 * @param url   下载网址。
+		 * @param path  目标路径。
 		 * @param error 失败异常；成功时为空。
 		 */
 		void finished(String url, String path, Throwable error);
@@ -62,7 +63,7 @@ final class DownloadTasks {
 	/**
 	 * 绑定当前浏览框的下载监听器，不持有 Activity。
 	 *
-	 * @param context 应用上下文。
+	 * @param context  应用上下文。
 	 * @param listener 当前浏览框的监听器。
 	 */
 	DownloadTasks(Context context, Listener listener) {
@@ -73,10 +74,11 @@ final class DownloadTasks {
 	/**
 	 * 创建明确目标的下载；不覆盖已有文件，也不触发自动打开。
 	 *
-	 * @param url 已校验的 HTTP 或 HTTPS 网址。
-	 * @param target 不存在的目标文件，其父目录必须可写。
+	 * @param url     已校验的 HTTP 或 HTTPS 网址。
+	 * @param target  不存在的目标文件，其父目录必须可写。
+	 * @param headers 仅用于本次任务的请求头。
 	 */
-	void start(final String url, final File target) {
+	void start(final String url, final File target, Map<String, String> headers) {
 		DownloadImpl downloader = DownloadImpl.getInstance(context);
 		if (requests.containsKey(url) || downloader.exist(url)) {
 			throw new IllegalStateException("此网址已有下载任务：" + url);
@@ -97,6 +99,9 @@ final class DownloadTasks {
 				.setEnableIndicator(false).closeAutoOpen().setConnectTimeOut(15000).setRetry(0);
 		// 明确使用调用方路径，禁止上游再按服务器 Content-Disposition 重命名或复用其它文件。
 		request.setContentDisposition("attachment");
+		for (Map.Entry<String, String> header : headers.entrySet()) {
+			request.addHeader(header.getKey(), header.getValue());
+		}
 		requests.put(url, request);
 		try {
 			request.enqueue(new DownloadListenerAdapter() {
@@ -115,16 +120,17 @@ final class DownloadTasks {
 				@Override
 				public boolean onResult(final Throwable error, Uri path, String address, Extra extra) {
 					// 上游在回调返回后清空任务字段，必须在此保存结果，不在排队任务中重读 DownloadTask。
-					final File completed = path != null && "file".equals(path.getScheme())
-							&& path.getPath() != null ? new File(path.getPath()) : null;
+					final File completed = path != null && "file".equals(path.getScheme()) && path.getPath() != null
+							? new File(path.getPath())
+							: null;
 					handler.post(new Runnable() {
 						@Override
 						public void run() {
 							if (requests.get(url) == request) {
 								requests.remove(url);
 								Throwable failure = error;
-								if (failure == null && (!target.isFile()
-										|| !target.getAbsoluteFile().equals(completed))) {
+								if (failure == null
+										&& (!target.isFile() || !target.getAbsoluteFile().equals(completed))) {
 									failure = new IllegalStateException("下载未写入指定目标文件。");
 								}
 								listener.finished(url, target.getAbsolutePath(), failure);

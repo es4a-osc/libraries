@@ -1,970 +1,106 @@
-别名 QuickJS实例 = simple.library.wsd.quickjs.QuickJS实例
-别名 QuickJS值 = simple.library.wsd.quickjs.QuickJS值
-别名 QuickJS对象 = simple.library.wsd.quickjs.QuickJS对象
-别名 QuickJS数组 = simple.library.wsd.quickjs.QuickJS数组
-别名 QuickJS函数 = simple.library.wsd.quickjs.QuickJS函数
-别名 QuickJS运行时 = simple.library.wsd.quickjs.QuickJS运行时
-别名 QuickJS控制器 = simple.library.wsd.quickjs.QuickJS控制器
-别名 QuickJS承诺 = simple.library.wsd.quickjs.QuickJS承诺
-别名 QuickJS内存 = simple.library.wsd.quickjs.QuickJS内存
-别名 QuickJS错误 = simple.library.wsd.quickjs.QuickJS错误
-别名 QuickJS模块 = simple.library.wsd.quickjs.QuickJS模块
-别名 QuickJS加载器 = simple.library.wsd.quickjs.QuickJS加载器
-别名 QuickJS日志 = simple.library.wsd.quickjs.QuickJS日志
-别名 QuickJS监听 = simple.library.wsd.quickjs.QuickJS监听
-别名 QuickJS参数 = simple.library.wsd.quickjs.QuickJS参数
-别名 QuickJS回调 = simple.library.wsd.quickjs.QuickJS回调
-别名 QuickJS常量 = simple.library.wsd.quickjs.QuickJS常量
-别名 QuickJS执行选项 = simple.library.wsd.quickjs.QuickJS执行选项
-别名 QuickJS构造回调 = simple.library.wsd.quickjs.QuickJS构造回调
-别名 QuickJS线程 = simple.library.wsd.quickjs.QuickJS线程
-别名 QuickJS线程回调 = simple.library.wsd.quickjs.QuickJS线程回调
+' QuickJS 固定版本引擎，导出对象统一采用 QJS 前缀。
+别名 QJS值 = simple.library.wsd.quickjs.QJS值
+别名 QJS内存 = simple.library.wsd.quickjs.QJS内存
+别名 QJS函数 = simple.library.wsd.quickjs.QJS函数
+别名 QJS加载器 = simple.library.wsd.quickjs.QJS加载器
+别名 QJS参数 = simple.library.wsd.quickjs.QJS参数
+别名 QJS回调 = simple.library.wsd.quickjs.QJS回调
+别名 QJS实例 = simple.library.wsd.quickjs.QJS实例
+别名 QJS对象 = simple.library.wsd.quickjs.QJS对象
+别名 QJS常量 = simple.library.wsd.quickjs.QJS常量
+别名 QJS执行选项 = simple.library.wsd.quickjs.QJS执行选项
+别名 QJS承诺 = simple.library.wsd.quickjs.QJS承诺
+别名 QJS控制器 = simple.library.wsd.quickjs.QJS控制器
+别名 QJS数组 = simple.library.wsd.quickjs.QJS数组
+别名 QJS日志 = simple.library.wsd.quickjs.QJS日志
+别名 QJS构造回调 = simple.library.wsd.quickjs.QJS构造回调
+别名 QJS模块 = simple.library.wsd.quickjs.QJS模块
+别名 QJS监听 = simple.library.wsd.quickjs.QJS监听
+别名 QJS线程 = simple.library.wsd.quickjs.QJS线程
+别名 QJS线程回调 = simple.library.wsd.quickjs.QJS线程回调
+别名 QJS运行时 = simple.library.wsd.quickjs.QJS运行时
+别名 QJS错误 = simple.library.wsd.quickjs.QJS错误
+变量 页0 为 基础窗口
 
-变量 引擎 为 QuickJS实例
-变量 运行时 为 QuickJS运行时
-变量 忙碌 为 逻辑型
-变量 操作 为 整数型
-变量 输入代码 为 文本型
-变量 报告 为 文本型
-
-事件 主窗口.初始化()
-
-	引擎 = 创建 QuickJS实例
-	运行时 = 引擎.取运行时()
-结束 事件
-
-过程 提交(编号 为 整数型)
-
-	如果 忙碌 则 退出 过程
-	忙碌 = 真
-	操作 = 编号
-	输入代码 = 代码.文本
-	报告 = ""
-	状态.文本 = "后台运行中……"
-	启动线程(本对象, "后台处理")
-结束 过程
-
-事件 主窗口.反馈消息(标记 为 变体型, 内容 为 变体型)
-
-	忙碌 = 假
-	状态.文本 = 内容
-结束 事件
-
-过程 记录(内容 为 文本型)
-
-	报告 = 报告 & 内容 & "\n"
-	输出信息("QuickJS示例", 内容)
-结束 过程
-
-过程 核对(条件 为 逻辑型, 说明 为 文本型)
-
-	如果 条件 = 假 则
-		引擎.置全局值("failure", 引擎.创建文本(说明))
-		引擎.执行代码("throw new Error(failure)")
+事件 入口0.被单击()
+	如果 页0 = 空 则
+		页0 = 创建 基础窗口
+		页0.来源 = 本对象
 	结束 如果
-结束 过程
+	页0.准备()
+	切换窗口(页0)
+结束 事件
+变量 页1 为 对象窗口
 
-过程 后台处理()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-
-	引擎.销毁()
-	引擎 = 创建 QuickJS实例
-	运行时 = 引擎.取运行时()
-	变量 异常 为 QuickJS错误
-
-	如果 操作 = 0 则
-		临时引用1 = 引擎.执行代码(输入代码)
-		记录("输入结果：" & 临时引用1.到文本())
-	否则如果 操作 = 9 则
-		数值主题()
-		对象主题()
-		回调主题()
-		承诺主题()
-		模块主题()
-		二进制主题()
-		隔离主题()
-		错误主题()
-		宿主主题()
-		扩展模块主题()
-		调度主题()
-	否则
-		判断 操作
-			分支 1
-				数值主题()
-			分支 2
-				对象主题()
-			分支 3
-				回调主题()
-			分支 4
-				承诺主题()
-			分支 5
-				模块主题()
-			分支 6
-				二进制主题()
-			分支 7
-				隔离主题()
-			分支 8
-				错误主题()
-			分支 10
-				宿主主题()
-			分支 11
-				扩展模块主题()
-			分支 12
-				调度主题()
-		结束 判断
+事件 入口1.被单击()
+	如果 页1 = 空 则
+		页1 = 创建 对象窗口
+		页1.来源 = 本对象
 	结束 如果
-	引擎.销毁()
-	投递消息("完成", 报告)
-	位于 错误
-		分支 QuickJS错误
-			输出错误("QuickJS示例", 引擎.取最近错误())
-			异常 = 引擎.取最近异常()
-			如果 异常 <> 空 则
-				输出错误("QuickJS示例", 异常.取堆栈())
-				报告 = 报告 & "中断原因：" & 异常.取原因() & "，" & 异常.取说明()
-			结束 如果
-			引擎.销毁()
-			投递消息("失败", 报告)
-		分支 否则
-			引擎.销毁()
-			投递消息("失败", 报告 & "宿主调用失败，请查看运行日志。")
-	结束 错误
-结束 过程
-
-过程 数值主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 简单数组 为 变体型(3)
-	变量 转换数组 为 QuickJS数组
-	变量 转换值 为 QuickJS值
-	变量 大数 为 QuickJS值
-	变量 文本 为 QuickJS值
-	变量 符号 为 QuickJS值
-	变量 副本 为 QuickJS值
-	变量 和 为 QuickJS值
-
-	简单数组(0) = 42
-	简单数组(1) = "中文"
-	转换值 = 引擎.生成值(简单数组)
-	转换数组 = 转换值.到数组()
-	核对(转换数组.取长度() = 3, "Simple 变体数组")
-
-	转换值 = 引擎.创建小数(-2147483648.75)
-	核对(转换值.到整数() = -2147483648, "小数向零截断边界")
-
-	大数 = 引擎.创建大整数("123456789012345678901234567890")
-	核对(大数.是否大整数(), "BigInt 类型")
-	和 = 大数.计算("+", 大数)
-	核对(和.到文本() = "246913578024691357802469135780", "BigInt 精度")
-
-	文本 = 引擎.创建文本("中文😀" & 字符(0) & "末尾")
-	核对(文本.到文本() = "中文😀" & 字符(0) & "末尾", "UTF-16 往返")
-	临时引用1 = 引擎.创建未定义()
-	核对(临时引用1.是否未定义(), "undefined")
-	临时引用2 = 引擎.创建空值()
-	核对(临时引用2.是否空值(), "null")
-
-	符号 = 引擎.取全局符号("ES4A")
-	核对(符号.是否符号(), "Symbol")
-	副本 = 符号.保留()
-	核对(符号.是否相同(副本), "保留引用")
-
-	引擎.启用扩展数值()
-	引擎.启用扩展数值()
-	转换值 = 引擎.执行代码("1.25m+2.75m")
-	核对(转换值.取类型() = 14, "BigDecimal")
-	核对(转换值.到文本() = "4", "BigDecimal 精度")
-	转换值 = 引擎.执行代码("1.25l+2.75l")
-	核对(转换值.取类型() = 13, "BigFloat")
-
-	记录("01 BigInt 相加：" & 和.到文本() & "；中文😀及零字符往返：完成")
-
-	大数.释放()
-	和.释放()
-	文本.释放()
-	符号.释放()
-	副本.释放()
-结束 过程
-
-过程 对象主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用3 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用4 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用5 为 simple.library.wsd.quickjs.QuickJS数组
-	变量 临时引用6 为 simple.library.wsd.quickjs.QuickJS值
-	变量 对象值 为 QuickJS对象
-	变量 数组值 为 QuickJS数组
-	变量 符号 为 QuickJS值
-	变量 数字 为 QuickJS值
-	变量 移除值 为 QuickJS数组
-
-	对象值 = 引擎.创建对象()
-	对象值.置简单成员("name", "ES4A")
-	临时引用1 = 对象值.取成员("name")
-	核对(临时引用1.到文本() = "ES4A", "属性读写")
-
-	对象值.置成员("missing", 空)
-	临时引用2 = 对象值.取成员("missing")
-	核对(临时引用2.是否未定义(), "值空引用表示 undefined")
-	对象值.置简单成员("nil", 空)
-	临时引用3 = 对象值.取成员("nil")
-	核对(临时引用3.是否空值(), "Simple 空转换为 JS null")
-
-	符号 = 引擎.创建符号("隐藏键")
-	数字 = 引擎.创建小数(42)
-	对象值.置键值(符号, 数字)
-	临时引用4 = 对象值.取键值(符号)
-	核对(临时引用4.到整数() = 42, "Symbol 键")
-	临时引用5 = 对象值.取自有键()
-	核对(临时引用5.取长度() = 4, "所有自有键")
-
-	数组值 = 引擎.创建数组()
-	数组值.置简单项目(0, "甲")
-	数组值.追加(数字)
-	数组值.插入(1, 数字)
-	移除值 = 数组值.移除(1, 1)
-	核对(数组值.连接文本("|") = "甲|42", "数组 splice")
-	核对(移除值.取长度() = 1, "移除结果")
-
-	引擎.置全局值("sample", 对象值)
-	临时引用6 = 引擎.执行资产("objects.js")
-	临时引用6.释放()
-	集合与描述()
-
-	记录("02 数组：" & 数组值.连接文本("|") & "；对象属性和集合：完成")
-
-	对象值.释放()
-	数组值.释放()
-	符号.释放()
-	数字.释放()
-	移除值.释放()
-结束 过程
-
-过程 回调主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用3 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用4 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用5 为 simple.library.wsd.quickjs.QuickJS值
-	变量 抛出回调 为 宿主抛出
-	变量 日志 为 宿主日志
-	变量 回调 为 宿主加法
-	变量 函数值 为 QuickJS函数
-	变量 结果 为 QuickJS值
-	变量 参数 为 变体型(2)
-
-	日志 = 创建 宿主日志
-	引擎.置日志接收器(日志)
-
-	回调 = 创建 宿主加法
-	回调.引擎 = 引擎
-	引擎.注册函数("hostAdd", 回调)
-
-	抛出回调 = 创建 宿主抛出
-	抛出回调.引擎 = 引擎
-	引擎.注册函数("hostThrow", 抛出回调)
-	临时引用1 = 引擎.执行代码("try{hostThrow({code:42})}catch(e){if(e.code!==42)throw Error('宿主异常类型');globalThis.thrownCode=e.code}")
-	临时引用1.释放()
-	临时引用2 = 引擎.取全局值("thrownCode")
-	核对(临时引用2.到整数() = 42, "宿主抛出原始 JS 值")
-
-	结果 = 引擎.执行代码("hostAdd(20,22)")
-	核对(结果.到整数() = 42, "JS 调 Simple")
-
-	临时引用3 = 引擎.执行代码("(a,b)=>a*b")
-	函数值 = 临时引用3.到函数()
-	参数(0) = 6
-	参数(1) = 7
-	临时引用4 = 函数值.调用(参数)
-	核对(临时引用4.到整数() = 42, "Simple 调 JS")
-
-	临时引用5 = 引擎.执行代码("console.log('Simple 与 JS 互调完成😀')")
-	临时引用5.释放()
-	核对(日志.次数 = 1, "console 回调")
-	回调回收(回调)
-
-	记录("03 JS 调 Simple：" & 结果.到文本() & "；Simple 调 JS：42")
-	结果.释放()
-	函数值.释放()
-结束 过程
-
-过程 承诺主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用3 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用4 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用5 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用6 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用7 为 simple.library.wsd.quickjs.QuickJS值
-	变量 后续 为 QuickJS承诺
-	变量 失败承诺 为 QuickJS承诺
-	变量 恢复函数 为 QuickJS函数
-	变量 函数引用 为 QuickJS值
-	变量 拒绝监听 为 宿主拒绝
-	变量 承诺值 为 QuickJS控制器
-	变量 结果 为 QuickJS承诺
-	变量 任务数 为 整数型
-
-	拒绝监听 = 创建 宿主拒绝
-	引擎.置监听(拒绝监听)
-
-	承诺值 = 引擎.创建控制器()
-	结果 = 承诺值.取承诺()
-
-	引擎.置全局值("hostPromise", 结果)
-	临时引用1 = 引擎.执行代码("globalThis.answer=0; hostPromise.then(v=>answer=v+1)")
-	临时引用1.释放()
-	承诺值.兑现(引擎.创建小数(41))
-	任务数 = 运行时.执行任务(100)
-	临时引用2 = 引擎.取全局值("answer")
-	核对(临时引用2.到整数() = 42, "宿主兑现")
-	核对(结果.取状态() = 1, "Promise 状态")
-
-	后续 = 结果.接续(空, 空)
-	后续 = 后续.最终处理(空)
-	任务数 = 运行时.执行任务(100)
-	临时引用3 = 后续.取结果()
-	核对(临时引用3.到整数() = 41, "空处理器传递兑现值")
-
-	临时引用4 = 引擎.执行资产("async.js")
-	临时引用4.释放()
-	任务数 = 运行时.执行任务(100)
-	临时引用5 = 引擎.取全局值("asyncAnswer")
-	核对(临时引用5.到整数() = 42, "async/await")
-	核对(拒绝监听.拒绝次数 = 1, "未处理拒绝通知")
-	核对(拒绝监听.处理次数 = 1, "拒绝已处理通知")
-
-	函数引用 = 引擎.执行代码("reason=>reason*2")
-	恢复函数 = 函数引用.到函数()
-	临时引用6 = 引擎.执行代码("Promise.reject(21)")
-	失败承诺 = 临时引用6.到承诺()
-	后续 = 失败承诺.捕获拒绝(恢复函数)
-	任务数 = 运行时.执行任务(100)
-	临时引用7 = 后续.取结果()
-	核对(临时引用7.到整数() = 42, "拒绝恢复")
-
-	记录("04 承诺：41；异步结果与拒绝恢复：42")
-	结果.释放()
-	承诺值.释放()
-结束 过程
-
-过程 模块主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用3 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用4 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用5 为 simple.library.wsd.quickjs.QuickJS值
-	变量 命名空间 为 QuickJS对象
-	变量 字节码 为 字节型()
-	变量 任务数 为 整数型
-	变量 加载器 为 模块来源
-
-	加载器 = 创建 模块来源
-	引擎.置加载器(加载器)
-	引擎.注册模块("math/add.js", "export const add=(a,b)=>a+b")
-	临时引用1 = 引擎.执行模块("import {add} from './math/add.js'; import {factor} from 'settings'; export const result=add(20,22)*factor", "entry.js")
-	临时引用1.释放()
-	任务数 = 运行时.执行任务(100)
-	命名空间 = 引擎.取模块命名空间("entry.js")
-	临时引用2 = 命名空间.取成员("result")
-	核对(临时引用2.到整数() = 84, "ESModule 与自定义加载")
-
-	字节码 = 引擎.编译代码("21*2", "compiled.js")
-	临时引用3 = 引擎.执行字节码(字节码)
-	核对(临时引用3.到整数() = 42, "脚本字节码")
-
-	字节码 = 引擎.编译模块("export const number=42", "binary-module.js")
-	引擎.注册模块字节码("binary-module.js", 字节码)
-	临时引用4 = 引擎.执行模块("import {number} from './binary-module.js';globalThis.moduleAnswer=number", "consumer.js")
-	临时引用4.释放()
-	任务数 = 运行时.执行任务(100)
-	临时引用5 = 引擎.取全局值("moduleAnswer")
-	核对(临时引用5.到整数() = 42, "模块字节码")
-
-	记录("05 模块结果：84；脚本与模块字节码：42")
-
-	命名空间.释放()
-结束 过程
-
-过程 二进制主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 字节 为 字节型(4)
-	变量 输出字节 为 字节型()
-	变量 缓冲 为 QuickJS对象
-	变量 视图 为 QuickJS对象
-	变量 原值 为 QuickJS值
-	变量 副本 为 QuickJS值
-
-	字节(0) = 1
-	字节(1) = 42
-	字节(2) = 3
-	字节(3) = 4
-
-	缓冲 = 引擎.创建缓冲区(字节)
-	视图 = 引擎.从缓冲区创建类型数组(1, 缓冲, 1, 2)
-	输出字节 = 视图.到字节集()
-	核对(输出字节(0) = 42, "TypedArray 可见范围")
-
-	引擎.置全局值("typedView", 视图)
-	临时引用1 = 引擎.执行代码("Object.defineProperty(typedView,'buffer',{value:new ArrayBuffer(1)});Object.defineProperty(typedView,'byteLength',{value:0})")
-	临时引用1.释放()
-	输出字节 = 视图.到字节集()
-	核对(输出字节(0) = 42, "视图内建数据不受自有属性覆盖影响")
-
-	视图 = 引擎.创建数据视图(缓冲, 1, 2)
-	输出字节 = 视图.到字节集()
-	核对(输出字节(1) = 3, "DataView 可见范围")
-
-	原值 = 引擎.执行代码("(()=>{const b=new SharedArrayBuffer(2);new Uint8Array(b)[0]=42;return b})()")
-	输出字节 = 原值.到字节集()
-	核对(输出字节(0) = 42, "SharedArrayBuffer")
-
-	原值 = 引擎.执行代码("(()=>{const a={name:'中文😀',big:12345678901234567890n};a.self=a;return a})()")
-	输出字节 = 引擎.序列化值(原值)
-	副本 = 引擎.反序列化值(输出字节)
-	引擎.置全局值("clone", 副本)
-	临时引用2 = 引擎.执行代码("clone.self===clone && clone.big===12345678901234567890n")
-	核对(临时引用2.到逻辑(), "循环数据序列化")
-
-	记录("06 视图字节：42、3；循环引用和 BigInt 序列化：完成")
-
-	缓冲.释放()
-	视图.释放()
-	原值.释放()
-	副本.释放()
-结束 过程
-
-过程 隔离主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 共享运行时 为 QuickJS运行时
-	变量 实例一 为 QuickJS实例
-	变量 实例二 为 QuickJS实例
-	变量 原值 为 QuickJS值
-	变量 副本 为 QuickJS值
-	变量 统计 为 QuickJS内存
-
-	共享运行时 = 创建 QuickJS运行时
-	实例一 = 共享运行时.创建实例()
-	实例二 = 共享运行时.创建实例()
-	原值 = 实例一.执行代码("globalThis.privateValue=42;({a:42})")
-	副本 = 原值.复制到(实例二)
-	实例二.置全局值("shared", 副本)
-	临时引用1 = 实例二.执行代码("typeof privateValue==='undefined' && shared.a===42")
-	核对(临时引用1.到逻辑(), "全局隔离与显式复制")
-
-	临时引用2 = 实例一.执行代码("Promise.resolve().then(()=>123)")
-	临时引用2.释放()
-	实例一.销毁()
-	共享运行时.执行任务(100)
-
-	共享运行时.回收垃圾()
-	统计 = 共享运行时.取内存统计()
-
-	记录("07 独立全局环境、共享堆、释放及内存：" & 统计.取使用字节() & " 字节")
-	共享运行时.销毁()
-结束 过程
-
-过程 错误主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-
-	演示脚本错误()
-	演示超时()
-	运行时.置执行时限(10000)
-	演示内存限制()
-	临时引用1 = 引擎.执行代码("6*7")
-	核对(临时引用1.到整数() = 42, "中断后恢复")
-
-	记录("08 脚本异常、超时中断及恢复：完成")
-结束 过程
-
-过程 演示脚本错误()
-
-	变量 异常 为 QuickJS错误
-	变量 异常值 为 QuickJS值
-
-	引擎.执行代码("throw new Error('预期的脚本异常')")
-
-	记录("失败：异常没有抛出")
-	位于 错误
-		分支 QuickJS错误
-			异常 = 引擎.取最近异常()
-			异常值 = 异常.取异常值()
-			核对(异常.取原因() = 0, "普通异常原因")
-			核对(异常值.到文本() = "Error: 预期的脚本异常", "原始异常值")
-			记录("已捕获：" & 异常.取说明())
-			异常值.释放()
-			异常.释放异常值()
-			引擎.清除最近错误()
-	结束 错误
-结束 过程
-
-过程 演示超时()
-
-	变量 异常 为 QuickJS错误
-
-	运行时.置执行时限(100)
-	引擎.执行代码("for(;;){}")
-
-	记录("失败：超时没有中断")
-	位于 错误
-		分支 QuickJS错误
-			异常 = 引擎.取最近异常()
-			核对(异常.取原因() = 2, "超时原因")
-			记录("已中断：" & 异常.取说明())
-			异常.释放异常值()
-	结束 错误
-结束 过程
-
-过程 演示内存限制()
-
-	运行时.置内存上限(1024)
-	引擎.执行代码("new Array(100000).fill(42)")
-
-	记录("失败：内存限制没有生效")
-	位于 错误
-		分支 QuickJS错误
-			运行时.置内存上限(67108864)
-			记录("已拦截内存超限；恢复默认上限")
-	结束 错误
-结束 过程
-
-事件 取消按钮.被单击()
-
-	运行时.取消执行()
+	页1.准备()
+	切换窗口(页1)
+结束 事件
+变量 页2 为 函数窗口
+
+事件 入口2.被单击()
+	如果 页2 = 空 则
+		页2 = 创建 函数窗口
+		页2.来源 = 本对象
+	结束 如果
+	页2.准备()
+	切换窗口(页2)
+结束 事件
+变量 页3 为 异步窗口
+
+事件 入口3.被单击()
+	如果 页3 = 空 则
+		页3 = 创建 异步窗口
+		页3.来源 = 本对象
+	结束 如果
+	页3.准备()
+	切换窗口(页3)
+结束 事件
+变量 页4 为 模块窗口
+
+事件 入口4.被单击()
+	如果 页4 = 空 则
+		页4 = 创建 模块窗口
+		页4.来源 = 本对象
+	结束 如果
+	页4.准备()
+	切换窗口(页4)
+结束 事件
+变量 页5 为 二进制窗口
+
+事件 入口5.被单击()
+	如果 页5 = 空 则
+		页5 = 创建 二进制窗口
+		页5.来源 = 本对象
+	结束 如果
+	页5.准备()
+	切换窗口(页5)
+结束 事件
+变量 页6 为 运行时窗口
+
+事件 入口6.被单击()
+	如果 页6 = 空 则
+		页6 = 创建 运行时窗口
+		页6.来源 = 本对象
+	结束 如果
+	页6.准备()
+	切换窗口(页6)
+结束 事件
+变量 页7 为 工作窗口
+
+事件 入口7.被单击()
+	如果 页7 = 空 则
+		页7 = 创建 工作窗口
+		页7.来源 = 本对象
+	结束 如果
+	页7.准备()
+	切换窗口(页7)
 结束 事件
 
-过程 集合与描述()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用3 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用4 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用5 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用6 为 simple.library.wsd.quickjs.QuickJS值
-	变量 集合 为 QuickJS对象
-	变量 日期 为 QuickJS对象
-	变量 正则 为 QuickJS对象
-	变量 描述 为 QuickJS对象
-	变量 目标 为 QuickJS对象
-	变量 原型 为 QuickJS对象
-	变量 处理器 为 QuickJS对象
-	变量 代理 为 QuickJS对象
-	变量 迭代器 为 QuickJS对象
-	变量 项目 为 QuickJS对象
-	变量 键 为 QuickJS值
-	变量 数字 为 QuickJS值
-	变量 临时 为 QuickJS值
-	变量 参数 为 变体型(2)
-	变量 单参数 为 变体型(1)
-	变量 空参数 为 变体型(0)
-
-	集合 = 引擎.创建Map()
-	参数(0) = "answer"
-	参数(1) = 42
-	临时 = 集合.调用成员("set", 参数)
-	临时.释放()
-	单参数(0) = "answer"
-	临时 = 集合.调用成员("get", 单参数)
-	核对(临时.到整数() = 42, "Map 成员函数及 this")
-	临时.释放()
-	迭代器 = 集合.取迭代器()
-	项目 = 迭代器.下一项(空)
-	临时引用1 = 项目.取成员("done")
-	核对(临时引用1.到逻辑() = 假, "迭代器")
-	集合.释放()
-
-	集合 = 引擎.创建Set()
-	单参数(0) = 42
-	临时 = 集合.调用成员("add", 单参数)
-	临时.释放()
-	临时引用2 = 集合.取成员("size")
-	核对(临时引用2.到整数() = 1, "Set")
-
-	日期 = 引擎.创建日期(0)
-	临时 = 日期.调用成员("getUTCFullYear", 空参数)
-	核对(临时.到整数() = 1970, "Date")
-
-	正则 = 引擎.创建正则("中文", "u")
-	单参数(0) = "中文😀"
-	临时 = 正则.调用成员("test", 单参数)
-	核对(临时.到逻辑(), "RegExp")
-
-	目标 = 引擎.创建对象()
-	原型 = 引擎.创建对象()
-	原型.置简单成员("base", 42)
-	目标.置原型(原型)
-	核对(目标.是否有成员("base"), "原型链")
-
-	键 = 引擎.创建文本("fixed")
-	描述 = 引擎.创建对象()
-	描述.置简单成员("value", 42)
-	描述.置简单成员("writable", 假)
-	核对(目标.定义属性(键, 描述), "属性描述")
-	核对(目标.是否自有键(键), "自有属性")
-
-	临时引用3 = 引擎.执行代码("({get:(target,key)=>key==='answer'?42:target[key]})")
-	处理器 = 临时引用3.到对象()
-	代理 = 引擎.创建代理(目标, 处理器)
-	临时引用4 = 代理.取成员("answer")
-	核对(临时引用4.到整数() = 42, "Proxy")
-
-	目标.密封()
-	核对(目标.是否已密封(), "密封")
-	目标.冻结()
-	核对(目标.是否已冻结(), "冻结")
-	核对(目标.是否可扩展() = 假, "禁止扩展")
-
-	集合 = 引擎.创建WeakMap()
-	参数(0) = 目标
-	参数(1) = 42
-	临时 = 集合.调用成员("set", 参数)
-	单参数(0) = 目标
-	临时引用5 = 集合.调用成员("get", 单参数)
-	核对(临时引用5.到整数() = 42, "WeakMap")
-
-	集合 = 引擎.创建WeakSet()
-	临时 = 集合.调用成员("add", 单参数)
-	临时引用6 = 集合.调用成员("has", 单参数)
-	核对(临时引用6.到逻辑(), "WeakSet")
-结束 过程
-
-过程 回调回收(回调 为 宿主加法)
-
-	变量 起始 为 QuickJS内存
-	变量 结束时 为 QuickJS内存
-	变量 全局 为 QuickJS对象
-	变量 编号 为 整数型
-	变量 已删除 为 逻辑型
-	变量 变化 为 长整数型
-
-	运行时.回收垃圾()
-	起始 = 运行时.取内存统计()
-
-	循环 编号 = 1 至 1000
-		引擎.注册函数("temporaryHost", 回调)
-	下个
-
-	全局 = 引擎.取全局对象()
-	已删除 = 全局.删除成员("temporaryHost")
-	全局.释放()
-	运行时.回收垃圾()
-	结束时 = 运行时.取内存统计()
-
-	变化 = 结束时.取分配字节() - 起始.取分配字节()
-	核对(变化 < 16384, "宿主函数回收")
-	记录("替换 1000 次宿主函数后，原生分配变化：" & 变化 & " 字节")
-结束 过程
-
-过程 宿主主题()
-
-	变量 成员列表 为 文本型(4)
-	变量 单成员 为 文本型(1)
-	变量 文本宿主 为 QuickJS对象
-	变量 宿主 为 示例宿主
-	变量 构造回调 为 示例构造
-	变量 构造函数 为 QuickJS函数
-	变量 数据 为 哈希表
-	变量 原值 为 QuickJS值
-	变量 副本 为 QuickJS值
-	变量 结果 为 QuickJS值
-
-	宿主 = 创建 示例宿主
-	宿主.名称 = "初始名称"
-	成员列表(0) = "名称"
-	成员列表(1) = "相加"
-	成员列表(2) = "回声"
-	成员列表(3) = "复制集合"
-	文本宿主 = 引擎.创建宿主对象(宿主, 成员列表)
-	引擎.置全局值("host", 文本宿主)
-	文本宿主.释放()
-	结果 = 引擎.执行资产("binding.js")
-	核对(结果.到逻辑(), "宿主方法和实时字段")
-	核对(宿主.名称 = "JS 修改", "字段写回宿主")
-	结果.释放()
-
-	单成员(0) = "相加"
-	文本宿主 = 引擎.创建宿主对象(宿主, 单成员)
-	引擎.置全局值("textHost", 文本宿主)
-	结果 = 引擎.执行代码("textHost.相加(20,22)===42 && Object.keys(textHost).length===1")
-	核对(结果.到逻辑(), "明确选择公开成员")
-	结果.释放()
-	文本宿主.释放()
-
-	构造回调 = 创建 示例构造
-	构造函数 = 引擎.创建构造函数("HostPoint", 1, 构造回调)
-	引擎.置全局值("HostPoint", 构造函数)
-	结果 = 引擎.执行代码("(()=>{class Point extends HostPoint{};const p=new Point(42);const q=Reflect.construct(HostPoint,[7],Point);return p.value===42 && p instanceof Point && p instanceof HostPoint && q.value===7 && q instanceof Point})()")
-	核对(结果.到逻辑(), "宿主构造函数和继承")
-	结果.释放()
-	构造函数.释放()
-
-	数据 = 创建 哈希表
-	数据.加入("self", 数据)
-	数据.加入("__proto__", 42)
-	原值 = 引擎.生成值(数据)
-	引擎.置全局值("graph", 原值)
-	结果 = 引擎.执行代码("graph.self===graph && Object.getPrototypeOf(graph)===Object.prototype && graph.__proto__===42")
-	核对(结果.到逻辑(), "循环哈希表及特殊键")
-	结果.释放()
-
-	数据 = 原值.到哈希表()
-	副本 = 引擎.生成值(数据)
-	引擎.置全局值("graphCopy", 副本)
-	结果 = 引擎.执行代码("graphCopy.self===graphCopy && graphCopy.__proto__===42")
-	核对(结果.到逻辑(), "循环数据深度往返")
-	结果.释放()
-	原值.释放()
-	副本.释放()
-	记录("09 宿主字段、成员选择、集合转换、循环数据及构造继承：完成")
-结束 过程
-
-过程 扩展模块主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用3 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用4 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用5 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用6 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用7 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用8 为 simple.library.wsd.quickjs.QuickJS值
-	变量 导出 为 QuickJS对象
-	变量 选项 为 QuickJS执行选项
-	变量 接收者 为 QuickJS对象
-	变量 命名空间 为 QuickJS对象
-	变量 承诺 为 QuickJS承诺
-	变量 结果 为 QuickJS值
-	变量 字节码 为 字节型()
-	变量 加载器 为 模块来源
-
-	加载器 = 创建 模块来源
-	引擎.置加载器(加载器)
-	导出 = 引擎.创建对象()
-	导出.置简单成员("answer", 42)
-	导出.置简单成员("default", "宿主模块")
-	引擎.注册模块对象("native", 导出)
-	导出.释放()
-
-	选项 = 创建 QuickJS执行选项
-	选项.置严格模式(真)
-	选项.置模块地址("asset:/entry-options.js")
-	选项.置模块入口(真)
-	临时引用1 = 引擎.执行模块("import label,{answer} from 'native';export const valid=answer===42 && label==='宿主模块' && import.meta.main===true && import.meta.url==='asset:/entry-options.js' && import.meta.custom==='ES4A'", "entry-options.js", 选项)
-	临时引用1.释放()
-	运行时.执行任务(100)
-	命名空间 = 引擎.取模块命名空间("entry-options.js")
-	临时引用2 = 命名空间.取成员("valid")
-	核对(临时引用2.到逻辑(), "宿主模块及 import.meta")
-	命名空间.释放()
-
-	承诺 = 引擎.导入模块("native", "consumer.js")
-	运行时.执行任务(100)
-	临时引用3 = 承诺.取结果()
-	命名空间 = 临时引用3.到对象()
-	临时引用4 = 命名空间.取成员("answer")
-	核对(临时引用4.到整数() = 42, "动态导入")
-	命名空间.释放()
-	承诺.释放()
-
-	接收者 = 引擎.创建对象()
-	接收者.置简单成员("answer", 42)
-	结果 = 引擎.执行代码("this.answer", "this.js", 接收者, 选项)
-	核对(结果.到整数() = 42, "脚本 this")
-	结果.释放()
-	结果 = 引擎.执行代码("(()=>{try{undeclaredSetting=1;return false}catch(e){return e instanceof ReferenceError}})()", "strict.js", 空, 选项)
-	核对(结果.到逻辑(), "严格模式")
-	结果.释放()
-	接收者.释放()
-
-	选项.置允许等待(真)
-	临时引用5 = 引擎.执行代码("await Promise.resolve(42)", "await.js", 空, 选项)
-	承诺 = 临时引用5.到承诺()
-	运行时.执行任务(100)
-	结果 = 承诺.取结果()
-	引擎.置全局值("awaitResult", 结果)
-	临时引用6 = 引擎.执行代码("awaitResult.value===42")
-	核对(临时引用6.到逻辑(), "普通脚本顶层 await")
-	结果.释放()
-	承诺.释放()
-
-	字节码 = 引擎.编译代码("await Promise.resolve(84)", "await-compiled.js", 选项)
-	临时引用7 = 引擎.执行字节码(字节码)
-	承诺 = 临时引用7.到承诺()
-	运行时.执行任务(100)
-	结果 = 承诺.取结果()
-	引擎.置全局值("awaitCompiled", 结果)
-	临时引用8 = 引擎.执行代码("awaitCompiled.value===84")
-	核对(临时引用8.到逻辑(), "异步脚本字节码")
-	结果.释放()
-	承诺.释放()
-	记录("10 宿主模块、动态导入、元信息、this、严格模式及顶层 await：完成")
-结束 过程
-
-过程 等待结果(名称 为 文本型)
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 轮次 为 整数型
-	变量 完成 为 QuickJS值
-
-	循环 轮次 = 1 至 250
-		完成 = 引擎.取全局值(名称)
-		如果 完成.到逻辑() 则
-			完成.释放()
-			退出 过程
-		结束 如果
-		完成.释放()
-		延时(20)
-	下个
-
-	临时引用1 = 引擎.执行代码("JSON.stringify({worker:globalThis.workerAnswer,module:globalThis.moduleAnswerNew,closing:globalThis.closeAnswer})")
-	记录(临时引用1.到文本())
-	核对(假, "等待异步结果超时：" & 名称)
-结束 过程
-
-过程 调度主题()
-	变量 临时引用1 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用2 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用3 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用4 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用5 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用6 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用7 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用8 为 simple.library.wsd.quickjs.QuickJS值
-	变量 临时引用9 为 simple.library.wsd.quickjs.QuickJS值
-	变量 结果 为 QuickJS值
-	变量 线程 为 QuickJS线程
-	变量 回调 为 示例线程
-	变量 缓冲 为 QuickJS对象
-	变量 字节 为 字节型(2)
-	变量 轮次 为 整数型
-
-	引擎.启用计时器()
-	临时引用1 = 引擎.执行资产("timers.js")
-	临时引用1.释放()
-	等待结果("timerDone")
-	临时引用2 = 引擎.取全局值("timerAnswer")
-	核对(临时引用2.到整数() = 42, "自动任务和定时器取消")
-	核对(运行时.取任务错误() = 空, "调度无异常")
-
-	引擎.启用工作线程()
-	临时引用3 = 引擎.执行资产("workers.js")
-	临时引用3.释放()
-	等待结果("workersDone")
-	临时引用4 = 引擎.取全局值("workerAnswer")
-	核对(临时引用4.到整数() = 42, "JS 工作线程复制消息")
-	临时引用5 = 引擎.取全局值("moduleAnswerNew")
-	核对(临时引用5.到整数() = 84, "模块工作线程")
-	临时引用6 = 引擎.取全局值("closeAnswer")
-	核对(临时引用6.到整数() = 21, "关闭前消息仍送达")
-
-	回调 = 创建 示例线程
-	线程 = 引擎.创建工作线程("onmessage=e=>{postMessage(e.data*2);close()}", 回调)
-	结果 = 引擎.创建小数(21)
-	线程.发送(结果)
-	结果.释放()
-	循环 轮次 = 1 至 250
-		如果 回调.已经结束了 则 退出 循环
-		延时(20)
-	下个
-	核对(回调.结果 = 42, "Simple 工作线程回调")
-	核对(回调.错误文本 = "", "工作线程无异常")
-
-	回调.已经结束了 = 假
-	线程 = 引擎.创建工作线程("for(;;){}", 回调)
-	延时(20)
-	线程.终止()
-	循环 轮次 = 1 至 250
-		如果 回调.已经结束了 则 退出 循环
-		延时(20)
-	下个
-	核对(回调.已经结束了, "主动终止及结束通知")
-
-	回调.已经结束了 = 假
-	线程 = 引擎.创建工作线程("for(;;){}", 回调)
-	临时引用7 = 引擎.执行代码("setInterval(()=>{},100)")
-	临时引用7.释放()
-
-	缓冲 = 引擎.创建缓冲区(字节)
-	引擎.置全局值("detachedBuffer", 缓冲)
-	引擎.分离缓冲区(缓冲)
-	临时引用8 = 引擎.执行代码("detachedBuffer.byteLength===0")
-	核对(临时引用8.到逻辑(), "ArrayBuffer 分离")
-	缓冲.释放()
-
-	运行时.停止自动调度()
-	核对(运行时.是否自动调度() = 假, "停止调度")
-	核对(线程.是否运行() = 假, "停止调度时停止工作线程")
-	运行时.启动自动调度(100)
-	临时引用9 = 引擎.执行代码("globalThis.restartDone=false;setTimeout(()=>{restartDone=true},0)")
-	临时引用9.释放()
-	等待结果("restartDone")
-	记录("11 自动调度、计时器、双向工作线程、模块线程及停止重启：完成")
-结束 过程
-
-事件 主题0.被单击()
-
-	提交(0)
-结束 事件
-
-事件 主题1.被单击()
-
-	提交(1)
-结束 事件
-
-事件 主题2.被单击()
-
-	提交(2)
-结束 事件
-
-事件 主题3.被单击()
-
-	提交(3)
-结束 事件
-
-事件 主题4.被单击()
-
-	提交(4)
-结束 事件
-
-事件 主题5.被单击()
-
-	提交(5)
-结束 事件
-
-事件 主题6.被单击()
-
-	提交(6)
-结束 事件
-
-事件 主题7.被单击()
-
-	提交(7)
-结束 事件
-
-事件 主题8.被单击()
-
-	提交(8)
-结束 事件
-
-事件 主题9.被单击()
-
-	提交(9)
-结束 事件
-
-事件 主题10.被单击()
-
-	提交(10)
-结束 事件
-
-事件 主题11.被单击()
-
-	提交(11)
-结束 事件
-
-事件 主题12.被单击()
-
-	提交(12)
-结束 事件
 $属性
 	$资源 $窗口
 	$定义 主窗口 $为 窗口
@@ -974,91 +110,58 @@ $属性
 		滚动 = 真
 		左填充 = "12dp"
 		右填充 = "12dp"
+		$定义 标题 $为 标签
+			宽度 = 长度_匹配父级
+			高度 = "44dp"
+			文本 = "QuickJS脚本示例"
+			字体大小 = 21
+			字体加粗 = 真
+		$结束 $定义
 		$定义 说明 $为 标签
 			宽度 = 长度_匹配父级
-			文本 = "脚本在后台运行，每次使用独立实例，结束自动销毁。默认限时 10 秒，可随时中断。支持 JS 核心语言；不提供浏览器 DOM、Node.js 或 qjs 的 std/os 模块。"
+			高度 = "90dp"
+			文本 = "按主题进入，逐个按钮阅读对应 API。脚本在后台运行；返回目录销毁本页引擎，再次进入创建新引擎。仅运行可信脚本，不提供浏览器 DOM、Node.js 或 std/os。"
 			字体大小 = 14
 		$结束 $定义
-		$定义 代码 $为 编辑框
+		$定义 入口0 $为 按钮
 			宽度 = 长度_匹配父级
-			高度 = "72dp"
-			单行模式 = 假
-			文本 = "6 * 7"
+			高度 = "46dp"
+			文本 = "01 代码、类型与数值"
 		$结束 $定义
-		$定义 状态 $为 标签
+		$定义 入口1 $为 按钮
 			宽度 = 长度_匹配父级
-			高度 = "240dp"
-			文本 = "请选择主题，结果在此显示。"
-			字体大小 = 14
+			高度 = "46dp"
+			文本 = "02 对象、数组与集合"
 		$结束 $定义
-		$定义 取消按钮 $为 按钮
+		$定义 入口2 $为 按钮
 			宽度 = 长度_匹配父级
-			文本 = "中断正在运行的脚本"
+			高度 = "46dp"
+			文本 = "03 函数与宿主对象"
 		$结束 $定义
-		$定义 主题0 $为 按钮
+		$定义 入口3 $为 按钮
 			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "执行输入代码"
+			高度 = "46dp"
+			文本 = "04 Promise 与计时器"
 		$结束 $定义
-		$定义 主题1 $为 按钮
+		$定义 入口4 $为 按钮
 			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "01 类型与数值"
+			高度 = "46dp"
+			文本 = "05 模块与执行选项"
 		$结束 $定义
-		$定义 主题2 $为 按钮
+		$定义 入口5 $为 按钮
 			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "02 对象与数组"
+			高度 = "46dp"
+			文本 = "06 字节码与二进制"
 		$结束 $定义
-		$定义 主题3 $为 按钮
+		$定义 入口6 $为 按钮
 			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "03 函数与宿主回调"
+			高度 = "46dp"
+			文本 = "07 隔离、资源与中断"
 		$结束 $定义
-		$定义 主题4 $为 按钮
+		$定义 入口7 $为 按钮
 			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "04 Promise 与异步"
-		$结束 $定义
-		$定义 主题5 $为 按钮
-			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "05 模块与字节码"
-		$结束 $定义
-		$定义 主题6 $为 按钮
-			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "06 二进制与序列化"
-		$结束 $定义
-		$定义 主题7 $为 按钮
-			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "07 隔离与资源释放"
-		$结束 $定义
-		$定义 主题8 $为 按钮
-			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "08 错误与超时"
-		$结束 $定义
-		$定义 主题9 $为 按钮
-			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "运行全部主题"
-		$结束 $定义
-		$定义 主题10 $为 按钮
-			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "09 宿主对象与数据转换"
-		$结束 $定义
-		$定义 主题11 $为 按钮
-			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "10 模块导出与执行选项"
-		$结束 $定义
-		$定义 主题12 $为 按钮
-			宽度 = 长度_匹配父级
-			高度 = "48dp"
-			文本 = "11 定时器与工作线程"
+			高度 = "46dp"
+			文本 = "08 工作线程与消息"
 		$结束 $定义
 	$结束 $定义
 $结束 $属性

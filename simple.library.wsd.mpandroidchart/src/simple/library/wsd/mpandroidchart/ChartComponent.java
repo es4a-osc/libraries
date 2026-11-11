@@ -1,65 +1,46 @@
 package simple.library.wsd.mpandroidchart;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
-
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Looper;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.BarLineChartBase;
-import com.github.mikephil.charting.charts.BubbleChart;
-import com.github.mikephil.charting.charts.CandleStickChart;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.charts.PieRadarChartBase;
 import com.github.mikephil.charting.charts.RadarChart;
-import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.BubbleData;
-import com.github.mikephil.charting.data.BubbleDataSet;
-import com.github.mikephil.charting.data.BubbleEntry;
-import com.github.mikephil.charting.data.CandleData;
-import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
+import com.github.mikephil.charting.data.ChartData;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.data.RadarData;
-import com.github.mikephil.charting.data.RadarDataSet;
-import com.github.mikephil.charting.data.RadarEntry;
-import com.github.mikephil.charting.data.ScatterData;
-import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IBubbleDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IRadarDataSet;
-import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet;
+import com.github.mikephil.charting.interfaces.datasets.IDataSet;
+import com.github.mikephil.charting.listener.ChartTouchListener.ChartGesture;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.github.mikephil.charting.utils.MPPointD;
 import com.github.mikephil.charting.utils.Utils;
-
 import simple.runtime.android.MainActivity;
 import simple.runtime.components.impl.android.视图组件;
 import simple.runtime.components.组件容器;
@@ -70,11 +51,42 @@ import simple.runtime.events.EventDispatcher;
  *
  * @author 树先生 xhwsd@qq.com
  */
-abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChartValueSelectedListener {
+abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChartValueSelectedListener, OnChartGestureListener {
 
 	private final ChartModel model = new ChartModel();
 	private final IdentityHashMap<Entry, int[]> entryLocations = new IdentityHashMap<Entry, int[]>();
 	private final float[][] ranges = new float[2][];
+
+	/**
+	 * 应用时保存的独立配置。
+	 */
+	private MPAC图表样式 chartStyle;
+	private MPAC图例样式 legendStyle;
+	private MPAC饼图样式 pieStyle;
+	private MPAC雷达样式 radarStyle;
+	private MPAC数据组样式 pieDataStyle;
+	private final MPAC轴样式[] axisStyles = new MPAC轴样式[3];
+	private float[] xRange;
+	private float barWidth = 0.8f;
+	private float barGap;
+	private boolean groupedBars = true;
+	private int animationAxes;
+	private int animationEasing;
+	private int[] combinedOrder = { 0, 1, 2, 3, 4 };
+	/**
+	 * 原生数据快照是否仍对应当前模型。
+	 */
+	private boolean dataDirty = true;
+	private Highlight manualHighlight;
+	private int[] manualLocation;
+	private static final Easing.EasingFunction[] EASINGS = { Easing.Linear, Easing.EaseInQuad, Easing.EaseOutQuad,
+			Easing.EaseInOutQuad, Easing.EaseInCubic, Easing.EaseOutCubic, Easing.EaseInOutCubic, Easing.EaseInQuart,
+			Easing.EaseOutQuart, Easing.EaseInOutQuart, Easing.EaseInSine, Easing.EaseOutSine, Easing.EaseInOutSine,
+			Easing.EaseInExpo, Easing.EaseOutExpo, Easing.EaseInOutExpo, Easing.EaseInCirc, Easing.EaseOutCirc,
+			Easing.EaseInOutCirc, Easing.EaseInElastic, Easing.EaseOutElastic, Easing.EaseInOutElastic,
+			Easing.EaseInBack, Easing.EaseOutBack, Easing.EaseInOutBack, Easing.EaseInBounce, Easing.EaseOutBounce,
+			Easing.EaseInOutBounce };
+
 	private Chart<?> chart;
 	private TextView caption;
 	private ValueAnimator animation;
@@ -141,13 +153,14 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 		layout.setOrientation(LinearLayout.VERTICAL);
 		caption = new TextView(context);
 		caption.setGravity(android.view.Gravity.CENTER);
-		layout.addView(caption, new LinearLayout.LayoutParams(
-			ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+		layout.addView(caption, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.WRAP_CONTENT));
 		chart = createChart(context);
 		chart.getDescription().setEnabled(false);
 		chart.setNoDataText("暂无数据");
 		chart.setLogEnabled(false);
 		chart.setOnChartValueSelectedListener(this);
+		chart.setOnChartGestureListener(this);
 		layout.addView(chart, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
 		return layout;
 	}
@@ -163,11 +176,16 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	@Override
 	public final int 项目数量() {
 		checkAlive();
-		return chartKind() == ChartModel.PIE ? model.series.size() : model.names.length;
+		int count = model.names.length;
+		for (ChartModel.Series group : model.series) {
+			count = Math.max(count, group.xs.length);
+		}
+		return chartKind() == ChartModel.PIE ? model.series.size() : count;
 	}
 
 	@Override
 	public final int 动画时间() {
+		checkAlive();
 		return animationDuration;
 	}
 
@@ -182,6 +200,7 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 
 	@Override
 	public final boolean 显示图例() {
+		checkAlive();
 		return showLegend;
 	}
 
@@ -195,6 +214,7 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 
 	@Override
 	public final boolean 显示数值() {
+		checkAlive();
 		return showValues;
 	}
 
@@ -203,7 +223,7 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 		checkAlive();
 		showValues = visible;
 		if (chart.getData() != null) {
-			chart.getData().setDrawValues(visible);
+			applyDataStyles();
 		}
 		chart.invalidate();
 	}
@@ -214,6 +234,7 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	 * @return 是否允许拖动。
 	 */
 	public final boolean 可否拖动() {
+		checkAlive();
 		return drag;
 	}
 
@@ -225,7 +246,8 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	public final void 可否拖动(boolean enabled) {
 		checkAlive();
 		drag = enabled;
-		cartesian().setDragEnabled(enabled);
+		cartesian().setDragXEnabled(enabled && (chartStyle == null || chartStyle.dragX));
+		cartesian().setDragYEnabled(enabled && (chartStyle == null || chartStyle.dragY));
 	}
 
 	/**
@@ -234,6 +256,7 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	 * @return 是否允许缩放。
 	 */
 	public final boolean 可否缩放() {
+		checkAlive();
 		return zoom;
 	}
 
@@ -245,9 +268,10 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	public final void 可否缩放(boolean enabled) {
 		checkAlive();
 		zoom = enabled;
-		cartesian().setScaleEnabled(enabled);
-		cartesian().setPinchZoom(enabled);
-		cartesian().setDoubleTapToZoomEnabled(enabled);
+		cartesian().setScaleXEnabled(enabled && (chartStyle == null || chartStyle.scaleX));
+		cartesian().setScaleYEnabled(enabled && (chartStyle == null || chartStyle.scaleY));
+		cartesian().setPinchZoom(enabled && (chartStyle == null || chartStyle.pinch));
+		cartesian().setDoubleTapToZoomEnabled(enabled && (chartStyle == null || chartStyle.doubleTap));
 	}
 
 	/**
@@ -256,6 +280,7 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	 * @return 是否生成平滑曲线。
 	 */
 	public final boolean 平滑曲线() {
+		checkAlive();
 		return smooth;
 	}
 
@@ -279,9 +304,9 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 		}
 		stopAnimation();
 		fontSize = textSize;
-		foreground = Color.alpha(backgroundColor) >= 128
-			&& Color.red(backgroundColor) * 299 + Color.green(backgroundColor) * 587
-			+ Color.blue(backgroundColor) * 114 < 128000 ? Color.WHITE : Color.BLACK;
+		foreground = Color.alpha(backgroundColor) >= 128 && Color.red(backgroundColor) * 299
+				+ Color.green(backgroundColor) * 587 + Color.blue(backgroundColor) * 114 < 128000 ? Color.WHITE
+						: Color.BLACK;
 		背景颜色(backgroundColor);
 		caption.setText(title);
 		caption.setVisibility(title.isEmpty() ? View.GONE : View.VISIBLE);
@@ -289,6 +314,28 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 		caption.setTextColor(foreground);
 		ranges[0] = null;
 		ranges[1] = null;
+		xRange = null;
+		chartStyle = new MPAC图表样式();
+		legendStyle = new MPAC图例样式();
+		legendStyle.textColor = foreground;
+		legendStyle.textSize = fontSize;
+		pieStyle = new MPAC饼图样式();
+		radarStyle = new MPAC雷达样式();
+		pieDataStyle = null;
+		chart.setNoDataText(chartStyle.noData);
+		if (chart instanceof BarLineChartBase) {
+			ChartStyles.axis(cartesian().getXAxis(), new MPAC轴样式(), Typeface.DEFAULT);
+			ChartStyles.axis(cartesian().getAxisLeft(), new MPAC轴样式(), Typeface.DEFAULT);
+			ChartStyles.axis(cartesian().getAxisRight(), new MPAC轴样式(), Typeface.DEFAULT);
+		} else if (chart instanceof RadarChart) {
+			ChartStyles.axis(((RadarChart) chart).getXAxis(), new MPAC轴样式(), Typeface.DEFAULT);
+			ChartStyles.axis(((RadarChart) chart).getYAxis(), new MPAC轴样式(), Typeface.DEFAULT);
+		}
+		java.util.Arrays.fill(axisStyles, null);
+		barWidth = 0.8f;
+		barGap = 0;
+		combinedOrder = new int[] { 0, 1, 2, 3, 4 };
+		groupedBars = true;
 		initialized = true;
 		清空数据();
 	}
@@ -301,14 +348,15 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	public final void 设置项目名称(String[] names) {
 		checkReady();
 		model.setNames(names);
+		dataDirty = true;
 	}
 
 	/**
 	 * 设置指定纵轴范围，重新构建后生效。
 	 *
 	 * @param axis 0 为左轴，1 为右轴。
-	 * @param min 最小值。
-	 * @param max 最大值。
+	 * @param min  最小值。
+	 * @param max  最大值。
 	 */
 	public final void 设置纵轴范围(int axis, float min, float max) {
 		checkReady();
@@ -319,27 +367,29 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	/**
 	 * 添加一组已复制的数值。
 	 *
-	 * @param kind 数据组类型。
-	 * @param name 数据组名称。
+	 * @param kind    数据组类型。
+	 * @param name    数据组名称。
 	 * @param columns 数据列。
-	 * @param color 数据组颜色。
-	 * @param axis 坐标轴编号。
+	 * @param color   数据组颜色。
+	 * @param axis    坐标轴编号。
 	 */
 	final void addSeries(int kind, String name, float[][] columns, int color, int axis) {
 		checkReady();
 		model.add(kind, name, columns, color, axis);
+		dataDirty = true;
 	}
 
 	/**
 	 * 添加饼图扇区。
 	 *
-	 * @param name 扇区名称。
+	 * @param name  扇区名称。
 	 * @param value 非负数值。
 	 * @param color 扇区颜色。
 	 */
 	final void addSlice(String name, float value, int color) {
 		checkReady();
 		model.addSlice(name, value, color);
+		dataDirty = true;
 	}
 
 	@Override
@@ -347,6 +397,9 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 		checkReady();
 		stopAnimation();
 		model.clear();
+		dataDirty = true;
+		manualHighlight = null;
+		manualLocation = null;
 		entryLocations.clear();
 		chart.clear();
 	}
@@ -354,26 +407,52 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	@Override
 	public final void 构建图表() {
 		checkReady();
+		render(true);
+	}
+
+	/**
+	 * 重建原生数据并根据调用方式保留或重置视图。
+	 *
+	 * @param reset 是否恢复全图并播放动画。
+	 */
+	private void render(boolean reset) {
 		if (chartKind() == ChartModel.PIE) {
 			model.checkPie();
 		}
 		stopAnimation();
 		entryLocations.clear();
+		manualHighlight = null;
+		manualLocation = null;
 		if (model.series.isEmpty()) {
 			chart.clear();
+			dataDirty = false;
 			return;
 		}
-		buildData();
+		if (chart instanceof CombinedChart) {
+			CombinedChart.DrawOrder[] order = new CombinedChart.DrawOrder[5];
+			for (int i = 0; i < order.length; i++) {
+				order[i] = CombinedChart.DrawOrder.values()[combinedOrder[i]];
+			}
+			((CombinedChart) chart).setDrawOrder(order);
+		}
+		ChartDataBuilder.build(chart, chartKind(), model, entryLocations, smooth, barWidth, barGap, groupedBars);
 		applyStyle();
+		applyAdvancedStyles();
 		if (chart instanceof BarChart || chart instanceof CombinedChart) {
 			BarSelectionHighlighter.install(cartesian());
 		}
 		chart.notifyDataSetChanged();
-		if (chart instanceof BarLineChartBase) {
+		measureAxisLabels();
+		if (reset && chart instanceof BarLineChartBase) {
 			cartesian().fitScreen();
 		}
 		chart.highlightValues(null);
-		startAnimation();
+		dataDirty = false;
+		if (reset) {
+			startAnimation();
+		} else {
+			chart.invalidate();
+		}
 	}
 
 	@Override
@@ -388,8 +467,10 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 
 	@Override
 	public final void onValueSelected(Entry entry, Highlight highlight) {
+		manualHighlight = null;
+		manualLocation = null;
 		int[] location = entryLocations.get(entry);
-		if (!destroyed && location != null) {
+		if (!destroyed && !dataDirty && location != null) {
 			// 分组柱条的 X 值含组内偏移，饼图和雷达也不使用 X 值表示项目编号。
 			float value = entry instanceof CandleEntry ? ((CandleEntry) entry).getClose() : entry.getY();
 			项目被选中(location[0], location[1], value);
@@ -398,6 +479,8 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 
 	@Override
 	public final void onNothingSelected() {
+		manualHighlight = null;
+		manualLocation = null;
 		if (!destroyed) {
 			选择被取消();
 		}
@@ -412,174 +495,19 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 		destroyed = true;
 		stopAnimation();
 		chart.setOnChartValueSelectedListener(null);
+		chart.setOnChartGestureListener(null);
+		chart.setMarker(null);
 		chart.clearAllViewportJobs();
 		chart.clear();
 		model.clear();
+		dataDirty = true;
+		manualHighlight = null;
+		manualLocation = null;
 		entryLocations.clear();
 		super.销毁();
 	}
 
 	/* 原生数据与渲染配置 */
-
-	/**
-	 * 根据已校验的数据组建立原生数据，不把第三方对象暴露给 Simple。
-	 */
-	private void buildData() {
-		List<ILineDataSet> lines = new ArrayList<ILineDataSet>();
-		List<IBarDataSet> bars = new ArrayList<IBarDataSet>();
-		List<IScatterDataSet> scatters = new ArrayList<IScatterDataSet>();
-		List<IBubbleDataSet> bubbles = new ArrayList<IBubbleDataSet>();
-		List<ICandleDataSet> candles = new ArrayList<ICandleDataSet>();
-		List<IRadarDataSet> radars = new ArrayList<IRadarDataSet>();
-		List<PieEntry> slices = new ArrayList<PieEntry>();
-		List<Integer> sliceColors = new ArrayList<Integer>();
-		for (int group = 0; group < model.series.size(); group++) {
-			ChartModel.Series item = model.series.get(group);
-			if (item.kind == ChartModel.PIE) {
-				PieEntry entry = new PieEntry(item.columns[0][0], item.name);
-				entryLocations.put(entry, new int[] { 0, group });
-				slices.add(entry);
-				sliceColors.add(Integer.valueOf(item.color));
-				continue;
-			}
-			if (item.kind == ChartModel.BAR || item.kind == ChartModel.HORIZONTAL) {
-				List<BarEntry> entries = new ArrayList<BarEntry>();
-				for (int index = 0; index < model.names.length; index++) {
-					BarEntry entry = new BarEntry(index, item.columns[0][index]);
-					entryLocations.put(entry, new int[] { group, index });
-					entries.add(entry);
-				}
-				BarDataSet set = new BarDataSet(entries, item.name);
-				configureSet(set, item);
-				bars.add(set);
-			} else if (item.kind == ChartModel.BUBBLE) {
-				List<BubbleEntry> entries = new ArrayList<BubbleEntry>();
-				for (int index = 0; index < model.names.length; index++) {
-					BubbleEntry entry = new BubbleEntry(index, item.columns[0][index], item.columns[1][index]);
-					entryLocations.put(entry, new int[] { group, index });
-					entries.add(entry);
-				}
-				// 3.2.0 仍将全零大小绘成整圆；使用非零归一化基准，让零项保持零直径。
-				BubbleDataSet set = new BubbleDataSet(entries, item.name) {
-					@Override
-					public float getMaxSize() {
-						float size = super.getMaxSize();
-						return size == 0 ? 1 : size;
-					}
-				};
-				configureSet(set, item);
-				bubbles.add(set);
-			} else if (item.kind == ChartModel.CANDLE) {
-				List<CandleEntry> entries = new ArrayList<CandleEntry>();
-				for (int index = 0; index < model.names.length; index++) {
-					CandleEntry entry = new CandleEntry(index, item.columns[1][index], item.columns[2][index],
-						item.columns[0][index], item.columns[3][index]);
-					entryLocations.put(entry, new int[] { group, index });
-					entries.add(entry);
-				}
-				CandleDataSet set = new CandleDataSet(entries, item.name);
-				configureSet(set, item);
-				set.setIncreasingColor(item.color);
-				set.setDecreasingColor(item.color);
-				set.setIncreasingPaintStyle(Paint.Style.STROKE);
-				set.setDecreasingPaintStyle(Paint.Style.FILL);
-				set.setShadowColorSameAsCandle(true);
-				candles.add(set);
-			} else if (item.kind == ChartModel.RADAR) {
-				List<RadarEntry> entries = new ArrayList<RadarEntry>();
-				for (int index = 0; index < model.names.length; index++) {
-					RadarEntry entry = new RadarEntry(item.columns[0][index]);
-					entryLocations.put(entry, new int[] { group, index });
-					entries.add(entry);
-				}
-				RadarDataSet set = new RadarDataSet(entries, item.name);
-				configureSet(set, item);
-				radars.add(set);
-			} else {
-				List<Entry> entries = new ArrayList<Entry>();
-				for (int index = 0; index < model.names.length; index++) {
-					Entry entry = new Entry(index, item.columns[0][index]);
-					entryLocations.put(entry, new int[] { group, index });
-					entries.add(entry);
-				}
-				if (item.kind == ChartModel.SCATTER) {
-					ScatterDataSet set = new ScatterDataSet(entries, item.name);
-					configureSet(set, item);
-					set.setScatterShape(ScatterChart.ScatterShape.CIRCLE);
-					scatters.add(set);
-
-				} else {
-					LineDataSet set = new LineDataSet(entries, item.name);
-					configureSet(set, item);
-					set.setLineWidth(2);
-					set.setCircleColor(item.color);
-					set.setMode(smooth ? LineDataSet.Mode.CUBIC_BEZIER : LineDataSet.Mode.LINEAR);
-					lines.add(set);
-				}
-			}
-		}
-
-		switch (chartKind()) {
-			case ChartModel.LINE:
-				((LineChart) chart).setData(new LineData(lines));
-				break;
-			case ChartModel.BAR:
-			case ChartModel.HORIZONTAL:
-				((BarChart) chart).setData(createBarData(bars));
-				break;
-			case ChartModel.PIE:
-				PieDataSet pie = new PieDataSet(slices, "");
-				pie.setColors(sliceColors);
-				((PieChart) chart).setData(new PieData(pie));
-				break;
-			case ChartModel.SCATTER:
-				((ScatterChart) chart).setData(new ScatterData(scatters));
-				break;
-			case ChartModel.BUBBLE:
-				((BubbleChart) chart).setData(new BubbleData(bubbles));
-				break;
-			case ChartModel.RADAR:
-				((RadarChart) chart).setData(new RadarData(radars));
-				break;
-			case ChartModel.CANDLE:
-				((CandleStickChart) chart).setData(new CandleData(candles));
-				break;
-			default:
-				CombinedData combined = new CombinedData();
-				if (!lines.isEmpty()) {
-					combined.setData(new LineData(lines));
-				}
-				if (!bars.isEmpty()) {
-					combined.setData(createBarData(bars));
-				}
-				if (!scatters.isEmpty()) {
-					combined.setData(new ScatterData(scatters));
-				}
-				if (!bubbles.isEmpty()) {
-					combined.setData(new BubbleData(bubbles));
-				}
-				if (!candles.isEmpty()) {
-					combined.setData(new CandleData(candles));
-				}
-				((CombinedChart) chart).setData(combined);
-				break;
-		}
-	}
-
-	/**
-	 * 将多个柱状数据组放入同一个分类槽，保持项目中心位于整数横坐标。
-	 *
-	 * @param sets 按添加顺序组织的柱状数据组。
-	 * @return 已设置柱宽和组内位置的数据。
-	 */
-	private BarData createBarData(List<IBarDataSet> sets) {
-		BarData data = new BarData(sets);
-		data.setBarWidth(0.8f / sets.size());
-		if (sets.size() > 1) {
-			data.groupBars(-0.5f, 0.2f, 0);
-		}
-		return data;
-	}
 
 	/**
 	 * 按整数分类坐标查找名称，略过缩放过程中不对应项目的刻度。
@@ -589,19 +517,7 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	 */
 	private String categoryLabel(float value) {
 		int index = Math.round(value);
-		return index >= 0 && index < model.names.length && Math.abs(value - index) < 0.001f
-			? model.names[index] : "";
-	}
-
-	/**
-	 * 配置数据组颜色与左右轴归属。
-	 *
-	 * @param set 原生数据组。
-	 * @param source 已校验的数据组。
-	 */
-	private void configureSet(DataSet<? extends Entry> set, ChartModel.Series source) {
-		set.setColor(source.color);
-		set.setAxisDependency(source.axis == 0 ? YAxis.AxisDependency.LEFT : YAxis.AxisDependency.RIGHT);
+		return index >= 0 && index < model.names.length && Math.abs(value - index) < 0.001f ? model.names[index] : "";
 	}
 
 	/**
@@ -621,11 +537,12 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 			view.setPinchZoom(zoom);
 			view.setDoubleTapToZoomEnabled(zoom);
 			view.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-			view.getXAxis().setValueFormatter(categoryFormatter);
+			view.getXAxis().setValueFormatter(model.numeric ? axisFormatter : categoryFormatter);
 			view.getXAxis().setGranularity(1);
 			// 给首尾项目留出半个分类槽，避免柱条、蜡烛和单点图被裁掉。
-			view.getXAxis().setAxisMinimum(-0.5f);
-			view.getXAxis().setAxisMaximum(model.names.length - 0.5f);
+			view.getXAxis().setAxisMinimum(model.numeric ? chart.getData().getXMin() - barWidth / 2 : -0.5f);
+			view.getXAxis().setAxisMaximum(
+					model.numeric ? chart.getData().getXMax() + barWidth / 2 : model.names.length - 0.5f);
 			view.getXAxis().setTextSize(fontSize);
 			view.getXAxis().setTextColor(foreground);
 			for (int axis = 0; axis < 2; axis++) {
@@ -652,7 +569,8 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 					if (chartKind() == ChartModel.BAR || chartKind() == ChartModel.HORIZONTAL
 							|| (chartKind() == ChartModel.COMBINED && ((CombinedChart) chart).getBarData() != null)) {
 						// 柱条始终以零为基线；负数仍属于有效数据，不能固定最小值为零。
-						YAxis.AxisDependency dependency = axis == 0 ? YAxis.AxisDependency.LEFT : YAxis.AxisDependency.RIGHT;
+						YAxis.AxisDependency dependency = axis == 0 ? YAxis.AxisDependency.LEFT
+								: YAxis.AxisDependency.RIGHT;
 						if (chart.getData().getYMin(dependency) >= 0) {
 							target.setAxisMinimum(0);
 						}
@@ -681,11 +599,38 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	}
 
 	/**
+	 * 按当前格式器的实际绘制宽度保留轴标签空间，避免刷新后沿用旧宽度。
+	 */
+	private void measureAxisLabels() {
+		if (!(chart instanceof BarLineChartBase)
+				|| chart instanceof com.github.mikephil.charting.charts.HorizontalBarChart) {
+			return;
+		}
+		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		for (int axis = 0; axis < 2; axis++) {
+			YAxis target = axis == 0 ? cartesian().getAxisLeft() : cartesian().getAxisRight();
+			paint.setTextSize(target.getTextSize());
+			paint.setTypeface(target.getTypeface());
+			float width = Math.max(
+					paint.measureText(target.getValueFormatter().getFormattedValue(target.mAxisMinimum, target)),
+					paint.measureText(target.getValueFormatter().getFormattedValue(target.mAxisMaximum, target)));
+			for (int i = 0; i < target.mEntryCount; i++) {
+				width = Math.max(width, paint.measureText(target.getFormattedLabel(i)));
+			}
+			target.setMinWidth((width + target.getXOffset() * 2) / density() + 1);
+		}
+		cartesian().calculateOffsets();
+	}
+
+	/**
 	 * 取得当前原生直角坐标图表。
 	 *
 	 * @return 直角坐标图表。
 	 */
 	private BarLineChartBase<?> cartesian() {
+		if (!(chart instanceof BarLineChartBase)) {
+			throw new IllegalArgumentException("此操作仅适用于直角坐标图。");
+		}
 		return (BarLineChartBase<?>) chart;
 	}
 
@@ -696,12 +641,13 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 		if (animationDuration > 0) {
 			animation = ValueAnimator.ofFloat(0, 1);
 			animation.setDuration(animationDuration);
+			animation.setInterpolator(EASINGS[animationEasing]);
 			animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 				@Override
 				public void onAnimationUpdate(ValueAnimator value) {
 					float phase = ((Float) value.getAnimatedValue()).floatValue();
-					chart.getAnimator().setPhaseX(phase);
-					chart.getAnimator().setPhaseY(phase);
+					chart.getAnimator().setPhaseX(animationAxes == 2 ? 1 : phase);
+					chart.getAnimator().setPhaseY(animationAxes == 1 ? 1 : phase);
 					chart.invalidate();
 				}
 			});
@@ -731,7 +677,7 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	private void checkReady() {
 		checkAlive();
 		if (!initialized) {
-			throw new IllegalStateException("请先初始化图表。");
+			throw new IllegalArgumentException("请先初始化图表。");
 		}
 	}
 
@@ -739,8 +685,1072 @@ abstract class ChartComponent extends 视图组件 implements MPAC图表, OnChar
 	 * 组件只允许在界面线程操作，销毁后拒绝后续修改。
 	 */
 	private void checkAlive() {
-		if (destroyed || Looper.myLooper() != Looper.getMainLooper()) {
-			throw new IllegalStateException("请在界面线程操作未销毁的图表。");
+		if (ChartStyles.formatting()) {
+			throw new IllegalArgumentException("格式器回调中不能操作图表。");
 		}
+		if (destroyed || Looper.myLooper() != Looper.getMainLooper()) {
+			throw new IllegalArgumentException("请在界面线程操作未销毁的图表。");
+		}
+	}
+
+	/**
+	 * 重新绘制当前数据和配置，保留当前缩放和平移，不播放构建动画。
+	 *
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 刷新图表() {
+		checkReady();
+		render(false);
+	}
+
+	/**
+	 * 保存配置副本，构建或刷新后生效。
+	 *
+	 * @param style 要复制的配置；不能为 null。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置图表样式(MPAC图表样式 style) {
+		checkReady();
+		ChartChecks.required(style);
+		ChartStyles.font(chart, style.font);
+		chartStyle = style.复制();
+		chart.setNoDataText(style.noData);
+		chart.invalidate();
+	}
+
+	/**
+	 * 保存配置副本，构建或刷新后生效。
+	 *
+	 * @param style 要复制的配置；不能为 null。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置图例样式(MPAC图例样式 style) {
+		checkReady();
+		ChartChecks.required(style);
+		ChartStyles.font(chart, style.font);
+		legendStyle = style.复制();
+	}
+
+	/**
+	 * 保存数据组样式副本，构建或刷新后生效。
+	 *
+	 * @param group 从 0 开始的数据组编号；饼图固定为 0。
+	 * @param style 要复制的配置；不能为 null。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置数据组样式(int group, MPAC数据组样式 style) {
+		checkReady();
+		ChartChecks.required(style);
+		if (chartKind() == ChartModel.PIE) {
+			ChartChecks.integer(group, 0, 数据组数量() - 1);
+			pieDataStyle = style.复制();
+		} else {
+			model.group(group).style = style.复制();
+		}
+	}
+
+	/**
+	 * 返回数据组配置的独立副本；尚未设置时返回默认配置。
+	 *
+	 * @param group 从 0 开始的数据组编号；饼图固定为 0。
+	 * @return 返回数据组配置的独立副本；尚未设置时返回默认配置。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public MPAC数据组样式 取数据组样式(int group) {
+		checkReady();
+		MPAC数据组样式 style;
+		if (chartKind() == ChartModel.PIE) {
+			ChartChecks.integer(group, 0, 数据组数量() - 1);
+			style = pieDataStyle;
+		} else {
+			style = model.group(group).style;
+		}
+		return style == null ? new MPAC数据组样式() : style.复制();
+	}
+
+	/**
+	 * 取得数据组名称；饼图返回空文本，扇区名称由取项目名称取得。
+	 *
+	 * @param group 从 0 开始的数据组编号；饼图固定为 0。
+	 * @return 取得数据组名称；饼图返回空文本，扇区名称由取项目名称取得。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public String 取数据组名称(int group) {
+		checkReady();
+		if (chartKind() == ChartModel.PIE) {
+			ChartChecks.integer(group, 0, 数据组数量() - 1);
+			return "";
+		}
+		return model.group(group).name;
+	}
+
+	/**
+	 * 取得分类名称副本；数值横坐标返回空数组，饼图返回扇区名称。
+	 *
+	 * @return 取得分类名称副本；数值横坐标返回空数组，饼图返回扇区名称。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public String[] 取项目名称() {
+		checkReady();
+		if (chartKind() != ChartModel.PIE) {
+			return model.names.clone();
+		}
+		String[] names = new String[model.series.size()];
+		for (int i = 0; i < names.length; i++) {
+			names[i] = model.series.get(i).name;
+		}
+		return names;
+	}
+
+	/**
+	 * 取得数据组横坐标副本；分类图和饼图返回项目索引。
+	 *
+	 * @param group 从 0 开始的数据组编号；饼图固定为 0。
+	 * @return 取得数据组横坐标副本；分类图和饼图返回项目索引。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public float[] 取横坐标(int group) {
+		checkReady();
+		if (chartKind() == ChartModel.PIE) {
+			ChartChecks.integer(group, 0, 数据组数量() - 1);
+			float[] xs = new float[model.series.size()];
+			for (int i = 0; i < xs.length; i++) {
+				xs[i] = i;
+			}
+			return xs;
+		}
+		return model.group(group).xs.clone();
+	}
+
+	/**
+	 * 取得指定列的数值副本。
+	 *
+	 * @param group  从 0 开始的数据组编号；饼图固定为 0。
+	 * @param column 普通图和饼图为 0；气泡 0 数值、1 大小；蜡烛 0 开、1 高、2 低、3 收；堆叠为层号。
+	 * @return 取得指定列的数值副本。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public float[] 取数据组数值(int group, int column) {
+		checkReady();
+		if (chartKind() == ChartModel.PIE) {
+			ChartChecks.integer(group, 0, 数据组数量() - 1);
+			ChartChecks.integer(column, 0, 0);
+			float[] result = new float[model.series.size()];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = model.series.get(i).columns[0][0];
+			}
+			return result;
+		}
+		ChartModel.Series data = model.group(group);
+		ChartChecks.integer(column, 0, data.columns.length - 1);
+		return data.columns[column].clone();
+	}
+
+	/**
+	 * 修改数据组名称、原颜色和轴归属，构建或刷新后生效；饼图请使用更新扇区。
+	 *
+	 * @param group 从 0 开始的数据组编号；饼图固定为 0。
+	 * @param name  非空引用的数据组名称。
+	 * @param color ARGB 颜色。
+	 * @param axis  0 左轴，1 右轴。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置数据组信息(int group, String name, int color, int axis) {
+		checkReady();
+		requireSeries();
+		ChartChecks.text(name);
+		ChartChecks.integer(axis, 0, 1);
+		if (chartKind() == ChartModel.RADAR && axis != 0) {
+			throw new IllegalArgumentException("雷达图仅有一条数值轴。");
+		}
+		ChartModel.Series data = model.group(group);
+		data.name = name;
+		data.color = color;
+		data.axis = axis;
+		dataDirty = true;
+	}
+
+	/**
+	 * 替换整组数据并保留样式；分类图横坐标必须仍为原索引，数值图可改变项目数量；饼图请使用更新扇区。
+	 *
+	 * @param group   从 0 开始的数据组编号；饼图固定为 0。
+	 * @param xs      非空有限横坐标数组，按非递减顺序排列。
+	 * @param values  非空有限数值数组。
+	 * @param columns 列数必须与原数据组一致。数值按整列依次拼接，例如气泡先全部数值再全部大小。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 更新数据组(int group, float[] xs, float[] values, int columns) {
+		checkReady();
+		requireSeries();
+		if (columns != model.group(group).columns.length) {
+			throw new IllegalArgumentException("数据列数必须与原数据组一致。");
+		}
+		model.replace(group, xs, values, columns);
+		dataDirty = true;
+	}
+
+	/**
+	 * 向数值横坐标数据组追加一个项目，构建或刷新后生效；分类图请替换整组数据。
+	 *
+	 * @param group  从 0 开始的数据组编号；饼图固定为 0。
+	 * @param x      不小于本组最后横坐标的有限数值。
+	 * @param values 此项目的各列数值，顺序与更新数据组一致。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 追加项目(int group, float x, float[] values) {
+		checkReady();
+		requireSeries();
+		model.append(group, x, values);
+		dataDirty = true;
+	}
+
+	/**
+	 * 删除数值横坐标数据组的一个项目，至少保留一个；构建或刷新后生效。
+	 *
+	 * @param group 从 0 开始的数据组编号；饼图固定为 0。
+	 * @param index 从 0 开始的项目编号。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 删除项目(int group, int index) {
+		checkReady();
+		requireSeries();
+		model.remove(group, index);
+		dataDirty = true;
+	}
+
+	/**
+	 * 删除整组数据，构建或刷新后生效；饼图删除全部扇区。
+	 *
+	 * @param group 从 0 开始的数据组编号；饼图固定为 0。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 删除数据组(int group) {
+		checkReady();
+		if (chartKind() == ChartModel.PIE) {
+			ChartChecks.integer(group, 0, 数据组数量() - 1);
+			model.clear();
+			dataDirty = true;
+			manualHighlight = null;
+			manualLocation = null;
+		} else {
+			model.group(group);
+			model.series.remove(group);
+			dataDirty = true;
+			if (model.series.isEmpty()) {
+				model.numeric = false;
+			}
+		}
+	}
+
+	/**
+	 * 主动选择已构建的项目；数据变更后须先构建或刷新，重复横坐标按项目编号精确选择。
+	 *
+	 * @param group  从 0 开始的数据组编号；饼图固定为 0。
+	 * @param index  从 0 开始的项目编号。
+	 * @param notify 是否触发项目被选中事件。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 选择项目(int group, int index, boolean notify) {
+		checkReady();
+		select(group, index, -1, notify);
+	}
+
+	/**
+	 * 取消当前高亮。
+	 *
+	 * @param notify 是否触发选择被取消事件。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 取消选择(boolean notify) {
+		checkReady();
+		manualHighlight = null;
+		manualLocation = null;
+		chart.highlightValue((Highlight) null, notify);
+	}
+
+	/**
+	 * 返回数据组、项目、堆叠层三个编号；未选择时返回空数组，非堆叠层为 -1。
+	 *
+	 * @return 返回数据组、项目、堆叠层三个编号；未选择时返回空数组，非堆叠层为 -1。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public int[] 取选中项目() {
+		checkReady();
+		if (dataDirty) {
+			return new int[0];
+		}
+		Highlight[] selected = chart.getHighlighted();
+		if (selected == null || selected.length == 0 || chart.getData() == null) {
+			return new int[0];
+		}
+		if (selected[0] == manualHighlight && manualLocation != null) {
+			return manualLocation.clone();
+		}
+		Entry entry = chart.getData().getEntryForHighlight(selected[0]);
+		int[] location = entryLocations.get(entry);
+		return location == null ? new int[0] : new int[] { location[0], location[1], selected[0].getStackIndex() };
+	}
+
+	/**
+	 * 导出包含标题的当前组件截图；需已完成布局，返回压缩字节，不写文件，不需要存储权限。
+	 *
+	 * @param format  0 PNG，1 JPEG。
+	 * @param quality 0 至 100；PNG 不使用质量参数。
+	 * @return 导出包含标题的当前组件截图；需已完成布局，返回压缩字节，不写文件，不需要存储权限。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public byte[] 导出图片(int format, int quality) {
+		checkReady();
+		ChartChecks.integer(format, 0, 1);
+		ChartChecks.integer(quality, 0, 100);
+		View view = getView();
+		if (view.getWidth() <= 0 || view.getHeight() <= 0) {
+			throw new IllegalArgumentException("请等待图表完成布局后再导出图片。");
+		}
+		Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+		try {
+			Canvas canvas = new Canvas(bitmap);
+			canvas.drawColor(Color.WHITE);
+			view.draw(canvas);
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			if (!bitmap.compress(format == 0 ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, quality,
+					output)) {
+				throw new IllegalArgumentException("图片编码失败。");
+			}
+			return output.toByteArray();
+		} finally {
+			bitmap.recycle();
+		}
+	}
+
+	/**
+	 * 设置构建动画的坐标方向及缓动方式，时长由动画时间属性控制。
+	 *
+	 * @param axes   0 双轴，1 横轴，2 纵轴。
+	 * @param easing 0 至 27：0 Linear, 1 EaseInQuad, 2 EaseOutQuad, 3 EaseInOutQuad, 4 EaseInCubic, 5
+	 *               EaseOutCubic, 6 EaseInOutCubic, 7 EaseInQuart, 8 EaseOutQuart, 9 EaseInOutQuart, 10
+	 *               EaseInSine, 11 EaseOutSine, 12 EaseInOutSine, 13 EaseInExpo, 14 EaseOutExpo, 15
+	 *               EaseInOutExpo, 16 EaseInCirc, 17 EaseOutCirc, 18 EaseInOutCirc, 19 EaseInElastic,
+	 *               20 EaseOutElastic, 21 EaseInOutElastic, 22 EaseInBack, 23 EaseOutBack, 24
+	 *               EaseInOutBack, 25 EaseInBounce, 26 EaseOutBounce, 27 EaseInOutBounce。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置动画(int axes, int easing) {
+		checkReady();
+		ChartChecks.integer(axes, 0, 2);
+		ChartChecks.integer(easing, 0, EASINGS.length - 1);
+		stopAnimation();
+		animationAxes = axes;
+		animationEasing = easing;
+	}
+
+	/**
+	 * 停止当前构建动画并显示完整数据。
+	 *
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 停止动画() {
+		checkReady();
+		stopAnimation();
+		chart.invalidate();
+	}
+
+	/**
+	 * 保存轴配置副本，构建或刷新后生效。
+	 *
+	 * @param axis  0 分类或横轴，1 左轴，2 右轴；横向柱图数值轴位于下方和上方。
+	 * @param style 要复制的轴配置。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置轴样式(int axis, MPAC轴样式 style) {
+		checkReady();
+		ChartChecks.integer(axis, 0, 2);
+		ChartChecks.required(style);
+		ChartStyles.font(chart, style.font);
+		axisStyles[axis] = style.复制();
+	}
+
+	/**
+	 * 固定横轴范围，构建或刷新后生效。
+	 *
+	 * @param min 有限数值，必须小于最大值。
+	 * @param max 有限数值。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置横轴范围(float min, float max) {
+		checkReady();
+		ChartModel.checkRange(0, min, max);
+		xRange = new float[] { min, max };
+	}
+
+	/**
+	 * 恢复指定坐标轴的自动范围，构建或刷新后生效。
+	 *
+	 * @param axis 0 横轴，1 左轴，2 右轴。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 恢复自动范围(int axis) {
+		checkReady();
+		ChartChecks.integer(axis, 0, 2);
+		if (axis == 0) {
+			xRange = null;
+		} else {
+			ranges[axis - 1] = null;
+		}
+	}
+
+	/**
+	 * 以内容中心缩放已构建图表。
+	 *
+	 * @param x 相对当前视图的倍数，必须大于零。
+	 * @param y 相对当前视图的倍数，必须大于零。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 缩放视图(float x, float y) {
+		checkReady();
+		requireBuilt();
+		ChartChecks.range(x, 0.000001f, 1000000f);
+		ChartChecks.range(y, 0.000001f, 1000000f);
+		cartesian().zoomToCenter(x, y);
+	}
+
+	/**
+	 * 移动已构建图表的可见区域。
+	 *
+	 * @param x    视图左边缘横坐标。
+	 * @param y    视图中心纵坐标。
+	 * @param axis 0 左轴，1 右轴。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 移动视图(float x, float y, int axis) {
+		checkReady();
+		requireBuilt();
+		ChartModel.checkFinite(x);
+		ChartModel.checkFinite(y);
+		ChartChecks.integer(axis, 0, 1);
+		cartesian().moveViewTo(x, y, axis == 0 ? YAxis.AxisDependency.LEFT : YAxis.AxisDependency.RIGHT);
+	}
+
+	/**
+	 * 限制已构建图表的可见数据跨度。
+	 *
+	 * @param min 必须大于零，且不大于最大跨度。
+	 * @param max 可见区域的数据跨度。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置可见横轴范围(float min, float max) {
+		checkReady();
+		requireBuilt();
+		ChartChecks.range(min, 0.000001f, 1e30f);
+		ChartChecks.range(max, min, 1e30f);
+		cartesian().setVisibleXRange(min, max);
+	}
+
+	/**
+	 * 限制已构建图表的可见数据跨度。
+	 *
+	 * @param min  必须大于零，且不大于最大跨度。
+	 * @param max  可见区域的数据跨度。
+	 * @param axis 0 左轴，1 右轴。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置可见纵轴范围(float min, float max, int axis) {
+		checkReady();
+		requireBuilt();
+		ChartChecks.range(min, 0.000001f, 1e30f);
+		ChartChecks.range(max, min, 1e30f);
+		ChartChecks.integer(axis, 0, 1);
+		cartesian().setVisibleYRange(min, max, axis == 0 ? YAxis.AxisDependency.LEFT : YAxis.AxisDependency.RIGHT);
+	}
+
+	/**
+	 * 恢复显示全部数据，清除可见跨度限制。
+	 *
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 重置视图() {
+		checkReady();
+		requireBuilt();
+		cartesian().getViewPortHandler().setMaximumScaleX(Float.MAX_VALUE);
+		cartesian().getViewPortHandler().setMaximumScaleY(Float.MAX_VALUE);
+		cartesian().fitScreen();
+	}
+
+	/**
+	 * 返回可见横轴最小值、最大值、横向缩放倍数、纵向缩放倍数。
+	 *
+	 * @return 返回可见横轴最小值、最大值、横向缩放倍数、纵向缩放倍数。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public float[] 取视图范围() {
+		checkReady();
+		requireBuilt();
+		return new float[] { cartesian().getLowestVisibleX(), cartesian().getHighestVisibleX(), cartesian().getScaleX(),
+				cartesian().getScaleY() };
+	}
+
+	/**
+	 * 转换已布局图表的坐标，返回横纵坐标数组；像素坐标单位为 DIP，不含标题。
+	 *
+	 * @param x    数据横坐标。
+	 * @param y    数据纵坐标。
+	 * @param axis 0 左轴，1 右轴。
+	 * @return 转换已布局图表的坐标，返回横纵坐标数组；像素坐标单位为 DIP，不含标题。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public float[] 数据坐标转像素(float x, float y, int axis) {
+		checkReady();
+		requireBuilt();
+		ChartModel.checkFinite(x);
+		ChartModel.checkFinite(y);
+		ChartChecks.integer(axis, 0, 1);
+		float density = chart.getResources().getDisplayMetrics().density;
+		MPPointD point = cartesian().getPixelForValues(x, y,
+				axis == 0 ? YAxis.AxisDependency.LEFT : YAxis.AxisDependency.RIGHT);
+		try {
+			return new float[] { (float) point.x / density, (float) point.y / density };
+		} finally {
+			MPPointD.recycleInstance(point);
+		}
+	}
+
+	/**
+	 * 转换已布局图表的坐标，返回横纵坐标数组；像素坐标单位为 DIP，不含标题。
+	 *
+	 * @param x    相对原生图表左上角的 DIP 横坐标，不含标题。
+	 * @param y    相对原生图表左上角的 DIP 纵坐标，不含标题。
+	 * @param axis 0 左轴，1 右轴。
+	 * @return 转换已布局图表的坐标，返回横纵坐标数组；像素坐标单位为 DIP，不含标题。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public float[] 像素转数据坐标(float x, float y, int axis) {
+		checkReady();
+		requireBuilt();
+		ChartModel.checkFinite(x);
+		ChartModel.checkFinite(y);
+		ChartChecks.integer(axis, 0, 1);
+		float density = chart.getResources().getDisplayMetrics().density;
+		MPPointD point = cartesian().getValuesByTouchPoint(x * density, y * density,
+				axis == 0 ? YAxis.AxisDependency.LEFT : YAxis.AxisDependency.RIGHT);
+		try {
+			return new float[] { (float) point.x, (float) point.y };
+		} finally {
+			MPPointD.recycleInstance(point);
+		}
+	}
+
+	/**
+	 * 设置柱宽和并排方式，数值横坐标保持原值，构建或刷新后生效。
+	 *
+	 * @param width   同一横坐标下全部柱的总宽，数据单位，必须大于零。
+	 * @param gap     分组柱之间的空白，数据单位，不能为负数。
+	 * @param grouped True 并排，False 重叠；仅柱图和含柱的组合图有效。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置柱布局(float width, float gap, boolean grouped) {
+		checkReady();
+		ChartChecks.range(width, 0.000001f, 1e30f);
+		ChartChecks.range(gap, 0, 1e30f);
+		barWidth = width;
+		barGap = gap;
+		groupedBars = grouped;
+	}
+
+	/**
+	 * 保存饼图配置副本，构建或刷新后生效。
+	 *
+	 * @param style 要复制的饼图配置。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置饼图样式(MPAC饼图样式 style) {
+		checkReady();
+		ChartChecks.required(style);
+		if (style.transparentRadius < style.holeRadius) {
+			throw new IllegalArgumentException("透明环半径不能小于圆孔半径。");
+		}
+		pieStyle = style.复制();
+	}
+
+	/**
+	 * 更新指定扇区，构建或刷新后生效。
+	 *
+	 * @param index 从 0 开始的项目编号。
+	 * @param name  非空引用的数据组名称。
+	 * @param value 非负有限数值。
+	 * @param color ARGB 颜色。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 更新扇区(int index, String name, float value, int color) {
+		checkReady();
+		model.updateSlice(index, name, value, color);
+		dataDirty = true;
+	}
+
+	/**
+	 * 删除指定扇区，构建或刷新后生效。
+	 *
+	 * @param index 从 0 开始的项目编号。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 删除扇区(int index) {
+		checkReady();
+		model.group(index);
+		model.series.remove(index);
+		dataDirty = true;
+	}
+
+	/**
+	 * 保存雷达网格配置副本，构建或刷新后生效。
+	 *
+	 * @param style 要复制的雷达配置。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置雷达样式(MPAC雷达样式 style) {
+		checkReady();
+		ChartChecks.required(style);
+		radarStyle = style.复制();
+	}
+
+	/**
+	 * 保存雷达轴配置副本，构建或刷新后生效。
+	 *
+	 * @param axis  0 项目轴，1 数值轴。
+	 * @param style 要复制的轴配置。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置雷达轴样式(int axis, MPAC轴样式 style) {
+		checkReady();
+		ChartChecks.integer(axis, 0, 1);
+		ChartChecks.required(style);
+		ChartStyles.font(chart, style.font);
+		axisStyles[axis] = style.复制();
+	}
+
+	/**
+	 * 设置雷达数值轴范围，构建或刷新后生效。
+	 *
+	 * @param min 非负有限最小值，必须小于最大值。
+	 * @param max 有限最大值。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	public void 设置数值范围(float min, float max) {
+		checkReady();
+		ChartModel.checkRange(0, min, max);
+		if (min < 0) {
+			throw new IllegalArgumentException("雷达数值轴最小值不能为负数。");
+		}
+		ranges[0] = new float[] { min, max };
+	}
+
+	/**
+	 * 派发图表手势事件。
+	 *
+	 * @param gesture 0 无，1 拖动，2 横向缩放，3 纵向缩放，4 双轴缩放，5 旋转，6 单击，7 双击，8 长按，9 惯性。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 手势开始(int gesture) {
+		EventDispatcher.dispatchEvent(this, "手势开始", gesture);
+	}
+
+	/**
+	 * 派发图表手势事件。
+	 *
+	 * @param gesture 与手势开始事件相同。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 手势结束(int gesture) {
+		EventDispatcher.dispatchEvent(this, "手势结束", gesture);
+	}
+
+	/**
+	 * 派发图表手势事件。
+	 *
+	 * @param x 相对图表内容视图的 DIP 横坐标。
+	 * @param y 相对图表内容视图的 DIP 纵坐标。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 图表单击(float x, float y) {
+		EventDispatcher.dispatchEvent(this, "图表单击", x, y);
+	}
+
+	/**
+	 * 派发图表手势事件。
+	 *
+	 * @param x DIP 横坐标。
+	 * @param y DIP 纵坐标。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 图表双击(float x, float y) {
+		EventDispatcher.dispatchEvent(this, "图表双击", x, y);
+	}
+
+	/**
+	 * 派发图表手势事件。
+	 *
+	 * @param x DIP 横坐标。
+	 * @param y DIP 纵坐标。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 图表长按(float x, float y) {
+		EventDispatcher.dispatchEvent(this, "图表长按", x, y);
+	}
+
+	/**
+	 * 派发图表手势事件。
+	 *
+	 * @param x 本次 DIP 位移。
+	 * @param y 本次 DIP 位移。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 图表拖动(float x, float y) {
+		EventDispatcher.dispatchEvent(this, "图表拖动", x, y);
+	}
+
+	/**
+	 * 派发图表手势事件。
+	 *
+	 * @param x 本次缩放倍数。
+	 * @param y 本次缩放倍数。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 图表缩放(float x, float y) {
+		EventDispatcher.dispatchEvent(this, "图表缩放", x, y);
+	}
+
+	/**
+	 * 派发图表手势事件。
+	 *
+	 * @param x DIP 每秒。
+	 * @param y DIP 每秒。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 图表惯性(float x, float y) {
+		EventDispatcher.dispatchEvent(this, "图表惯性", x, y);
+	}
+
+	/**
+	 * 检查已构建且对应当前模型的数据快照。
+	 */
+	private void requireBuilt() {
+		if (dataDirty || chart.getData() == null || chart.getWidth() <= 0 || chart.getHeight() <= 0) {
+			throw new IllegalArgumentException("请先构建或刷新图表并等待布局完成。");
+		}
+	}
+
+	/**
+	 * 检查不适用于饼图的数据组操作。
+	 */
+	private void requireSeries() {
+		if (chartKind() == ChartModel.PIE) {
+			throw new IllegalArgumentException("饼图请使用扇区接口。");
+		}
+	}
+
+	/**
+	 * 添加堆叠柱并标记数据快照过期。
+	 *
+	 * @param kind   柱图类型。
+	 * @param name   数据组名称。
+	 * @param xs     数值横坐标，null 表示分类坐标。
+	 * @param values 按层排列的数值。
+	 * @param layers 堆叠层数。
+	 * @param color  ARGB 颜色。
+	 * @param axis   数值轴编号。
+	 */
+	final void addStack(int kind, String name, float[] xs, float[] values, int layers, int color, int axis) {
+		checkReady();
+		model.addStack(kind, name, xs, values, layers, color, axis);
+		dataDirty = true;
+	}
+
+	/**
+	 * 添加数值横坐标数据组。
+	 *
+	 * @param kind    图形类型。
+	 * @param name    数据组名称。
+	 * @param xs      数值横坐标。
+	 * @param columns 数值列。
+	 * @param color   数据组颜色。
+	 * @param axis    数值轴编号。
+	 */
+	final void addNumeric(int kind, String name, float[] xs, float[][] columns, int color, int axis) {
+		checkReady();
+		model.addXY(kind, name, xs, columns, color, axis);
+		dataDirty = true;
+	}
+
+	/**
+	 * 应用每组独立配置；组合图按数据对象映射回原添加顺序。
+	 */
+	private void applyDataStyles() {
+		chart.getData().setDrawValues(showValues);
+		for (IDataSet<?> data : chart.getData().getDataSets()) {
+			if (data.getEntryCount() == 0) {
+				continue;
+			}
+			int[] location = entryLocations.get(data.getEntryForIndex(0));
+			MPAC数据组样式 style = chartKind() == ChartModel.PIE ? pieDataStyle
+					: location == null ? null : model.series.get(location[0]).style;
+			if (style != null) {
+				ChartStyles.data((DataSet<?>) data, style, showValues);
+			}
+		}
+	}
+
+	/**
+	 * 应用图表、坐标轴和图例配置，明确范围优先于自动计算。
+	 */
+	private void applyAdvancedStyles() {
+		if (chartStyle != null) {
+			MPAC图表样式 style = chartStyle;
+			Typeface typeface = ChartStyles.font(chart, style.font);
+			caption.setTypeface(typeface);
+			chart.getLegend().setTypeface(typeface);
+			chart.getData().setValueTypeface(typeface);
+			chart.setNoDataText(style.noData);
+			chart.setNoDataTextTypeface(typeface);
+			chart.setTouchEnabled(style.touch);
+			chart.setHighlightPerTapEnabled(style.tapHighlight);
+			chart.setDragDecelerationEnabled(style.deceleration);
+			chart.setDragDecelerationFrictionCoef(style.friction);
+			chart.setExtraOffsets(style.left, style.top, style.right, style.bottom);
+			chart.getDescription().setText(style.description);
+			chart.getDescription().setEnabled(!style.description.isEmpty());
+			chart.getDescription().setTextColor(style.descriptionColor);
+			chart.getDescription().setTextSize(style.descriptionSize);
+			chart.getDescription().setTypeface(typeface);
+			chart.setDrawMarkers(style.markers);
+			chart.setMarker(style.markers ? new ChartMarker(chart, style) : null);
+			if (chart instanceof BarLineChartBase) {
+				BarLineChartBase<?> view = cartesian();
+				view.setHighlightPerDragEnabled(style.dragHighlight);
+				view.setDrawBorders(style.borders);
+				view.setBorderColor(style.borderColor);
+				view.setBorderWidth(style.borderWidth);
+				view.setDrawGridBackground(style.gridBackground);
+				view.setGridBackgroundColor(style.gridColor);
+				view.setAutoScaleMinMaxEnabled(style.autoScale);
+				view.setScaleXEnabled(zoom && style.scaleX);
+				view.setScaleYEnabled(zoom && style.scaleY);
+				view.setDragXEnabled(drag && style.dragX);
+				view.setDragYEnabled(drag && style.dragY);
+				view.setDoubleTapToZoomEnabled(zoom && style.doubleTap);
+				view.setPinchZoom(zoom && style.pinch);
+				view.setMaxVisibleValueCount(style.maxValues);
+				view.getXAxis().setTypeface(typeface);
+				view.getAxisLeft().setTypeface(typeface);
+				view.getAxisRight().setTypeface(typeface);
+			} else if (chart instanceof PieRadarChartBase) {
+				((PieRadarChartBase<?>) chart).setRotationEnabled(style.rotation);
+				((PieRadarChartBase<?>) chart).setRotationAngle(style.rotationAngle);
+			}
+		}
+		if (chartStyle != null && chart instanceof BarChart) {
+			BarChart view = (BarChart) chart;
+			view.setDrawValueAboveBar(chartStyle.valuesAbove);
+			view.setDrawBarShadow(chartStyle.barShadows);
+			view.setHighlightFullBarEnabled(chartStyle.fullBar);
+		}
+		if (chartStyle != null && chart instanceof CombinedChart) {
+			CombinedChart view = (CombinedChart) chart;
+			view.setDrawValueAboveBar(chartStyle.valuesAbove);
+			view.setDrawBarShadow(chartStyle.barShadows);
+			view.setHighlightFullBarEnabled(chartStyle.fullBar);
+		}
+		if (legendStyle != null) {
+			ChartStyles.legend(chart.getLegend(), legendStyle, ChartStyles.font(chart, legendStyle.font));
+		}
+		if (chart instanceof BarLineChartBase) {
+			for (int axis = 0; axis < 3; axis++) {
+				if (axisStyles[axis] != null) {
+					ChartStyles.axis(
+							axis == 0 ? cartesian().getXAxis()
+									: axis == 1 ? cartesian().getAxisLeft() : cartesian().getAxisRight(),
+							axisStyles[axis], ChartStyles.font(chart, axisStyles[axis].font));
+				}
+			}
+			if (xRange != null) {
+				cartesian().getXAxis().setAxisMinimum(xRange[0]);
+				cartesian().getXAxis().setAxisMaximum(xRange[1]);
+			}
+		} else if (chart instanceof RadarChart) {
+			RadarChart view = (RadarChart) chart;
+			if (radarStyle != null) {
+				ChartStyles.radar(view, radarStyle);
+			}
+			for (int axis = 0; axis < 2; axis++) {
+				if (axisStyles[axis] != null) {
+					ChartStyles.axis(axis == 0 ? view.getXAxis() : view.getYAxis(), axisStyles[axis],
+							ChartStyles.font(chart, axisStyles[axis].font));
+				}
+			}
+			if (ranges[0] != null) {
+				view.getYAxis().setAxisMinimum(ranges[0][0]);
+				view.getYAxis().setAxisMaximum(ranges[0][1]);
+			}
+		} else if (pieStyle != null) {
+			ChartStyles.pie((PieChart) chart, pieStyle);
+		}
+		applyDataStyles();
+	}
+
+	/**
+	 * 按原始编号定位原生数据，支持组合图和分组柱偏移。
+	 *
+	 * @param group  数据组编号。
+	 * @param index  项目编号。
+	 * @param layer  堆叠层编号，-1 表示整项。
+	 * @param notify 是否派发选择事件。
+	 */
+	private void select(int group, int index, int layer, boolean notify) {
+		requireBuilt();
+		ChartChecks.integer(group, 0, 数据组数量() - 1);
+		ChartChecks.integer(index, 0,
+				chartKind() == ChartModel.PIE ? model.series.size() - 1 : model.group(group).xs.length - 1);
+		ChartData<?> data = chart.getData();
+		java.util.List<ChartData<?>> children = new java.util.ArrayList<ChartData<?>>();
+		if (data instanceof CombinedData) {
+			for (Object child : ((CombinedData) data).getAllData()) {
+				children.add((ChartData<?>) child);
+			}
+		} else {
+			children.add(data);
+		}
+		for (int child = 0; child < children.size(); child++) {
+			ChartData<?> part = children.get(child);
+			for (int setIndex = 0; setIndex < part.getDataSetCount(); setIndex++) {
+				IDataSet<?> set = part.getDataSetByIndex(setIndex);
+				for (int entryIndex = 0; entryIndex < set.getEntryCount(); entryIndex++) {
+					Entry entry = set.getEntryForIndex(entryIndex);
+					int[] location = entryLocations.get(entry);
+					if (location != null && location[0] == group && location[1] == index) {
+						if (!set.isVisible() || !set.isHighlightEnabled()) {
+							throw new IllegalArgumentException("此数据组不可见或不允许高亮。");
+						}
+						Highlight selected = new Highlight(
+								chartKind() == ChartModel.PIE || chartKind() == ChartModel.RADAR ? index : entry.getX(),
+								entry.getY(), 0, 0, setIndex, layer, set.getAxisDependency());
+						if (data instanceof CombinedData) {
+							selected.setDataIndex(child);
+						}
+						chart.highlightValue(selected, false);
+						manualHighlight = selected;
+						manualLocation = new int[] { group, index, layer };
+						if (notify) {
+							项目被选中(group, index,
+									entry instanceof CandleEntry ? ((CandleEntry) entry).getClose() : entry.getY());
+						}
+						return;
+					}
+				}
+			}
+		}
+		throw new IllegalArgumentException("未找到已构建的项目。");
+	}
+
+	@Override
+	public void onChartGestureStart(MotionEvent event, ChartGesture gesture) {
+		if (!destroyed) {
+			手势开始(gesture.ordinal());
+		}
+	}
+
+	@Override
+	public void onChartGestureEnd(MotionEvent event, ChartGesture gesture) {
+		if (!destroyed) {
+			手势结束(gesture.ordinal());
+		}
+	}
+
+	@Override
+	public void onChartLongPressed(MotionEvent event) {
+		if (!destroyed) {
+			图表长按(event.getX() / density(), event.getY() / density());
+		}
+	}
+
+	@Override
+	public void onChartDoubleTapped(MotionEvent event) {
+		if (!destroyed) {
+			图表双击(event.getX() / density(), event.getY() / density());
+		}
+	}
+
+	@Override
+	public void onChartSingleTapped(MotionEvent event) {
+		if (!destroyed) {
+			图表单击(event.getX() / density(), event.getY() / density());
+		}
+	}
+
+	@Override
+	public void onChartFling(MotionEvent start, MotionEvent end, float x, float y) {
+		if (!destroyed) {
+			图表惯性(x / density(), y / density());
+		}
+	}
+
+	@Override
+	public void onChartScale(MotionEvent event, float x, float y) {
+		if (!destroyed) {
+			图表缩放(x, y);
+		}
+	}
+
+	@Override
+	public void onChartTranslate(MotionEvent event, float x, float y) {
+		if (!destroyed) {
+			图表拖动(x / density(), y / density());
+		}
+	}
+
+	/**
+	 * 取得 DIP 转换密度。
+	 *
+	 * @return 当前显示密度。
+	 */
+	private float density() {
+		return chart.getResources().getDisplayMetrics().density;
+	}
+
+	/**
+	 * 主动选择已构建的堆叠柱中的一层。
+	 *
+	 * @param group  从 0 开始的数据组编号。
+	 * @param index  从 0 开始的项目编号。
+	 * @param layer  从 0 开始的层编号。
+	 * @param notify 是否触发项目被选中事件。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+
+	public void 选择堆叠层(int group, int index, int layer, boolean notify) {
+		checkReady();
+		ChartModel.Series data = model.group(group);
+		if (!data.stacked) {
+			throw new IllegalArgumentException("此组不是堆叠柱。");
+		}
+		ChartChecks.integer(layer, 0, data.columns.length - 1);
+		select(group, index, layer, notify);
+	}
+
+	/**
+	 * 设置组合图绘制层次，须包含五个类型且不重复；构建或刷新后生效。
+	 *
+	 * @param order 五个编号的排列：0 柱、1 气泡、2 折线、3 蜡烛、4 散点；先绘制的位于下方。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+
+	public void 设置绘制顺序(int[] order) {
+		checkReady();
+		ChartChecks.order(order);
+		combinedOrder = order.clone();
 	}
 }

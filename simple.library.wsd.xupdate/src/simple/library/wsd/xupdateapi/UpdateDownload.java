@@ -19,8 +19,7 @@ import com.xuexiang.xupdate.aria.AriaDownloadServiceProxyImpl;
 import com.xuexiang.xupdate.proxy.IUpdateHttpService;
 
 /**
- * XUpdateAPI 的 Aria 下载适配：按任务 ID 和私有路径隔离监听，暂停保留记录，取消移除记录。
- * 不修改 Aria 全局超时；每个实例以无进度定时器约束连接和读取等待。
+ * XUpdateAPI 的 Aria 下载适配：按任务 ID 和私有路径隔离监听，暂停保留记录，取消移除记录。 不修改 Aria 全局超时；每个实例以无进度定时器约束连接和读取等待。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -51,11 +50,8 @@ final class UpdateDownload extends AriaDownloadServiceProxyImpl {
 			if (callback != null && !stopping) {
 				if (received == lastReceived) {
 					final IUpdateHttpService.DownloadCallback target = callback;
-					pause(new Runnable() {
-						@Override
-						public void run() {
-							target.onError(new IOException("APK 下载等待超时，可稍后继续。"));
-						}
+					pause(() -> {
+						target.onError(new IOException("APK 下载等待超时，可稍后继续。"));
 					});
 				} else {
 					lastReceived = received;
@@ -123,8 +119,8 @@ final class UpdateDownload extends AriaDownloadServiceProxyImpl {
 		lastReceived = received;
 		main.postDelayed(watchdog, timeout + REPORT_INTERVAL);
 		if (taskId < 0) {
-			taskId = Aria.download(this).load(url).setFilePath(file.getAbsolutePath())
-					.option(option).ignoreCheckPermissions().create();
+			taskId = Aria.download(this).load(url).setFilePath(file.getAbsolutePath()).option(option)
+					.ignoreCheckPermissions().create();
 		} else {
 			Aria.download(this).load(taskId).option(option).ignoreCheckPermissions().resume();
 		}

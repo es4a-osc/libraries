@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.view.View;
 import android.widget.TextView;
+
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.iconics.internal.CheckedCompoundIconicsDrawables;
 
@@ -16,7 +17,9 @@ final class ViewIcons {
 	/**
 	 * 工具不创建实例。
 	 */
-	private ViewIcons() {}
+	private ViewIcons() {
+	}
+
 	/**
 	 * 获取目标状态，首次读取实际已有附图。
 	 *
@@ -33,12 +36,8 @@ final class ViewIcons {
 		System.arraycopy(current, 0, s.normal, 0, 4);
 		if (view instanceof CheckedCompoundIconicsDrawables) {
 			CheckedCompoundIconicsDrawables c = (CheckedCompoundIconicsDrawables) view;
-			Drawable[] a = {
-				c.getCheckedIconicsDrawableStart(),
-				c.getCheckedIconicsDrawableTop(),
-				c.getCheckedIconicsDrawableEnd(),
-				c.getCheckedIconicsDrawableBottom()
-			};
+			Drawable[] a = { c.getCheckedIconicsDrawableStart(), c.getCheckedIconicsDrawableTop(),
+					c.getCheckedIconicsDrawableEnd(), c.getCheckedIconicsDrawableBottom() };
 			if (view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
 				Drawable x = a[0];
 				a[0] = a[2];
@@ -49,11 +48,12 @@ final class ViewIcons {
 		view.setTag(R.id.es4a_iconics_slots, s);
 		return s;
 	}
+
 	/**
 	 * 校验位置并转换坐标系，转换时保持当前视觉位置。
 	 *
-	 * @param view 文字视图。
-	 * @param s 图标状态。
+	 * @param view     文字视图。
+	 * @param s        图标状态。
 	 * @param position 0左1上2右3下4起始5结束。
 	 * @return 四侧数组位置。
 	 */
@@ -75,12 +75,13 @@ final class ViewIcons {
 		}
 		return position == 4 ? 0 : position == 5 ? 2 : position;
 	}
+
 	/**
 	 * 读取普通或选中附图，不改变坐标系。
 	 *
-	 * @param view 目标。
+	 * @param view     目标。
 	 * @param position 图标位置。
-	 * @param checked 是否读取选中态。
+	 * @param checked  是否读取选中态。
 	 * @return 独立图标；无字体图标时为空。
 	 */
 	static 图标图像 get(TextView view, int position, boolean checked) {
@@ -89,20 +90,20 @@ final class ViewIcons {
 		}
 		State s = state(view);
 		int i = position == 4 ? 0 : position == 5 ? 2 : position;
-		if ((position >= 4) != s.relative
-				&& view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL
+		if ((position >= 4) != s.relative && view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL
 				&& (i == 0 || i == 2)) {
 			i = 2 - i;
 		}
 		return 图标图像.wrap((checked ? s.checked : s.normal)[i]);
 	}
+
 	/**
 	 * 写入一个位置的图标；空引用表示清除该侧。
 	 *
-	 * @param view 目标。
+	 * @param view     目标。
 	 * @param position 位置。
-	 * @param image 图像。
-	 * @param checked 是否写入选中态。
+	 * @param image    图像。
+	 * @param checked  是否写入选中态。
 	 */
 	static void set(TextView view, int position, 图标图像 image, boolean checked) {
 		if (image != null) {
@@ -113,11 +114,12 @@ final class ViewIcons {
 		(checked ? s.checked : s.normal)[i] = image == null ? null : Support.copy(image.value);
 		render(view, s);
 	}
+
 	/**
 	 * 设置四侧统一图标，空引用清除所有对应状态。
 	 *
-	 * @param view 目标。
-	 * @param image 图像。
+	 * @param view    目标。
+	 * @param image   图像。
 	 * @param checked 选中态。
 	 */
 	static void all(TextView view, 图标图像 image, boolean checked) {
@@ -130,11 +132,37 @@ final class ViewIcons {
 		}
 		render(view, s);
 	}
+
+	/**
+	 * 同时更新两种状态，任一图像无效时保留原有图标；只刷新一次视图。
+	 *
+	 * @param view     文本视图。
+	 * @param position 0 至 5 的位置；-1 表示全部四侧。
+	 * @param checked  选中图标；空引用清除。
+	 * @param normal   未选中图标；空引用清除。
+	 */
+	static void pair(TextView view, int position, 图标图像 checked, 图标图像 normal) {
+		if (checked != null) {
+			checked.check();
+		}
+		if (normal != null) {
+			normal.check();
+		}
+		State s = state(view);
+		int start = position == -1 ? 0 : slot(view, s, position);
+		int end = position == -1 ? 4 : start + 1;
+		for (int i = start; i < end; i++) {
+			s.checked[i] = checked == null ? null : Support.copy(checked.value);
+			s.normal[i] = normal == null ? null : Support.copy(normal.value);
+		}
+		render(view, s);
+	}
+
 	/**
 	 * 同时保持普通和选中图标；状态改变由 Android 刷新。
 	 *
 	 * @param view 目标。
-	 * @param s 状态。
+	 * @param s    状态。
 	 */
 	private static void render(TextView view, State s) {
 		Drawable[] out = new Drawable[4];
@@ -148,19 +176,14 @@ final class ViewIcons {
 			}
 			if (checked != null) {
 				StateListDrawable list = new StateListDrawable();
-				list.addState(new int[] {android.R.attr.state_checked}, checked);
-				list.addState(
-						new int[0],
-						normal == null ? new android.graphics.drawable.ColorDrawable(0) : normal);
+				list.addState(new int[] { android.R.attr.state_checked }, checked);
+				list.addState(new int[0], normal == null ? new android.graphics.drawable.ColorDrawable(0) : normal);
 				out[i] = list;
 			} else {
 				out[i] = normal;
 			}
 			if (out[i] != null) {
-				out[i].setBounds(
-						0,
-						0,
-						Math.max(0, out[i].getIntrinsicWidth()),
+				out[i].setBounds(0, 0, Math.max(0, out[i].getIntrinsicWidth()),
 						Math.max(0, out[i].getIntrinsicHeight()));
 			}
 		}
@@ -170,6 +193,7 @@ final class ViewIcons {
 			view.setCompoundDrawables(out[0], out[1], out[2], out[3]);
 		}
 	}
+
 	/**
 	 * 私有图标状态，与视图共同释放。
 	 */
@@ -177,9 +201,11 @@ final class ViewIcons {
 		final Drawable[] normal = new Drawable[4];
 		final Drawable[] checked = new Drawable[4];
 		boolean relative;
+
 		/**
 		 * 创建空状态。
 		 */
-		State() {}
+		State() {
+		}
 	}
 }

@@ -9,6 +9,7 @@
 	返回值(2) = "来自 Simple 的加法"
 	处理调用 = 参数.生成(返回值)
 结束 函数
+
 $属性
 	$资源 $对象
 	基础对象 = simple.library.wsd.luaj.LuaJ回调

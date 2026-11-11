@@ -15,8 +15,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 /**
- * 将 CityPicker 1.0.2 的数据库复制到应用私有目录，并提供独立的排序、搜索快照。
- * 不持有 Activity，不跨选择器共享可变列表或数据库句柄。
+ * 将 CityPicker 1.0.2 的数据库复制到应用私有目录，并提供独立的排序、搜索快照。 不持有 Activity，不跨选择器共享可变列表或数据库句柄。
  *
  * @author xuexiang
  * @author 树先生 xhwsd@qq.com
@@ -62,10 +61,12 @@ public final class CityStore {
 		}
 
 		List<City> cities = new ArrayList<City>();
-		try (SQLiteDatabase database = SQLiteDatabase.openDatabase(target.getPath(), null, SQLiteDatabase.OPEN_READONLY);
+		try (SQLiteDatabase database = SQLiteDatabase.openDatabase(target.getPath(), null,
+				SQLiteDatabase.OPEN_READONLY);
 				Cursor cursor = database.rawQuery("SELECT c_name, c_province, c_pinyin, c_code FROM cities", null)) {
 			while (cursor.moveToNext()) {
-				cities.add(new City(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
+				cities.add(
+						new City(cursor.getString(0), cursor.getString(1), cursor.getString(2), cursor.getString(3)));
 			}
 		}
 		return sorted(cities);
@@ -94,7 +95,7 @@ public final class CityStore {
 	/**
 	 * 按上游语义匹配名称子串或拼音前缀；空关键字返回完整列表副本。
 	 *
-	 * @param cities 当前选择器的数据快照。
+	 * @param cities  当前选择器的数据快照。
 	 * @param keyword 用户输入。
 	 * @return 搜索结果。
 	 */

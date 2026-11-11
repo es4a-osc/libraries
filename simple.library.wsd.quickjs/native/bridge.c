@@ -377,10 +377,10 @@ static void callback_finalizer(JSRuntime *engine, JSValue value) {
 static JSValue java_exception(JNIEnv *env, Context *context) {
 	jthrowable error = (*env)->ExceptionOccurred(env);
 	(*env)->ExceptionClear(env);
-	jclass exported = (*env)->FindClass(env, "simple/library/wsd/quickjs/QuickJS错误");
+	jclass exported = (*env)->FindClass(env, "simple/library/wsd/quickjs/QJS错误");
 	if (exported && (*env)->IsInstanceOf(env, error, exported)) {
 		jmethodID method =
-				(*env)->GetMethodID(env, exported, "nativeThrown", "(Lsimple/library/wsd/quickjs/QuickJS实例;)J");
+				(*env)->GetMethodID(env, exported, "nativeThrown", "(Lsimple/library/wsd/quickjs/QJS实例;)J");
 		jlong pointer = (*env)->CallLongMethod(env, error, method, context->owner);
 		if ((*env)->ExceptionCheck(env)) {
 			(*env)->ExceptionClear(env);
@@ -1226,7 +1226,10 @@ JNIEXPORT jint JNICALL Java_simple_library_wsd_quickjs_Native_kind(
 	if (array < 0) {
 		JS_FreeValue(ctx, JS_GetException(ctx));
 	}
-	if (JS_PromiseState(ctx, value) >= 0) {
+	/* 非 Promise 返回 -1；枚举可能按无符号整数传递，不能用 >= 0 判断。 */
+	JSPromiseStateEnum promise_state = JS_PromiseState(ctx, value);
+	if (promise_state == JS_PROMISE_PENDING || promise_state == JS_PROMISE_FULFILLED ||
+			promise_state == JS_PROMISE_REJECTED) {
 		return 10;
 	}
 	if (JS_IsObject(value)) {

@@ -9,7 +9,7 @@ import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleProperty;
 
 /**
- * 无障碍服务信息快照。仅事件类型、反馈类型、标志、通知间隔及监听包名可动态修改；修改后由服务的应用配置方法提交。
+ * 无障碍服务信息快照。仅事件类型、反馈类型、标志、通知间隔、监听包名及显示时长可动态修改；修改后由服务的应用配置方法提交。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -107,6 +107,56 @@ public final class 无障碍服务信息 {
 	@SimpleProperty
 	public int 能力() {
 		return value.getCapabilities();
+	}
+
+	/**
+	 * 服务建议的交互显示时长，单位为毫秒，需要 API 29 及以上。
+	 *
+	 * @return 非负显示时长。
+	 */
+	@SimpleProperty
+	public int 交互显示时长() {
+		AccessibilitySupport.api(29, "交互显示时长");
+		return value.getInteractiveUiTimeoutMillis();
+	}
+
+	/**
+	 * 修改快照的交互显示时长，提交配置后生效，需要 API 29 及以上。
+	 *
+	 * @param timeout 非负显示时长，单位为毫秒。
+	 */
+	@SimpleFunction
+	public void 设置交互显示时长(int timeout) {
+		AccessibilitySupport.api(29, "交互显示时长");
+		if (timeout < 0) {
+			throw new IllegalArgumentException("显示时长不能为负数。");
+		}
+		value.setInteractiveUiTimeoutMillis(timeout);
+	}
+
+	/**
+	 * 服务建议的非交互显示时长，单位为毫秒，需要 API 29 及以上。
+	 *
+	 * @return 非负显示时长。
+	 */
+	@SimpleProperty
+	public int 非交互显示时长() {
+		AccessibilitySupport.api(29, "非交互显示时长");
+		return value.getNonInteractiveUiTimeoutMillis();
+	}
+
+	/**
+	 * 修改快照的非交互显示时长，提交配置后生效，需要 API 29 及以上。
+	 *
+	 * @param timeout 非负显示时长，单位为毫秒。
+	 */
+	@SimpleFunction
+	public void 设置非交互显示时长(int timeout) {
+		AccessibilitySupport.api(29, "非交互显示时长");
+		if (timeout < 0) {
+			throw new IllegalArgumentException("显示时长不能为负数。");
+		}
+		value.setNonInteractiveUiTimeoutMillis(timeout);
 	}
 
 	/* 方法 */

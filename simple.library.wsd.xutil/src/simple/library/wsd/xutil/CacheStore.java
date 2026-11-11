@@ -35,11 +35,11 @@ final class CacheStore {
 	/**
 	 * 存入带类型前缀的缓存并检查实际写入结果，不把上游吞掉的 I/O 失败当作成功。
 	 *
-	 * @param name 缓存名。
-	 * @param key 原键。
-	 * @param value 数据。
+	 * @param name    缓存名。
+	 * @param key     原键。
+	 * @param value   数据。
 	 * @param seconds 有效期。
-	 * @param type 数据类型标记。
+	 * @param type    数据类型标记。
 	 */
 	static synchronized void put(String name, String key, byte[] value, int seconds, byte type) {
 		if (value == null) {
@@ -52,17 +52,17 @@ final class CacheStore {
 		System.arraycopy(value, 0, encoded, 1, value.length);
 		cache.put(id, encoded, XUtilSupport.cacheTtl(seconds));
 		if (!Arrays.equals(cache.getBytes(id), encoded)) {
-			throw new IllegalStateException("缓存写入失败或立即被淘汰");
+			throw XUtilSupport.failure("缓存写入失败或立即被淘汰", null);
 		}
 	}
 
 	/**
 	 * 按类型读取缓存，类型不同或过期均返回默认值。
 	 *
-	 * @param name 缓存名。
-	 * @param key 原键。
+	 * @param name     缓存名。
+	 * @param key      原键。
 	 * @param fallback 缺省值。
-	 * @param type 数据类型标记。
+	 * @param type     数据类型标记。
 	 * @return 解码后的数据。
 	 */
 	static synchronized byte[] get(String name, String key, byte[] fallback, byte type) {

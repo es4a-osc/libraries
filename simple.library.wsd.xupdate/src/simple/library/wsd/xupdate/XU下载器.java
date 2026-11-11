@@ -14,7 +14,7 @@ public interface XU下载器 {
 	/**
 	 * 开始下载，不执行版本检查或安装。
 	 *
-	 * @param info 地址、大小和校验信息。
+	 * @param info     地址、大小和校验信息。
 	 * @param callback 本次下载的结果回调。
 	 */
 	@SimpleFunction

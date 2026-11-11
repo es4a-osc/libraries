@@ -14,12 +14,12 @@ public interface XU网络服务 {
 	/**
 	 * 发出异步请求；只提交响应，不执行更新判断。
 	 *
-	 * @param post 是否使用 POST，假表示 GET。
-	 * @param json POST 是否使用 JSON 请求体。
-	 * @param address 请求地址。
+	 * @param post       是否使用 POST，假表示 GET。
+	 * @param json       POST 是否使用 JSON 请求体。
+	 * @param address    请求地址。
 	 * @param parameters 参数 JSON 对象文本。
-	 * @param headers 请求头 JSON 对象文本。
-	 * @param callback 本次请求的结果回调。
+	 * @param headers    请求头 JSON 对象文本。
+	 * @param callback   本次请求的结果回调。
 	 */
 	@SimpleFunction
 	void 请求(boolean post, boolean json, String address, String parameters, String headers, XU检查回调 callback);

@@ -1,0 +1,18 @@
+别名 JSONPath操作 = simple.library.wsd.jsonpath.JSONPath操作
+别名 JSONPath文档 = simple.library.wsd.jsonpath.JSONPath文档
+别名 JSONPath结果 = simple.library.wsd.jsonpath.JSONPath结果
+
+
+变量 内容 为 文本型
+变量 上限 为 整数型
+
+' 返回假停止，最后一次回调也计入次数。
+函数 访问(索引 为 整数型, 路径 为 文本型, 值 为 JSONPath结果) 为 逻辑型
+	内容 = 内容 & 路径 & "：" & 值.取文本() & "\n"
+	访问 = 索引 + 1 < 上限
+结束 函数
+
+$属性
+	$资源 $对象
+	实现接口 = simple.library.wsd.jsonpath.JSONPath访问器
+$结束 $属性

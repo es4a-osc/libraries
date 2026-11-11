@@ -59,21 +59,21 @@ final class Native {
 	 * @param owner 对应 Java 对象。
 	 * @return 原生拥有引用；失败时抛出异常。
 	 */
-	static synchronized native long runtime(QuickJS运行时 owner);
+	static synchronized native long runtime(QJS运行时 owner);
 
 	/**
 	 * 在运行时中创建上下文。
 	 *
 	 * @param runtime 原生运行时引用。
-	 * @param owner 对应 Java 对象。
+	 * @param owner   对应 Java 对象。
 	 * @return 原生拥有引用；失败时抛出异常。
 	 */
-	static native long context(long runtime, QuickJS实例 owner);
+	static native long context(long runtime, QJS实例 owner);
 
 	/**
 	 * 设置外层调用的中断边界。
 	 *
-	 * @param runtime 原生运行时引用。
+	 * @param runtime      原生运行时引用。
 	 * @param milliseconds 调用时限，毫秒；0 不限制。
 	 */
 	static native void begin(long runtime, long milliseconds);
@@ -95,25 +95,25 @@ final class Native {
 	/**
 	 * 设置资源限制或执行垃圾回收。
 	 *
-	 * @param runtime 原生运行时引用。
+	 * @param runtime   原生运行时引用。
 	 * @param operation 内部操作编号。
-	 * @param value 值引用或资源参数。
+	 * @param value     值引用或资源参数。
 	 */
 	static native void configure(long runtime, int operation, long value);
 
 	/**
 	 * 执行原生值操作并返回拥有引用。
 	 *
-	 * @param context 原生上下文引用。
+	 * @param context   原生上下文引用。
 	 * @param operation 内部操作编号。
-	 * @param left 主操作数引用。
-	 * @param right 次操作数引用。
-	 * @param text 可选文本输入。
-	 * @param name 来源或名称。
-	 * @param index 整数输入。
-	 * @param number 小数输入。
+	 * @param left      主操作数引用。
+	 * @param right     次操作数引用。
+	 * @param text      可选文本输入。
+	 * @param name      来源或名称。
+	 * @param index     整数输入。
+	 * @param number    小数输入。
 	 * @param arguments 参数引用数组。
-	 * @param binary 二进制输入。
+	 * @param binary    二进制输入。
 	 * @return 原生拥有引用；失败时抛出异常。
 	 */
 	static native long value(long context, int operation, long left, long right, String text, String name, long index,
@@ -123,7 +123,7 @@ final class Native {
 	 * 读取 JS 值的实际类型。
 	 *
 	 * @param context 原生上下文引用。
-	 * @param value 值引用或资源参数。
+	 * @param value   值引用或资源参数。
 	 * @return 类型编号或已执行的作业数。
 	 */
 	static native int kind(long context, long value);
@@ -132,7 +132,7 @@ final class Native {
 	 * 读取 JS 字符串内容。
 	 *
 	 * @param context 原生上下文引用。
-	 * @param value 值引用或资源参数。
+	 * @param value   值引用或资源参数。
 	 * @return 完整文本。
 	 */
 	static native String string(long context, long value);
@@ -141,7 +141,7 @@ final class Native {
 	 * 读取已经转换的 Number。
 	 *
 	 * @param context 原生上下文引用。
-	 * @param value 值引用或资源参数。
+	 * @param value   值引用或资源参数。
 	 * @return 数值。
 	 */
 	static native double number(long context, long value);
@@ -150,7 +150,7 @@ final class Native {
 	 * 按 JS 真值规则转换。
 	 *
 	 * @param context 原生上下文引用。
-	 * @param value 值引用或资源参数。
+	 * @param value   值引用或资源参数。
 	 * @return 逻辑结果。
 	 */
 	static native boolean bool(long context, long value);
@@ -159,7 +159,7 @@ final class Native {
 	 * 复制缓冲区的可见字节。
 	 *
 	 * @param context 原生上下文引用。
-	 * @param value 值引用或资源参数。
+	 * @param value   值引用或资源参数。
 	 * @return 独立字节数组。
 	 */
 	static native byte[] bytes(long context, long value);
@@ -167,12 +167,12 @@ final class Native {
 	/**
 	 * 编译代码或序列化数据。
 	 *
-	 * @param context 原生上下文引用。
-	 * @param value 值引用或资源参数。
-	 * @param source 可选待编译代码。
+	 * @param context  原生上下文引用。
+	 * @param value    值引用或资源参数。
+	 * @param source   可选待编译代码。
 	 * @param filename 代码来源名称。
-	 * @param mode 编译或序列化模式。
-	 * @param flags 执行选项标志。
+	 * @param mode     编译或序列化模式。
+	 * @param flags    执行选项标志。
 	 * @return 独立字节数组。
 	 */
 	static native byte[] write(long context, long value, String source, String filename, int mode, int flags);
@@ -181,9 +181,9 @@ final class Native {
 	 * 创建绑定到 Java 回调的函数。
 	 *
 	 * @param context 原生上下文引用。
-	 * @param id 宿主回调编号。
-	 * @param name 来源或名称。
-	 * @param length 函数形参数量。
+	 * @param id      宿主回调编号。
+	 * @param name    来源或名称。
+	 * @param length  函数形参数量。
 	 * @return 原生拥有引用；失败时抛出异常。
 	 */
 	static native long host(long context, int id, String name, int length);
@@ -225,7 +225,7 @@ final class Native {
 	 * 读取内部对象身份，仅用于数据图转换，不向 Simple 导出。
 	 *
 	 * @param context 所属上下文。
-	 * @param value 值引用。
+	 * @param value   值引用。
 	 * @return 对象身份；基本值为 0。
 	 */
 	static native long identity(long context, long value);
@@ -243,7 +243,7 @@ final class Native {
 	 * @param value 值引用或资源参数。
 	 * @return 值所属实例；实例关闭时为空。
 	 */
-	static native QuickJS实例 owner(long value);
+	static native QJS实例 owner(long value);
 
 	/**
 	 * 关闭上下文并保留作业需要的状态。

@@ -1,13 +1,9 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import android.view.View;
+import android.widget.Checkable;
+
+import simple.runtime.components.组件容器;
 import simple.runtime.events.EventDispatcher;
 
 /**
@@ -23,17 +19,14 @@ public final class 字体图标可选文本框Impl extends WidgetBase implements
 	 */
 	public 字体图标可选文本框Impl(组件容器 container) {
 		super(container);
-		((com.mikepenz.iconics.view.IconicsCheckableTextView) getView())
-				.setOnCheckedChangeListener(
-						new com.mikepenz.iconics.view.IconicsCheckableTextView
-								.OnCheckedChangeListener() {
-							@Override
-							public void onCheckedChanged(
-									com.mikepenz.iconics.view.IconicsCheckableTextView v,
-									boolean checked) {
-								选中改变(checked);
-							}
-						});
+		((com.mikepenz.iconics.view.IconicsCheckableTextView) getView()).setOnCheckedChangeListener(
+				new com.mikepenz.iconics.view.IconicsCheckableTextView.OnCheckedChangeListener() {
+					@Override
+					public void onCheckedChanged(com.mikepenz.iconics.view.IconicsCheckableTextView v,
+							boolean checked) {
+						选中改变(checked);
+					}
+				});
 	}
 
 	@Override
@@ -62,8 +55,7 @@ public final class 字体图标可选文本框Impl extends WidgetBase implements
 	@Override
 	public void 设置选中图标(图标图像 checked, 图标图像 unchecked) {
 		check();
-		ViewIcons.set(text(), 4, checked, true);
-		ViewIcons.set(text(), 4, unchecked, false);
+		ViewIcons.pair(text(), 4, checked, unchecked);
 	}
 
 	@Override
@@ -94,15 +86,13 @@ public final class 字体图标可选文本框Impl extends WidgetBase implements
 	@Override
 	public void 设置位置选中图标(int position, 图标图像 checked, 图标图像 unchecked) {
 		check();
-		ViewIcons.set(text(), position, checked, true);
-		ViewIcons.set(text(), position, unchecked, false);
+		ViewIcons.pair(text(), position, checked, unchecked);
 	}
 
 	@Override
 	public void 设置四侧选中图标(图标图像 checked, 图标图像 unchecked) {
 		check();
-		ViewIcons.all(text(), checked, true);
-		ViewIcons.all(text(), unchecked, false);
+		ViewIcons.pair(text(), -1, checked, unchecked);
 	}
 
 	@Override

@@ -23,6 +23,9 @@ final class ClientSettings {
 	long cacheSeconds = 3600;
 	long maxBytes = 8L * 1024 * 1024;
 	boolean redirects = true;
+	long responseCacheBytes = 50L * 1024 * 1024;
+	long httpCacheBytes = 20L * 1024 * 1024;
+	boolean socksProxy;
 	String proxyHost = "";
 	int proxyPort;
 	String proxyUser = "";
@@ -34,6 +37,11 @@ final class ClientSettings {
 	final List<String[]> headers = new ArrayList<String[]>();
 	final List<String[]> query = new ArrayList<String[]>();
 
+	/**
+	 * 复制默认配置和可变数组，供请求独立保存。
+	 *
+	 * @return 复制默认配置和可变数组，供请求独立保存。
+	 */
 	ClientSettings copy() {
 		ClientSettings result = new ClientSettings();
 		result.baseUrl = baseUrl;
@@ -49,6 +57,9 @@ final class ClientSettings {
 		result.cacheSeconds = cacheSeconds;
 		result.maxBytes = maxBytes;
 		result.redirects = redirects;
+		result.responseCacheBytes = responseCacheBytes;
+		result.httpCacheBytes = httpCacheBytes;
+		result.socksProxy = socksProxy;
 		result.proxyHost = proxyHost;
 		result.proxyPort = proxyPort;
 		result.proxyUser = proxyUser;

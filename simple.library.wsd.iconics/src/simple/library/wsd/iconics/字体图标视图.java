@@ -1,13 +1,9 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import simple.runtime.annotations.SimpleEvent;
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
+import simple.runtime.components.可视组件;
 
 /**
  * 图标视图公共接口。
@@ -23,6 +19,7 @@ public interface 字体图标视图 extends 可视组件 {
 	 */
 	@SimpleFunction
 	public void 设置图标(图标图像 image);
+
 	/**
 	 * 设置图标混排文字；仅文本类控件有效。
 	 *
@@ -30,6 +27,7 @@ public interface 字体图标视图 extends 可视组件 {
 	 */
 	@SimpleFunction
 	public void 设置文字(String text);
+
 	/**
 	 * 取得文本；仅文本类控件有效。
 	 *
@@ -37,6 +35,7 @@ public interface 字体图标视图 extends 可视组件 {
 	 */
 	@SimpleFunction
 	public String 取文字();
+
 	/**
 	 * 设置文字 SP 大小；仅文本类控件有效。
 	 *
@@ -44,6 +43,7 @@ public interface 字体图标视图 extends 可视组件 {
 	 */
 	@SimpleFunction
 	public void 设置字号(float size);
+
 	/**
 	 * 设置文字颜色；仅文本类控件有效。
 	 *
@@ -51,6 +51,7 @@ public interface 字体图标视图 extends 可视组件 {
 	 */
 	@SimpleFunction
 	public void 设置文字颜色(int color);
+
 	/**
 	 * 设置是否接受操作。
 	 *
@@ -58,6 +59,7 @@ public interface 字体图标视图 extends 可视组件 {
 	 */
 	@SimpleFunction
 	public void 设置启用(boolean enabled);
+
 	/**
 	 * 设置无障碍描述。
 	 *
@@ -65,18 +67,23 @@ public interface 字体图标视图 extends 可视组件 {
 	 */
 	@SimpleFunction
 	public void 设置内容描述(String text);
+
 	/**
 	 * 用户点击控件。
 	 */
 	@SimpleEvent
 	void 被单击();
+
 	/**
 	 * 用户长按控件。
 	 */
 	@SimpleEvent
 	void 被长按();
+
 	/**
 	 * 焦点状态改变。
+	 *
+	 * @param focused 获得焦点时为真。
 	 */
 	@SimpleEvent
 	void 焦点改变(boolean focused);
@@ -84,7 +91,7 @@ public interface 字体图标视图 extends 可视组件 {
 	/**
 	 * 设置文本四侧附图，0左1上2右3下4起始5结束。
 	 *
-	 * @param image 图像。
+	 * @param image    图像。
 	 * @param position 位置。
 	 */
 	@SimpleFunction

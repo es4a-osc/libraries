@@ -15,14 +15,14 @@ import java.util.concurrent.TimeUnit;
  * @author 树先生 xhwsd@qq.com
  */
 final class RuntimeTasks {
-	private final QuickJS运行时 runtime;
+	private final QJS运行时 runtime;
 	private final Object submission = new Object();
 	private volatile ScheduledThreadPoolExecutor executor;
 	private final Map<Integer, Timer> timers = new HashMap<Integer, Timer>();
 	private int nextTimer = 1;
 	private int batch = 100;
 	private boolean draining;
-	private volatile QuickJS错误 lastError;
+	private volatile QJS错误 lastError;
 	private ErrorHandler errorHandler;
 
 	/**
@@ -34,7 +34,7 @@ final class RuntimeTasks {
 		 *
 		 * @param error 实际错误。
 		 */
-		void failed(QuickJS错误 error);
+		void failed(QJS错误 error);
 	}
 
 	/**
@@ -51,7 +51,7 @@ final class RuntimeTasks {
 	 *
 	 * @param runtime 所属运行时。
 	 */
-	RuntimeTasks(QuickJS运行时 runtime) {
+	RuntimeTasks(QJS运行时 runtime) {
 		this.runtime = runtime;
 	}
 
@@ -62,7 +62,7 @@ final class RuntimeTasks {
 	 */
 	void start(int maximum) {
 		if (maximum <= 0 || maximum > 100000) {
-			throw new QuickJS错误("自动调度批量须为 1 至 100000");
+			throw new QJS错误("自动调度批量须为 1 至 100000");
 		}
 		batch = maximum;
 		synchronized (submission) {
@@ -99,22 +99,22 @@ final class RuntimeTasks {
 		}
 		draining = true;
 		if (!post(new Runnable() {
-				@Override
-				public void run() {
-					synchronized (runtime.lock) {
-						try {
-							if (executor != null && !runtime.是否已销毁()) {
-								runtime.执行任务(batch);
-							}
-						} catch (RuntimeException error) {
-							record(error);
-						} finally {
-							draining = false;
-							wake();
+			@Override
+			public void run() {
+				synchronized (runtime.lock) {
+					try {
+						if (executor != null && !runtime.是否已销毁()) {
+							runtime.执行任务(batch);
 						}
+					} catch (RuntimeException error) {
+						record(error);
+					} finally {
+						draining = false;
+						wake();
 					}
 				}
-			})) {
+			}
+		})) {
 			draining = false;
 		}
 	}
@@ -142,26 +142,26 @@ final class RuntimeTasks {
 	/**
 	 * 登记拥有独立引用的计时器，调用方已取得运行时锁。
 	 *
-	 * @param context 所属实例。
-	 * @param function 回调函数。
-	 * @param delay 延迟毫秒。
-	 * @param repeat 是否重复。
+	 * @param context   所属实例。
+	 * @param function  回调函数。
+	 * @param delay     延迟毫秒。
+	 * @param repeat    是否重复。
 	 * @param arguments 回调参数。
 	 * @return 正整数计时器编号。
 	 */
-	int timer(QuickJS实例 context, QuickJS函数 function, long delay, boolean repeat, QuickJS值[] arguments) {
+	int timer(QJS实例 context, QJS函数 function, long delay, boolean repeat, QJS值[] arguments) {
 		if (executor == null || nextTimer == Integer.MAX_VALUE) {
-			throw new QuickJS错误("计时器调度已停止或编号已用尽");
+			throw new QJS错误("计时器调度已停止或编号已用尽");
 		}
 		if (delay < 0 || delay > Integer.MAX_VALUE) {
-			throw new QuickJS错误("计时器延迟须为 0 至 2147483647 毫秒");
+			throw new QJS错误("计时器延迟须为 0 至 2147483647 毫秒");
 		}
 		Timer timer = new Timer(nextTimer++, context, function, repeat, arguments);
 		timers.put(timer.id, timer);
 		try {
 			ScheduledThreadPoolExecutor current = executor;
 			if (current == null) {
-				throw new QuickJS错误("计时器调度已停止");
+				throw new QJS错误("计时器调度已停止");
 			}
 			timer.future = repeat
 					? current.scheduleWithFixedDelay(timer, delay, Math.max(1, delay), TimeUnit.MILLISECONDS)
@@ -176,10 +176,10 @@ final class RuntimeTasks {
 	/**
 	 * 取消所属实例的计时器；不存在时无操作。
 	 *
-	 * @param id 计时器编号。
+	 * @param id      计时器编号。
 	 * @param context 所属实例。
 	 */
-	void cancel(int id, QuickJS实例 context) {
+	void cancel(int id, QJS实例 context) {
 		Timer timer = timers.get(id);
 		if (timer == null || timer.context != context) {
 			return;
@@ -189,7 +189,7 @@ final class RuntimeTasks {
 			timer.future.cancel(false);
 		}
 		timer.function.释放();
-		for (QuickJS值 argument : timer.arguments) {
+		for (QJS值 argument : timer.arguments) {
 			argument.释放();
 		}
 	}
@@ -199,7 +199,7 @@ final class RuntimeTasks {
 	 *
 	 * @param context 所属实例。
 	 */
-	void closeContext(QuickJS实例 context) {
+	void closeContext(QJS实例 context) {
 		for (Timer timer : new ArrayList<Timer>(timers.values())) {
 			if (timer.context == context) {
 				cancel(timer.id, context);
@@ -231,7 +231,7 @@ final class RuntimeTasks {
 	 * @param error 实际失败。
 	 */
 	void record(RuntimeException error) {
-		lastError = error instanceof QuickJS错误 ? (QuickJS错误)error : new QuickJS错误(error.toString());
+		lastError = error instanceof QJS错误 ? (QJS错误) error : new QJS错误(error.toString());
 		android.util.Log.e("QuickJS", "后台任务失败", error);
 
 		if (errorHandler != null) {
@@ -248,7 +248,7 @@ final class RuntimeTasks {
 	 *
 	 * @return 最近异常；尚无异常时为空。
 	 */
-	QuickJS错误 error() {
+	QJS错误 error() {
 		return lastError;
 	}
 
@@ -264,34 +264,34 @@ final class RuntimeTasks {
 	 */
 	private final class Timer implements Runnable {
 		final int id;
-		final QuickJS实例 context;
-		final QuickJS函数 function;
+		final QJS实例 context;
+		final QJS函数 function;
 		final boolean repeat;
-		final QuickJS值[] arguments;
+		final QJS值[] arguments;
 		ScheduledFuture<?> future;
 
 		/**
 		 * 保留回调及参数，保证原引用释放后计时器仍可执行。
 		 *
-		 * @param id 编号。
-		 * @param context 所属实例。
+		 * @param id       编号。
+		 * @param context  所属实例。
 		 * @param function 回调。
-		 * @param repeat 是否重复。
-		 * @param source 参数。
+		 * @param repeat   是否重复。
+		 * @param source   参数。
 		 */
-		Timer(int id, QuickJS实例 context, QuickJS函数 function, boolean repeat, QuickJS值[] source) {
+		Timer(int id, QJS实例 context, QJS函数 function, boolean repeat, QJS值[] source) {
 			this.id = id;
 			this.context = context;
 			this.repeat = repeat;
 			this.function = function.保留().到函数();
-			arguments = new QuickJS值[source.length];
+			arguments = new QJS值[source.length];
 			try {
 				for (int i = 0; i < source.length; i++) {
 					arguments[i] = source[i].保留();
 				}
 			} catch (RuntimeException | Error error) {
 				this.function.释放();
-				for (QuickJS值 value : arguments) {
+				for (QJS值 value : arguments) {
 					if (value != null) {
 						value.释放();
 					}

@@ -24,7 +24,8 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 	private final MainActivity host;
 	private final Context context;
 	private final Handler handler = new Handler(Looper.getMainLooper());
-	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new ArrayBlockingQueue<Runnable>(4));
+	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS,
+			new ArrayBlockingQueue<Runnable>(4));
 	private final Map<Integer, Job> jobs = new LinkedHashMap<>();
 	private final int pickerCode = PICKERS.getAndIncrement();
 	private int sequence;
@@ -111,24 +112,14 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 	public int 异步生成(final String content, XQRC二维码配置 options) {
 		check();
 		final XQRC二维码配置 snapshot = options.copy();
-		return submit("生成", new Work() {
-			@Override
-			public Object execute() throws Exception {
-				return Images.generate(context, content, snapshot);
-			}
-		});
+		return submit("生成", () -> Images.generate(context, content, snapshot));
 	}
 
 	@Override
 	public int 异步识别图片(final String path, XQRC扫码配置 options) {
 		check();
 		final XQRC扫码配置 snapshot = options.copy();
-		return submit("识别", new Work() {
-			@Override
-			public Object execute() throws Exception {
-				return Images.recognize(Images.read(context, path), snapshot);
-			}
-		});
+		return submit("识别", () -> Images.recognize(Images.read(context, path), snapshot));
 	}
 
 	@Override
@@ -139,19 +130,14 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 		}
 		final byte[] snapshot = data.clone();
 		final XQRC扫码配置 config = options.copy();
-		return submit("识别", new Work() {
-			@Override
-			public Object execute() throws Exception {
-				return Images.recognize(snapshot, config);
-			}
-		});
+		return submit("识别", () -> Images.recognize(snapshot, config));
 	}
 
 	/**
 	 * 新建任务并将实际执行交给后台队列。
 	 *
 	 * @param operation 操作名称。
-	 * @param work 后台工作。
+	 * @param work      后台工作。
 	 * @return 请求编号。
 	 */
 	private int submit(String operation, Work work) {
@@ -164,7 +150,7 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 	/**
 	 * 调度已有请求，主线程完成时先移除请求再触发事件。
 	 *
-	 * @param job 本次任务。
+	 * @param job  本次任务。
 	 * @param work 后台工作。
 	 */
 	private void schedule(final Job job, final Work work) {
@@ -192,7 +178,7 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 	/**
 	 * 将后台结果送回主线程，取消或销毁后的回调直接丢弃。
 	 *
-	 * @param job 本次任务。
+	 * @param job   本次任务。
 	 * @param value 成功结果。
 	 * @param error 失败原因。
 	 */
@@ -253,12 +239,7 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 			return;
 		}
 		final String uri = data.getData().toString();
-		schedule(job, new Work() {
-			@Override
-			public Object execute() throws Exception {
-				return Images.recognize(Images.read(context, uri), job.options);
-			}
-		});
+		schedule(job, () -> Images.recognize(Images.read(context, uri), job.options));
 	}
 
 	@Override
@@ -278,6 +259,24 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 	}
 
 	@Override
+	public int 取消全部任务() {
+		check();
+		List<Job> pending = new ArrayList<>(jobs.values());
+		// 先移除本次快照，避免取消事件中新提交的任务被一并取消。
+		jobs.clear();
+		for (Job job : pending) {
+			if (job.future != null) {
+				job.future.cancel(true);
+			}
+		}
+		executor.purge();
+		for (Job job : pending) {
+			任务取消(job.id, job.operation);
+		}
+		return pending.size();
+	}
+
+	@Override
 	public int 开始扫描(XQRC扫码配置 options) {
 		check();
 		if (scanId != 0) {
@@ -290,8 +289,7 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 			}
 			int theme = options.主题资源();
 			try {
-				if (theme != 0
-						&& !"style".equals(context.getResources().getResourceTypeName(theme))) {
+				if (theme != 0 && !"style".equals(context.getResources().getResourceTypeName(theme))) {
 					throw new XQRC二维码错误("主题必须为style资源");
 				}
 			} catch (android.content.res.Resources.NotFoundException error) {
@@ -308,15 +306,14 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 				scanId = 0;
 				scanToken = "";
 			}
-			handler.post(
-					new Runnable() {
-						@Override
-						public void run() {
-							if (!destroyed) {
-								扫描失败(id, message(error));
-							}
-						}
-					});
+			handler.post(new Runnable() {
+				@Override
+				public void run() {
+					if (!destroyed) {
+						扫描失败(id, message(error));
+					}
+				}
+			});
 		}
 		return id;
 	}
@@ -445,8 +442,8 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 		 * 创建请求记录。
 		 *
 		 * @param requestId 编号。
-		 * @param name 操作名。
-		 * @param config 选图配置，普通任务可为空。
+		 * @param name      操作名。
+		 * @param config    选图配置，普通任务可为空。
 		 */
 		Job(int requestId, String name, XQRC扫码配置 config) {
 			id = requestId;
@@ -454,59 +451,60 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 			options = config;
 		}
 	}
+
 	@Override
 	public void 生成完成(int requestId, byte[] image) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(this, "生成完成" , requestId, image);
+			EventDispatcher.dispatchEvent(this, "生成完成", requestId, image);
 		}
 	}
 
 	@Override
 	public void 识别完成(int requestId, XQRC识别结果 result) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(this, "识别完成" , requestId, result);
+			EventDispatcher.dispatchEvent(this, "识别完成", requestId, result);
 		}
 	}
 
 	@Override
 	public void 任务失败(int requestId, String operation, String reason) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(this, "任务失败" , requestId, operation, reason);
+			EventDispatcher.dispatchEvent(this, "任务失败", requestId, operation, reason);
 		}
 	}
 
 	@Override
 	public void 任务取消(int requestId, String operation) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(this, "任务取消" , requestId, operation);
+			EventDispatcher.dispatchEvent(this, "任务取消", requestId, operation);
 		}
 	}
 
 	@Override
 	public void 扫描准备就绪(int requestId) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(this, "扫描准备就绪" , requestId);
+			EventDispatcher.dispatchEvent(this, "扫描准备就绪", requestId);
 		}
 	}
 
 	@Override
 	public void 扫描得到结果(int requestId, XQRC识别结果 result) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(this, "扫描得到结果" , requestId, result);
+			EventDispatcher.dispatchEvent(this, "扫描得到结果", requestId, result);
 		}
 	}
 
 	@Override
 	public void 扫描失败(int requestId, String reason) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(this, "扫描失败" , requestId, reason);
+			EventDispatcher.dispatchEvent(this, "扫描失败", requestId, reason);
 		}
 	}
 
 	@Override
 	public void 扫描取消(int requestId) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(this, "扫描取消" , requestId);
+			EventDispatcher.dispatchEvent(this, "扫描取消", requestId);
 		}
 	}
 
@@ -551,17 +549,13 @@ public final class XQRC二维码Impl extends 组件Impl implements XQRC二维码
 	@Override
 	public int[] 取扫描区域(int requestId) {
 		check();
-		return requestId != 0 && requestId == scanId
-				? ScanRegistry.bounds(scanToken, false)
-				: new int[0];
+		return requestId != 0 && requestId == scanId ? ScanRegistry.bounds(scanToken, false) : new int[0];
 	}
 
 	@Override
 	public int[] 取预览识别区域(int requestId) {
 		check();
-		return requestId != 0 && requestId == scanId
-				? ScanRegistry.bounds(scanToken, true)
-				: new int[0];
+		return requestId != 0 && requestId == scanId ? ScanRegistry.bounds(scanToken, true) : new int[0];
 	}
 
 	@Override

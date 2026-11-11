@@ -1,14 +1,16 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
+import android.graphics.Bitmap;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.mikepenz.iconics.IconicsDrawable;
+
 import simple.runtime.android.MainActivity;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
+import simple.runtime.components.可视组件;
 
 /**
  * 图标图像快照及输出。
@@ -18,10 +20,13 @@ import simple.runtime.components.*;
 @SimpleObject
 public final class 图标图像 {
 	IconicsDrawable value;
+
 	/**
 	 * 创建独立实例。
 	 */
-	public 图标图像() {}
+	public 图标图像() {
+	}
+
 	/**
 	 * 验证图像。
 	 */
@@ -31,6 +36,7 @@ public final class 图标图像 {
 			throw new 图标错误("请用图标工具创建图标");
 		}
 	}
+
 	/**
 	 * 复制图标及样式。
 	 *
@@ -92,7 +98,7 @@ public final class 图标图像 {
 	/**
 	 * 设置文字附图之一并保留其他位置；0左1上2右3下4起始5结束。
 	 *
-	 * @param target 目标。
+	 * @param target   目标。
 	 * @param position 位置。
 	 */
 	@SimpleFunction
@@ -113,9 +119,7 @@ public final class 图标图像 {
 	@SimpleFunction
 	public byte[] 取PNG() {
 		check();
-		if (value.getIntrinsicWidth() <= 0
-				|| value.getIntrinsicHeight() <= 0
-				|| value.getIntrinsicWidth() > 4096
+		if (value.getIntrinsicWidth() <= 0 || value.getIntrinsicHeight() <= 0 || value.getIntrinsicWidth() > 4096
 				|| value.getIntrinsicHeight() > 4096) {
 			throw new 图标错误("导出尺寸须为1至4096像素");
 		}
@@ -216,8 +220,7 @@ public final class 图标图像 {
 	@SimpleFunction
 	public String 取图标文字() {
 		check();
-		return value.getIcon() != null
-				? String.valueOf(value.getIcon().getCharacter())
+		return value.getIcon() != null ? String.valueOf(value.getIcon().getCharacter())
 				: (value.getIconText() == null ? "" : value.getIconText());
 	}
 

@@ -40,7 +40,11 @@ public final class XU资源 {
 	@SimpleFunction
 	public static String 取文本(int id) {
 		XUtilSupport.context();
-		return ResUtils.getString(id);
+		try {
+			return ResUtils.getString(id);
+		} catch (android.content.res.Resources.NotFoundException missing) {
+			throw new IllegalArgumentException("资源不存在或类型不匹配：" + id, missing);
+		}
 	}
 
 	/**
@@ -52,7 +56,11 @@ public final class XU资源 {
 	@SimpleFunction
 	public static String[] 取文本数组(int id) {
 		XUtilSupport.context();
-		return ResUtils.getStringArray(id);
+		try {
+			return ResUtils.getStringArray(id);
+		} catch (android.content.res.Resources.NotFoundException missing) {
+			throw new IllegalArgumentException("资源不存在或类型不匹配：" + id, missing);
+		}
 	}
 
 	/**
@@ -64,7 +72,11 @@ public final class XU资源 {
 	@SimpleFunction
 	public static int[] 取整数数组(int id) {
 		XUtilSupport.context();
-		return ResUtils.getIntArray(id);
+		try {
+			return ResUtils.getIntArray(id);
+		} catch (android.content.res.Resources.NotFoundException missing) {
+			throw new IllegalArgumentException("资源不存在或类型不匹配：" + id, missing);
+		}
 	}
 
 	/**
@@ -76,7 +88,11 @@ public final class XU资源 {
 	@SimpleFunction
 	public static int 取尺寸像素(int id) {
 		XUtilSupport.context();
-		return ResUtils.getDimensionPixelSize(id);
+		try {
+			return ResUtils.getDimensionPixelSize(id);
+		} catch (android.content.res.Resources.NotFoundException missing) {
+			throw new IllegalArgumentException("资源不存在或类型不匹配：" + id, missing);
+		}
 	}
 
 	/**

@@ -20,9 +20,9 @@ public final class DateMath {
 	/**
 	 * 将严格公历日期转换为 UTC 零点，拒绝自动滚入下个月。
 	 *
-	 * @param year 公历年份。
+	 * @param year  公历年份。
 	 * @param month 月份，1 至 12。
-	 * @param day 日号。
+	 * @param day   日号。
 	 * @return UTC 零点毫秒数。
 	 */
 	public static long millis(int year, int month, int day) {
@@ -39,9 +39,9 @@ public final class DateMath {
 	/**
 	 * 创建已校验的原生公历值，农历信息由使用边界填充。
 	 *
-	 * @param year 公历年份。
+	 * @param year  公历年份。
 	 * @param month 月份。
-	 * @param day 日号。
+	 * @param day   日号。
 	 * @return 独立原生日期。
 	 */
 	public static Calendar calendar(int year, int month, int day) {
@@ -57,30 +57,33 @@ public final class DateMath {
 	 * 按日序增加日期，不用本地时区的 24 小时长度推算。
 	 *
 	 * @param value 原日期。
-	 * @param days 增加的天数，可为负。
+	 * @param days  增加的天数，可为负。
 	 * @return 范围内的新日期。
 	 */
 	public static Calendar add(Calendar value, int days) {
 		GregorianCalendar result = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
-		result.setTimeInMillis(Math.addExact(millis(value.getYear(), value.getMonth(), value.getDay()), Math.multiplyExact((long) days, 86400000L)));
-		return calendar(result.get(java.util.Calendar.YEAR), result.get(java.util.Calendar.MONTH) + 1, result.get(java.util.Calendar.DAY_OF_MONTH));
+		result.setTimeInMillis(Math.addExact(millis(value.getYear(), value.getMonth(), value.getDay()),
+				Math.multiplyExact((long) days, 86400000L)));
+		return calendar(result.get(java.util.Calendar.YEAR), result.get(java.util.Calendar.MONTH) + 1,
+				result.get(java.util.Calendar.DAY_OF_MONTH));
 	}
 
 	/**
 	 * 计算含符号的公历日差。
 	 *
-	 * @param first 被减日期。
+	 * @param first  被减日期。
 	 * @param second 减去的日期。
 	 * @return 第一日期减第二日期的天数。
 	 */
 	public static int differ(Calendar first, Calendar second) {
-		return (int) ((millis(first.getYear(), first.getMonth(), first.getDay()) - millis(second.getYear(), second.getMonth(), second.getDay())) / 86400000L);
+		return (int) ((millis(first.getYear(), first.getMonth(), first.getDay())
+				- millis(second.getYear(), second.getMonth(), second.getDay())) / 86400000L);
 	}
 
 	/**
 	 * 计算日期相对周起始的前置空位。
 	 *
-	 * @param date 已验证公历日期。
+	 * @param date      已验证公历日期。
 	 * @param weekStart 1 周日、2 周一、7 周六。
 	 * @return 0 至 6 的偏移。
 	 */

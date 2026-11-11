@@ -12,9 +12,10 @@ import simple.runtime.annotations.UsesPermissions;
  * @author 树先生 xhwsd@qq.com
  */
 @SimpleObject
-@UsesPermissions(permissionNames =
-	// 查询默认网络及其连接、验证和传输能力。
-	"android.permission.ACCESS_NETWORK_STATE"
+@UsesPermissions(
+	permissionNames =
+// 查询默认网络及其连接、验证和传输能力。
+"android.permission.ACCESS_NETWORK_STATE"
 )
 public final class XU网络 {
 

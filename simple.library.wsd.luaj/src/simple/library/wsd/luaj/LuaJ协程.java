@@ -1,7 +1,6 @@
 package simple.library.wsd.luaj;
 
 import org.luaj.vm2.LuaThread;
-
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.variants.Variant;
@@ -18,7 +17,7 @@ public final class LuaJ协程 extends LuaJ值 {
 	 * 包装当前实例的协程。
 	 *
 	 * @param context 所属实例。
-	 * @param value 有效协程。
+	 * @param value   有效协程。
 	 */
 	LuaJ协程(LuaJContext context, LuaThread value) {
 		super(context, value);
@@ -31,13 +30,7 @@ public final class LuaJ协程 extends LuaJ值 {
 	 */
 	@SimpleFunction
 	public String 取状态() {
-		return context.perform(
-				new LuaJContext.Action<String>() {
-					@Override
-					public String run() throws Exception {
-						return value.checkthread().getStatus();
-					}
-				});
+		return context.perform(() -> value.checkthread().getStatus());
 	}
 
 	/**
@@ -48,17 +41,13 @@ public final class LuaJ协程 extends LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ参数 恢复(Variant[] arguments) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ参数>() {
-					@Override
-					public LuaJ参数 run() throws Exception {
-						LuaThread thread = value.checkthread();
-						String status = thread.getStatus();
-						if (!"suspended".equals(status) && !"dead".equals(status)) {
-							throw new LuaJ错误("不能恢复正在执行的协程");
-						}
-						return new LuaJ参数(context, thread.resume(context.arguments(arguments)));
-					}
-				});
+		return context.perform(() -> {
+			LuaThread thread = value.checkthread();
+			String status = thread.getStatus();
+			if (!"suspended".equals(status) && !"dead".equals(status)) {
+				throw new LuaJ错误("不能恢复正在执行的协程");
+			}
+			return new LuaJ参数(context, thread.resume(context.arguments(arguments)));
+		});
 	}
 }

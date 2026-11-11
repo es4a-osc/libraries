@@ -1,13 +1,8 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import android.view.View;
+
+import simple.runtime.components.组件容器;
 
 /**
  * 字体图标原生控件适配。

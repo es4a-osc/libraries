@@ -162,7 +162,7 @@
 						},
 						{
 							"name": "设置选中图标",
-							"description": "设置两种状态图标；空引用清除；可选文本设置起始侧。",
+							"description": "同时设置勾选和未勾选图标；任一图像无效则不更新，空引用清除对应图标。",
 							"params": [
 								{
 									"name": "选中图标",
@@ -195,7 +195,7 @@
 						},
 						{
 							"name": "设置位置选中图标",
-							"description": "分别设置指定位置两种状态；0至5，空引用清除对应图标。",
+							"description": "同时设置指定位置两种状态；0至5，任一图像无效则不更新，空引用清除对应图标。",
 							"params": [
 								{
 									"name": "位置",
@@ -216,7 +216,7 @@
 						},
 						{
 							"name": "设置四侧选中图标",
-							"description": "统一设置四侧两种状态图标，空引用清除。",
+							"description": "统一设置四侧两种状态图标；任一图像无效则不更新，空引用清除。",
 							"params": [
 								{
 									"name": "选中图标",
@@ -1119,11 +1119,12 @@
 							"name": "取字体前缀",
 							"description": "取得所有已注册字体前缀。",
 							"params": [],
-							"return": "文本型[]"
+							"return": "文本型[]",
+							"static": true
 						},
 						{
 							"name": "取字体",
-							"description": "查询已注册字体。",
+							"description": "查询已注册字体；前缀必须为三个小写字母或数字，未注册时抛出图标错误。",
 							"params": [
 								{
 									"name": "前缀",
@@ -1131,7 +1132,8 @@
 									"description": "前缀。"
 								}
 							],
-							"return": "simple.library.wsd.iconics.图标字体"
+							"return": "simple.library.wsd.iconics.图标字体",
+							"static": true
 						},
 						{
 							"name": "创建资产字体",
@@ -1148,7 +1150,8 @@
 									"description": "资产路径。"
 								}
 							],
-							"return": "simple.library.wsd.iconics.图标字体"
+							"return": "simple.library.wsd.iconics.图标字体",
+							"static": true
 						},
 						{
 							"name": "创建资源字体",
@@ -1165,7 +1168,8 @@
 									"description": "字体资源。"
 								}
 							],
-							"return": "simple.library.wsd.iconics.图标字体"
+							"return": "simple.library.wsd.iconics.图标字体",
+							"static": true
 						},
 						{
 							"name": "注册字体",
@@ -1176,11 +1180,12 @@
 									"type": "simple.library.wsd.iconics.图标字体",
 									"description": "字体。"
 								}
-							]
+							],
+							"static": true
 						},
 						{
 							"name": "图标存在",
-							"description": "检查图标是否存在。",
+							"description": "在主线程检查图标是否存在；未知或无效图标名返回假。",
 							"params": [
 								{
 									"name": "图标名称",
@@ -1188,7 +1193,8 @@
 									"description": "图标名称。"
 								}
 							],
-							"return": "逻辑型"
+							"return": "逻辑型",
+							"static": true
 						},
 						{
 							"name": "搜索图标",
@@ -1205,7 +1211,8 @@
 									"description": "关键词。"
 								}
 							],
-							"return": "文本型[]"
+							"return": "文本型[]",
+							"static": true
 						},
 						{
 							"name": "创建图标",
@@ -1222,7 +1229,8 @@
 									"description": "样式。"
 								}
 							],
-							"return": "simple.library.wsd.iconics.图标图像"
+							"return": "simple.library.wsd.iconics.图标图像",
+							"static": true
 						},
 						{
 							"name": "应用文字图标",
@@ -1238,7 +1246,8 @@
 									"type": "文本型",
 									"description": "文本。"
 								}
-							]
+							],
+							"static": true
 						},
 						{
 							"name": "创建文件字体",
@@ -1255,7 +1264,8 @@
 									"description": "字体路径。"
 								}
 							],
-							"return": "simple.library.wsd.iconics.图标字体"
+							"return": "simple.library.wsd.iconics.图标字体",
+							"static": true
 						},
 						{
 							"name": "创建字符图标",
@@ -1277,7 +1287,8 @@
 									"description": "样式。"
 								}
 							],
-							"return": "simple.library.wsd.iconics.图标图像"
+							"return": "simple.library.wsd.iconics.图标图像",
+							"static": true
 						},
 						{
 							"name": "批量创建图标",
@@ -1294,7 +1305,8 @@
 									"description": "样式。"
 								}
 							],
-							"return": "simple.library.wsd.iconics.图标图像[]"
+							"return": "simple.library.wsd.iconics.图标图像[]",
+							"static": true
 						},
 						{
 							"name": "创建文字图标",
@@ -1316,7 +1328,8 @@
 									"description": "样式。"
 								}
 							],
-							"return": "simple.library.wsd.iconics.图标图像"
+							"return": "simple.library.wsd.iconics.图标图像",
+							"static": true
 						}
 					]
 				},

@@ -1,10 +1,8 @@
 package simple.library.wsd.mpandroidchart;
 
 import android.content.Context;
-
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
-
 import simple.runtime.components.组件容器;
 
 /**
@@ -36,5 +34,22 @@ public final class MPAC折线图Impl extends ChartComponent implements MPAC折�
 	@Override
 	public void 添加数据组(String name, float[] values, int color, int axis) {
 		addSeries(ChartModel.LINE, name, new float[][] { values }, color, axis);
+	}
+
+	/* 数值坐标与堆叠数据 */
+
+	/**
+	 * 添加使用数值横坐标的数据组；不同组可有不同横坐标和项目数量，不能与分类坐标混用。
+	 *
+	 * @param name   非空引用的数据组名称。
+	 * @param xs     非空有限横坐标数组，按非递减顺序排列。
+	 * @param values 非空有限数值数组。
+	 * @param color  ARGB 颜色。
+	 * @param axis   0 左轴，1 右轴。
+	 * @throws IllegalArgumentException 参数无效或当前位置不满足要求。
+	 */
+	@Override
+	public void 添加数值组(String name, float[] xs, float[] values, int color, int axis) {
+		addNumeric(ChartModel.LINE, name, xs, new float[][] { values }, color, axis);
 	}
 }

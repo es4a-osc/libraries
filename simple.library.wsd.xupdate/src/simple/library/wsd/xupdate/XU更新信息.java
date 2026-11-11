@@ -6,8 +6,7 @@ import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleProperty;
 
 /**
- * 可创建和修改的版本信息；提交给更新器后使用独立快照。
- * 文件大小以字节表示，默认解析时会将 XUpdate 接口的 KB 转换为字节。
+ * 可创建和修改的版本信息；提交给更新器后使用独立快照。 文件大小以字节表示，默认解析时会将 XUpdate 接口的 KB 转换为字节。
  *
  * @author 树先生 xhwsd@qq.com
  */

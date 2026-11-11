@@ -32,17 +32,18 @@ public final class CV日历绘图 {
 	/**
 	 * 为一个回调创建裁剪到本单元的局部画布。
 	 *
-	 * @param target 原生画布。
-	 * @param pool 图片集合。
-	 * @param x 单元左边像素。
-	 * @param y 单元顶边像素。
-	 * @param w 单元宽像素。
-	 * @param h 单元高像素。
-	 * @param density DIP 比例。
+	 * @param target        原生画布。
+	 * @param pool          图片集合。
+	 * @param x             单元左边像素。
+	 * @param y             单元顶边像素。
+	 * @param w             单元宽像素。
+	 * @param h             单元高像素。
+	 * @param density       DIP 比例。
 	 * @param scaledDensity SP 比例。
 	 * @return 仅本回调有效的上下文。
 	 */
-	public static CV日历绘图 begin(Canvas target, ImagePool pool, float x, float y, float w, float h, float density, float scaledDensity) {
+	public static CV日历绘图 begin(Canvas target, ImagePool pool, float x, float y, float w, float h, float density,
+			float scaledDensity) {
 		CV日历绘图 drawing = new CV日历绘图();
 		drawing.canvas = target;
 		drawing.images = pool;
@@ -81,8 +82,8 @@ public final class CV日历绘图 {
 	/**
 	 * 统一准备当前绘制画笔。
 	 *
-	 * @param color ARGB 颜色。
-	 * @param fill 是否填充。
+	 * @param color     ARGB 颜色。
+	 * @param fill      是否填充。
 	 * @param lineWidth 描边 DIP 宽度。
 	 */
 	private void prepare(int color, boolean fill, float lineWidth) {
@@ -166,11 +167,11 @@ public final class CV日历绘图 {
 	/**
 	 * 绘制线段，坐标及线宽用 DIP。
 	 *
-	 * @param x1 起点横坐标。
-	 * @param y1 起点纵坐标。
-	 * @param x2 终点横坐标。
-	 * @param y2 终点纵坐标。
-	 * @param color 颜色。
+	 * @param x1        起点横坐标。
+	 * @param y1        起点纵坐标。
+	 * @param x2        终点横坐标。
+	 * @param y2        终点纵坐标。
+	 * @param color     颜色。
 	 * @param lineWidth 线宽。
 	 */
 	@SimpleFunction
@@ -183,12 +184,12 @@ public final class CV日历绘图 {
 	/**
 	 * 绘制矩形，坐标及尺寸用 DIP。
 	 *
-	 * @param x 左边。
-	 * @param y 顶边。
-	 * @param w 宽。
-	 * @param h 高。
-	 * @param color 颜色。
-	 * @param fill 填充。
+	 * @param x         左边。
+	 * @param y         顶边。
+	 * @param w         宽。
+	 * @param h         高。
+	 * @param color     颜色。
+	 * @param fill      填充。
 	 * @param lineWidth 线宽。
 	 */
 	@SimpleFunction
@@ -201,13 +202,13 @@ public final class CV日历绘图 {
 	/**
 	 * 绘制圆角矩形，坐标、尺寸及圆角用 DIP。
 	 *
-	 * @param x 左边。
-	 * @param y 顶边。
-	 * @param w 宽。
-	 * @param h 高。
-	 * @param radius 圆角半径。
-	 * @param color 颜色。
-	 * @param fill 填充。
+	 * @param x         左边。
+	 * @param y         顶边。
+	 * @param w         宽。
+	 * @param h         高。
+	 * @param radius    圆角半径。
+	 * @param color     颜色。
+	 * @param fill      填充。
 	 * @param lineWidth 线宽。
 	 */
 	@SimpleFunction
@@ -220,11 +221,11 @@ public final class CV日历绘图 {
 	/**
 	 * 绘制圆形，坐标及半径用 DIP。
 	 *
-	 * @param x 圆心横坐标。
-	 * @param y 圆心纵坐标。
-	 * @param radius 半径。
-	 * @param color 颜色。
-	 * @param fill 填充。
+	 * @param x         圆心横坐标。
+	 * @param y         圆心纵坐标。
+	 * @param radius    半径。
+	 * @param color     颜色。
+	 * @param fill      填充。
 	 * @param lineWidth 线宽。
 	 */
 	@SimpleFunction
@@ -237,18 +238,19 @@ public final class CV日历绘图 {
 	/**
 	 * 绘制椭圆弧，角度按顺时针度数表示。
 	 *
-	 * @param x 左边。
-	 * @param y 顶边。
-	 * @param w 宽。
-	 * @param h 高。
-	 * @param start 起始角度。
-	 * @param sweep 经过角度。
-	 * @param center 连接圆心。
-	 * @param color 颜色。
+	 * @param x         左边。
+	 * @param y         顶边。
+	 * @param w         宽。
+	 * @param h         高。
+	 * @param start     起始角度。
+	 * @param sweep     经过角度。
+	 * @param center    连接圆心。
+	 * @param color     颜色。
 	 * @param lineWidth 线宽。
 	 */
 	@SimpleFunction
-	public void 画弧(float x, float y, float w, float h, float start, float sweep, boolean center, int color, float lineWidth) {
+	public void 画弧(float x, float y, float w, float h, float start, float sweep, boolean center, int color,
+			float lineWidth) {
 		finite(x, y, w, h, start, sweep);
 		prepare(color, false, lineWidth);
 		canvas.drawArc(new RectF(x, y, x + w, y + h), start, sweep, center, paint);
@@ -257,13 +259,13 @@ public final class CV日历绘图 {
 	/**
 	 * 绘制文字，位置用 DIP，字号用 SP；对齐 0 左、1 中、2 右，纵坐标是基线。
 	 *
-	 * @param text 文本。
-	 * @param x 横坐标。
+	 * @param text     文本。
+	 * @param x        横坐标。
 	 * @param baseline 基线纵坐标。
-	 * @param size 字号。
-	 * @param color 颜色。
-	 * @param align 对齐。
-	 * @param bold 粗体。
+	 * @param size     字号。
+	 * @param color    颜色。
+	 * @param align    对齐。
+	 * @param bold     粗体。
 	 */
 	@SimpleFunction
 	public void 画文本(String text, float x, float baseline, float size, int color, int align, boolean bold) {
@@ -302,10 +304,10 @@ public final class CV日历绘图 {
 	 * 绘制本日历预载入的图片，目标位置及尺寸用 DIP。
 	 *
 	 * @param imageId 图片编号。
-	 * @param x 左边。
-	 * @param y 顶边。
-	 * @param w 宽。
-	 * @param h 高。
+	 * @param x       左边。
+	 * @param y       顶边。
+	 * @param w       宽。
+	 * @param h       高。
 	 */
 	@SimpleFunction
 	public void 画图片(int imageId, float x, float y, float w, float h) {

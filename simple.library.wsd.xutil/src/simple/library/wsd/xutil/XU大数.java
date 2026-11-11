@@ -25,7 +25,7 @@ public final class XU大数 {
 	/**
 	 * 计算两段十进制数值文本，结果用普通十进制表示。
 	 *
-	 * @param first 第一文本。
+	 * @param first  第一文本。
 	 * @param second 第二文本。
 	 * @return 返回的文本。
 	 */
@@ -37,7 +37,7 @@ public final class XU大数 {
 	/**
 	 * 计算两段十进制数值文本，结果用普通十进制表示。
 	 *
-	 * @param first 第一文本。
+	 * @param first  第一文本。
 	 * @param second 第二文本。
 	 * @return 返回的文本。
 	 */
@@ -49,7 +49,7 @@ public final class XU大数 {
 	/**
 	 * 计算两段十进制数值文本，结果用普通十进制表示。
 	 *
-	 * @param first 第一文本。
+	 * @param first  第一文本。
 	 * @param second 第二文本。
 	 * @return 返回的文本。
 	 */
@@ -61,21 +61,25 @@ public final class XU大数 {
 	/**
 	 * 十进制除法，按四舍五入保留指定小数位；除零抛出异常。
 	 *
-	 * @param first 第一文本。
+	 * @param first  第一文本。
 	 * @param second 第二文本。
-	 * @param scale 小数位数。
+	 * @param scale  小数位数。
 	 * @return 返回的文本。
 	 */
 	@SimpleFunction
 	public static String 除(String first, String second, int scale) {
 		XUtilSupport.nonNegative(scale);
-		return new BigDecimal(first).divide(new BigDecimal(second), scale, RoundingMode.HALF_UP).toPlainString();
+		BigDecimal divisor = new BigDecimal(second);
+		if (divisor.signum() == 0) {
+			throw new IllegalArgumentException("除数不能为零");
+		}
+		return new BigDecimal(first).divide(divisor, scale, RoundingMode.HALF_UP).toPlainString();
 	}
 
 	/**
 	 * 按四舍五入保留指定小数位。
 	 *
-	 * @param text 文本。
+	 * @param text  文本。
 	 * @param scale 小数位数。
 	 * @return 返回的文本。
 	 */
@@ -88,7 +92,7 @@ public final class XU大数 {
 	/**
 	 * 比较十进制数，返回负数、零或正数。
 	 *
-	 * @param first 第一文本。
+	 * @param first  第一文本。
 	 * @param second 第二文本。
 	 * @return 返回的整数值。
 	 */
@@ -100,7 +104,7 @@ public final class XU大数 {
 	/**
 	 * 按上游金额规则添加分组分隔符。
 	 *
-	 * @param text 文本。
+	 * @param text      文本。
 	 * @param separator 分隔符。
 	 * @return 返回的文本。
 	 */

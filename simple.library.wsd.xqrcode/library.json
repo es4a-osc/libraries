@@ -146,6 +146,12 @@
 							"return": "逻辑型"
 						},
 						{
+							"name": "取消全部任务",
+							"description": "取消调用时尚未完成的全部生成、图片识别和选图请求，并逐项触发任务取消；不停止相机或关闭系统选择器。事件中新提交的请求不受影响。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
 							"name": "开始扫描",
 							"description": "打开普通 Activity 扫码页并自动请求相机权限；已有本组件请求时返回 0，否则返回正整数请求序号。",
 							"params": [
@@ -630,7 +636,14 @@
 							"name": "边距",
 							"type": "整数型",
 							"initializer": "12",
-							"description": "二维码边缘宽度，范围 0 至 256。"
+							"description": "最小边距，单位像素，范围 0 至 256；实际边距还须满足静区模块数。"
+						},
+						{
+							"name": "静区模块数",
+							"description": "每侧至少保留的空白模块数，范围 0 至 32，默认 4。随内容密度和图像尺寸换算；背景图片应保留白色边缘。设为 0 仅使用像素边距，可能降低识别率。",
+							"type": "整数型",
+							"writable": true,
+							"initializer": "4"
 						},
 						{
 							"name": "数据点比例",
@@ -1011,7 +1024,8 @@
 						{
 							"name": "开启",
 							"description": "使用默认标签ES4A-XQRCode开启日志。",
-							"params": []
+							"params": [],
+							"static": true
 						},
 						{
 							"name": "开启",
@@ -1022,24 +1036,28 @@
 									"type": "文本型",
 									"description": "1 至 23 个字符的日志标签。"
 								}
-							]
+							],
+							"static": true
 						},
 						{
 							"name": "关闭",
 							"description": "关闭本库及上游生成核心日志。",
-							"params": []
+							"params": [],
+							"static": true
 						},
 						{
 							"name": "是否开启",
 							"description": "查询日志开关。",
 							"params": [],
-							"return": "逻辑型"
+							"return": "逻辑型",
+							"static": true
 						},
 						{
 							"name": "取标签",
 							"description": "取得日志标签，关闭时为空文本。",
 							"params": [],
-							"return": "文本型"
+							"return": "文本型",
+							"static": true
 						}
 					]
 				}

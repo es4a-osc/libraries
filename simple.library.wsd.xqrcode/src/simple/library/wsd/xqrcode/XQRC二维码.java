@@ -24,7 +24,7 @@ public interface XQRC二维码 extends 组件 {
 	 * 异步生成成功后在主线程触发，图片为 PNG 数据。
 	 *
 	 * @param requestId 请求序号。
-	 * @param image 图片数据。
+	 * @param image     图片数据。
 	 */
 	@SimpleEvent
 	void 生成完成(int requestId, byte[] image);
@@ -33,7 +33,7 @@ public interface XQRC二维码 extends 组件 {
 	 * 异步图片识别成功后在主线程触发。
 	 *
 	 * @param requestId 请求序号。
-	 * @param result 结果。
+	 * @param result    结果。
 	 */
 	@SimpleEvent
 	void 识别完成(int requestId, XQRC识别结果 result);
@@ -43,7 +43,7 @@ public interface XQRC二维码 extends 组件 {
 	 *
 	 * @param requestId 请求序号。
 	 * @param operation 操作。
-	 * @param reason 原因。
+	 * @param reason    原因。
 	 */
 	@SimpleEvent
 	void 任务失败(int requestId, String operation, String reason);
@@ -69,7 +69,7 @@ public interface XQRC二维码 extends 组件 {
 	 * 独立扫码页识别成功时触发；连续模式可重复触发。
 	 *
 	 * @param requestId 请求序号。
-	 * @param result 结果。
+	 * @param result    结果。
 	 */
 	@SimpleEvent
 	void 扫描得到结果(int requestId, XQRC识别结果 result);
@@ -78,7 +78,7 @@ public interface XQRC二维码 extends 组件 {
 	 * 独立扫码页报告权限、设备或补光失败；补光或提示反馈失败不结束现有预览。
 	 *
 	 * @param requestId 请求序号。
-	 * @param reason 原因。
+	 * @param reason    原因。
 	 */
 	@SimpleEvent
 	void 扫描失败(int requestId, String reason);
@@ -130,7 +130,7 @@ public interface XQRC二维码 extends 组件 {
 	/**
 	 * 同步识别资产、文件或 content URI；仅使用格式、字符集及返回图像设置。无结果时抛出错误。
 	 *
-	 * @param path 图片路径。
+	 * @param path    图片路径。
 	 * @param options 配置。
 	 * @return 本次操作的返回值。
 	 */
@@ -140,7 +140,7 @@ public interface XQRC二维码 extends 组件 {
 	/**
 	 * 同步识别图像字节；输入压缩数据不超过 32 MiB，无结果时抛出错误。
 	 *
-	 * @param data 图片数据。
+	 * @param data    图片数据。
 	 * @param options 配置。
 	 * @return 本次操作的返回值。
 	 */
@@ -150,7 +150,7 @@ public interface XQRC二维码 extends 组件 {
 	/**
 	 * 后台识别资产、文件或 content URI，以识别完成或任务失败返回结果。
 	 *
-	 * @param path 图片路径。
+	 * @param path    图片路径。
 	 * @param options 配置。
 	 * @return 本次操作的返回值。
 	 */
@@ -160,7 +160,7 @@ public interface XQRC二维码 extends 组件 {
 	/**
 	 * 复制图像数据及配置后后台识别，返回请求序号。
 	 *
-	 * @param data 图片数据。
+	 * @param data    图片数据。
 	 * @param options 配置。
 	 * @return 本次操作的返回值。
 	 */
@@ -184,6 +184,14 @@ public interface XQRC二维码 extends 组件 {
 	 */
 	@SimpleFunction
 	boolean 取消任务(int requestId);
+
+	/**
+	 * 取消调用时尚未完成的全部生成、图片识别和选图请求，并逐项触发任务取消；不停止相机或关闭系统选择器。事件中新提交的请求不受影响。
+	 *
+	 * @return 本次取消的请求数量；没有待处理请求时返回 0。
+	 */
+	@SimpleFunction
+	int 取消全部任务();
 
 	/**
 	 * 打开普通 Activity 扫码页并自动请求相机权限；已有本组件请求时返回 0，否则返回正整数请求序号。
@@ -225,7 +233,7 @@ public interface XQRC二维码 extends 组件 {
 	 * 设置指定请求的真实补光；预览未打开、请求过期或硬件不支持时返回假。
 	 *
 	 * @param requestId 请求序号。
-	 * @param enabled 开启。
+	 * @param enabled   开启。
 	 * @return 操作结果。
 	 */
 	@SimpleFunction
@@ -235,7 +243,7 @@ public interface XQRC二维码 extends 组件 {
 	 * 独立扫码页手动对焦的真实完成结果。
 	 *
 	 * @param requestId 请求序号。
-	 * @param success 成功。
+	 * @param success   成功。
 	 */
 	@SimpleEvent
 	void 扫描对焦完成(int requestId, boolean success);
@@ -244,7 +252,7 @@ public interface XQRC二维码 extends 组件 {
 	 * 独立扫码页的候选点；不代表成功，坐标为预览视图物理像素。
 	 *
 	 * @param requestId 请求序号。
-	 * @param points 坐标。
+	 * @param points    坐标。
 	 */
 	@SimpleEvent
 	void 扫描发现识别点(int requestId, float[] points);

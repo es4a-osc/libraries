@@ -1,27 +1,27 @@
 package simple.library.wsd.notification;
 
-import simple.runtime.annotations.SimpleDataElement;
-import simple.runtime.annotations.SimpleFunction;
-import simple.runtime.annotations.SimpleObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import simple.runtime.annotations.SimpleDataElement;
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
 
 /**
- * 可逐项定制的通知对象，持有 Android {@link Notification.Builder}。
- * 通知编号在管理器发送时确定；操作按钮会在首次发送时绑定管理器和编号。
+ * 可逐项定制的通知对象，持有 Android {@link Notification.Builder}。 通知编号在管理器发送时确定；操作按钮会在首次发送时绑定管理器和编号。
+ *
+ * @author 树先生 xhwsd@qq.com
  */
 @SimpleObject
 public final class 通知构建器 {
@@ -54,6 +54,7 @@ public final class 通知构建器 {
 	public static final int ACTION_CONTENT = 0;
 	public static final int ACTION_BUTTON = 1;
 	public static final int ACTION_REPLY = 2;
+	public static final int ACTION_DISMISS = 3;
 
 	/* 以下是一组通知优先级常量；API 26 起映射为通知渠道重要程度。 */
 
@@ -123,7 +124,9 @@ public final class 通知构建器 {
 	/* 通知管理器创建通知时传入 Android 构建器与上下文。 */
 
 	/**
-	 * 构造方法
+	 * 禁止直接创建通知，需通过通知管理器创建。
+	 *
+	 * @throws UnsupportedOperationException 始终提示正确的创建入口
 	 */
 	public 通知构建器() {
 		throw new UnsupportedOperationException("请通过\"通知管理器.创建通知()\"创建");
@@ -214,8 +217,7 @@ public final class 通知构建器 {
 
 		// 新系统在发送时按此值选渠道，旧系统直接设置通知优先级。
 		this.priority = priority;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
-				&& Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
 			applyLegacyPriority(priority);
 		}
 	}
@@ -238,7 +240,7 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 设置通知是否不能通过滑动清除。
+	 * 设置常驻标记，同时设置相反的自动取消状态；能否滑动清除由系统决定。
 	 *
 	 * @param ongoing 是否保持常驻
 	 */
@@ -293,20 +295,14 @@ public final class 通知构建器 {
 		requireStyleSupport();
 
 		// 解码失败时立即报错，避免生成缺少图片的展开样式。
-		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), imageResource);
-
-		if (bitmap == null) {
-			throw new IllegalArgumentException("无法读取通知图片资源");
-		}
-
-		builder.setStyle(new Notification.BigPictureStyle().bigPicture(bitmap));
+		builder.setStyle(new Notification.BigPictureStyle().bigPicture(decodeBitmap(imageResource)));
 	}
 
 	/**
 	 * 添加文本操作按钮。点击后由通知管理器发出按钮事件。
 	 *
 	 * @param title 按钮上显示的文字
-	 * @param mark 区分不同按钮的自定义标记
+	 * @param mark  区分不同按钮的自定义标记
 	 */
 	@SimpleFunction
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -318,8 +314,8 @@ public final class 通知构建器 {
 	 * 添加带图标的操作按钮，最多三个。
 	 *
 	 * @param iconResource 按钮图标资源编号，0 表示使用内置操作图标
-	 * @param title 按钮上显示的文字
-	 * @param mark 区分不同按钮的自定义标记
+	 * @param title        按钮上显示的文字
+	 * @param mark         区分不同按钮的自定义标记
 	 */
 	@SimpleFunction
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -330,8 +326,8 @@ public final class 通知构建器 {
 	/**
 	 * 添加内联回复操作。
 	 *
-	 * @param title 回复按钮的文字
-	 * @param mark 区分不同回复操作的自定义标记
+	 * @param title     回复按钮的文字
+	 * @param mark      区分不同回复操作的自定义标记
 	 * @param inputHint 回复输入框的提示文字
 	 */
 	@SimpleFunction
@@ -344,9 +340,9 @@ public final class 通知构建器 {
 	 * 添加带图标的内联回复操作。
 	 *
 	 * @param iconResource 回复按钮图标资源编号，0 表示使用内置回复图标
-	 * @param title 回复按钮的文字
-	 * @param mark 区分不同回复操作的自定义标记
-	 * @param inputHint 回复输入框的提示文字
+	 * @param title        回复按钮的文字
+	 * @param mark         区分不同回复操作的自定义标记
+	 * @param inputHint    回复输入框的提示文字
 	 */
 	@SimpleFunction
 	@TargetApi(Build.VERSION_CODES.N)
@@ -392,7 +388,222 @@ public final class 通知构建器 {
 		builder.setProgress(0, 0, false);
 	}
 
+	/**
+	 * 设置通知副文本。
+	 *
+	 * @param text 副文本
+	 */
+	@SimpleFunction
+	public void 置副文本(String text) {
+		builder.setSubText(text);
+	}
+
+	/**
+	 * 设置通知关联的项目数量；0 表示不显示数量提示。
+	 *
+	 * @param number 非负项目数量
+	 */
+	@SimpleFunction
+	public void 置数量(int number) {
+		if (number < 0) {
+			throw new IllegalArgumentException("通知数量不能为负数");
+		}
+
+		builder.setNumber(number);
+	}
+
+	/**
+	 * 设置通知显示的时间，发送和更新时保留此值。
+	 *
+	 * @param time 从 1970 年起的毫秒数
+	 */
+	@SimpleFunction
+	public void 置时间(long time) {
+		builder.setWhen(time);
+	}
+
+	/**
+	 * 设置是否显示通知时间。
+	 *
+	 * @param show 是否显示时间
+	 */
+	@SimpleFunction
+	public void 置显示时间(boolean show) {
+		builder.setShowWhen(show);
+	}
+
+	/**
+	 * 设置点击通知正文后是否自动移除通知。
+	 *
+	 * @param enabled 是否自动移除
+	 */
+	@SimpleFunction
+	public void 置自动取消(boolean enabled) {
+		builder.setAutoCancel(enabled);
+	}
+
+	/**
+	 * 设置同一编号更新时是否只在首次发送时提醒。
+	 *
+	 * @param enabled 是否仅首次提醒
+	 */
+	@SimpleFunction
+	public void 置仅提醒一次(boolean enabled) {
+		builder.setOnlyAlertOnce(enabled);
+	}
+
+	/**
+	 * 设置是否禁止将通知桥接到其它设备。
+	 *
+	 * @param enabled 是否仅在本机显示
+	 */
+	@SimpleFunction
+	public void 置仅本机显示(boolean enabled) {
+		builder.setLocalOnly(enabled);
+	}
+
+	/**
+	 * 设置将通知时间显示为运行中的计时器。
+	 *
+	 * @param enabled 是否使用计时器
+	 */
+	@SimpleFunction
+	public void 置计时显示(boolean enabled) {
+		builder.setUsesChronometer(enabled);
+	}
+
+	/**
+	 * 显示持续运行的不确定进度条；可用清除进度移除。
+	 */
+	@SimpleFunction
+	public void 置不确定进度() {
+		builder.setProgress(0, 0, true);
+	}
+
+	/**
+	 * 设置通知大图标；资源必须可解码为位图。
+	 *
+	 * @param resource 位图资源编号
+	 */
+	@SimpleFunction
+	public void 置大图标(int resource) {
+		builder.setLargeIcon(decodeBitmap(resource));
+	}
+
+	/**
+	 * 移除当前通知的大图标。
+	 */
+	@SimpleFunction
+	public void 清除大图标() {
+		builder.setLargeIcon((Bitmap) null);
+	}
+
+	/**
+	 * 恢复普通通知样式，保留标题和正文。
+	 */
+	@SimpleFunction
+	public void 清除样式() {
+		builder.setStyle(null);
+	}
+
+	/**
+	 * 设置通知分组；空文本或 null 表示取消分组。
+	 *
+	 * @param group   应用内的分组键
+	 * @param summary 是否为该组的汇总通知
+	 */
+	@SimpleFunction
+	public void 置分组(String group, boolean summary) {
+		boolean grouped = group != null && !group.isEmpty();
+		builder.setGroup(grouped ? group : null).setGroupSummary(grouped && summary);
+	}
+
+	/**
+	 * 设置同组通知使用的文本排序键；null 表示移除。
+	 *
+	 * @param key 组内排序键
+	 */
+	@SimpleFunction
+	public void 置排序键(String key) {
+		builder.setSortKey(key);
+	}
+
+	/**
+	 * 设置系统通知类别，例如 msg、email、progress 或 reminder；null 表示移除。
+	 *
+	 * @param category Android 通知类别标识
+	 */
+	@SimpleFunction
+	public void 置类别(String category) {
+		if (Build.VERSION.SDK_INT < 21) {
+			throw new UnsupportedOperationException("通知类别需要 Android API 21");
+		}
+		builder.setCategory(category);
+	}
+
+	/**
+	 * 设置通知强调色；具体显示效果由系统决定。
+	 *
+	 * @param color ARGB 颜色值
+	 */
+	@SimpleFunction
+	public void 置强调色(int color) {
+		if (Build.VERSION.SDK_INT < 21) {
+			throw new UnsupportedOperationException("通知强调色需要 Android API 21");
+		}
+		builder.setColor(color);
+	}
+
+	/**
+	 * 设置发布后自动取消的时长；需要 Android API 26，0 表示不设置超时。
+	 *
+	 * @param milliseconds 非负毫秒数
+	 */
+	@SimpleFunction
+	public void 置超时(long milliseconds) {
+		if (milliseconds < 0) {
+			throw new IllegalArgumentException("通知超时不能为负数");
+		}
+		if (Build.VERSION.SDK_INT < 26) {
+			throw new UnsupportedOperationException("通知超时需要 Android API 26");
+		}
+		builder.setTimeoutAfter(milliseconds);
+	}
+
+	/**
+	 * 移除所有操作及回复按钮；需要 Android API 24。
+	 */
+	@SimpleFunction
+	public void 清除按钮() {
+		if (Build.VERSION.SDK_INT < 24) {
+			throw new UnsupportedOperationException("清除通知按钮需要 Android API 24");
+		}
+		builder.setActions(new Notification.Action[0]);
+		actions.clear();
+		addedActionCount = 0;
+		boundNotificationId = null;
+		boundBroadcastAction = null;
+	}
+
 	/* 内部接口与平台回调 */
+
+	/**
+	 * 生成与当前配置一致的通知，供管理器发送。
+	 *
+	 * @return 已构建的通知
+	 */
+	@SuppressWarnings("deprecation")
+	Notification build() {
+		// 保留旧系统的实际构建路径。
+		Notification notification = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN
+				? builder.build() : builder.getNotification();
+
+		// 某些系统复用构建器时不会清空已生成的 actions；与当前按钮配置同步。
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && actions.isEmpty()) {
+			notification.actions = null;
+		}
+		return notification;
+	}
 
 	/**
 	 * 取得持有的 Android 构建器，供通知管理器发布。
@@ -424,7 +635,7 @@ public final class 通知构建器 {
 	/**
 	 * 发送前为操作按钮绑定管理器和通知编号；再次发送同一通知时只追加新操作。
 	 *
-	 * @param notificationId 要发送的通知编号
+	 * @param notificationId  要发送的通知编号
 	 * @param broadcastAction 此通知管理器的广播动作
 	 */
 	public void bindActions(int notificationId, String broadcastAction) {
@@ -453,11 +664,30 @@ public final class 通知构建器 {
 	/* 内部辅助方法 */
 
 	/**
+	 * 读取通知图像，统一拒绝非位图或不存在的资源。
+	 *
+	 * @param resource 图像资源编号
+	 * @return 已解码位图
+	 * @throws IllegalArgumentException 资源不存在或不能解码
+	 */
+	private Bitmap decodeBitmap(int resource) {
+		try {
+			Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resource);
+			if (bitmap != null) {
+				return bitmap;
+			}
+		} catch (Resources.NotFoundException e) {
+			throw new IllegalArgumentException("通知图片资源不存在", e);
+		}
+		throw new IllegalArgumentException("无法读取通知图片资源");
+	}
+
+	/**
 	 * 使用按钮独立的请求码区分 PendingIntent；不设置数据 URI，以匹配按动作注册的接收器。
 	 *
-	 * @param notificationId 当前通知编号
+	 * @param notificationId  当前通知编号
 	 * @param broadcastAction 所属通知管理器的广播动作
-	 * @param action 要绑定的按钮定义
+	 * @param action          要绑定的按钮定义
 	 * @return 按钮点击时发出的广播意图
 	 */
 	private PendingIntent createActionPendingIntent(int notificationId, String broadcastAction, ActionSpec action) {
@@ -486,7 +716,7 @@ public final class 通知构建器 {
 	/**
 	 * 按系统版本附加按钮；回复按钮额外携带输入框。
 	 *
-	 * @param action 要添加的按钮定义
+	 * @param action        要添加的按钮定义
 	 * @param pendingIntent 点击按钮时发送的意图
 	 */
 	private void appendAction(ActionSpec action, PendingIntent pendingIntent) {
@@ -503,7 +733,7 @@ public final class 通知构建器 {
 	/**
 	 * API 24 起为回复按钮附加系统内联输入框。
 	 *
-	 * @param action 回复按钮定义
+	 * @param action        回复按钮定义
 	 * @param pendingIntent 提交回复时发送的意图
 	 */
 	@TargetApi(Build.VERSION_CODES.N)
@@ -514,10 +744,9 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * API 23 起使用 Icon 构造操作按钮，避开已弃用的整数图标构造器。
-	 * 从资源编号取实际包名，兼容应用图标和 android.R 的内置图标。
+	 * API 23 起使用 Icon 构造操作按钮，避开已弃用的整数图标构造器。 从资源编号取实际包名，兼容应用图标和 android.R 的内置图标。
 	 *
-	 * @param action 要添加的按钮定义
+	 * @param action        要添加的按钮定义
 	 * @param pendingIntent 点击按钮时发送的意图
 	 * @return 可继续添加内联输入的操作构建器
 	 */
@@ -532,7 +761,7 @@ public final class 通知构建器 {
 	/**
 	 * API 16 至 22 使用整数图标的操作按钮；API 23 起使用 Icon。
 	 *
-	 * @param action 要添加的按钮定义
+	 * @param action        要添加的按钮定义
 	 * @param pendingIntent 点击按钮时发送的意图
 	 */
 	@SuppressWarnings("deprecation")
@@ -582,11 +811,11 @@ public final class 通知构建器 {
 	/**
 	 * 验证并暂存按钮定义，等待发送时绑定通知编号。
 	 *
-	 * @param kind 普通按钮或回复按钮
-	 * @param icon 图标资源编号，0 表示使用内置操作图标
+	 * @param kind  普通按钮或回复按钮
+	 * @param icon  图标资源编号，0 表示使用内置操作图标
 	 * @param title 按钮文字
-	 * @param mark 回调标记
-	 * @param hint 回复输入框提示，普通按钮为 null
+	 * @param mark  回调标记
+	 * @param hint  回复输入框提示，普通按钮为 null
 	 */
 	private void addAction(int kind, int icon, String title, String mark, String hint) {
 		// 先拒绝不支持的版本和无效配置，再保存尚未绑定编号的按钮。
@@ -609,8 +838,9 @@ public final class 通知构建器 {
 	}
 
 	/**
-	 * 一条尚未绑定通知编号的操作按钮配置。
-	 * 管理器发送通知时才确定编号，并据此生成互不覆盖的点击意图。
+	 * 一条尚未绑定通知编号的操作按钮配置。 管理器发送通知时才确定编号，并据此生成互不覆盖的点击意图。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	private static final class ActionSpec {
 		private final int kind;
@@ -625,11 +855,11 @@ public final class 通知构建器 {
 		/**
 		 * 保存按钮配置；通知编号在发送时才确定。
 		 *
-		 * @param kind 按钮类型
-		 * @param icon 按钮图标资源编号
+		 * @param kind  按钮类型
+		 * @param icon  按钮图标资源编号
 		 * @param title 按钮文字
-		 * @param mark 回调标记
-		 * @param hint 回复输入提示，普通按钮为 null
+		 * @param mark  回调标记
+		 * @param hint  回复输入提示，普通按钮为 null
 		 */
 		private ActionSpec(int kind, int icon, String title, String mark, String hint) {
 			this.kind = kind;

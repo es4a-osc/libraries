@@ -70,7 +70,7 @@ public final class XU颜色 {
 	/**
 	 * 按 0 到 1 的比例调整颜色明暗。
 	 *
-	 * @param color ARGB 整数颜色。
+	 * @param color  ARGB 整数颜色。
 	 * @param factor 比例。
 	 * @return 返回的整数值。
 	 */
@@ -83,7 +83,7 @@ public final class XU颜色 {
 	/**
 	 * 按 0 到 1 的比例调整颜色明暗。
 	 *
-	 * @param color ARGB 整数颜色。
+	 * @param color  ARGB 整数颜色。
 	 * @param factor 比例。
 	 * @return 返回的整数值。
 	 */

@@ -1,6 +1,7 @@
 package simple.library.wsd.alerter;
 
 import simple.runtime.annotations.SimpleComponent;
+import simple.runtime.annotations.SimpleDataElement;
 import simple.runtime.annotations.SimpleEvent;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
@@ -11,8 +12,8 @@ import simple.runtime.components.组件;
 /**
  * 在当前窗口内显示标题、正文、图标、进度和操作按钮的提示条。
  *
- * <p>所有成员在界面线程调用。配置用于下次显示，更新标题和更新内容可同时修改
- * 当前提示条。同一窗口同时保留一个提示条，新显示替换旧显示并通知旧实例隐藏。
+ * <p>
+ * 所有成员在界面线程调用。配置用于下次显示，更新标题和更新内容可同时修改 当前提示条。同一窗口同时保留一个提示条，新显示替换旧显示并通知旧实例隐藏。
  * 显示立即返回；进入动画结束后触发被显示，移除后触发被隐藏。
  *
  * @author 树先生 xhwsd@qq.com
@@ -21,6 +22,120 @@ import simple.runtime.components.组件;
 @SimpleComponent
 @UsesPermissions(permissionNames = "android.permission.VIBRATE")
 public interface 提示条 extends 组件 {
+
+	/**
+	 * 保留图片原始颜色，不施加颜色滤镜。
+	 */
+	@SimpleDataElement
+	int 混合_原色 = -1;
+
+	/**
+	 * 清空图像；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_CLEAR = 0;
+
+	/**
+	 * 只保留着色颜色；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_SRC = 1;
+
+	/**
+	 * 只保留原图；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_DST = 2;
+
+	/**
+	 * 着色覆盖原图；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_SRC_OVER = 3;
+
+	/**
+	 * 原图覆盖着色；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_DST_OVER = 4;
+
+	/**
+	 * 按原图透明度显示着色颜色；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_SRC_IN = 5;
+
+	/**
+	 * 按着色透明度保留原图；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_DST_IN = 6;
+
+	/**
+	 * 在原图外显示着色颜色；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_SRC_OUT = 7;
+
+	/**
+	 * 在着色区域外保留原图；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_DST_OUT = 8;
+
+	/**
+	 * 在原图区域叠加着色；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_SRC_ATOP = 9;
+
+	/**
+	 * 在着色区域叠加原图；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_DST_ATOP = 10;
+
+	/**
+	 * 只保留不重叠部分；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_XOR = 11;
+
+	/**
+	 * 叠加颜色通道；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_ADD = 12;
+
+	/**
+	 * 正片叠底；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_MULTIPLY = 13;
+
+	/**
+	 * 滤色；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_SCREEN = 14;
+
+	/**
+	 * 叠加混合；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_OVERLAY = 15;
+
+	/**
+	 * 取较暗颜色；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_DARKEN = 16;
+
+	/**
+	 * 取较亮颜色；着色颜色为源，原图为目标。
+	 */
+	@SimpleDataElement
+	int 混合_LIGHTEN = 17;
 
 	/* 组件事件 */
 
@@ -50,7 +165,115 @@ public interface 提示条 extends 组件 {
 	@SimpleEvent
 	void 按钮被单击(int id);
 
+	/**
+	 * 已监听的内容布局控件被单击时触发；不会自动关闭提示条。
+	 *
+	 * @param resourceId 控件的资源编号。
+	 */
+	@SimpleEvent
+	void 布局控件被单击(int resourceId);
+
 	/* 下次显示采用的配置 */
+
+	/**
+	 * 读取标题 TextAppearance 样式资源；0 沿用布局样式，显式设置的标题字体优先。
+	 *
+	 * @return 下次显示采用的配置。
+	 */
+	@SimpleProperty
+	int 标题样式资源();
+
+	/**
+	 * 设置下次显示的标题 TextAppearance 样式资源；0 沿用布局样式，显式设置的标题字体优先。
+	 *
+	 * @param value 资源编号，0 沿用默认，不得小于零。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
+		initializer = "0"
+	)
+	void 标题样式资源(int value);
+
+	/**
+	 * 读取正文 TextAppearance 样式资源；0 沿用布局样式，显式设置的内容字体优先。
+	 *
+	 * @return 下次显示采用的配置。
+	 */
+	@SimpleProperty
+	int 内容样式资源();
+
+	/**
+	 * 设置下次显示的正文 TextAppearance 样式资源；0 沿用布局样式，显式设置的内容字体优先。
+	 *
+	 * @param value 资源编号，0 沿用默认，不得小于零。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
+		initializer = "0"
+	)
+	void 内容样式资源(int value);
+
+	/**
+	 * 读取内容布局资源；0 使用内置布局。标题、正文、图标和进度配置仅作用于布局中对应的 Alerter 控件。
+	 *
+	 * @return 下次显示采用的配置。
+	 */
+	@SimpleProperty
+	int 内容布局资源();
+
+	/**
+	 * 设置下次显示的内容布局资源；0 使用内置布局。标题、正文、图标和进度配置仅作用于布局中对应的 Alerter 控件。
+	 *
+	 * @param value 资源编号，0 沿用默认，不得小于零。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
+		initializer = "0"
+	)
+	void 内容布局资源(int value);
+
+	/**
+	 * 读取左侧图标的混合模式，使用混合常量，默认混合_SRC_IN；混合_原色保留原图颜色。
+	 *
+	 * @return 下次显示采用的配置。
+	 */
+	@SimpleProperty
+	int 图标混合模式();
+
+	/**
+	 * 设置下次显示的左侧图标的混合模式，使用混合常量，默认混合_SRC_IN；混合_原色保留原图颜色。
+	 *
+	 * @param value 混合常量；同时清除此前的颜色矩阵。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
+		initializer = "5"
+	)
+	void 图标混合模式(int value);
+
+	/**
+	 * 读取右侧图标的混合模式，使用混合常量，默认混合_SRC_IN；混合_原色保留原图颜色。
+	 *
+	 * @return 下次显示采用的配置。
+	 */
+	@SimpleProperty
+	int 右侧图标混合模式();
+
+	/**
+	 * 设置下次显示的右侧图标的混合模式，使用混合常量，默认混合_SRC_IN；混合_原色保留原图颜色。
+	 *
+	 * @param value 混合常量；同时清除此前的颜色矩阵。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
+		initializer = "5"
+	)
+	void 右侧图标混合模式(int value);
 
 	/**
 	 * 读取标题配置。
@@ -64,8 +287,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的标题。
 	 *
 	 * @param value 标题文本，空文本不显示标题。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_STRING,
@@ -85,8 +307,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的内容。
 	 *
 	 * @param value 正文文本，空文本不显示正文。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_STRING,
@@ -106,8 +327,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的显示时间。
 	 *
 	 * @param value 自动关闭前的显示时间，单位毫秒，不得小于零；始终显示开启时不自动关闭。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_LONG,
@@ -127,7 +347,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的背景颜色。
 	 *
 	 * @param value 背景 ARGB 颜色；背景图片非空时优先使用图片。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_COLOR,
@@ -147,8 +367,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的背景图片。
 	 *
 	 * @param value 背景图片，支持资源编号文本、@drawable/名称、资产文件名及有读取权限的绝对文件路径；空文本使用背景颜色。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_ASSET,
@@ -168,8 +387,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的图标。
 	 *
 	 * @param value 左侧图片，支持资源编号文本、@drawable/名称、资产文件名及有读取权限的绝对文件路径；空文本沿用内置图标。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_ASSET,
@@ -189,8 +407,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的右侧图标。
 	 *
 	 * @param value 右侧图片，图片标识规则与图标相同；是否显示由显示右侧图标决定。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_ASSET,
@@ -210,7 +427,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的图标颜色。
 	 *
 	 * @param value 左侧图标的 ARGB 着色。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_COLOR,
@@ -230,7 +447,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的右侧图标颜色。
 	 *
 	 * @param value 右侧图标的 ARGB 着色。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_COLOR,
@@ -250,8 +467,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的图标尺寸。
 	 *
 	 * @param value 左侧图标宽高，单位 DIP；-1 沿用内置尺寸，设置后取消像素尺寸设置。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
@@ -271,8 +487,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的右侧图标尺寸。
 	 *
 	 * @param value 右侧图标宽高，单位 DIP；-1 沿用内置尺寸，设置后取消像素尺寸设置。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
@@ -292,7 +507,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的显示图标。
 	 *
 	 * @param value 是否显示左侧图标；显示进度开启时由进度指示替代。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -312,7 +527,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的显示右侧图标。
 	 *
 	 * @param value 是否显示右侧图标。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -332,7 +547,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的图标动画。
 	 *
 	 * @param value 是否播放左侧图标的脉冲动画。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -352,7 +567,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的右侧图标动画。
 	 *
 	 * @param value 是否播放右侧图标的脉冲动画。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -372,7 +587,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的单击动画。
 	 *
 	 * @param value 是否显示提示条按下时的反馈动画。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -392,7 +607,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的单击关闭。
 	 *
 	 * @param value 点击提示条主体后是否关闭；先派发被单击事件，再关闭仍属于本次显示的提示条。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -412,7 +627,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的始终显示。
 	 *
 	 * @param value 是否持续显示，直至关闭、滑动关闭或被新的提示条替换。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -432,7 +647,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的滑动关闭。
 	 *
 	 * @param value 是否允许使用滑动手势关闭提示条。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -452,7 +667,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的启用震动。
 	 *
 	 * @param value 显示时是否请求震动反馈；实际效果受设备硬件和系统设置影响。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -472,7 +687,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的显示进度。
 	 *
 	 * @param value 是否在图标区域显示进度指示。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -492,7 +707,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的进度颜色。
 	 *
 	 * @param value 进度指示的 ARGB 颜色。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_COLOR,
@@ -512,7 +727,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的禁用外部触摸。
 	 *
 	 * @param value 显示时是否阻止提示条以外区域的触摸。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
@@ -532,7 +747,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的位置。
 	 *
 	 * @param value 提示条在窗口中的 Android Gravity 值，48 表示顶部，80 表示底部。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_GRAVITY,
@@ -552,7 +767,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的内容对齐。
 	 *
 	 * @param value 提示条内容区域的 Android Gravity 值，16 表示垂直居中。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_GRAVITY,
@@ -572,7 +787,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的右侧图标对齐。
 	 *
 	 * @param value 右侧图标的 Android Gravity 值，8388613 表示跟随文字方向的末端。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_GRAVITY,
@@ -592,8 +807,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的进入动画资源。
 	 *
 	 * @param value 进入动画资源编号，0 沿用内置动画。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
@@ -613,8 +827,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的退出动画资源。
 	 *
 	 * @param value 退出动画资源编号，0 沿用内置动画。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
@@ -634,8 +847,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的阴影高度。
 	 *
 	 * @param value 背景的抬升高度，单位 DIP；-1 沿用内置值，不改变提示条布局高度。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_SINGLE,
@@ -655,8 +867,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的提示声音。
 	 *
 	 * @param value 提示音 URI，空文本不播放；内容 URI 需具备读取权限，可使用 android.resource://包名/raw/资源名。
-	 * @throws IllegalArgumentException 参数不符合约定。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 参数不符合约定； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleProperty(
 		type = SimpleProperty.PROPERTY_TYPE_STRING,
@@ -677,8 +888,7 @@ public interface 提示条 extends 组件 {
 	/**
 	 * 使用当前配置显示提示条，立即返回；同一窗口的新显示替换旧显示。
 	 *
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 图片或资源不可读取。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；图片或资源不可读取。
 	 */
 	@SimpleFunction
 	void 显示();
@@ -686,7 +896,7 @@ public interface 提示条 extends 组件 {
 	/**
 	 * 使用退出动画关闭本实例当前提示条；重复调用不重复触发被隐藏。
 	 *
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示。
 	 */
 	@SimpleFunction
 	void 关闭();
@@ -694,11 +904,10 @@ public interface 提示条 extends 组件 {
 	/**
 	 * 为下次显示添加按钮；相同标记替换已有配置，按钮顺序保留首次添加顺序。
 	 *
-	 * @param id 用于按钮被单击事件的标记。
+	 * @param id      用于按钮被单击事件的标记。
 	 * @param caption 按钮显示文字。
-	 * @param style 按钮样式资源编号，-1 使用内置 AlertButton，0 不指定额外样式。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @param style   按钮样式资源编号，-1 使用内置 AlertButton，0 不指定额外样式。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 添加按钮(int id, String caption, int style);
@@ -706,7 +915,7 @@ public interface 提示条 extends 组件 {
 	/**
 	 * 清除下次显示的全部按钮，不修改当前界面。
 	 *
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示。
 	 */
 	@SimpleFunction
 	void 清空按钮();
@@ -715,8 +924,7 @@ public interface 提示条 extends 组件 {
 	 * 更新标题配置，并立即修改本实例当前提示条的标题。
 	 *
 	 * @param value 新的标题文本。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 更新标题(String value);
@@ -725,8 +933,7 @@ public interface 提示条 extends 组件 {
 	 * 更新正文配置，并立即修改本实例当前提示条的正文。
 	 *
 	 * @param value 新的正文文本。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 更新内容(String value);
@@ -735,8 +942,7 @@ public interface 提示条 extends 组件 {
 	 * 读取字符串资源作为下次显示的标题。
 	 *
 	 * @param resourceId 字符串资源编号。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置标题资源(int resourceId);
@@ -745,8 +951,7 @@ public interface 提示条 extends 组件 {
 	 * 读取字符串资源作为下次显示的正文。
 	 *
 	 * @param resourceId 字符串资源编号。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置内容资源(int resourceId);
@@ -755,8 +960,7 @@ public interface 提示条 extends 组件 {
 	 * 读取颜色资源作为下次显示的背景颜色。
 	 *
 	 * @param resourceId 颜色资源编号。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置背景颜色资源(int resourceId);
@@ -765,8 +969,7 @@ public interface 提示条 extends 组件 {
 	 * 读取颜色资源作为下次显示的进度颜色。
 	 *
 	 * @param resourceId 颜色资源编号。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置进度颜色资源(int resourceId);
@@ -775,8 +978,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示的左侧图标宽高，优先于此前的 DIP 尺寸设置。
 	 *
 	 * @param pixels 像素尺寸，不得小于零。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置图标像素尺寸(int pixels);
@@ -785,8 +987,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示的右侧图标宽高，优先于此前的 DIP 尺寸设置。
 	 *
 	 * @param pixels 像素尺寸，不得小于零。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置右侧图标像素尺寸(int pixels);
@@ -795,8 +996,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示的背景图片资源；0 恢复使用背景颜色。
 	 *
 	 * @param resourceId 图片资源编号，不得小于零。
-	 * @throws IllegalArgumentException 资源编号小于零。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 资源编号小于零； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleFunction
 	void 置背景图片资源(int resourceId);
@@ -805,8 +1005,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示的左侧图标资源；0 沿用内置图标。
 	 *
 	 * @param resourceId 图片资源编号，不得小于零。
-	 * @throws IllegalArgumentException 资源编号小于零。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 资源编号小于零； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleFunction
 	void 置图标资源(int resourceId);
@@ -815,8 +1014,7 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示的右侧图标资源；0 沿用内置图标。
 	 *
 	 * @param resourceId 图片资源编号，不得小于零。
-	 * @throws IllegalArgumentException 资源编号小于零。
-	 * @throws IllegalStateException 不在界面线程调用或组件已销毁。
+	 * @throws 提示条错误 资源编号小于零； 不在界面线程调用或组件已销毁。
 	 */
 	@SimpleFunction
 	void 置右侧图标资源(int resourceId);
@@ -825,9 +1023,8 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的标题字体。
 	 *
 	 * @param family 系统字体族名称、@assets/字体文件名或有读取权限的绝对文件路径；空文本使用默认字体。
-	 * @param style 0 普通、1 粗体、2 斜体、3 粗斜体。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @param style  0 普通、1 粗体、2 斜体、3 粗斜体。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置标题字体(String family, int style);
@@ -836,9 +1033,8 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的内容字体。
 	 *
 	 * @param family 系统字体族名称、@assets/字体文件名或有读取权限的绝对文件路径；空文本使用默认字体。
-	 * @param style 0 普通、1 粗体、2 斜体、3 粗斜体。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @param style  0 普通、1 粗体、2 斜体、3 粗斜体。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置内容字体(String family, int style);
@@ -847,11 +1043,84 @@ public interface 提示条 extends 组件 {
 	 * 设置下次显示使用的按钮字体。
 	 *
 	 * @param family 系统字体族名称、@assets/字体文件名或有读取权限的绝对文件路径；空文本使用默认字体。
-	 * @param style 0 普通、1 粗体、2 斜体、3 粗斜体。
-	 * @throws IllegalStateException 不在界面线程调用、组件已销毁或宿主不能显示。
-	 * @throws IllegalArgumentException 参数不符合约定。
+	 * @param style  0 普通、1 粗体、2 斜体、3 粗斜体。
+	 * @throws 提示条错误 不在界面线程调用、组件已销毁或宿主不能显示；参数不符合约定。
 	 */
 	@SimpleFunction
 	void 置按钮字体(String family, int style);
+
+	/**
+	 * 修改当前提示条内容布局中的文本控件；可在被显示事件中初始化自定义布局。
+	 *
+	 * @param resourceId 布局内 TextView 或其子类的资源编号。
+	 * @param value      新文本，空文本清空内容。
+	 * @throws 提示条错误 控件不存在或类型不符合要求； 没有有效的显示、组件已销毁或不在界面线程调用。
+	 */
+	@SimpleFunction
+	void 置布局文本(int resourceId, String value);
+
+	/**
+	 * 读取当前提示条内容布局中的文本控件。
+	 *
+	 * @param resourceId 布局内 TextView 或其子类的资源编号。
+	 * @return 控件当前文本。
+	 * @throws 提示条错误 控件不存在或类型不符合要求； 没有有效的显示、组件已销毁或不在界面线程调用。
+	 */
+	@SimpleFunction
+	String 取布局文本(int resourceId);
+
+	/**
+	 * 设置当前提示条内容布局控件的点击监听；仅对本次显示有效。
+	 *
+	 * @param resourceId 内容布局内控件的资源编号。
+	 * @param enabled    真启用并派发布局控件被单击事件；假移除监听。
+	 * @throws 提示条错误 控件不存在或类型不符合要求； 没有有效的显示、组件已销毁或不在界面线程调用。
+	 */
+	@SimpleFunction
+	void 监听布局单击(int resourceId, boolean enabled);
+
+	/**
+	 * 设置下次显示的左侧图标颜色矩阵，优先于颜色及混合模式；重新设置图标颜色或混合模式可取消矩阵。
+	 *
+	 * @param values 按行排列的 4×5 颜色矩阵，共 20 个有限数值；空数组取消矩阵。
+	 * @throws 提示条错误 数量不是 0 或 20，或含非有限数值； 不在界面线程调用或组件已销毁。
+	 */
+	@SimpleFunction
+	void 置图标颜色矩阵(float[] values);
+
+	/**
+	 * 设置下次显示的右侧图标颜色矩阵，优先于颜色及混合模式；重新设置图标颜色或混合模式可取消矩阵。
+	 *
+	 * @param values 按行排列的 4×5 颜色矩阵，共 20 个有限数值；空数组取消矩阵。
+	 * @throws 提示条错误 数量不是 0 或 20，或含非有限数值； 不在界面线程调用或组件已销毁。
+	 */
+	@SimpleFunction
+	void 置右侧图标颜色矩阵(float[] values);
+
+	/**
+	 * 下次显示时使用系统默认通知提示音；系统静音和音量设置仍然生效。
+	 *
+	 * @throws 提示条错误 不在界面线程调用或组件已销毁。
+	 */
+	@SimpleFunction
+	void 使用默认提示声音();
+
+	/**
+	 * 读取尺寸资源作为下次显示的左侧图标宽高，优先于此前的 DIP 尺寸配置。
+	 *
+	 * @param resourceId dimen 尺寸资源编号。
+	 * @throws 提示条错误 资源无效、组件已销毁或不在界面线程调用。
+	 */
+	@SimpleFunction
+	void 置图标尺寸资源(int resourceId);
+
+	/**
+	 * 读取尺寸资源作为下次显示的右侧图标宽高，优先于此前的 DIP 尺寸配置。
+	 *
+	 * @param resourceId dimen 尺寸资源编号。
+	 * @throws 提示条错误 资源无效、组件已销毁或不在界面线程调用。
+	 */
+	@SimpleFunction
+	void 置右侧图标尺寸资源(int resourceId);
 
 }

@@ -25,7 +25,7 @@ public final class LuaJ错误 extends 运行错误 {
 	 * 创建失败说明并保留原因。
 	 *
 	 * @param message 失败说明。
-	 * @param cause 原始失败。
+	 * @param cause   原始失败。
 	 */
 	LuaJ错误(String message, Throwable cause) {
 		super(message);

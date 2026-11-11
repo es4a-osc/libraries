@@ -1,13 +1,13 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import android.view.View;
+import android.widget.TextView;
+
+import com.mikepenz.iconics.Iconics;
+
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
+import simple.runtime.components.可视组件;
 
 /**
  * 文字图标混排构造器。
@@ -17,10 +17,13 @@ import simple.runtime.components.*;
 @SimpleObject
 public final class 图标文字 {
 	private Iconics.Builder builder = new Iconics.Builder();
+
 	/**
 	 * 创建独立实例。
 	 */
-	public 图标文字() {}
+	public 图标文字() {
+	}
+
 	/**
 	 * 添加作用于全部图标的样式快照。
 	 *
@@ -37,7 +40,7 @@ public final class 图标文字 {
 	/**
 	 * 添加作用于指定图标的样式快照。
 	 *
-	 * @param name 图标名称。
+	 * @param name  图标名称。
 	 * @param style 样式。
 	 */
 	@SimpleFunction
@@ -53,7 +56,7 @@ public final class 图标文字 {
 	 * 处理图标标记并应用到文本控件。
 	 *
 	 * @param target 目标。
-	 * @param text 文本。
+	 * @param text   文本。
 	 */
 	@SimpleFunction
 	public void 应用(可视组件 target, String text) {
@@ -62,10 +65,7 @@ public final class 图标文字 {
 			throw new 图标错误("需要文本视图及文本");
 		}
 		Support.init();
-		java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\{([^{}]+)\\}").matcher(text);
-		while (m.find()) {
-			Support.resolve(m.group(1));
-		}
+		Support.validateText(text);
 		Support.setText((TextView) v, builder.on(text).build());
 	}
 

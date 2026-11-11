@@ -106,7 +106,8 @@ public final class CalendarCells {
 		}
 
 		@Override
-		protected boolean onDrawSelected(Canvas canvas, Calendar date, int x, int y, boolean hasScheme, boolean previous, boolean next) {
+		protected boolean onDrawSelected(Canvas canvas, Calendar date, int x, int y, boolean hasScheme,
+				boolean previous, boolean next) {
 			painter.day(canvas, date, 0, true, previous, next, x, y, mItemWidth, mItemHeight, false);
 			return true;
 		}
@@ -140,7 +141,8 @@ public final class CalendarCells {
 		}
 
 		@Override
-		protected boolean onDrawSelected(Canvas canvas, Calendar date, int x, boolean hasScheme, boolean previous, boolean next) {
+		protected boolean onDrawSelected(Canvas canvas, Calendar date, int x, boolean hasScheme, boolean previous,
+				boolean next) {
 			painter.day(canvas, date, 0, true, previous, next, x, 0, mItemWidth, mItemHeight, false);
 			return true;
 		}
@@ -174,7 +176,8 @@ public final class CalendarCells {
 		}
 
 		@Override
-		protected boolean onDrawSelected(Canvas canvas, Calendar date, int x, int y, boolean hasScheme, boolean previous, boolean next) {
+		protected boolean onDrawSelected(Canvas canvas, Calendar date, int x, int y, boolean hasScheme,
+				boolean previous, boolean next) {
 			painter.day(canvas, date, 0, true, previous, next, x, y, mItemWidth, mItemHeight, false);
 			return true;
 		}
@@ -208,7 +211,8 @@ public final class CalendarCells {
 		}
 
 		@Override
-		protected boolean onDrawSelected(Canvas canvas, Calendar date, int x, boolean hasScheme, boolean previous, boolean next) {
+		protected boolean onDrawSelected(Canvas canvas, Calendar date, int x, boolean hasScheme, boolean previous,
+				boolean next) {
 			painter.day(canvas, date, 0, true, previous, next, x, 0, mItemWidth, mItemHeight, false);
 			return true;
 		}
@@ -260,7 +264,8 @@ public final class CalendarCells {
 		@Override
 		protected void onDrawScheme(Canvas canvas, Calendar date, int x, int y) {
 			NativeCalendar owner = painter.owner();
-			painter.day(canvas, date, 1, owner != null && owner.es4aSelected(date), false, false, x, y, mItemWidth, mItemHeight, true);
+			painter.day(canvas, date, 1, owner != null && owner.es4aSelected(date), false, false, x, y, mItemWidth,
+					mItemHeight, true);
 		}
 
 		@Override
@@ -310,7 +315,8 @@ public final class CalendarCells {
 			Calendar selected = owner.getSelectedCalendar();
 			for (int i = 0; i < 7; i++) {
 				int week = (weekStart - 1 + i) % 7;
-				painter.heading(canvas, selected.getYear(), selected.getMonth(), 2, week, getPaddingLeft() + i * width, 0, width, getHeight());
+				painter.heading(canvas, selected.getYear(), selected.getMonth(), 2, week, getPaddingLeft() + i * width,
+						0, width, getHeight());
 			}
 		}
 	}
@@ -358,19 +364,20 @@ public final class CalendarCells {
 		/**
 		 * 按阶段绘制日项。
 		 *
-		 * @param canvas 原生画布。
-		 * @param date 日期。
-		 * @param stage 本地阶段。
+		 * @param canvas   原生画布。
+		 * @param date     日期。
+		 * @param stage    本地阶段。
 		 * @param selected 是否选中。
 		 * @param previous 前项是否选中。
-		 * @param next 后项是否选中。
-		 * @param x 左边像素。
-		 * @param y 顶边像素。
-		 * @param width 宽度像素。
-		 * @param height 高度像素。
+		 * @param next     后项是否选中。
+		 * @param x        左边像素。
+		 * @param y        顶边像素。
+		 * @param width    宽度像素。
+		 * @param height   高度像素。
 		 * @param yearView 是否为年视图。
 		 */
-		void day(Canvas canvas, Calendar date, int stage, boolean selected, boolean previous, boolean next, float x, float y, float width, float height, boolean yearView) {
+		void day(Canvas canvas, Calendar date, int stage, boolean selected, boolean previous, boolean next, float x,
+				float y, float width, float height, boolean yearView) {
 			NativeCalendar owner = owner();
 			if (owner == null || width <= 0 || height <= 0) {
 				return;
@@ -412,16 +419,19 @@ public final class CalendarCells {
 				java.util.List<Calendar.Scheme> marks = date.getSchemes();
 				int count = marks == null || marks.isEmpty() ? 1 : Math.min(5, marks.size());
 				if (!yearView && config.内置样式() == 3) {
-					int progress = marks == null || marks.isEmpty() ? 100 : Math.max(0, Math.min(100, marks.get(0).getType()));
+					int progress = marks == null || marks.isEmpty() ? 100
+							: Math.max(0, Math.min(100, marks.get(0).getType()));
 					paint.setColor(date.getSchemeColor() == 0 ? config.标记颜色() : date.getSchemeColor());
 					paint.setStyle(Paint.Style.STROKE);
 					rect.set(cx - radius, cy - radius, cx + radius, cy + radius);
 					canvas.drawArc(rect, -90, progress * 3.6f, false, paint);
 				} else if (yearView || config.内置样式() == 4) {
 					for (int i = 0; i < count; i++) {
-						int color = marks == null || marks.isEmpty() ? date.getSchemeColor() : marks.get(i).getShcemeColor();
+						int color = marks == null || marks.isEmpty() ? date.getSchemeColor()
+								: marks.get(i).getShcemeColor();
 						paint.setColor(color == 0 ? config.标记颜色() : color);
-						canvas.drawCircle(cx + (i - (count - 1) / 2f) * 6 * density, y + height - 4 * density, (yearView ? 1 : 2) * density, paint);
+						canvas.drawCircle(cx + (i - (count - 1) / 2f) * 6 * density, y + height - 4 * density,
+								(yearView ? 1 : 2) * density, paint);
 					}
 				} else {
 					paint.setColor(date.getSchemeColor() == 0 ? config.标记颜色() : date.getSchemeColor());
@@ -443,7 +453,10 @@ public final class CalendarCells {
 			} else {
 				boolean lunar = !yearView && config.显示农历();
 				boolean blocked = owner.blocked(date);
-				int color = selected ? (yearView ? config.年选中颜色() : config.选中文字颜色()) : date.isCurrentDay() ? (yearView ? config.年今日颜色() : config.今日文字颜色()) : yearView ? config.年日期颜色() : date.isCurrentMonth() ? config.本月文字颜色() : config.其他月文字颜色();
+				int color = selected ? (yearView ? config.年选中颜色() : config.选中文字颜色())
+						: date.isCurrentDay() ? (yearView ? config.年今日颜色() : config.今日文字颜色())
+								: yearView ? config.年日期颜色()
+										: date.isCurrentMonth() ? config.本月文字颜色() : config.其他月文字颜色();
 				if (!selected && !date.isCurrentDay() && date.hasScheme()) {
 					color = yearView ? config.年标记颜色() : config.标记文字颜色();
 				}
@@ -457,12 +470,16 @@ public final class CalendarCells {
 				canvas.drawText(String.valueOf(date.getDay()), cx, baseline, paint);
 				if (lunar) {
 					paint.setTextSize(config.农历字号() * scaled);
-					paint.setColor(selected ? config.选中农历颜色() : date.isCurrentDay() ? config.今日农历颜色() : date.hasScheme() ? config.标记农历颜色() : date.isCurrentMonth() ? config.本月农历颜色() : config.其他月农历颜色());
+					paint.setColor(selected ? config.选中农历颜色()
+							: date.isCurrentDay() ? config.今日农历颜色()
+									: date.hasScheme() ? config.标记农历颜色()
+											: date.isCurrentMonth() ? config.本月农历颜色() : config.其他月农历颜色());
 					if (blocked) {
 						paint.setAlpha(85);
 					}
 					metrics = paint.getFontMetrics();
-					canvas.drawText(date.getLunar() == null ? "" : date.getLunar(), cx, cy + height * 0.21f - (metrics.ascent + metrics.descent) / 2, paint);
+					canvas.drawText(date.getLunar() == null ? "" : date.getLunar(), cx,
+							cy + height * 0.21f - (metrics.ascent + metrics.descent) / 2, paint);
 				}
 			}
 		}
@@ -471,16 +488,17 @@ public final class CalendarCells {
 		 * 绘制月份标题和星期标题。
 		 *
 		 * @param canvas 原生画布。
-		 * @param year 公历年。
-		 * @param month 公历月。
-		 * @param stage 标题阶段。
-		 * @param week 星期，月份标题为 -1。
-		 * @param x 左边像素。
-		 * @param y 顶边像素。
-		 * @param width 宽度像素。
+		 * @param year   公历年。
+		 * @param month  公历月。
+		 * @param stage  标题阶段。
+		 * @param week   星期，月份标题为 -1。
+		 * @param x      左边像素。
+		 * @param y      顶边像素。
+		 * @param width  宽度像素。
 		 * @param height 高度像素。
 		 */
-		void heading(Canvas canvas, int year, int month, int stage, int week, float x, float y, float width, float height) {
+		void heading(Canvas canvas, int year, int month, int stage, int week, float x, float y, float width,
+				float height) {
 			NativeCalendar owner = owner();
 			if (owner == null || !owner.heading(canvas, year, month, stage, week, x, y, width, height)) {
 				return;

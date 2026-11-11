@@ -2,7 +2,6 @@ package simple.library.wsd.luaj;
 
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
-
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.variants.Variant;
@@ -22,7 +21,7 @@ public final class LuaJ参数 {
 	 * 计算尾调用并复制所有值的位置，避免持有可变的参数容器。
 	 *
 	 * @param context 所属实例。
-	 * @param values 原参数或返回值。
+	 * @param values  原参数或返回值。
 	 */
 	LuaJ参数(LuaJContext context, Varargs values) {
 		this.context = context;
@@ -41,13 +40,7 @@ public final class LuaJ参数 {
 	 */
 	@SimpleFunction
 	public int 取数量() {
-		return context.perform(
-				new LuaJContext.Action<Integer>() {
-					@Override
-					public Integer run() throws Exception {
-						return values.narg();
-					}
-				});
+		return context.perform(() -> values.narg());
 	}
 
 	/**
@@ -58,16 +51,12 @@ public final class LuaJ参数 {
 	 */
 	@SimpleFunction
 	public LuaJ值 取值(int index) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						if (index < 1) {
-							throw new LuaJ错误("参数位置必须从 1 开始");
-						}
-						return context.wrap(values.arg(index));
-					}
-				});
+		return context.perform(() -> {
+			if (index < 1) {
+				throw new LuaJ错误("参数位置必须从 1 开始");
+			}
+			return context.wrap(values.arg(index));
+		});
 	}
 
 	/**
@@ -77,17 +66,13 @@ public final class LuaJ参数 {
 	 */
 	@SimpleFunction
 	public LuaJ值[] 取全部() {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值[]>() {
-					@Override
-					public LuaJ值[] run() throws Exception {
-						LuaJ值[] result = new LuaJ值[values.narg()];
-						for (int i = 0; i < result.length; i++) {
-							result[i] = context.wrap(values.arg(i + 1));
-						}
-						return result;
-					}
-				});
+		return context.perform(() -> {
+			LuaJ值[] result = new LuaJ值[values.narg()];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = context.wrap(values.arg(i + 1));
+			}
+			return result;
+		});
 	}
 
 	/**
@@ -98,20 +83,16 @@ public final class LuaJ参数 {
 	 */
 	@SimpleFunction
 	public LuaJ参数 从位置取(int index) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ参数>() {
-					@Override
-					public LuaJ参数 run() throws Exception {
-						if (index < 1 || index > values.narg() + 1) {
-							throw new LuaJ错误("参数子列表位置无效");
-						}
-						LuaValue[] result = new LuaValue[values.narg() - index + 1];
-						for (int i = 0; i < result.length; i++) {
-							result[i] = values.arg(index + i);
-						}
-						return new LuaJ参数(context, LuaValue.varargsOf(result));
-					}
-				});
+		return context.perform(() -> {
+			if (index < 1 || index > values.narg() + 1) {
+				throw new LuaJ错误("参数子列表位置无效");
+			}
+			LuaValue[] result = new LuaValue[values.narg() - index + 1];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = values.arg(index + i);
+			}
+			return new LuaJ参数(context, LuaValue.varargsOf(result));
+		});
 	}
 
 	/**
@@ -122,12 +103,6 @@ public final class LuaJ参数 {
 	 */
 	@SimpleFunction
 	public LuaJ参数 生成(Variant[] arguments) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ参数>() {
-					@Override
-					public LuaJ参数 run() throws Exception {
-						return new LuaJ参数(context, context.arguments(arguments));
-					}
-				});
+		return context.perform(() -> new LuaJ参数(context, context.arguments(arguments)));
 	}
 }

@@ -1,13 +1,9 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import simple.runtime.annotations.SimpleComponent;
+import simple.runtime.annotations.SimpleEvent;
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
 
 /**
  * 字体图标控件。
@@ -24,6 +20,7 @@ public interface 字体图标切换按钮 extends 字体图标视图 {
 	 */
 	@SimpleFunction
 	public boolean 是否选中();
+
 	/**
 	 * 设置选中状态，变化时通知。
 	 *
@@ -31,14 +28,16 @@ public interface 字体图标切换按钮 extends 字体图标视图 {
 	 */
 	@SimpleFunction
 	public void 设置选中(boolean checked);
+
 	/**
 	 * 设置勾选和未勾选图标。
 	 *
-	 * @param checked 选中图标。
+	 * @param checked   选中图标。
 	 * @param unchecked 未选中图标。
 	 */
 	@SimpleFunction
 	public void 设置选中图标(图标图像 checked, 图标图像 unchecked);
+
 	/**
 	 * 选中状态变化。
 	 *

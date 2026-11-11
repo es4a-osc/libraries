@@ -5,8 +5,8 @@
 <button id="send">发送消息给 Simple</button>
 <button id="alert">弹出网页提示</button>
 <button id="confirm">网页确认与取消</button>
-<button id="select">选择本地文件</button><input id="file" type="file" accept="text/*" multiple hidden>
-<p id="web-result">等待网页操作。</p><small>文件由系统选择器授权访问，取消也会向 Simple 返回结果。示例不请求摄像头、麦克风或定位。</small>
+<button id="select">选择本地文件</button><input id="file" type="file" accept=".txt,application/json" multiple hidden>
+<p id="web-result">等待网页操作。</p><small>此例接受 TXT 或 JSON 文件，可多选。文件由系统选择器授权访问，取消也会向 Simple 返回结果。示例不请求摄像头、麦克风或定位。</small>
 <script>
 const result=document.getElementById('web-result');
 document.getElementById('send').onclick=function(){if(window.ES4A){window.ES4A.postMessage('来自本地网页的问候');result.textContent='网页消息已发送。';}else{result.textContent='当前页面未注册演示接口，请回到本地主页。';}};

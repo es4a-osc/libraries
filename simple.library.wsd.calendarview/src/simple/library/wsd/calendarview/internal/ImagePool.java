@@ -27,7 +27,7 @@ public final class ImagePool {
 	 * 读取资产、文件或系统内容 URI。
 	 *
 	 * @param context 应用上下文。
-	 * @param path 输入路径。
+	 * @param path    输入路径。
 	 * @return 本集合中的图片编号。
 	 */
 	public int load(Context context, String path) {
@@ -79,7 +79,8 @@ public final class ImagePool {
 			throw new IllegalArgumentException("无法读取图像尺寸");
 		}
 		options.inSampleSize = 1;
-		while ((Math.max(options.outWidth, options.outHeight) + options.inSampleSize - 1L) / options.inSampleSize > 1024) {
+		while ((Math.max(options.outWidth, options.outHeight) + options.inSampleSize - 1L)
+				/ options.inSampleSize > 1024) {
 			options.inSampleSize *= 2;
 		}
 		options.inJustDecodeBounds = false;

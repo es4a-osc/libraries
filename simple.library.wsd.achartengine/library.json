@@ -1,6 +1,6 @@
 {
 	"name": "ACE图表库",
-	"description": "基于 AChartEngine https://github.com/ddanny/achartengine 封装，提供饼状图、柱状图和折线图。",
+	"description": "基于 AChartEngine https://github.com/ddanny/achartengine 封装，提供十一类图形、多数据组、分类及数值横坐标、左右轴、样式、数据更新、选择、拖动缩放与图片导出；需要 Android 7.0 及以上，在界面线程操作。",
 	"version": "0.1.0",
 	"authors": [
 		{
@@ -15,210 +15,1809 @@
 			"definitions": [
 				{
 					"name": "ACE饼状图",
-					"description": "展示非负数值占比；非空图表至少包含一个正数。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
-					"icon": "icons/chart-pie.svg",
-					"kind": "component",
 					"type": "simple.library.wsd.achartengine.ACE饼状图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的饼状图；在界面线程初始化、添加数据并构建。",
 					"inherits": [
-						"simple.runtime.components.可视组件"
+						"simple.library.wsd.achartengine.ACE图表"
 					],
+					"icon": "icons/chart-pie.svg",
 					"functions": [
 						{
-							"name": "初始化图表",
-							"description": "在界面线程设置样式，清空原数据和图形；必须先初始化再添加数据。",
-							"params": [
-								{
-									"name": "图表标题",
-									"type": "文本型",
-									"description": "图表顶部显示的标题。"
-								},
-								{
-									"name": "字体大小",
-									"type": "单精度小数型",
-									"description": "单位 SP，必须为有限正数。"
-								},
-								{
-									"name": "背景颜色",
-									"type": "整数型",
-									"description": "图表背景的 ARGB 颜色。"
-								}
-							]
-						},
-						{
 							"name": "添加数据",
-							"description": "添加一个项目；数值校验失败时不改变原数据，调用构建图表后显示。",
+							"description": "添加一个扇区或指针；饼图值须非负。",
 							"params": [
 								{
 									"name": "名称",
 									"type": "文本型",
-									"description": "项目名称，按添加顺序显示。"
+									"description": "非空引用的名称，允许空文本。"
 								},
 								{
-									"name": "数据",
-									"type": "文本型",
-									"description": "有限非负数的数值文本。"
-								},
-								{
-									"name": "单位",
-									"type": "文本型",
-									"description": "随项目显示的数值单位，可以为空文本。"
+									"name": "数值",
+									"type": "双精度小数型",
+									"description": "有限数值。"
 								},
 								{
 									"name": "颜色",
 									"type": "整数型",
-									"description": "当前扇区的 ARGB 颜色。"
+									"description": "ARGB 颜色。"
 								}
 							]
 						},
 						{
-							"name": "构建图表",
-							"description": "在界面线程按当前数据重建图表；无数据时清空图形，重复调用不累计数据或坐标边距。"
+							"name": "更新数据",
+							"description": "更新指定扇区或指针，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从 0 开始的项目编号。"
+								},
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型",
+									"description": "有限数值。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "删除数据",
+							"description": "删除指定扇区或指针，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从 0 开始的项目编号。"
+								}
+							]
 						}
 					]
 				},
 				{
 					"name": "ACE柱状图",
-					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
-					"icon": "icons/chart-bar.svg",
-					"kind": "component",
 					"type": "simple.library.wsd.achartengine.ACE柱状图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的柱状图；在界面线程初始化、添加数据并构建。",
 					"inherits": [
-						"simple.runtime.components.可视组件"
+						"simple.library.wsd.achartengine.ACE坐标图表"
 					],
+					"icon": "icons/chart-bar.svg",
 					"functions": [
 						{
-							"name": "初始化图表",
-							"description": "在界面线程设置样式，清空原数据和图形；必须先初始化再添加数据。",
-							"params": [
-								{
-									"name": "图表标题",
-									"type": "文本型",
-									"description": "图表顶部显示的标题。"
-								},
-								{
-									"name": "横轴标题",
-									"type": "文本型",
-									"description": "项目名称轴的标题。"
-								},
-								{
-									"name": "纵轴标题",
-									"type": "文本型",
-									"description": "数值轴的标题。"
-								},
-								{
-									"name": "字体大小",
-									"type": "单精度小数型",
-									"description": "单位 SP，必须为有限正数。"
-								},
-								{
-									"name": "背景颜色",
-									"type": "整数型",
-									"description": "图表背景的 ARGB 颜色。"
-								},
-								{
-									"name": "项目颜色",
-									"type": "整数型",
-									"description": "柱条或折线的 ARGB 颜色。"
-								}
-							]
-						},
-						{
-							"name": "添加数据",
-							"description": "添加一个项目；数值校验失败时不改变原数据，调用构建图表后显示。",
+							"name": "添加数据组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
 							"params": [
 								{
 									"name": "名称",
 									"type": "文本型",
-									"description": "项目名称，按添加顺序显示。"
+									"description": "非空引用的名称，允许空文本。"
 								},
 								{
-									"name": "数据",
-									"type": "文本型",
-									"description": "有限数值的文本，允许零和负数。"
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
 								},
 								{
-									"name": "单位",
-									"type": "文本型",
-									"description": "随项目显示的数值单位，可以为空文本。"
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
 								}
 							]
 						},
 						{
-							"name": "构建图表",
-							"description": "在界面线程按当前数据重建图表；无数据时清空图形，重复调用不累计数据或坐标边距。"
+							"name": "添加数值组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "设置柱排列",
+							"description": "设置柱排列，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "模式",
+									"type": "整数型",
+									"description": "0 并排，1 重叠；重叠沿用上游 STACKED 的从零点覆盖绘制，并非累加堆叠。"
+								}
+							]
 						}
 					]
 				},
 				{
 					"name": "ACE折线图",
-					"description": "按项目顺序展示有限数值，支持零和负数；单组系列，无时间轴。在界面线程依次初始化、添加数据并构建图表；追加数据后可重新构建。",
-					"icon": "icons/chart-line.svg",
-					"kind": "component",
 					"type": "simple.library.wsd.achartengine.ACE折线图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的折线图；在界面线程初始化、添加数据并构建。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE坐标图表"
+					],
+					"icon": "icons/chart-line.svg",
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "添加数值组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ACE平滑曲线图",
+					"type": "simple.library.wsd.achartengine.ACE平滑曲线图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的平滑曲线图；在界面线程初始化、添加数据并构建。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE坐标图表"
+					],
+					"icon": "icons/chart-curve.svg",
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "添加数值组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "设置曲线强度",
+							"description": "设置贝塞尔曲线强度，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "强度",
+									"type": "单精度小数型",
+									"description": "0 至 1。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ACE时间图",
+					"type": "simple.library.wsd.achartengine.ACE时间图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的时间图；在界面线程初始化、添加数据并构建。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE坐标图表"
+					],
+					"icon": "icons/chart-time.svg",
+					"functions": [
+						{
+							"name": "添加数值组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；时间横坐标使用整数毫秒时间戳。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "设置时间格式",
+							"description": "设置时间轴格式，格式错误时拒绝修改，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "格式",
+									"type": "文本型",
+									"description": "SimpleDateFormat 格式，空文本自动选择；按设备时区显示。"
+								},
+								{
+									"name": "智能刻度",
+									"type": "逻辑型",
+									"description": "是否按时间跨度生成时间刻度。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ACE散点图",
+					"type": "simple.library.wsd.achartengine.ACE散点图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的散点图；在界面线程初始化、添加数据并构建。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE坐标图表"
+					],
+					"icon": "icons/chart-scatter.svg",
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "添加数值组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ACE气泡图",
+					"type": "simple.library.wsd.achartengine.ACE气泡图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的气泡图；在界面线程初始化、添加数据并构建。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE坐标图表"
+					],
+					"icon": "icons/chart-bubble.svg",
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "大小",
+									"type": "双精度小数型[]",
+									"description": "与纵坐标等长的有限非负大小。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "添加数值组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								},
+								{
+									"name": "大小",
+									"type": "双精度小数型[]",
+									"description": "与纵坐标等长的有限非负大小。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ACE区间柱状图",
+					"type": "simple.library.wsd.achartengine.ACE区间柱状图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的区间柱状图；在界面线程初始化、添加数据并构建。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE坐标图表"
+					],
+					"icon": "icons/chart-range.svg",
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "下限",
+									"type": "双精度小数型[]",
+									"description": "与横坐标等长，不大于上限。"
+								},
+								{
+									"name": "上限",
+									"type": "双精度小数型[]",
+									"description": "与横坐标等长，不小于下限。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "添加数值组",
+							"description": "添加数据组并复制输入数组，构建或刷新后显示；分类和数值坐标不能混用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "下限",
+									"type": "双精度小数型[]",
+									"description": "与横坐标等长，不大于上限。"
+								},
+								{
+									"name": "上限",
+									"type": "双精度小数型[]",
+									"description": "与横坐标等长，不小于下限。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						},
+						{
+							"name": "设置柱排列",
+							"description": "设置柱排列，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "模式",
+									"type": "整数型",
+									"description": "0 并排，1 重叠；重叠沿用上游 STACKED 的从零点覆盖绘制，并非累加堆叠。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ACE组合图",
+					"type": "simple.library.wsd.achartengine.ACE组合图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的组合图；在界面线程初始化、添加数据并构建。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE坐标图表"
+					],
+					"icon": "icons/chart-covariate.svg",
+					"functions": [
+						{
+							"name": "添加数据组",
+							"description": "添加组合图的数据组，保持添加顺序和左右轴归属。",
+							"params": [
+								{
+									"name": "图形类型",
+									"type": "整数型",
+									"description": "0 折线，1 平滑曲线，2 柱，3 散点，4 气泡，5 区间柱，6 时间折线。"
+								},
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "普通图传纵坐标；气泡按整列拼接纵坐标与大小，区间按整列拼接下限与上限。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ACE圆环图",
+					"type": "simple.library.wsd.achartengine.ACE圆环图",
+					"kind": "component",
+					"description": "基于 AChartEngine 的圆环图；在界面线程初始化、添加数据并构建。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE图表"
+					],
+					"icon": "icons/chart-ring.svg",
+					"functions": [
+						{
+							"name": "添加圆环",
+							"description": "添加一层圆环，各层允许不同项目数，数值非负且至少一个正数。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "扇区名称",
+									"type": "文本型[]",
+									"description": "扇区名称数组。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								}
+							]
+						},
+						{
+							"name": "设置颜色集",
+							"description": "设置各圆环共用的扇区配色，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "颜色集",
+									"type": "整数型[]",
+									"description": "按扇区索引循环使用的 ARGB 颜色，不能为空。"
+								}
+							]
+						},
+						{
+							"name": "更新圆环",
+							"description": "原子替换一层圆环，校验失败保留原数据。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "扇区名称",
+									"type": "文本型[]",
+									"description": "新扇区名称数组。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "与横坐标或分类名称等长的有限数值数组。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "ACE仪表盘",
+					"type": "simple.library.wsd.achartengine.ACE仪表盘",
+					"kind": "component",
+					"description": "基于 AChartEngine 的仪表盘；在界面线程初始化、添加数据并构建。 指针数值须位于设置的量程内，构建时检查。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE图表"
+					],
+					"icon": "icons/chart-dial.svg",
+					"functions": [
+						{
+							"name": "添加数据",
+							"description": "添加一个扇区或指针；饼图值须非负。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型",
+									"description": "有限数值。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								},
+								{
+									"name": "指针类型",
+									"type": "整数型",
+									"description": "0 三角，1 箭头。"
+								}
+							]
+						},
+						{
+							"name": "更新数据",
+							"description": "更新指定扇区或指针，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从 0 开始的项目编号。"
+								},
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型",
+									"description": "有限数值。"
+								},
+								{
+									"name": "颜色",
+									"type": "整数型",
+									"description": "ARGB 颜色。"
+								}
+							]
+						},
+						{
+							"name": "删除数据",
+							"description": "删除指定扇区或指针，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从 0 开始的项目编号。"
+								}
+							]
+						},
+						{
+							"name": "设置仪表样式",
+							"description": "设置量程、刻度和角度，拒绝超过 2000 条的刻度循环，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.achartengine.ACE仪表样式",
+									"description": "要复制的表盘配置。"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "ACE图表",
+					"kind": "interface",
+					"type": "simple.library.wsd.achartengine.ACE图表",
+					"description": "图表共用配置、数据与交互接口。 数据绝对值不超过 1e99，轴界限不超过 1e100。",
 					"inherits": [
 						"simple.runtime.components.可视组件"
 					],
 					"functions": [
 						{
 							"name": "初始化图表",
-							"description": "在界面线程设置样式，清空原数据和图形；必须先初始化再添加数据。",
+							"description": "初始化基础样式，清空数据、轴范围和配置；后续操作须先初始化。",
 							"params": [
 								{
-									"name": "图表标题",
+									"name": "标题",
 									"type": "文本型",
-									"description": "图表顶部显示的标题。"
+									"description": "图表标题，允许空文本。"
 								},
 								{
-									"name": "横轴标题",
-									"type": "文本型",
-									"description": "项目名称轴的标题。"
-								},
-								{
-									"name": "纵轴标题",
-									"type": "文本型",
-									"description": "数值轴的标题。"
-								},
-								{
-									"name": "字体大小",
+									"name": "字号",
 									"type": "单精度小数型",
-									"description": "单位 SP，必须为有限正数。"
+									"description": "6 至 100 SP。"
 								},
 								{
-									"name": "背景颜色",
+									"name": "颜色",
 									"type": "整数型",
-									"description": "图表背景的 ARGB 颜色。"
-								},
-								{
-									"name": "项目颜色",
-									"type": "整数型",
-									"description": "柱条或折线的 ARGB 颜色。"
+									"description": "ARGB 颜色。"
 								}
 							]
 						},
 						{
-							"name": "添加数据",
-							"description": "添加一个项目；数值校验失败时不改变原数据，调用构建图表后显示。",
-							"params": [
-								{
-									"name": "名称",
-									"type": "文本型",
-									"description": "项目名称，按添加顺序显示。"
-								},
-								{
-									"name": "数据",
-									"type": "文本型",
-									"description": "有限数值的文本，允许零和负数。"
-								},
-								{
-									"name": "单位",
-									"type": "文本型",
-									"description": "随项目显示的数值单位，可以为空文本。"
-								}
-							]
+							"name": "清空数据",
+							"description": "清空数据与图形，保留样式、轴标签和范围。"
 						},
 						{
 							"name": "构建图表",
-							"description": "在界面线程按当前数据重建图表；无数据时清空图形，重复调用不累计数据或坐标边距。"
+							"description": "重建图表并恢复设置的轴范围；无数据时清空图形。"
+						},
+						{
+							"name": "刷新图表",
+							"description": "重建图表，保留当前缩放和平移范围。"
+						},
+						{
+							"name": "设置图表样式",
+							"description": "保存样式副本，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.achartengine.ACE图表样式",
+									"description": "要复制的配置，不能为 null。"
+								}
+							]
+						},
+						{
+							"name": "设置数据组样式",
+							"description": "保存数据组样式副本，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.achartengine.ACE数据组样式",
+									"description": "要复制的数据组配置。"
+								}
+							]
+						},
+						{
+							"name": "取数据组样式",
+							"description": "返回独立的数据组样式副本，未设置时返回默认配置。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								}
+							],
+							"return": "simple.library.wsd.achartengine.ACE数据组样式"
+						},
+						{
+							"name": "取数据组名称",
+							"description": "返回数据组名称；饼图和仪表盘返回空文本。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "设置数据组名称",
+							"description": "修改数据组名称，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的名称，允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "取项目名称",
+							"description": "返回名称数组副本；数值坐标返回空数组。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								}
+							],
+							"return": "文本型[]"
+						},
+						{
+							"name": "取横坐标",
+							"description": "返回横坐标副本，分类和圆图为从 1 开始的项目索引。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								}
+							],
+							"return": "双精度小数型[]"
+						},
+						{
+							"name": "取数据组数值",
+							"description": "返回指定列的独立数值数组。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "数值列",
+									"type": "整数型",
+									"description": "普通图为 0；气泡 0 纵坐标、1 大小；区间柱 0 下限、1 上限。"
+								}
+							],
+							"return": "双精度小数型[]"
+						},
+						{
+							"name": "删除数据组",
+							"description": "删除指定数据组；饼图或仪表盘删除全部项目，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								}
+							]
+						},
+						{
+							"name": "选择项目",
+							"description": "主动选择已构建项目，显示文字提示；上游没有程序化高亮效果。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从 0 开始的项目编号。"
+								},
+								{
+									"name": "触发事件",
+									"type": "逻辑型",
+									"description": "是否派发项目被选中事件。"
+								}
+							]
+						},
+						{
+							"name": "取消选择",
+							"description": "取消当前选择和文字提示。",
+							"params": [
+								{
+									"name": "触发事件",
+									"type": "逻辑型",
+									"description": "是否派发选择被取消事件。"
+								}
+							]
+						},
+						{
+							"name": "取选中项目",
+							"description": "返回数据组和项目编号的副本；未选择或模型已修改时返回空数组。",
+							"return": "整数型[]"
+						},
+						{
+							"name": "导出图片",
+							"description": "导出已完成布局的图表截图，返回压缩字节，无需存储权限。",
+							"params": [
+								{
+									"name": "格式",
+									"type": "整数型",
+									"description": "0 PNG，1 JPEG。"
+								},
+								{
+									"name": "质量",
+									"type": "整数型",
+									"description": "0 至 100；PNG 不使用质量参数。"
+								}
+							],
+							"return": "字节型[]"
+						},
+						{
+							"name": "放大",
+							"description": "调整已构建图表的显示比例；复位恢复构建时的初始范围。"
+						},
+						{
+							"name": "缩小",
+							"description": "调整已构建图表的显示比例；复位恢复构建时的初始范围。"
+						},
+						{
+							"name": "重置视图",
+							"description": "调整已构建图表的显示比例；复位恢复构建时的初始范围。"
+						}
+					],
+					"properties": [
+						{
+							"name": "数据组数量",
+							"type": "整数型",
+							"writable": false,
+							"description": "当前模型中的数据组数量；项目数为各数据组项目数的最大值。"
+						},
+						{
+							"name": "项目数量",
+							"type": "整数型",
+							"writable": false,
+							"description": "当前模型中的项目数量；项目数为各数据组项目数的最大值。"
+						},
+						{
+							"name": "显示图例",
+							"type": "逻辑型",
+							"description": "是否显示图例，同时受图表样式控制。",
+							"initializer": "True",
+							"editor": "simple.boolean"
+						},
+						{
+							"name": "显示数值",
+							"type": "逻辑型",
+							"description": "是否显示坐标图数值，同时受数据组样式控制。",
+							"initializer": "True",
+							"editor": "simple.boolean"
+						}
+					],
+					"events": [
+						{
+							"name": "项目被选中",
+							"description": "项目被主动选择或原生点选；编号从 0 开始，圆环和仪表盘仅支持主动选择。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从 0 开始的项目编号。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型",
+									"description": "原模型横坐标。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型",
+									"description": "普通图为纵坐标，区间为上限，饼图及仪表盘为原始值。"
+								}
+							]
+						},
+						{
+							"name": "选择被取消",
+							"description": "选择被取消或点击空白位置。"
+						},
+						{
+							"name": "图表被拖动",
+							"description": "手势平移已改变可见范围。"
+						},
+						{
+							"name": "图表被缩放",
+							"description": "原生缩放手势或按钮已改变图表范围。",
+							"params": [
+								{
+									"name": "放大",
+									"type": "逻辑型",
+									"description": "True 放大，False 缩小。"
+								},
+								{
+									"name": "倍率",
+									"type": "单精度小数型",
+									"description": "本次缩放倍率。"
+								}
+							]
+						},
+						{
+							"name": "视图被重置",
+							"description": "原生复位已恢复图表初始范围。"
+						}
+					]
+				},
+				{
+					"name": "ACE坐标图表",
+					"kind": "interface",
+					"type": "simple.library.wsd.achartengine.ACE坐标图表",
+					"description": "图表共用配置、数据与交互接口。",
+					"inherits": [
+						"simple.library.wsd.achartengine.ACE图表"
+					],
+					"functions": [
+						{
+							"name": "设置项目名称",
+							"description": "设置分类索引名称，数值坐标数据不需要调用。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型[]",
+									"description": "分类名称，添加数据前设置；更换名称前先清空。"
+								}
+							]
+						},
+						{
+							"name": "设置轴标题",
+							"description": "设置横轴和左右轴标题，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "横轴",
+									"type": "文本型",
+									"description": "横轴标题。"
+								},
+								{
+									"name": "左轴",
+									"type": "文本型",
+									"description": "左数值轴标题。"
+								},
+								{
+									"name": "右轴",
+									"type": "文本型",
+									"description": "右数值轴标题。"
+								}
+							]
+						},
+						{
+							"name": "设置轴样式",
+							"description": "保存轴样式副本，构建或刷新后生效；数值轴刻度数量和角度为上游共享设置。",
+							"params": [
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 横轴，1 左数值轴，2 右数值轴。"
+								},
+								{
+									"name": "样式",
+									"type": "simple.library.wsd.achartengine.ACE轴样式",
+									"description": "要复制的轴配置。"
+								}
+							]
+						},
+						{
+							"name": "设置轴范围",
+							"description": "固定指定坐标轴范围，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 横轴，1 左数值轴，2 右数值轴。"
+								},
+								{
+									"name": "最小值",
+									"type": "双精度小数型",
+									"description": "有限数值，必须小于最大值。"
+								},
+								{
+									"name": "最大值",
+									"type": "双精度小数型",
+									"description": "有限数值。"
+								}
+							]
+						},
+						{
+							"name": "恢复自动范围",
+							"description": "恢复指定轴按数据自动计算范围，下一次构建图表后生效。",
+							"params": [
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 横轴，1 左数值轴，2 右数值轴。"
+								}
+							]
+						},
+						{
+							"name": "添加轴文字",
+							"description": "设置指定刻度位置的文字标签，相同坐标替换，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 横轴，1 左数值轴，2 右数值轴。"
+								},
+								{
+									"name": "坐标",
+									"type": "双精度小数型",
+									"description": "有限轴坐标。"
+								},
+								{
+									"name": "文字",
+									"type": "文本型",
+									"description": "非空引用的文字。"
+								}
+							]
+						},
+						{
+							"name": "清空轴文字",
+							"description": "清空自定义轴文字，分类名称保留。",
+							"params": [
+								{
+									"name": "坐标轴",
+									"type": "整数型",
+									"description": "0 横轴，1 左数值轴，2 右数值轴。"
+								}
+							]
+						},
+						{
+							"name": "更新数据组",
+							"description": "替换整组数据并保留样式，分类图须保持项目数和原索引，刷新或构建后生效。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型[]",
+									"description": "严格递增的有限数值数组，不允许重复。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "按整列拼接；气泡先纵坐标后大小，区间先下限后上限。"
+								}
+							]
+						},
+						{
+							"name": "追加项目",
+							"description": "向数值横坐标数据组追加一项，刷新或构建后生效。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "横坐标",
+									"type": "双精度小数型",
+									"description": "必须大于本组最后横坐标。"
+								},
+								{
+									"name": "数值",
+									"type": "双精度小数型[]",
+									"description": "此项目各列数值，顺序与更新数据组一致。"
+								}
+							]
+						},
+						{
+							"name": "删除项目",
+							"description": "删除数值横坐标数据组中的一项，至少保留一项，刷新或构建后生效。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从 0 开始的数据组编号；饼图和仪表盘固定为 0。"
+								},
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从 0 开始的项目编号。"
+								}
+							]
+						},
+						{
+							"name": "设置可见范围",
+							"description": "直接设置已构建图表的可见范围；横轴范围对两条数值轴同步。",
+							"params": [
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								},
+								{
+									"name": "范围",
+									"type": "双精度小数型[]",
+									"description": "横轴最小、横轴最大、纵轴最小、纵轴最大，必须分别递增。"
+								}
+							]
+						},
+						{
+							"name": "取可见范围",
+							"description": "返回横轴最小、最大和指定纵轴最小、最大。",
+							"params": [
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							],
+							"return": "双精度小数型[]"
+						},
+						{
+							"name": "设置拖动边界",
+							"description": "保存拖动边界限制；缩放跨度为正数数据跨度，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "范围",
+									"type": "双精度小数型[]",
+									"description": "四个数值：横轴最小、最大和纵轴最小、最大；空数组取消限制。"
+								}
+							]
+						},
+						{
+							"name": "设置缩放跨度",
+							"description": "保存缩放跨度限制；缩放跨度为正数数据跨度，构建或刷新后生效。",
+							"params": [
+								{
+									"name": "范围",
+									"type": "双精度小数型[]",
+									"description": "四个数值：横轴最小、最大和纵轴最小、最大；空数组取消限制。"
+								}
+							]
+						},
+						{
+							"name": "数据坐标转像素",
+							"description": "转换已完成绘制的纵向图表坐标，返回横纵坐标；像素坐标单位 DIP，横向图形不支持此换算。",
+							"params": [
+								{
+									"name": "横坐标",
+									"type": "双精度小数型",
+									"description": "数据坐标或相对图表左上角的 DIP 坐标。"
+								},
+								{
+									"name": "纵坐标",
+									"type": "双精度小数型",
+									"description": "数据坐标或相对图表左上角的 DIP 坐标。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							],
+							"return": "双精度小数型[]"
+						},
+						{
+							"name": "像素转数据坐标",
+							"description": "转换已完成绘制的纵向图表坐标，返回横纵坐标；像素坐标单位 DIP，横向图形不支持此换算。",
+							"params": [
+								{
+									"name": "横坐标",
+									"type": "双精度小数型",
+									"description": "数据坐标或相对图表左上角的 DIP 坐标。"
+								},
+								{
+									"name": "纵坐标",
+									"type": "双精度小数型",
+									"description": "数据坐标或相对图表左上角的 DIP 坐标。"
+								},
+								{
+									"name": "数值轴",
+									"type": "整数型",
+									"description": "0 左轴，1 右轴。"
+								}
+							],
+							"return": "双精度小数型[]"
+						},
+						{
+							"name": "设置项目缺失",
+							"description": "将指定项目标记为缺失，不改变原数值；构建或刷新后生效，缺失点不能主动选择。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从零开始的数据组编号。"
+								},
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从零开始的项目编号。"
+								},
+								{
+									"name": "缺失",
+									"type": "逻辑型",
+									"description": "True 留空，False 恢复原始数值。"
+								}
+							]
+						},
+						{
+							"name": "项目是否缺失",
+							"description": "查询指定项目的缺失标记。",
+							"params": [
+								{
+									"name": "数据组",
+									"type": "整数型",
+									"description": "从零开始的数据组编号。"
+								},
+								{
+									"name": "项目",
+									"type": "整数型",
+									"description": "从零开始的项目编号。"
+								}
+							],
+							"return": "逻辑型"
+						}
+					],
+					"properties": [],
+					"events": []
+				},
+				{
+					"name": "ACE图表样式",
+					"type": "simple.library.wsd.achartengine.ACE图表样式",
+					"kind": "object",
+					"description": "ACE图表样式，应用时保存独立副本。",
+					"properties": [
+						{
+							"name": "显示图例",
+							"type": "逻辑型",
+							"description": "是否显示数据组图例。"
+						},
+						{
+							"name": "显示标签",
+							"type": "逻辑型",
+							"description": "是否显示项目和轴标签。"
+						},
+						{
+							"name": "显示坐标轴",
+							"type": "逻辑型",
+							"description": "是否显示直角坐标轴。"
+						},
+						{
+							"name": "横向网格",
+							"type": "逻辑型",
+							"description": "是否绘制水平网格。"
+						},
+						{
+							"name": "纵向网格",
+							"type": "逻辑型",
+							"description": "是否绘制垂直网格。"
+						},
+						{
+							"name": "标签网格",
+							"type": "逻辑型",
+							"description": "是否为自定义文字标签绘制网格。"
+						},
+						{
+							"name": "文字颜色",
+							"type": "整数型",
+							"description": "ARGB 颜色。"
+						},
+						{
+							"name": "文字大小",
+							"type": "单精度小数型",
+							"description": "轴标签大小，单位 SP。"
+						},
+						{
+							"name": "标题大小",
+							"type": "单精度小数型",
+							"description": "图表标题大小，单位 SP。"
+						},
+						{
+							"name": "轴标题大小",
+							"type": "单精度小数型",
+							"description": "横纵轴标题大小，单位 SP。"
+						},
+						{
+							"name": "图例大小",
+							"type": "单精度小数型",
+							"description": "图例文字大小，单位 SP。"
+						},
+						{
+							"name": "坐标轴颜色",
+							"type": "整数型",
+							"description": "ARGB 颜色。"
+						},
+						{
+							"name": "网格颜色",
+							"type": "整数型",
+							"description": "ARGB 颜色。"
+						},
+						{
+							"name": "图例自适应",
+							"type": "逻辑型",
+							"description": "是否按图例条目计算所需高度。"
+						},
+						{
+							"name": "图例高度",
+							"type": "整数型",
+							"description": "图例固定高度，单位 DIP，0 使用自动高度。"
+						},
+						{
+							"name": "上边距",
+							"type": "单精度小数型",
+							"description": "图表内容上边距，单位 DIP。"
+						},
+						{
+							"name": "左边距",
+							"type": "单精度小数型",
+							"description": "图表内容左边距，单位 DIP。"
+						},
+						{
+							"name": "下边距",
+							"type": "单精度小数型",
+							"description": "图表内容下边距，单位 DIP。"
+						},
+						{
+							"name": "右边距",
+							"type": "单精度小数型",
+							"description": "图表内容右边距，单位 DIP。"
+						},
+						{
+							"name": "抗锯齿",
+							"type": "逻辑型",
+							"description": "是否开启抗锯齿。"
+						},
+						{
+							"name": "横向拖动",
+							"type": "逻辑型",
+							"description": "是否允许横向拖动。"
+						},
+						{
+							"name": "纵向拖动",
+							"type": "逻辑型",
+							"description": "是否允许纵向拖动。"
+						},
+						{
+							"name": "横向缩放",
+							"type": "逻辑型",
+							"description": "是否允许横向手势缩放。"
+						},
+						{
+							"name": "纵向缩放",
+							"type": "逻辑型",
+							"description": "是否允许纵向手势缩放。"
+						},
+						{
+							"name": "缩放按钮",
+							"type": "逻辑型",
+							"description": "是否显示上游内置放大、缩小和复位按钮。"
+						},
+						{
+							"name": "缩放倍率",
+							"type": "单精度小数型",
+							"description": "内置放大和缩小按钮的倍率，须大于 1。"
+						},
+						{
+							"name": "允许选择",
+							"type": "逻辑型",
+							"description": "是否允许点击选择；原生点选适用于饼图和坐标图。"
+						},
+						{
+							"name": "点选距离",
+							"type": "单精度小数型",
+							"description": "点的点击容差，单位 DIP。"
+						},
+						{
+							"name": "图形方向",
+							"type": "整数型",
+							"description": "坐标图：0 纵向，1 横向；时间图建议纵向。"
+						},
+						{
+							"name": "点大小",
+							"type": "单精度小数型",
+							"description": "折线及散点标记大小，单位 DIP。"
+						},
+						{
+							"name": "柱间距",
+							"type": "双精度小数型",
+							"description": "柱宽间距系数，越大柱越细。"
+						},
+						{
+							"name": "圆图比例",
+							"type": "单精度小数型",
+							"description": "饼图、圆环及仪表盘的半径比例。"
+						},
+						{
+							"name": "起始角度",
+							"type": "单精度小数型",
+							"description": "饼图和圆环开始绘制的角度。"
+						},
+						{
+							"name": "字体名称",
+							"type": "文本型",
+							"description": "系统字体族名称。"
+						},
+						{
+							"name": "字体风格",
+							"type": "整数型",
+							"description": "0 常规，1 粗体，2 斜体，3 粗斜体。"
+						},
+						{
+							"name": "显示选择提示",
+							"type": "逻辑型",
+							"description": "主动选择或原生点选后是否显示内置数值提示。"
+						},
+						{
+							"name": "圆图中心横坐标",
+							"type": "单精度小数型",
+							"description": "饼、圆环和仪表中心的横坐标，单位 DIP；负数自动定位。"
+						},
+						{
+							"name": "圆图中心纵坐标",
+							"type": "单精度小数型",
+							"description": "饼、圆环和仪表中心的纵坐标，单位 DIP；负数自动定位。"
+						}
+					],
+					"functions": [
+						{
+							"name": "复制",
+							"description": "返回独立的配置副本。",
+							"return": "simple.library.wsd.achartengine.ACE图表样式"
+						}
+					]
+				},
+				{
+					"name": "ACE数据组样式",
+					"type": "simple.library.wsd.achartengine.ACE数据组样式",
+					"kind": "object",
+					"description": "ACE数据组样式，应用时保存独立副本。",
+					"properties": [
+						{
+							"name": "显示数值",
+							"type": "逻辑型",
+							"description": "是否绘制坐标图的数据数值。"
+						},
+						{
+							"name": "数值大小",
+							"type": "单精度小数型",
+							"description": "数据标签大小，单位 SP。"
+						},
+						{
+							"name": "数值间距",
+							"type": "单精度小数型",
+							"description": "数据标签与数据点的间距，单位 DIP。"
+						},
+						{
+							"name": "数值对齐",
+							"type": "整数型",
+							"description": "0 左对齐，1 居中，2 右对齐。"
+						},
+						{
+							"name": "线宽",
+							"type": "单精度小数型",
+							"description": "折线线宽，单位 DIP。"
+						},
+						{
+							"name": "点形状",
+							"type": "整数型",
+							"description": "0 斜十字，1 圆，2 三角，3 方形，4 菱形，5 点。"
+						},
+						{
+							"name": "填充点",
+							"type": "逻辑型",
+							"description": "是否填充折线及散点标记。"
+						},
+						{
+							"name": "填充线下",
+							"type": "逻辑型",
+							"description": "是否填充折线下方。"
+						},
+						{
+							"name": "线下颜色",
+							"type": "整数型",
+							"description": "ARGB 颜色。"
+						},
+						{
+							"name": "线条样式",
+							"type": "整数型",
+							"description": "0 实线，1 虚线，2 点线。"
+						},
+						{
+							"name": "渐变启用",
+							"type": "逻辑型",
+							"description": "柱图是否按数值使用渐变色。"
+						},
+						{
+							"name": "渐变起值",
+							"type": "双精度小数型",
+							"description": "柱渐变起始数值。"
+						},
+						{
+							"name": "渐变止值",
+							"type": "双精度小数型",
+							"description": "柱渐变结束数值。"
+						},
+						{
+							"name": "渐变起色",
+							"type": "整数型",
+							"description": "ARGB 颜色。"
+						},
+						{
+							"name": "渐变止色",
+							"type": "整数型",
+							"description": "ARGB 颜色。"
+						}
+					],
+					"functions": [
+						{
+							"name": "复制",
+							"description": "返回独立的配置副本。",
+							"return": "simple.library.wsd.achartengine.ACE数据组样式"
+						}
+					]
+				},
+				{
+					"name": "ACE轴样式",
+					"type": "simple.library.wsd.achartengine.ACE轴样式",
+					"kind": "object",
+					"description": "ACE轴样式，应用时保存独立副本。",
+					"properties": [
+						{
+							"name": "标签数量",
+							"type": "整数型",
+							"description": "轴的建议刻度数量，0 隐藏自动刻度。"
+						},
+						{
+							"name": "标签角度",
+							"type": "单精度小数型",
+							"description": "轴标签旋转角度。"
+						},
+						{
+							"name": "文字颜色",
+							"type": "整数型",
+							"description": "ARGB 颜色。"
+						},
+						{
+							"name": "文字对齐",
+							"type": "整数型",
+							"description": "0 左，1 中，2 右；纵轴默认为靠近轴线的右对齐。"
+						},
+						{
+							"name": "标题",
+							"type": "文本型",
+							"description": "纵轴标题；横轴标题通过设置轴标题设置。"
+						}
+					],
+					"functions": [
+						{
+							"name": "复制",
+							"description": "返回独立的配置副本。",
+							"return": "simple.library.wsd.achartengine.ACE轴样式"
+						}
+					]
+				},
+				{
+					"name": "ACE仪表样式",
+					"type": "simple.library.wsd.achartengine.ACE仪表样式",
+					"kind": "object",
+					"description": "ACE仪表样式，应用时保存独立副本。",
+					"properties": [
+						{
+							"name": "最小值",
+							"type": "双精度小数型",
+							"description": "表盘最小值，必须小于最大值。"
+						},
+						{
+							"name": "最大值",
+							"type": "双精度小数型",
+							"description": "表盘最大值。"
+						},
+						{
+							"name": "起始角度",
+							"type": "双精度小数型",
+							"description": "最小值对应角度。"
+						},
+						{
+							"name": "结束角度",
+							"type": "双精度小数型",
+							"description": "最大值对应角度，不能等于起始角度。"
+						},
+						{
+							"name": "小刻度间距",
+							"type": "双精度小数型",
+							"description": "小刻度正间距；总刻度数不得超过 2000。"
+						},
+						{
+							"name": "大刻度间距",
+							"type": "双精度小数型",
+							"description": "大刻度正间距；总刻度数不得超过 2000。"
+						}
+					],
+					"functions": [
+						{
+							"name": "复制",
+							"description": "返回独立的配置副本。",
+							"return": "simple.library.wsd.achartengine.ACE仪表样式"
 						}
 					]
 				}

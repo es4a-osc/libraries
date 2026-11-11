@@ -34,14 +34,14 @@ final class HostBinding {
 	/**
 	 * 建立绑定对象，未指定成员时只选择 Simple 导出成员。
 	 *
-	 * @param context 所属实例。
-	 * @param target 宿主对象。
+	 * @param context  所属实例。
+	 * @param target   宿主对象。
 	 * @param selected 指定成员名；空表示使用 Simple 注解。
 	 * @return 新的 JS 对象引用。
 	 */
-	static QuickJS对象 create(final QuickJS实例 context, final Object target, String[] selected) {
+	static QJS对象 create(final QJS实例 context, final Object target, String[] selected) {
 		if (target == null) {
-			throw new QuickJS错误("宿主对象不能为空");
+			throw new QJS错误("宿主对象不能为空");
 		}
 		Set<String> requested = selected == null ? null : new HashSet<String>(Arrays.asList(selected));
 		Map<String, List<Method>> functions = new LinkedHashMap<String, List<Method>>();
@@ -55,7 +55,7 @@ final class HostBinding {
 			}
 			boolean property = method.isAnnotationPresent(SimpleProperty.class);
 			if (requested != null ? !requested.contains(method.getName())
-								  : !property && !method.isAnnotationPresent(SimpleFunction.class)) {
+					: !property && !method.isAnnotationPresent(SimpleFunction.class)) {
 				continue;
 			}
 			found.add(method.getName());
@@ -70,7 +70,7 @@ final class HostBinding {
 				} else if (method.getParameterTypes().length == 1 && method.getReturnType() == Void.TYPE) {
 					pair[1] = method;
 				} else {
-					throw new QuickJS错误("宿主属性签名无效：" + method.getName());
+					throw new QJS错误("宿主属性签名无效：" + method.getName());
 				}
 			} else {
 				List<Method> overloads = functions.get(method.getName());
@@ -83,9 +83,8 @@ final class HostBinding {
 		}
 
 		for (Field field : target.getClass().getFields()) {
-			if (field.isSynthetic() ||
-					(requested != null ? !requested.contains(field.getName())
-									   : !field.isAnnotationPresent(SimpleDataElement.class))) {
+			if (field.isSynthetic() || (requested != null ? !requested.contains(field.getName())
+					: !field.isAnnotationPresent(SimpleDataElement.class))) {
 				continue;
 			}
 			found.add(field.getName());
@@ -93,19 +92,19 @@ final class HostBinding {
 		}
 		if (requested != null && !found.containsAll(requested)) {
 			requested.removeAll(found);
-			throw new QuickJS错误("未找到可绑定的公开成员：" + requested);
+			throw new QJS错误("未找到可绑定的公开成员：" + requested);
 		}
 		if (found.isEmpty()) {
-			throw new QuickJS错误("宿主对象没有 Simple 导出成员，可用成员列表明确选择公开成员");
+			throw new QJS错误("宿主对象没有 Simple 导出成员，可用成员列表明确选择公开成员");
 		}
 
-		QuickJS对象 object = context.创建对象();
+		QJS对象 object = context.创建对象();
 		try {
 			for (Map.Entry<String, List<Method>> entry : functions.entrySet()) {
 				final List<Method> methods = entry.getValue();
-				QuickJS函数 function = context.创建函数(entry.getKey(), 0, new ManagedCallback() {
+				QJS函数 function = context.创建函数(entry.getKey(), 0, new ManagedCallback() {
 					@Override
-					public QuickJS值 处理调用(QuickJS值 receiver, QuickJS参数 arguments) {
+					public QJS值 处理调用(QJS值 receiver, QJS参数 arguments) {
 						return invoke(context, target, methods, arguments);
 					}
 				});
@@ -118,14 +117,14 @@ final class HostBinding {
 
 			for (Map.Entry<String, Method[]> entry : properties.entrySet()) {
 				if (functions.containsKey(entry.getKey())) {
-					throw new QuickJS错误("宿主方法与属性重名：" + entry.getKey());
+					throw new QJS错误("宿主方法与属性重名：" + entry.getKey());
 				}
 				final Method getter = entry.getValue()[0], setter = entry.getValue()[1];
 				defineAccessor(context, object, entry.getKey(), target, getter, setter, null);
 			}
 			for (final Field field : fields) {
 				if (functions.containsKey(field.getName()) || properties.containsKey(field.getName())) {
-					throw new QuickJS错误("宿主成员重名：" + field.getName());
+					throw new QJS错误("宿主成员重名：" + field.getName());
 				}
 				defineAccessor(context, object, field.getName(), target, null, null, field);
 			}
@@ -140,21 +139,21 @@ final class HostBinding {
 	 * 绑定实时属性或字段，不把宿主值做成一次性快照。
 	 *
 	 * @param context 所属实例。
-	 * @param object 目标对象。
-	 * @param name 属性名。
-	 * @param target 宿主对象。
-	 * @param getter 可选读取方法。
-	 * @param setter 可选设置方法。
-	 * @param field 可选公开字段。
+	 * @param object  目标对象。
+	 * @param name    属性名。
+	 * @param target  宿主对象。
+	 * @param getter  可选读取方法。
+	 * @param setter  可选设置方法。
+	 * @param field   可选公开字段。
 	 */
-	private static void defineAccessor(final QuickJS实例 context, QuickJS对象 object, String name, final Object target,
+	private static void defineAccessor(final QJS实例 context, QJS对象 object, String name, final Object target,
 			final Method getter, final Method setter, final Field field) {
-		QuickJS函数 read = null, write = null;
+		QJS函数 read = null, write = null;
 		try {
 			if (getter != null || field != null) {
 				read = context.创建函数(name, 0, new ManagedCallback() {
 					@Override
-					public QuickJS值 处理调用(QuickJS值 receiver, QuickJS参数 args) {
+					public QJS值 处理调用(QJS值 receiver, QJS参数 args) {
 						try {
 							return context.fromJava(field == null ? getter.invoke(target) : field.get(target));
 						} catch (ReflectiveOperationException error) {
@@ -166,8 +165,8 @@ final class HostBinding {
 			if (setter != null || field != null && !Modifier.isFinal(field.getModifiers())) {
 				write = context.创建函数(name, 1, new ManagedCallback() {
 					@Override
-					public QuickJS值 处理调用(QuickJS值 receiver, QuickJS参数 args) {
-						List<QuickJS值> temporary = new ArrayList<QuickJS值>();
+					public QJS值 处理调用(QJS值 receiver, QJS参数 args) {
+						List<QJS值> temporary = new ArrayList<QJS值>();
 						try {
 							Class<?> type = field == null ? setter.getParameterTypes()[0] : field.getType();
 							Object value = argument(args.取值(0), type, temporary, 0);
@@ -180,7 +179,7 @@ final class HostBinding {
 						} catch (ReflectiveOperationException error) {
 							throw failure(error);
 						} finally {
-							for (QuickJS值 value : temporary) {
+							for (QJS值 value : temporary) {
 								value.释放();
 							}
 						}
@@ -201,13 +200,13 @@ final class HostBinding {
 	/**
 	 * 按参数类型选择唯一重载，失败时明确报告，不依赖反射枚举顺序。
 	 *
-	 * @param context 所属实例。
-	 * @param target 宿主对象。
-	 * @param methods 同名候选方法。
+	 * @param context   所属实例。
+	 * @param target    宿主对象。
+	 * @param methods   同名候选方法。
 	 * @param arguments 本次借用参数。
 	 * @return 拥有引用的返回值。
 	 */
-	private static QuickJS值 invoke(QuickJS实例 context, Object target, List<Method> methods, QuickJS参数 arguments) {
+	private static QJS值 invoke(QJS实例 context, Object target, List<Method> methods, QJS参数 arguments) {
 		Method selected = null;
 		int best = Integer.MAX_VALUE;
 		boolean ambiguous = false;
@@ -219,7 +218,7 @@ final class HostBinding {
 			int score = method.isVarArgs() ? 8 : 0;
 			for (int i = 0; i < arguments.取数量(); i++) {
 				Class<?> type = method.isVarArgs() && i >= types.length - 1 ? types[types.length - 1].getComponentType()
-																			: types[i];
+						: types[i];
 				int part = score(arguments.取值(i), type);
 				if (part < 0) {
 					score = Integer.MAX_VALUE;
@@ -236,10 +235,10 @@ final class HostBinding {
 			}
 		}
 		if (selected == null || ambiguous) {
-			throw new QuickJS错误(ambiguous ? "宿主方法重载不明确" : "没有匹配参数类型及数量的宿主方法");
+			throw new QJS错误(ambiguous ? "宿主方法重载不明确" : "没有匹配参数类型及数量的宿主方法");
 		}
 
-		List<QuickJS值> temporary = new ArrayList<QuickJS值>();
+		List<QJS值> temporary = new ArrayList<QJS值>();
 		try {
 			Class<?>[] types = selected.getParameterTypes();
 			Object[] actual = new Object[types.length];
@@ -260,7 +259,7 @@ final class HostBinding {
 		} catch (ReflectiveOperationException error) {
 			throw failure(error);
 		} finally {
-			for (QuickJS值 value : temporary) {
+			for (QJS值 value : temporary) {
 				value.释放();
 			}
 		}
@@ -270,10 +269,10 @@ final class HostBinding {
 	 * 计算实参与声明类型的匹配程度，数字重载优先保留原精度。
 	 *
 	 * @param value JS 值。
-	 * @param type 声明类型。
+	 * @param type  声明类型。
 	 * @return 非负匹配分数，负数表示不支持。
 	 */
-	private static int score(QuickJS值 value, Class<?> type) {
+	private static int score(QJS值 value, Class<?> type) {
 		int kind = value.取类型();
 		if (type.isInstance(value)) {
 			return type == Object.class ? 20 : 0;
@@ -330,17 +329,17 @@ final class HostBinding {
 	/**
 	 * 将已匹配参数转换为 Java 声明类型，特殊 JS 值仍作为借用值使用。
 	 *
-	 * @param value JS 值。
-	 * @param type 目标类型。
+	 * @param value     JS 值。
+	 * @param type      目标类型。
 	 * @param temporary 转换产生的特殊值引用。
-	 * @param depth 数组嵌套深度。
+	 * @param depth     数组嵌套深度。
 	 * @return Java 参数。
 	 */
-	private static Object argument(QuickJS值 value, Class<?> type, List<QuickJS值> temporary, int depth) {
+	private static Object argument(QJS值 value, Class<?> type, List<QJS值> temporary, int depth) {
 		if (depth > 128 || score(value, type) < 0) {
-			throw new QuickJS错误("宿主参数类型不匹配：" + type.getName());
+			throw new QJS错误("宿主参数类型不匹配：" + type.getName());
 		}
-		if (QuickJS值.class.isAssignableFrom(type)) {
+		if (QJS值.class.isAssignableFrom(type)) {
 			return value;
 		}
 		int kind = value.取类型();
@@ -354,7 +353,7 @@ final class HostBinding {
 				return converted;
 			}
 			if (result != null && type != Object.class && !type.isInstance(result)) {
-				throw new QuickJS错误("宿主参数不能转换为：" + type.getName());
+				throw new QJS错误("宿主参数不能转换为：" + type.getName());
 			}
 			return result;
 		}
@@ -364,7 +363,7 @@ final class HostBinding {
 		if (type == Character.class || type == Character.TYPE) {
 			String text = value.到文本();
 			if (text.length() != 1) {
-				throw new QuickJS错误("字符参数须恰好包含一个 UTF-16 字符");
+				throw new QJS错误("字符参数须恰好包含一个 UTF-16 字符");
 			}
 			return text.charAt(0);
 		}
@@ -375,14 +374,14 @@ final class HostBinding {
 			return value.到字节集();
 		}
 		if (type.isArray()) {
-			QuickJS数组 array = value.到数组();
+			QJS数组 array = value.到数组();
 			long length = array.取长度();
 			if (length > 100000) {
-				throw new QuickJS错误("宿主数组参数不能超过 100000 项");
+				throw new QJS错误("宿主数组参数不能超过 100000 项");
 			}
-			Object result = Array.newInstance(type.getComponentType(), (int)length);
+			Object result = Array.newInstance(type.getComponentType(), (int) length);
 			for (int i = 0; i < length; i++) {
-				QuickJS值 item = array.取项目(i);
+				QJS值 item = array.取项目(i);
 				try {
 					Array.set(result, i, argument(item, type.getComponentType(), temporary, depth + 1));
 				} finally {
@@ -395,7 +394,7 @@ final class HostBinding {
 			return value.到小数();
 		}
 		if (type == Float.TYPE || type == Float.class) {
-			return (float)value.到小数();
+			return (float) value.到小数();
 		}
 		if (type == Long.TYPE || type == Long.class) {
 			return value.到长整数();
@@ -404,12 +403,12 @@ final class HostBinding {
 			return value.到整数();
 		}
 		if (type == Short.TYPE || type == Short.class) {
-			return (short)value.到整数();
+			return (short) value.到整数();
 		}
 		if (type == Byte.TYPE || type == Byte.class) {
-			return (byte)value.到整数();
+			return (byte) value.到整数();
 		}
-		throw new QuickJS错误("不支持的宿主参数类型：" + type.getName());
+		throw new QJS错误("不支持的宿主参数类型：" + type.getName());
 	}
 
 	/**
@@ -421,11 +420,11 @@ final class HostBinding {
 	private static RuntimeException failure(ReflectiveOperationException error) {
 		Throwable cause = error instanceof InvocationTargetException ? error.getCause() : error;
 		if (cause instanceof RuntimeException) {
-			return (RuntimeException)cause;
+			return (RuntimeException) cause;
 		}
 		if (cause instanceof Error) {
-			throw (Error)cause;
+			throw (Error) cause;
 		}
-		return new QuickJS错误("宿主调用失败：" + cause);
+		return new QJS错误("宿主调用失败：" + cause);
 	}
 }

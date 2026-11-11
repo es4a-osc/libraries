@@ -14,7 +14,7 @@ public interface XU检查器 {
 	/**
 	 * 开始异步检查。
 	 *
-	 * @param address 检查地址。
+	 * @param address  检查地址。
 	 * @param callback 本次检查的单次结果回调。
 	 */
 	@SimpleFunction

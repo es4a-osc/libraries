@@ -22,9 +22,9 @@ public final class XU缓存 {
 	/**
 	 * 写入文本缓存；有效期以秒计。
 	 *
-	 * @param cache 私有缓存名称，不得为空或包含路径分隔符。
-	 * @param key 键。
-	 * @param value 值。
+	 * @param cache   私有缓存名称，不得为空或包含路径分隔符。
+	 * @param key     键。
+	 * @param value   值。
 	 * @param seconds 大于零为有效秒数，零表示不过期；负数拒绝。
 	 */
 	@SimpleFunction
@@ -35,8 +35,8 @@ public final class XU缓存 {
 	/**
 	 * 读取缓存，未命中或过期返回默认值。
 	 *
-	 * @param cache 私有缓存名称，不得为空或包含路径分隔符。
-	 * @param key 键。
+	 * @param cache    私有缓存名称，不得为空或包含路径分隔符。
+	 * @param key      键。
 	 * @param fallback 默认值。
 	 * @return 返回的文本。
 	 */
@@ -49,9 +49,9 @@ public final class XU缓存 {
 	/**
 	 * 写入字节集缓存；有效期以秒计。
 	 *
-	 * @param cache 私有缓存名称，不得为空或包含路径分隔符。
-	 * @param key 键。
-	 * @param value 值。
+	 * @param cache   私有缓存名称，不得为空或包含路径分隔符。
+	 * @param key     键。
+	 * @param value   值。
 	 * @param seconds 大于零为有效秒数，零表示不过期；负数拒绝。
 	 */
 	@SimpleFunction
@@ -62,8 +62,8 @@ public final class XU缓存 {
 	/**
 	 * 读取缓存，未命中或过期返回默认值。
 	 *
-	 * @param cache 私有缓存名称，不得为空或包含路径分隔符。
-	 * @param key 键。
+	 * @param cache    私有缓存名称，不得为空或包含路径分隔符。
+	 * @param key      键。
 	 * @param fallback 默认值。
 	 * @return 返回的字节集。
 	 */
@@ -76,7 +76,7 @@ public final class XU缓存 {
 	 * 操作指定缓存；删除或清空返回是否成功，容量单位为字节。
 	 *
 	 * @param cache 私有缓存名称，不得为空或包含路径分隔符。
-	 * @param key 键。
+	 * @param key   键。
 	 * @return 判断或操作的结果。
 	 */
 	@SimpleFunction

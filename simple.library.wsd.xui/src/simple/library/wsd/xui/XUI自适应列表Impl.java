@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.xuexiang.xui.widget.XUIWrapContentListView;
 
 import simple.runtime.components.组件容器;
@@ -78,7 +77,7 @@ public final class XUI自适应列表Impl extends XUI列表基类 implements XUI
 					row.addView(words, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
 				}
 				ImageView icon = (ImageView) row.getChildAt(0);
-				Glide.with(icon).clear(icon);
+				ComponentSupport.clearImage(icon);
 				icon.setImageDrawable(null);
 				icon.setVisibility(data.get(position).image.isEmpty() ? View.GONE : View.VISIBLE);
 				if (!data.get(position).image.isEmpty()) {

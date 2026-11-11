@@ -1,7 +1,6 @@
 package simple.library.wsd.xui;
 
 import android.view.View;
-import android.widget.ImageView;
 
 import com.xuexiang.xui.widget.alpha.XUIAlphaImageView;
 
@@ -41,17 +40,6 @@ public final class XUI透明图片Impl extends XUI视图组件基类 implements 
 	@Override
 	public void 置禁用透明反馈(boolean changeAlphaWhenDisable) {
 		view.setChangeAlphaWhenDisable(changeAlphaWhenDisable);
-	}
-
-	@Override
-	public void 置图片(String image) {
-		view.setImageDrawable(ComponentSupport.getDrawable(image));
-	}
-
-	@Override
-	public void 置图片缩放模式(int mode) {
-		ComponentSupport.validateIndex(mode, ImageView.ScaleType.values().length);
-		view.setScaleType(ImageView.ScaleType.values()[mode]);
 	}
 
 }

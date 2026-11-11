@@ -80,8 +80,10 @@ public final class NativeCalendar extends CalendarView {
 		} else {
 			setSelectMultiMode();
 		}
-		setMonthView(mode == 2 ? CalendarCells.RangeMonth.class : mode == 3 ? CalendarCells.MultiMonth.class : CalendarCells.MonthCell.class);
-		setWeekView(mode == 2 ? CalendarCells.RangeWeek.class : mode == 3 ? CalendarCells.MultiWeek.class : CalendarCells.WeekCell.class);
+		setMonthView(mode == 2 ? CalendarCells.RangeMonth.class
+				: mode == 3 ? CalendarCells.MultiMonth.class : CalendarCells.MonthCell.class);
+		setWeekView(mode == 2 ? CalendarCells.RangeWeek.class
+				: mode == 3 ? CalendarCells.MultiWeek.class : CalendarCells.WeekCell.class);
 		setMaxMultiSelectSize(snapshot.最大多选数());
 		setSelectRange(snapshot.最小选择跨度(), snapshot.最大选择跨度());
 		if (snapshot.周起始() == 1) {
@@ -122,6 +124,24 @@ public final class NativeCalendar extends CalendarView {
 	}
 
 	/**
+	 * 读取内部选择模式，避免每个日期的拦截查询都复制完整配置。
+	 *
+	 * @return 0 默认、1 单选、2 范围、3 多选。
+	 */
+	public int selectionMode() {
+		return options.选择模式();
+	}
+
+	/**
+	 * 读取长按监听采用的选择策略。
+	 *
+	 * @return 长按时阻止默认选择为真。
+	 */
+	public boolean preventLongPressSelection() {
+		return options.长按阻止选择();
+	}
+
+	/**
 	 * 原生绘制类只读访问当前样式。
 	 *
 	 * @return 本实例的样式配置。
@@ -151,19 +171,20 @@ public final class NativeCalendar extends CalendarView {
 	/**
 	 * 同步执行日项绘制回调，并保证画布及上下文恢复。
 	 *
-	 * @param canvas 原生画布。
-	 * @param date 日期。
-	 * @param stage 绘制阶段。
+	 * @param canvas   原生画布。
+	 * @param date     日期。
+	 * @param stage    绘制阶段。
 	 * @param selected 是否选中。
 	 * @param previous 前项是否选中。
-	 * @param next 后项是否选中。
-	 * @param x 左边像素。
-	 * @param y 顶边像素。
-	 * @param width 宽度像素。
-	 * @param height 高度像素。
+	 * @param next     后项是否选中。
+	 * @param x        左边像素。
+	 * @param y        顶边像素。
+	 * @param width    宽度像素。
+	 * @param height   高度像素。
 	 * @return 是否继续默认绘制。
 	 */
-	boolean draw(Canvas canvas, Calendar date, int stage, boolean selected, boolean previous, boolean next, float x, float y, float width, float height) {
+	boolean draw(Canvas canvas, Calendar date, int stage, boolean selected, boolean previous, boolean next, float x,
+			float y, float width, float height) {
 		if (disposed || listener == null || !options.启用绘制事件()) {
 			return true;
 		}
@@ -184,17 +205,18 @@ public final class NativeCalendar extends CalendarView {
 	 * 同步执行年标题或星期栏的绘制回调。
 	 *
 	 * @param canvas 原生画布。
-	 * @param year 年份。
-	 * @param month 月份。
-	 * @param stage 标题阶段。
-	 * @param week 星期编号。
-	 * @param x 左边像素。
-	 * @param y 顶边像素。
-	 * @param width 宽度像素。
+	 * @param year   年份。
+	 * @param month  月份。
+	 * @param stage  标题阶段。
+	 * @param week   星期编号。
+	 * @param x      左边像素。
+	 * @param y      顶边像素。
+	 * @param width  宽度像素。
 	 * @param height 高度像素。
 	 * @return 是否继续默认绘制。
 	 */
-	boolean heading(Canvas canvas, int year, int month, int stage, int week, float x, float y, float width, float height) {
+	boolean heading(Canvas canvas, int year, int month, int stage, int week, float x, float y, float width,
+			float height) {
 		if (disposed || listener == null || !options.启用绘制事件()) {
 			return true;
 		}
@@ -215,9 +237,9 @@ public final class NativeCalendar extends CalendarView {
 	 * 创建局部绘图作用域。
 	 *
 	 * @param canvas 原生画布。
-	 * @param x 左边像素。
-	 * @param y 顶边像素。
-	 * @param width 宽度像素。
+	 * @param x      左边像素。
+	 * @param y      顶边像素。
+	 * @param width  宽度像素。
 	 * @param height 高度像素。
 	 * @return 本回调专用上下文。
 	 */
@@ -316,9 +338,9 @@ public final class NativeCalendar extends CalendarView {
 		 * 报告实际翻页位置。
 		 *
 		 * @param monthView 是否为月视图。
-		 * @param position 从 0 开始的页序号。
-		 * @param offset 页间比例。
-		 * @param pixels 物理像素偏移。
+		 * @param position  从 0 开始的页序号。
+		 * @param offset    页间比例。
+		 * @param pixels    物理像素偏移。
 		 */
 		void scrolled(boolean monthView, int position, float offset, int pixels);
 
@@ -326,19 +348,19 @@ public final class NativeCalendar extends CalendarView {
 		 * 报告实际翻页状态。
 		 *
 		 * @param monthView 是否为月视图。
-		 * @param state 0 空闲、1 拖动、2 自动滚动。
+		 * @param state     0 空闲、1 拖动、2 自动滚动。
 		 */
 		void scrollState(boolean monthView, int state);
 
 		/**
 		 * 执行同步日项绘制。
 		 *
-		 * @param drawing 局部上下文。
-		 * @param date 日期快照。
-		 * @param stage 绘制阶段。
+		 * @param drawing  局部上下文。
+		 * @param date     日期快照。
+		 * @param stage    绘制阶段。
 		 * @param selected 是否选中。
 		 * @param previous 前项是否选中。
-		 * @param next 后项是否选中。
+		 * @param next     后项是否选中。
 		 * @return 是否继续默认绘制。
 		 */
 		boolean draw(CV日历绘图 drawing, CV日历日期 date, int stage, boolean selected, boolean previous, boolean next);
@@ -347,10 +369,10 @@ public final class NativeCalendar extends CalendarView {
 		 * 执行同步标题绘制。
 		 *
 		 * @param drawing 局部上下文。
-		 * @param year 年份。
-		 * @param month 月份。
-		 * @param stage 绘制阶段。
-		 * @param week 星期编号。
+		 * @param year    年份。
+		 * @param month   月份。
+		 * @param stage   绘制阶段。
+		 * @param week    星期编号。
 		 * @return 是否继续默认绘制。
 		 */
 		boolean heading(CV日历绘图 drawing, int year, int month, int stage, int week);
@@ -366,11 +388,12 @@ public final class NativeCalendar extends CalendarView {
 	/**
 	 * 注册实际翻页进度，不替换上游已有的日期选择监听。
 	 *
-	 * @param pager 月或周翻页视图。
+	 * @param pager     月或周翻页视图。
 	 * @param monthView 是否为月视图。
 	 * @return 本实例注册的监听句柄。
 	 */
-	private androidx.viewpager.widget.ViewPager.OnPageChangeListener bindPager(androidx.viewpager.widget.ViewPager pager, final boolean monthView) {
+	private androidx.viewpager.widget.ViewPager.OnPageChangeListener bindPager(
+			androidx.viewpager.widget.ViewPager pager, final boolean monthView) {
 		androidx.viewpager.widget.ViewPager.OnPageChangeListener callback = new androidx.viewpager.widget.ViewPager.SimpleOnPageChangeListener() {
 			@Override
 			public void onPageScrolled(int position, float offset, int pixels) {

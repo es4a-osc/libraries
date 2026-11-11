@@ -24,7 +24,7 @@ public final class XU压缩 {
 	/**
 	 * 压缩文件或目录为 ZIP；不能把目标 ZIP 放入源目录。
 	 *
-	 * @param source 源路径。
+	 * @param source      源路径。
 	 * @param destination 目标文件。
 	 * @return 判断或操作的结果。
 	 */
@@ -56,9 +56,9 @@ public final class XU压缩 {
 	/**
 	 * 解压 ZIP 并返回文件路径；拒绝路径越界及符号链接目标，累计解压上限由调用者指定。
 	 *
-	 * @param path 路径。
+	 * @param path        路径。
 	 * @param destination 目标目录。
-	 * @param limit 所有文件累计解压上限，必须大于零；失败可能保留已写入文件。
+	 * @param limit       所有文件累计解压上限，必须大于零；失败可能保留已写入文件。
 	 * @return 返回的文本数组。
 	 */
 	@SimpleFunction

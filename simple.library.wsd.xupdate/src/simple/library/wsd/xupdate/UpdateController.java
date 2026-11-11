@@ -62,13 +62,13 @@ import simple.runtime.components.impl.android.视图组件;
 import simple.runtime.events.EventDispatcher;
 
 /**
- * 两个导出更新器共用的内部实现；独立管理每个实例的版本、网络、提示和安装状态。
- * 下载、校验在后台执行；界面和事件仅由所属窗口的主线程操作。
+ * 两个导出更新器共用的内部实现；独立管理每个实例的版本、网络、提示和安装状态。 下载、校验在后台执行；界面和事件仅由所属窗口的主线程操作。
+ * 具体组件分别声明导出接口；共享基类不声明，避免组件发现把两个实现混在一起。
  *
  * @author 树先生 xhwsd@qq.com
  */
-public abstract class UpdateController extends 组件Impl implements
-		MainActivity.OnResumeListener, MainActivity.OnDestroyListener, View.OnAttachStateChangeListener {
+public abstract class UpdateController extends 组件Impl
+		implements MainActivity.OnResumeListener, MainActivity.OnDestroyListener, View.OnAttachStateChangeListener {
 
 	private static boolean initialized;
 	private UpdateStages stages;
@@ -84,6 +84,7 @@ public abstract class UpdateController extends 组件Impl implements
 	private boolean postJson;
 	private boolean pauseReady;
 	private UpdateFileTask fileTask;
+	private UpdateFileTask detachedTask;
 	private UpdateFileTask.Listener downloadEvents;
 	private boolean customParser = false;
 	private boolean autoPrompt = true;
@@ -135,6 +136,11 @@ public abstract class UpdateController extends 组件Impl implements
 		super.初始化();
 	}
 
+	/**
+	 * 异步检查版本；已有任务时拒绝启动第二个任务。
+	 *
+	 * @param address 版本检查接口的完整 HTTP 或 HTTPS 地址。
+	 */
 	public void 检查更新(final String address) {
 		checkIdle();
 		final UpdateTransport.Task active = begin(状态_检查);
@@ -152,6 +158,11 @@ public abstract class UpdateController extends 组件Impl implements
 		}
 	}
 
+	/**
+	 * 解析已有响应；默认解析器比较本机版本，自定义解析器自行决定是否更新。
+	 *
+	 * @param response 默认 XUpdate JSON，或由解析响应事件处理的自定义内容。
+	 */
 	public void 解析更新(String response) {
 		checkIdle();
 		UpdateTransport.Task active = begin(状态_检查);
@@ -159,6 +170,11 @@ public abstract class UpdateController extends 组件Impl implements
 		stages.response(response);
 	}
 
+	/**
+	 * 显示 XUpdate 原生更新提示，使用传入信息的快照。
+	 *
+	 * @param info 包含版本名称、下载地址和更新内容的信息。
+	 */
 	public void 显示更新(XU更新信息 info) {
 		checkIdle();
 		XU更新信息 snapshot = validate(info);
@@ -167,6 +183,11 @@ public abstract class UpdateController extends 组件Impl implements
 		showPrompt(sequence);
 	}
 
+	/**
+	 * 直接下载，不要求存在更高版本；进度和已校验文件通过事件返回。
+	 *
+	 * @param info 具有下载地址和可选校验信息的版本信息。
+	 */
 	public void 下载更新(XU更新信息 info) {
 		checkIdle();
 		current = validateDownload(info);
@@ -175,6 +196,11 @@ public abstract class UpdateController extends 组件Impl implements
 		stages.download(current);
 	}
 
+	/**
+	 * 请求系统安装；需要时先打开安装来源授权页，恢复后继续。
+	 *
+	 * @param path 可读取的本地 APK 绝对路径。
+	 */
 	public void 安装更新(String path) {
 		checkThread();
 		if (state == 状态_检查 || state == 状态_下载 || state == 状态_暂停 || pendingInstall != null) {
@@ -187,15 +213,30 @@ public abstract class UpdateController extends 组件Impl implements
 		requestInstall(file);
 	}
 
+	/**
+	 * 取消请求、下载或待授权安装并关闭提示，移除未完成续传记录；显式后台下载同样取消。
+	 */
 	public void 取消() {
 		checkThread();
-		boolean active = task != null || dialog != null || pendingInstall != null || fileTask != null;
+		boolean active = task != null || dialog != null || pendingInstall != null || fileTask != null
+				|| detachedTask != null;
+		if (detachedTask != null) {
+			File completed = detachedTask.completedFile();
+			if (completed != null) {
+				readyFile = completed;
+			}
+			detachedTask.cancel();
+			detachedTask = null;
+		}
 		cancelWork();
 		if (active) {
 			已取消();
 		}
 	}
 
+	/**
+	 * 暂停已接入可暂停下载器的任务，保留当前文件及请求配置；停止后触发已暂停。 尚未下载或下载器不支持暂停时拒绝调用。
+	 */
 	public void 暂停下载() {
 		checkThread();
 		if (fileTask == null || !fileTask.canPause()) {
@@ -206,6 +247,9 @@ public abstract class UpdateController extends 组件Impl implements
 		fileTask.pause();
 	}
 
+	/**
+	 * 恢复已暂停或网络失败的续传任务；沿用开始下载时的地址、请求头和安装配置。 须等待已暂停事件或可恢复的失败事件，不得在停止尚未完成时调用。
+	 */
 	public void 继续下载() {
 		checkThread();
 		if (fileTask == null || state != 状态_暂停 || !pauseReady) {
@@ -224,6 +268,9 @@ public abstract class UpdateController extends 组件Impl implements
 		}
 	}
 
+	/**
+	 * 下载中关闭提示并转入后台通知；不表示允许静默安装。
+	 */
 	public void 转入后台() {
 		checkThread();
 		if (fileTask == null || state != 状态_下载) {
@@ -243,15 +290,25 @@ public abstract class UpdateController extends 组件Impl implements
 		}
 	}
 
+	/**
+	 * 移除本更新器的已下载文件和续传记录，不影响其它实例。 下载或安装进行中拒绝调用，请先暂停或取消。
+	 */
 	public void 清理缓存() {
 		checkThread();
-		if (task != null || dialog != null || pendingInstall != null || state == 状态_安装
-				|| state == 状态_下载 || (state == 状态_暂停 && !pauseReady)) {
+		if (detachedActive()) {
+			throw new IllegalArgumentException("请先取消后台任务，再清理本实例缓存。");
+		}
+		if (task != null || dialog != null || pendingInstall != null || state == 状态_安装 || state == 状态_下载
+				|| (state == 状态_暂停 && !pauseReady)) {
 			throw new IllegalArgumentException("请先完成、暂停或取消当前任务。");
 		}
 		if (fileTask != null) {
 			fileTask.cancel();
 			fileTask = null;
+		}
+		if (detachedTask != null) {
+			detachedTask.cancel();
+			detachedTask = null;
 		}
 		cancelWork();
 		readyFile = null;
@@ -265,6 +322,12 @@ public abstract class UpdateController extends 组件Impl implements
 		}
 	}
 
+	/**
+	 * 新增或替换版本检查参数；GET 使用查询串，POST 使用表单。
+	 *
+	 * @param name  非空参数名。
+	 * @param value 参数文本，使用 UTF-8 编码。
+	 */
 	public void 置请求参数(String name, String value) {
 		checkThread();
 		if (name == null || name.isEmpty() || value == null) {
@@ -273,25 +336,43 @@ public abstract class UpdateController extends 组件Impl implements
 		parameters.put(name, value);
 	}
 
+	/**
+	 * 新增或替换检查与下载请求头；配置在任务开始时固定。
+	 *
+	 * @param name  合法 HTTP 请求头名称。
+	 * @param value 不含换行的请求头值。
+	 */
 	public void 置请求头(String name, String value) {
 		checkThread();
-		if (name == null || !name.matches("[!#$%&'*+.^_`|~0-9A-Za-z-]+")
-				|| value == null || value.indexOf('\r') >= 0 || value.indexOf('\n') >= 0) {
+		if (name == null || !name.matches("[!#$%&'*+.^_`|~0-9A-Za-z-]+") || value == null || value.indexOf('\r') >= 0
+				|| value.indexOf('\n') >= 0) {
 			throw new IllegalArgumentException("请求头名称或值无效。");
 		}
 		headers.put(name, value);
 	}
 
+	/**
+	 * 清空请求参数与请求头，不改变其它配置。
+	 */
 	public void 清空请求配置() {
 		checkThread();
 		parameters.clear();
 		headers.clear();
 	}
 
+	/**
+	 * 设置下次更新框的颜色、顶部图片及尺寸。
+	 *
+	 * @param themeColor  ARGB 颜色；-1 使用上游默认。
+	 * @param textColor   按钮文字颜色；0 使用上游默认。
+	 * @param topImage    drawable 资源标识；空文本使用上游默认。
+	 * @param widthRatio  屏幕宽度比例，0 至 1；0 使用默认。
+	 * @param heightRatio 屏幕高度比例，0 至 1；0 适应内容。
+	 */
 	public void 置提示样式(int themeColor, int textColor, String topImage, float widthRatio, float heightRatio) {
 		checkThread();
-		if (!Float.isFinite(widthRatio) || !Float.isFinite(heightRatio)
-				|| widthRatio < 0 || widthRatio > 1 || heightRatio < 0 || heightRatio > 1) {
+		if (!Float.isFinite(widthRatio) || !Float.isFinite(heightRatio) || widthRatio < 0 || widthRatio > 1
+				|| heightRatio < 0 || heightRatio > 1) {
 			throw new IllegalArgumentException("提示框比例应在 0 至 1 之间。");
 		}
 		int image = 0;
@@ -306,17 +387,34 @@ public abstract class UpdateController extends 组件Impl implements
 				.setWidthRatio(widthRatio == 0 ? -1 : widthRatio).setHeightRatio(heightRatio == 0 ? -1 : heightRatio);
 	}
 
+	/**
+	 * 清除 XUpdate 为当前应用记录的忽略版本。
+	 */
 	public void 清除忽略版本() {
 		checkThread();
 		UpdateUtils.saveIgnoreVersion(activity, "");
 	}
 
+	/**
+	 * 当前状态，使用状态_* 常量比较。
+	 *
+	 * @return 当前状态，使用状态_* 常量比较。
+	 */
 	public int 状态() {
-		return state;
+		checkThread();
+		return detachedTask == null ? state : detachedTask.state();
 	}
 
+	/**
+	 * 最后一次下载校验通过的私有 APK 路径，尚无文件时为空文本。
+	 *
+	 * @return 最后一次下载校验通过的私有 APK 路径，尚无文件时为空文本。
+	 */
 	public String 已下载文件() {
-		return readyFile == null ? "" : readyFile.getAbsolutePath();
+		checkThread();
+		File completed = detachedTask == null ? null : detachedTask.completedFile();
+		File available = completed == null ? readyFile : completed;
+		return available == null ? "" : available.getAbsolutePath();
 	}
 
 	/**
@@ -334,8 +432,8 @@ public abstract class UpdateController extends 组件Impl implements
 	 * 为一次请求组装官方流程，所有策略和参数均固定到本次实例。
 	 *
 	 * @param address 版本检查地址。
-	 * @param token 当前任务序号。
-	 * @param active 本次网络取消句柄。
+	 * @param token   当前任务序号。
+	 * @param active  本次网络取消句柄。
 	 * @return 由官方接口组合的更新调度器。
 	 */
 	private UpdateStages createStages(String address, final long token, UpdateTransport.Task active) {
@@ -359,25 +457,27 @@ public abstract class UpdateController extends 组件Impl implements
 					send(true, url, values, callback);
 				}
 
-				/** 仅传递快照，第三方网络请求通过标准回调返回。 */
+				/**
+				 * 仅传递快照，第三方网络请求通过标准回调返回。
+				 */
 				private void send(boolean post, String url, Map<String, Object> values, final Callback callback) {
 					selectedNetwork.请求(post, requestJson, url, new JSONObject(values).toString(), requestHeaders,
 							new XU检查回调(new XU检查回调.Result() {
-						@Override
-						public void response(String value) {
-							callback.onSuccess(value);
-						}
+								@Override
+								public void response(String value) {
+									callback.onSuccess(value);
+								}
 
-						@Override
-						public void information(XU更新信息 value) {
-							callback.onError(new IOException("网络服务应提交原始响应；直接更新信息请使用检查器。"));
-						}
+								@Override
+								public void information(XU更新信息 value) {
+									callback.onError(new IOException("网络服务应提交原始响应；直接更新信息请使用检查器。"));
+								}
 
-						@Override
-						public void failure(String message) {
-							callback.onError(new IOException(message));
-						}
-					}));
+								@Override
+								public void failure(String message) {
+									callback.onError(new IOException(message));
+								}
+							}));
 				}
 
 				@Override
@@ -391,86 +491,86 @@ public abstract class UpdateController extends 组件Impl implements
 				}
 			};
 		}
-		return new UpdateStages(createUpdateBuilder(activity, address), address, post, directory.getAbsolutePath(), transport, params,
-				customChecker, new UpdateStages.Host() {
-			@Override
-			public boolean accepts() {
-				return UpdateController.this.accepts(token);
-			}
-
-			@Override
-			public UpdateEntity parse(String response) throws Exception {
-				if (selectedParser != null) {
-					XU更新信息 result = selectedParser.解析(response);
-					return result == null ? null : UpdateStages.toEntity(result);
-				}
-				if (customParser) {
-					XU更新信息 result = new XU更新信息();
-					解析响应(response, result);
-					return UpdateStages.toEntity(result);
-				}
-				return new DefaultUpdateParser().parseJson(response);
-			}
-
-			@Override
-			public void checked() {
-				if (accepts()) {
-					检查结束();
-				}
-			}
-
-			@Override
-			public void found(XU更新信息 info) {
-				task = null;
-				current = validate(info);
-				state = 状态_就绪;
-				发现更新(current.copy());
-				if (accepts()) {
-					if (autoDownload) {
-						UpdateController.this.download(token, null);
-					} else if (autoPrompt) {
-						showPrompt(token);
+		return new UpdateStages(createUpdateBuilder(activity, address), address, post, directory.getAbsolutePath(),
+				transport, params, customChecker, new UpdateStages.Host() {
+					@Override
+					public boolean accepts() {
+						return UpdateController.this.accepts(token);
 					}
-				}
-			}
 
-			@Override
-			public void none() {
-				task = null;
-				state = 状态_空闲;
-				无需更新();
-			}
+					@Override
+					public UpdateEntity parse(String response) throws Exception {
+						if (selectedParser != null) {
+							XU更新信息 result = selectedParser.解析(response);
+							return result == null ? null : UpdateStages.toEntity(result);
+						}
+						if (customParser) {
+							XU更新信息 result = new XU更新信息();
+							解析响应(response, result);
+							return UpdateStages.toEntity(result);
+						}
+						return new DefaultUpdateParser().parseJson(response);
+					}
 
-			@Override
-			public void failure(Exception error) {
-				if (accepts()) {
-					fail(阶段_检查, error);
-				}
-			}
+					@Override
+					public void checked() {
+						if (accepts()) {
+							检查结束();
+						}
+					}
 
-			@Override
-			public void download(XU更新信息 info, OnFileDownloadListener listener) {
-				if (accepts()) {
-					current = validateDownload(info);
-					UpdateController.this.download(token, listener);
-				}
-			}
+					@Override
+					public void found(XU更新信息 info) {
+						task = null;
+						current = validate(info);
+						state = 状态_就绪;
+						发现更新(current.copy());
+						if (accepts()) {
+							if (autoDownload) {
+								UpdateController.this.download(token, null);
+							} else if (autoPrompt) {
+								showPrompt(token);
+							}
+						}
+					}
 
-			@Override
-			public void cancelDownload() {
-				UpdateController.this.取消();
-			}
+					@Override
+					public void none() {
+						task = null;
+						state = 状态_空闲;
+						无需更新();
+					}
 
-			@Override
-			public void background() {
-				UpdateController.this.转入后台();
-			}
+					@Override
+					public void failure(Exception error) {
+						if (accepts()) {
+							fail(阶段_检查, error);
+						}
+					}
 
-			@Override
-			public boolean ignored(XU更新信息 info) {
-				return !info.强制更新() && info.允许忽略() && UpdateUtils.isIgnoreVersion(activity, info.版本名());
-			}
-		});
+					@Override
+					public void download(XU更新信息 info, OnFileDownloadListener listener) {
+						if (accepts()) {
+							current = validateDownload(info);
+							UpdateController.this.download(token, listener);
+						}
+					}
+
+					@Override
+					public void cancelDownload() {
+						UpdateController.this.取消();
+					}
+
+					@Override
+					public void background() {
+						UpdateController.this.转入后台();
+					}
+
+					@Override
+					public boolean ignored(XU更新信息 info) {
+						return !info.强制更新() && info.允许忽略() && UpdateUtils.isIgnoreVersion(activity, info.版本名());
+					}
+				});
 	}
 
 	/**
@@ -487,10 +587,15 @@ public abstract class UpdateController extends 组件Impl implements
 		return validateDownload(info);
 	}
 
-	/** 下载只验证文件信息，不与更新状态或本机版本绑定。 */
+	/**
+	 * 下载只验证文件信息，不与更新状态或本机版本绑定。
+	 *
+	 * @param info 待下载版本信息。
+	 * @return 满足下载地址、大小及摘要约束的信息副本。
+	 */
 	private XU更新信息 validateDownload(XU更新信息 info) {
-		if (info == null || info.文件大小() < 0 || (verifier == null && !info.MD5().isEmpty()
-				&& !info.MD5().matches("[0-9A-Fa-f]{32}"))) {
+		if (info == null || info.文件大小() < 0
+				|| (verifier == null && !info.MD5().isEmpty() && !info.MD5().matches("[0-9A-Fa-f]{32}"))) {
 			throw new IllegalArgumentException("下载信息、文件大小或摘要格式无效。");
 		}
 		try {
@@ -516,11 +621,10 @@ public abstract class UpdateController extends 组件Impl implements
 		try {
 			task = null;
 			UpdateEntity entity = new UpdateEntity().setHasUpdate(true).setVersionCode(current.版本号())
-					.setVersionName(current.版本名()).setUpdateContent(current.更新内容())
-					.setDownloadUrl(current.下载地址()).setSize(current.文件大小() / 1024)
-					.setMd5(current.MD5()).setForce(current.强制更新())
-					.setIsIgnorable(current.允许忽略() && !current.强制更新())
-					.setApkCacheDir(directory.getAbsolutePath()).setIsSilent(false).setIsAutoInstall(false);
+					.setVersionName(current.版本名()).setUpdateContent(current.更新内容()).setDownloadUrl(current.下载地址())
+					.setSize(current.文件大小() / 1024).setMd5(current.MD5()).setForce(current.强制更新())
+					.setIsIgnorable(current.允许忽略() && !current.强制更新()).setApkCacheDir(directory.getAbsolutePath())
+					.setIsSilent(false).setIsAutoInstall(false);
 			Context context = new ContextThemeWrapper(activity, R.style.XUpdateSimpleTheme);
 			dialog = UpdateDialog.newInstance(context, entity, new IPrompterProxy() {
 				@Override
@@ -578,8 +682,7 @@ public abstract class UpdateController extends 组件Impl implements
 	}
 
 	/**
-	 * 将用户指定的比例应用到可见卡片，避免上游图片固有宽度限制卡片宽度。
-	 * 高度只约束提示窗口，内容超过可用空间时由上游滚动区承载。
+	 * 将用户指定的比例应用到可见卡片，避免上游图片固有宽度限制卡片宽度。 高度只约束提示窗口，内容超过可用空间时由上游滚动区承载。
 	 */
 	private void applyPromptSize() {
 		Window window = dialog.getWindow();
@@ -607,7 +710,7 @@ public abstract class UpdateController extends 组件Impl implements
 	/**
 	 * 提示和独立下载共用文件任务；任务只弱引用界面观察者。
 	 *
-	 * @param token 当前流程序号。
+	 * @param token    当前流程序号。
 	 * @param listener 原生提示框的进度接收者。
 	 */
 	private void download(final long token, final OnFileDownloadListener listener) {
@@ -618,61 +721,9 @@ public abstract class UpdateController extends 组件Impl implements
 			checkNetwork();
 			state = 状态_下载;
 			task = null;
-			final boolean install = autoInstall;
-			downloadEvents = new UpdateFileTask.Listener() {
-				@Override
-				public void progress(long received, long total, int percent) {
-					if (accepts(token) && owner != null && owner.isShown()) {
-						if (listener != null && dialog != null) {
-							listener.onProgress(percent < 0 ? 0 : percent / 100f, total);
-						}
-						下载进度(received, total, percent);
-					}
-				}
-
-				@Override
-				public void completed(File file) {
-					if (accepts(token)) {
-						readyFile = file;
-						state = 状态_就绪;
-						if (listener != null && dialog != null) {
-							listener.onCompleted(file);
-							bindInstallButton(file);
-						}
-						下载完成(file.getAbsolutePath());
-						// 后台完成交给通知，由用户决定何时打开安装界面。
-						if (accepts(token) && install && !fileTask.isBackground()
-								&& pendingInstall == null && state != 状态_安装) {
-							requestInstall(file);
-						}
-					}
-				}
-
-				@Override
-				public void failed(Exception error, boolean recoverable) {
-					if (accepts(token)) {
-						state = recoverable ? 状态_暂停 : 状态_空闲;
-						pauseReady = recoverable;
-						if (listener != null && dialog != null) {
-							listener.onError(error);
-						}
-						bindResumeButton();
-						失败(阶段_下载, error.getMessage());
-					}
-				}
-
-				@Override
-				public void paused() {
-					if (accepts(token)) {
-						state = 状态_暂停;
-						pauseReady = true;
-						bindResumeButton();
-						已暂停();
-					}
-				}
-			};
-			fileTask = new UpdateFileTask(activity.getApplicationContext(), directory, current, headers,
-					timeout, downloader, verifier, downloadEvents);
+			downloadEvents = createDownloadEvents(token, listener, autoInstall);
+			fileTask = new UpdateFileTask(activity.getApplicationContext(), directory, current, headers, timeout,
+					downloader, verifier, downloadEvents);
 			if (listener != null) {
 				listener.onStart();
 			}
@@ -683,6 +734,70 @@ public abstract class UpdateController extends 组件Impl implements
 		} catch (Exception exception) {
 			fail(阶段_下载, exception);
 		}
+	}
+
+	/**
+	 * 为本次界面会话创建结果桥接；任务仅弱引用桥接，离页后不持有窗口。
+	 *
+	 * @param token    当前界面任务序号。
+	 * @param listener 原生提示框观察者；独立页面或重新附着时为空。
+	 * @param install  非后台任务完成后是否请求系统安装。
+	 * @return 当前会话的下载事件桥接。
+	 */
+	private UpdateFileTask.Listener createDownloadEvents(final long token, final OnFileDownloadListener listener,
+			final boolean install) {
+		return new UpdateFileTask.Listener() {
+			@Override
+			public void progress(long received, long total, int percent) {
+				if (accepts(token) && owner != null && owner.isShown()) {
+					if (listener != null && dialog != null) {
+						listener.onProgress(percent < 0 ? 0 : percent / 100f, total);
+					}
+					下载进度(received, total, percent);
+				}
+			}
+
+			@Override
+			public void completed(File file) {
+				if (accepts(token)) {
+					readyFile = file;
+					state = 状态_就绪;
+					if (listener != null && dialog != null) {
+						listener.onCompleted(file);
+						bindInstallButton(file);
+					}
+					下载完成(file.getAbsolutePath());
+					// 后台完成交给通知，由用户决定何时打开安装界面。
+					if (accepts(token) && install && !fileTask.isBackground() && pendingInstall == null
+							&& state != 状态_安装) {
+						requestInstall(file);
+					}
+				}
+			}
+
+			@Override
+			public void failed(Exception error, boolean recoverable) {
+				if (accepts(token)) {
+					state = recoverable ? 状态_暂停 : 状态_空闲;
+					pauseReady = recoverable;
+					if (listener != null && dialog != null) {
+						listener.onError(error);
+					}
+					bindResumeButton();
+					失败(阶段_下载, error.getMessage());
+				}
+			}
+
+			@Override
+			public void paused() {
+				if (accepts(token)) {
+					state = 状态_暂停;
+					pauseReady = true;
+					bindResumeButton();
+					已暂停();
+				}
+			}
+		};
 	}
 
 	/**
@@ -757,36 +872,31 @@ public abstract class UpdateController extends 组件Impl implements
 		}
 	}
 
-	/** 将外部可读 APK 复制到私有共享目录，不扩大 FileProvider 的暴露范围。 */
+	/**
+	 * 将外部可读 APK 复制到私有共享目录，不扩大 FileProvider 的暴露范围。
+	 *
+	 * @param source 可读取的原始 APK 文件。
+	 */
 	private void stageInstall(final File source) {
 		final long token = ++sequence;
 		state = 状态_安装;
 		final File destination = new File(directory, UUID.randomUUID() + ".apk");
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					UpdateFiles.copy(source, destination);
-					main.post(new Runnable() {
-						@Override
-						public void run() {
-							if (accepts(token)) {
-								requestInstall(destination);
-							} else {
-								destination.delete();
-							}
-						}
-					});
-				} catch (final Exception exception) {
-					main.post(new Runnable() {
-						@Override
-						public void run() {
-							if (accepts(token)) {
-								fail(阶段_安装, exception);
-							}
-						}
-					});
-				}
+		executor.execute(() -> {
+			try {
+				UpdateFiles.copy(source, destination);
+				main.post(() -> {
+					if (accepts(token)) {
+						requestInstall(destination);
+					} else {
+						destination.delete();
+					}
+				});
+			} catch (final Exception exception) {
+				main.post(() -> {
+					if (accepts(token)) {
+						fail(阶段_安装, exception);
+					}
+				});
 			}
 		});
 	}
@@ -830,6 +940,7 @@ public abstract class UpdateController extends 组件Impl implements
 	public void onViewAttachedToWindow(View view) {
 		if (!destroyed) {
 			registerLifecycle();
+			restoreBackgroundTask();
 		}
 	}
 
@@ -846,6 +957,7 @@ public abstract class UpdateController extends 组件Impl implements
 		}
 		releaseWindow();
 		destroyed = true;
+		detachedTask = null;
 		executor.shutdownNow();
 		unregisterLifecycle();
 		if (owner != null) {
@@ -882,17 +994,19 @@ public abstract class UpdateController extends 组件Impl implements
 	 *
 	 * @throws IllegalArgumentException 当前线程或实例状态不允许操作。
 	 */
-	private void checkThread() {
+	protected final void checkThread() {
 		if (Looper.myLooper() != Looper.getMainLooper() || destroyed) {
 			// 使用 Simple 可映射的异常类型，使调用方能够在错误处理块中恢复。
 			throw new IllegalArgumentException("更新器须在界面线程且未销毁时调用。");
 		}
 	}
 
-	/** 配置可在窗口初始化阶段设置，不要求视图已经附着；活动任务期间不可换策略。 */
+	/**
+	 * 配置可在窗口初始化阶段设置，不要求视图已经附着；活动任务期间不可换策略。
+	 */
 	private void checkConfiguration() {
 		checkThread();
-		if (task != null || dialog != null || pendingInstall != null || state == 状态_下载
+		if (detachedActive() || task != null || dialog != null || pendingInstall != null || state == 状态_下载
 				|| state == 状态_安装 || state == 状态_暂停) {
 			throw new IllegalArgumentException("请先完成或取消当前任务，再替换更新策略。");
 		}
@@ -908,7 +1022,8 @@ public abstract class UpdateController extends 组件Impl implements
 		if (owner == null || !owner.isAttachedToWindow() || !owner.isShown()) {
 			throw new IllegalArgumentException("请在所属 Simple 窗口显示后调用更新器。");
 		}
-		if (task != null || dialog != null || pendingInstall != null || state == 状态_下载 || state == 状态_安装 || state == 状态_暂停) {
+		if (detachedActive() || task != null || dialog != null || pendingInstall != null || state == 状态_下载
+				|| state == 状态_安装 || state == 状态_暂停) {
 			throw new IllegalArgumentException("请先完成或取消当前更新任务。");
 		}
 	}
@@ -936,13 +1051,62 @@ public abstract class UpdateController extends 组件Impl implements
 		return !destroyed && token == sequence;
 	}
 
-	/** 解绑窗口观察者；显式后台任务由服务持有，其余任务沿用取消语义。 */
+	/**
+	 * 解绑窗口观察者；显式后台任务由服务持有，其余任务沿用取消语义。
+	 */
 	private void releaseWindow() {
 		if (fileTask != null && fileTask.isBackground()) {
 			fileTask.detach();
+			detachedTask = fileTask;
 			fileTask = null;
 		}
 		cancelWork();
+	}
+
+	/**
+	 * 判断离页托管的任务是否仍未终止，防止删除在用文件或替换活动策略。
+	 *
+	 * @return 后台任务正在下载或暂停时为真。
+	 */
+	private boolean detachedActive() {
+		return detachedTask != null && (detachedTask.state() == 状态_下载 || detachedTask.state() == 状态_暂停);
+	}
+
+	/**
+	 * 缓存窗口重新显示时接回原任务；使用新序号过滤旧桥接并回放当前状态。
+	 */
+	private void restoreBackgroundTask() {
+		if (detachedTask == null) {
+			return;
+		}
+		final UpdateFileTask restored = detachedTask;
+		detachedTask = null;
+		fileTask = restored;
+		state = restored.state();
+		pauseReady = restored.canResume();
+		final long token = ++sequence;
+		downloadEvents = createDownloadEvents(token, null, false);
+		restored.attach(downloadEvents);
+		final File completed = restored.completedFile();
+		final boolean publishCompletion = completed != null && !completed.equals(readyFile);
+		if (completed != null) {
+			readyFile = completed;
+		}
+		main.post(() -> {
+			if (!accepts(token) || fileTask != restored || owner == null || !owner.isShown()) {
+				return;
+			}
+			if (publishCompletion) {
+				downloadEvents.completed(completed);
+			} else if (restored.state() == 状态_下载 || restored.state() == 状态_暂停) {
+				long total = restored.total();
+				downloadEvents.progress(restored.received(), total,
+						total > 0 ? (int) Math.min(99, restored.received() * 100.0 / total) : -1);
+				if (restored.canResume()) {
+					downloadEvents.paused();
+				}
+			}
+		});
 	}
 
 	/**
@@ -980,7 +1144,7 @@ public abstract class UpdateController extends 组件Impl implements
 	/**
 	 * 终止失败流程并发送可重试的错误说明。
 	 *
-	 * @param stage 检查、下载或安装阶段。
+	 * @param stage     检查、下载或安装阶段。
 	 * @param exception 实际异常。
 	 */
 	private void fail(int stage, Exception exception) {
@@ -1004,117 +1168,245 @@ public abstract class UpdateController extends 组件Impl implements
 		}
 	}
 
-
+	/**
+	 * 替换本实例的检查器；仅可在空闲时设置，空对象恢复默认实现。
+	 *
+	 * @param value 自定义检查器。
+	 */
 	public void 置检查器(XU检查器 value) {
 		checkConfiguration();
 		customChecker = value;
 	}
 
+	/**
+	 * 替换本实例的解析器；仅可在空闲时设置，空对象恢复默认实现。
+	 *
+	 * @param value 自定义解析器。
+	 */
 	public void 置解析器(XU解析器 value) {
 		checkConfiguration();
 		parser = value;
 	}
 
+	/**
+	 * 替换本实例的提示器；仅可在空闲时设置，空对象恢复默认实现。
+	 *
+	 * @param value 自定义提示器。
+	 */
 	public void 置提示器(XU提示器 value) {
 		checkConfiguration();
 		prompter = value;
 	}
 
+	/**
+	 * 替换本实例的下载器；仅可在空闲时设置，空对象恢复默认实现。
+	 *
+	 * @param value 自定义下载器。
+	 */
 	public void 置下载器(XU下载器 value) {
 		checkConfiguration();
 		downloader = value;
 	}
 
+	/**
+	 * 替换本实例的网络服务；仅可在空闲时设置，空对象恢复默认实现。
+	 *
+	 * @param value 自定义网络服务。
+	 */
 	public void 置网络服务(XU网络服务 value) {
 		checkConfiguration();
 		network = value;
 	}
 
+	/**
+	 * 替换本实例的校验器；仅可在空闲时设置，空对象恢复默认实现。
+	 *
+	 * @param value 自定义校验器。
+	 */
 	public void 置校验器(XU校验器 value) {
 		checkConfiguration();
 		verifier = value;
 	}
 
+	/**
+	 * 替换本实例的安装器；仅可在空闲时设置，空对象恢复默认实现。
+	 *
+	 * @param value 自定义安装器。
+	 */
 	public void 置安装器(XU安装器 value) {
 		checkConfiguration();
 		installer = value;
 	}
 
+	/**
+	 * 取得发现更新后是否跳过提示直接下载，默认关闭。
+	 *
+	 * @return 是否自动下载。
+	 */
 	public boolean 自动下载() {
+		checkThread();
 		return autoDownload;
 	}
 
+	/**
+	 * 设置是否自动下载；是否请求安装仍由下载后安装独立控制。
+	 *
+	 * @param value 是否自动下载。
+	 */
 	public void 自动下载(boolean value) {
 		checkThread();
 		autoDownload = value;
 	}
 
+	/**
+	 * 检查请求已经结束；之后仍可能解析、提示或下载，不代表更新完成。
+	 */
 	public void 检查结束() {
 		EventDispatcher.dispatchEvent(this, "检查结束");
 	}
 
+	/**
+	 * 取得是否用 POST 表单检查；默认为 GET。
+	 *
+	 * @return 是否用 POST 表单检查；默认为 GET。
+	 */
 	public boolean 使用POST() {
+		checkThread();
 		return post;
 	}
 
+	/**
+	 * 设置是否用 POST 表单检查；默认为 GET。
+	 *
+	 * @param value 是否用 POST 表单检查；默认为 GET。
+	 */
 	public void 使用POST(boolean value) {
 		checkThread();
 		post = value;
 	}
 
+	/**
+	 * 取得 POST 是否发送 JSON 对象；默认为假，只在使用 POST 时生效。
+	 *
+	 * @return 是否使用 JSON 请求体。
+	 */
 	public boolean POST使用JSON() {
+		checkThread();
 		return postJson;
 	}
 
+	/**
+	 * 设置 POST 是否发送 UTF-8 JSON 对象，参数值保持文本；假表示表单。
+	 *
+	 * @param value 是否使用 JSON 请求体。
+	 */
 	public void POST使用JSON(boolean value) {
 		checkThread();
 		postJson = value;
 	}
 
+	/**
+	 * 下载已经停止且续传记录已保留，可以调用继续下载；不表示下载完成。
+	 */
 	public void 已暂停() {
 		EventDispatcher.dispatchEvent(this, "已暂停");
 	}
 
+	/**
+	 * 取得是否通过解析响应事件填写更新信息。
+	 *
+	 * @return 是否通过解析响应事件填写更新信息。
+	 */
 	public boolean 自定义解析() {
+		checkThread();
 		return customParser;
 	}
 
+	/**
+	 * 设置是否通过解析响应事件填写更新信息。
+	 *
+	 * @param value 是否通过解析响应事件填写更新信息。
+	 */
 	public void 自定义解析(boolean value) {
 		checkThread();
 		customParser = value;
 	}
 
+	/**
+	 * 取得检查发现更新后是否自动显示更新框。
+	 *
+	 * @return 检查发现更新后是否自动显示更新框。
+	 */
 	public boolean 自动提示() {
+		checkThread();
 		return autoPrompt;
 	}
 
+	/**
+	 * 设置检查发现更新后是否自动显示更新框。
+	 *
+	 * @param value 检查发现更新后是否自动显示更新框。
+	 */
 	public void 自动提示(boolean value) {
 		checkThread();
 		autoPrompt = value;
 	}
 
+	/**
+	 * 取得下载完成后是否请求系统安装；设置为假可先取得 APK。
+	 *
+	 * @return 下载完成后是否请求系统安装；设置为假可先取得 APK。
+	 */
 	public boolean 下载后安装() {
+		checkThread();
 		return autoInstall;
 	}
 
+	/**
+	 * 设置下载完成后是否请求系统安装；设置为假可先取得 APK。
+	 *
+	 * @param value 下载完成后是否请求系统安装；设置为假可先取得 APK。
+	 */
 	public void 下载后安装(boolean value) {
 		checkThread();
 		autoInstall = value;
 	}
 
+	/**
+	 * 取得开始检查和下载时是否要求当前网络为 Wi-Fi；不自动切换网络。
+	 *
+	 * @return 开始检查和下载时是否要求当前网络为 Wi-Fi；不自动切换网络。
+	 */
 	public boolean 仅WiFi() {
+		checkThread();
 		return wifiOnly;
 	}
 
+	/**
+	 * 设置开始检查和下载时是否要求当前网络为 Wi-Fi；不自动切换网络。
+	 *
+	 * @param value 开始检查和下载时是否要求当前网络为 Wi-Fi；不自动切换网络。
+	 */
 	public void 仅WiFi(boolean value) {
 		checkThread();
 		wifiOnly = value;
 	}
 
+	/**
+	 * 取得连接及连续读取的超时毫秒数，范围 1000 至 120000。
+	 *
+	 * @return 连接及连续读取的超时毫秒数，范围 1000 至 120000。
+	 */
 	public int 请求超时() {
+		checkThread();
 		return timeout;
 	}
 
+	/**
+	 * 设置连接及连续读取的超时毫秒数，范围 1000 至 120000。
+	 *
+	 * @param value 连接及连续读取的超时毫秒数，范围 1000 至 120000。
+	 */
 	public void 请求超时(int value) {
 		checkThread();
 		if (value < 1000 || value > 120000) {
@@ -1123,48 +1415,99 @@ public abstract class UpdateController extends 组件Impl implements
 		timeout = value;
 	}
 
+	/**
+	 * 版本请求即将发出，事件在界面线程触发。
+	 */
 	public void 检查开始() {
 		EventDispatcher.dispatchEvent(this, "检查开始");
 	}
 
+	/**
+	 * 启用自定义解析后触发；默认有更新为假，必须明确填写有效信息。
+	 *
+	 * @param response 原始响应内容。
+	 * @param info     在本事件内填写；事件返回后读取其快照。
+	 */
 	public void 解析响应(String response, XU更新信息 info) {
-		EventDispatcher.dispatchEvent(this, "解析响应" , response, info);
+		EventDispatcher.dispatchEvent(this, "解析响应", response, info);
 	}
 
+	/**
+	 * 存在高于本机的未忽略版本，之后按自动提示配置决定是否显示更新框。
+	 *
+	 * @param info 独立的版本信息，修改不影响当前提示或下载。
+	 */
 	public void 发现更新(XU更新信息 info) {
-		EventDispatcher.dispatchEvent(this, "发现更新" , info);
+		EventDispatcher.dispatchEvent(this, "发现更新", info);
 	}
 
+	/**
+	 * 服务端无更新、本机版本已足够或此版本被用户忽略。
+	 */
 	public void 无需更新() {
 		EventDispatcher.dispatchEvent(this, "无需更新");
 	}
 
+	/**
+	 * 下载任务已启动，进度事件在界面线程返回。
+	 */
 	public void 下载开始() {
 		EventDispatcher.dispatchEvent(this, "下载开始");
 	}
 
+	/**
+	 * 下载期间的进度；只有写入完成且校验通过后才报告 100%。
+	 *
+	 * @param received 已接收的字节数。
+	 * @param total    预期字节数；未知时为零。
+	 * @param percent  0 至 100；总大小未知时为 -1。
+	 */
 	public void 下载进度(long received, long total, int percent) {
-		EventDispatcher.dispatchEvent(this, "下载进度" , received, total, percent);
+		EventDispatcher.dispatchEvent(this, "下载进度", received, total, percent);
 	}
 
+	/**
+	 * APK 下载和可选大小、MD5 校验完成；不表示已经安装。
+	 *
+	 * @param path 已写入完成且校验通过的私有缓存 APK 绝对路径。
+	 */
 	public void 下载完成(String path) {
-		EventDispatcher.dispatchEvent(this, "下载完成" , path);
+		EventDispatcher.dispatchEvent(this, "下载完成", path);
 	}
 
+	/**
+	 * 已打开允许此来源安装应用的系统设置；拒绝后报告失败，可重新请求。
+	 *
+	 * @param path 等待本应用安装来源授权的已校验 APK。
+	 */
 	public void 安装授权(String path) {
-		EventDispatcher.dispatchEvent(this, "安装授权" , path);
+		EventDispatcher.dispatchEvent(this, "安装授权", path);
 	}
 
+	/**
+	 * 系统安装界面已打开；用户仍可拒绝或取消，不表示安装成功。
+	 *
+	 * @param path 交给系统安装器的 APK 路径。
+	 */
 	public void 已请求安装(String path) {
-		EventDispatcher.dispatchEvent(this, "已请求安装" , path);
+		EventDispatcher.dispatchEvent(this, "已请求安装", path);
 	}
 
+	/**
+	 * 活动任务被用户或程序取消；切换窗口时静默释放，不回调旧窗口。
+	 */
 	public void 已取消() {
 		EventDispatcher.dispatchEvent(this, "已取消");
 	}
 
+	/**
+	 * 请求、解析、下载、校验或安装请求失败。
+	 *
+	 * @param stage   阶段_检查、阶段_下载或阶段_安装。
+	 * @param message 失败原因，任务已停止；可修正配置后重试。
+	 */
 	public void 失败(int stage, String message) {
-		EventDispatcher.dispatchEvent(this, "失败" , stage, message);
+		EventDispatcher.dispatchEvent(this, "失败", stage, message);
 	}
 
 }

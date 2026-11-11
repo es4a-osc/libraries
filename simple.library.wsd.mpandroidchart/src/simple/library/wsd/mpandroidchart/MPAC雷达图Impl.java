@@ -1,10 +1,7 @@
 package simple.library.wsd.mpandroidchart;
 
 import android.content.Context;
-
 import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.RadarChart;
-
 import simple.runtime.components.组件容器;
 
 /**
@@ -25,7 +22,7 @@ public final class MPAC雷达图Impl extends ChartComponent implements MPAC雷�
 
 	@Override
 	protected Chart<?> createChart(Context context) {
-		return new RadarChart(context);
+		return new BoundedRadarChart(context);
 	}
 
 	@Override

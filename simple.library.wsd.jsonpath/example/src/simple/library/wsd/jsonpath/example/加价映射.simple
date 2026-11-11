@@ -1,0 +1,14 @@
+别名 JSONPath操作 = simple.library.wsd.jsonpath.JSONPath操作
+别名 JSONPath文档 = simple.library.wsd.jsonpath.JSONPath文档
+别名 JSONPath结果 = simple.library.wsd.jsonpath.JSONPath结果
+
+
+' 按当前价格返回新 JSON 数值，文档负责事务提交。
+函数 转换(路径 为 文本型, 当前值 为 JSONPath结果) 为 JSONPath结果
+	转换 = JSONPath操作.解析值("" & (当前值.取长整数() + 5))
+结束 函数
+
+$属性
+	$资源 $对象
+	实现接口 = simple.library.wsd.jsonpath.JSONPath映射器
+$结束 $属性

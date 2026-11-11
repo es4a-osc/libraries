@@ -2,7 +2,6 @@ package simple.library.wsd.xui;
 
 import android.graphics.drawable.Drawable;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.xuexiang.xui.widget.button.shinebutton.PorterShapeImageView;
 
@@ -42,19 +41,6 @@ public final class XUI形状图片Impl extends XUI视图组件基类 implements 
 	@Override
 	public void 置图标图像(String image) {
 		view.setIconDrawable(ComponentSupport.getDrawable(image));
-	}
-
-	@Override
-	public void 置图片(String image) {
-		Drawable drawable = ComponentSupport.getDrawable(image);
-		view.setImageDrawable(drawable);
-		view.setIconDrawable(drawable);
-	}
-
-	@Override
-	public void 置图片缩放模式(int mode) {
-		ComponentSupport.validateIndex(mode, ImageView.ScaleType.values().length);
-		view.setScaleType(ImageView.ScaleType.values()[mode]);
 	}
 
 }

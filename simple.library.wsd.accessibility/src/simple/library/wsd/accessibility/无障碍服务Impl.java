@@ -29,8 +29,8 @@ import simple.runtime.parameters.BooleanReferenceParameter;
  *
  * @author 树先生 xhwsd@qq.com
  */
-public final class 无障碍服务Impl extends 组件Impl implements 无障碍服务,
-		AccessibilityListener.Listener, MainActivity.OnDestroyListener {
+public final class 无障碍服务Impl extends 组件Impl
+		implements 无障碍服务, AccessibilityListener.Listener, MainActivity.OnDestroyListener {
 
 	/* 内部状态 */
 
@@ -72,80 +72,77 @@ public final class 无障碍服务Impl extends 组件Impl implements 无障碍�
 	/**
 	 * 监听系统中任意无障碍服务的启用状态。
 	 */
-	private final AccessibilityManager.AccessibilityStateChangeListener systemListener =
-		new AccessibilityManager.AccessibilityStateChangeListener() {
-			/**
-			 * 系统无障碍状态改变时通知当前组件。
-			 *
-			 * @param enabled 系统无障碍是否已启用
-			 */
-			@Override
-			public void onAccessibilityStateChanged(boolean enabled) {
-				signal("系统启用状态改变", enabled);
-			}
-		};
+	private final AccessibilityManager.AccessibilityStateChangeListener systemListener = new AccessibilityManager.AccessibilityStateChangeListener() {
+		/**
+		 * 系统无障碍状态改变时通知当前组件。
+		 *
+		 * @param enabled 系统无障碍是否已启用
+		 */
+		@Override
+		public void onAccessibilityStateChanged(boolean enabled) {
+			signal("系统启用状态改变", enabled);
+		}
+	};
 
 	/**
 	 * 监听触摸探索模式的启用状态。
 	 */
-	private final AccessibilityManager.TouchExplorationStateChangeListener touchListener =
-		new AccessibilityManager.TouchExplorationStateChangeListener() {
-			/**
-			 * 触摸探索状态改变时通知当前组件。
-			 *
-			 * @param enabled 当前是否已启用触摸探索
-			 */
-			@Override
-			public void onTouchExplorationStateChanged(boolean enabled) {
-				signal("触摸探索状态改变", enabled);
-			}
-		};
+	private final AccessibilityManager.TouchExplorationStateChangeListener touchListener = new AccessibilityManager.TouchExplorationStateChangeListener() {
+		/**
+		 * 触摸探索状态改变时通知当前组件。
+		 *
+		 * @param enabled 当前是否已启用触摸探索
+		 */
+		@Override
+		public void onTouchExplorationStateChanged(boolean enabled) {
+			signal("触摸探索状态改变", enabled);
+		}
+	};
 
 	/**
 	 * 监听系统字幕的启用、语言、字号和样式改变。
 	 */
-	private final CaptioningManager.CaptioningChangeListener captionListener =
-		new CaptioningManager.CaptioningChangeListener() {
-			/**
-			 * 字幕启用状态改变后请求重新读取首选项。
-			 *
-			 * @param enabled 当前字幕启用状态
-			 */
-			@Override
-			public void onEnabledChanged(boolean enabled) {
-				signal("字幕设置改变");
-			}
+	private final CaptioningManager.CaptioningChangeListener captionListener = new CaptioningManager.CaptioningChangeListener() {
+		/**
+		 * 字幕启用状态改变后请求重新读取首选项。
+		 *
+		 * @param enabled 当前字幕启用状态
+		 */
+		@Override
+		public void onEnabledChanged(boolean enabled) {
+			signal("字幕设置改变");
+		}
 
-			/**
-			 * 字幕字号改变后请求重新读取首选项。
-			 *
-			 * @param scale 当前字幕字号比例
-			 */
-			@Override
-			public void onFontScaleChanged(float scale) {
-				signal("字幕设置改变");
-			}
+		/**
+		 * 字幕字号改变后请求重新读取首选项。
+		 *
+		 * @param scale 当前字幕字号比例
+		 */
+		@Override
+		public void onFontScaleChanged(float scale) {
+			signal("字幕设置改变");
+		}
 
-			/**
-			 * 字幕语言改变后请求重新读取首选项。
-			 *
-			 * @param locale 新的语言首选项，可以为空
-			 */
-			@Override
-			public void onLocaleChanged(java.util.Locale locale) {
-				signal("字幕设置改变");
-			}
+		/**
+		 * 字幕语言改变后请求重新读取首选项。
+		 *
+		 * @param locale 新的语言首选项，可以为空
+		 */
+		@Override
+		public void onLocaleChanged(java.util.Locale locale) {
+			signal("字幕设置改变");
+		}
 
-			/**
-			 * 字幕样式改变后请求重新读取首选项。
-			 *
-			 * @param style 新的系统字幕样式
-			 */
-			@Override
-			public void onUserStyleChanged(CaptioningManager.CaptionStyle style) {
-				signal("字幕设置改变");
-			}
-		};
+		/**
+		 * 字幕样式改变后请求重新读取首选项。
+		 *
+		 * @param style 新的系统字幕样式
+		 */
+		@Override
+		public void onUserStyleChanged(CaptioningManager.CaptionStyle style) {
+			signal("字幕设置改变");
+		}
+	};
 
 	/* 构造与内部方法 */
 
@@ -182,7 +179,8 @@ public final class 无障碍服务Impl extends 组件Impl implements 无障碍�
 	@Override
 	public boolean 已启用() {
 		check();
-		String enabled = Settings.Secure.getString(host.getContentResolver(), Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+		String enabled = Settings.Secure.getString(host.getContentResolver(),
+				Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
 		ComponentName expected = new ComponentName(host, AccessibilityListener.class);
 		if (enabled != null) {
 			for (String name : enabled.split(":")) {
@@ -243,6 +241,13 @@ public final class 无障碍服务Impl extends 组件Impl implements 无障碍�
 		check();
 		java.util.Locale locale = captioning.getLocale();
 		return locale == null ? "" : locale.toLanguageTag();
+	}
+
+	@Override
+	public boolean 辅助按钮受支持() {
+		check();
+		AccessibilitySupport.api(27, "辅助按钮支持查询");
+		return AccessibilityManager.isAccessibilityButtonSupported();
 	}
 
 	/* 方法 */
@@ -333,7 +338,8 @@ public final class 无障碍服务Impl extends 组件Impl implements 无障碍�
 	public 无障碍服务信息[] 取已启用服务() {
 		check();
 
-		List<AccessibilityServiceInfo> values = manager.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
+		List<AccessibilityServiceInfo> values = manager
+				.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK);
 		无障碍服务信息[] result = new 无障碍服务信息[values.size()];
 		for (int i = 0; i < values.size(); i++) {
 			result[i] = new 无障碍服务信息(values.get(i));
@@ -447,6 +453,33 @@ public final class 无障碍服务Impl extends 组件Impl implements 无障碍�
 		return new 无障碍字幕样式(captioning.getUserStyle());
 	}
 
+	@Override
+	public 无障碍动作[] 取系统动作() {
+		check();
+		AccessibilitySupport.api(30, "系统动作查询");
+		AccessibilityListener service = AccessibilityListener.current();
+		if (service == null) {
+			return new 无障碍动作[0];
+		}
+		List<android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction> actions = service.getSystemActions();
+		无障碍动作[] result = new 无障碍动作[actions.size()];
+		for (int i = 0; i < actions.size(); i++) {
+			result[i] = new 无障碍动作(actions.get(i));
+		}
+		return result;
+	}
+
+	@Override
+	public int 取建议显示时长(int original, int contentFlags) {
+		check();
+		if (original < 0 || (contentFlags & ~7) != 0) {
+			throw new IllegalArgumentException("显示时长不能为负数，显示内容掩码只能包含图标、文本和控件。");
+		}
+		// 较早系统没有辅助显示时长设置，使用调用者提供的原时长。
+		return android.os.Build.VERSION.SDK_INT >= 29 ? manager.getRecommendedTimeoutMillis(original, contentFlags)
+				: original;
+	}
+
 	/* 事件 */
 
 	@Override
@@ -558,6 +591,13 @@ public final class 无障碍服务Impl extends 组件Impl implements 无障碍�
 	public void 字幕设置改变() {
 		if (!destroyed && listening) {
 			EventDispatcher.dispatchEvent(this, "字幕设置改变");
+		}
+	}
+
+	@Override
+	public void 系统动作改变() {
+		if (!destroyed && listening) {
+			EventDispatcher.dispatchEvent(this, "系统动作改变");
 		}
 	}
 

@@ -1,14 +1,16 @@
 package simple.library.wsd.iconics;
 
 import android.content.res.ColorStateList;
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+
+import com.mikepenz.iconics.IconicsDrawable;
+
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
+import simple.runtime.annotations.SimpleProperty;
 
 /**
  * 图标渲染配置。
@@ -18,6 +20,7 @@ import simple.runtime.components.*;
 @SimpleObject
 public final class 图标样式 {
 	private int p宽度 = 24;
+
 	/**
 	 * 图标宽度，DIP，必须大于零。
 	 *
@@ -27,6 +30,7 @@ public final class 图标样式 {
 	public int 宽度() {
 		return p宽度;
 	}
+
 	/**
 	 * 图标宽度，DIP，必须大于零。
 	 *
@@ -38,6 +42,7 @@ public final class 图标样式 {
 	}
 
 	private int p高度 = 24;
+
 	/**
 	 * 图标高度，DIP，必须大于零。
 	 *
@@ -47,6 +52,7 @@ public final class 图标样式 {
 	public int 高度() {
 		return p高度;
 	}
+
 	/**
 	 * 图标高度，DIP，必须大于零。
 	 *
@@ -58,6 +64,7 @@ public final class 图标样式 {
 	}
 
 	private int p颜色 = Color.BLACK;
+
 	/**
 	 * 图标 ARGB 颜色。
 	 *
@@ -67,6 +74,7 @@ public final class 图标样式 {
 	public int 颜色() {
 		return p颜色;
 	}
+
 	/**
 	 * 图标 ARGB 颜色。
 	 *
@@ -78,6 +86,7 @@ public final class 图标样式 {
 	}
 
 	private int p透明度 = 255;
+
 	/**
 	 * 透明度，0 至 255。
 	 *
@@ -87,6 +96,7 @@ public final class 图标样式 {
 	public int 透明度() {
 		return p透明度;
 	}
+
 	/**
 	 * 透明度，0 至 255。
 	 *
@@ -98,6 +108,7 @@ public final class 图标样式 {
 	}
 
 	private int p内边距 = 0;
+
 	/**
 	 * 图标内边距，DIP。
 	 *
@@ -107,6 +118,7 @@ public final class 图标样式 {
 	public int 内边距() {
 		return p内边距;
 	}
+
 	/**
 	 * 图标内边距，DIP。
 	 *
@@ -118,6 +130,7 @@ public final class 图标样式 {
 	}
 
 	private int p描边宽度 = 0;
+
 	/**
 	 * 图标描边宽度，DIP。
 	 *
@@ -127,6 +140,7 @@ public final class 图标样式 {
 	public int 描边宽度() {
 		return p描边宽度;
 	}
+
 	/**
 	 * 图标描边宽度，DIP。
 	 *
@@ -138,6 +152,7 @@ public final class 图标样式 {
 	}
 
 	private int p描边颜色 = Color.BLACK;
+
 	/**
 	 * 图标描边颜色。
 	 *
@@ -147,6 +162,7 @@ public final class 图标样式 {
 	public int 描边颜色() {
 		return p描边颜色;
 	}
+
 	/**
 	 * 图标描边颜色。
 	 *
@@ -158,6 +174,7 @@ public final class 图标样式 {
 	}
 
 	private int p背景颜色 = Color.TRANSPARENT;
+
 	/**
 	 * 背景颜色。
 	 *
@@ -167,6 +184,7 @@ public final class 图标样式 {
 	public int 背景颜色() {
 		return p背景颜色;
 	}
+
 	/**
 	 * 背景颜色。
 	 *
@@ -178,6 +196,7 @@ public final class 图标样式 {
 	}
 
 	private int p背景描边宽度 = 0;
+
 	/**
 	 * 背景描边宽度，DIP。
 	 *
@@ -187,6 +206,7 @@ public final class 图标样式 {
 	public int 背景描边宽度() {
 		return p背景描边宽度;
 	}
+
 	/**
 	 * 背景描边宽度，DIP。
 	 *
@@ -198,6 +218,7 @@ public final class 图标样式 {
 	}
 
 	private int p背景描边颜色 = Color.BLACK;
+
 	/**
 	 * 背景描边颜色。
 	 *
@@ -207,6 +228,7 @@ public final class 图标样式 {
 	public int 背景描边颜色() {
 		return p背景描边颜色;
 	}
+
 	/**
 	 * 背景描边颜色。
 	 *
@@ -218,6 +240,7 @@ public final class 图标样式 {
 	}
 
 	private float p圆角横半径 = 0f;
+
 	/**
 	 * 背景横向圆角半径，DIP。
 	 *
@@ -227,6 +250,7 @@ public final class 图标样式 {
 	public float 圆角横半径() {
 		return p圆角横半径;
 	}
+
 	/**
 	 * 背景横向圆角半径，DIP。
 	 *
@@ -238,6 +262,7 @@ public final class 图标样式 {
 	}
 
 	private float p圆角纵半径 = 0f;
+
 	/**
 	 * 背景纵向圆角半径，DIP。
 	 *
@@ -247,6 +272,7 @@ public final class 图标样式 {
 	public float 圆角纵半径() {
 		return p圆角纵半径;
 	}
+
 	/**
 	 * 背景纵向圆角半径，DIP。
 	 *
@@ -258,6 +284,7 @@ public final class 图标样式 {
 	}
 
 	private int p横偏移 = 0;
+
 	/**
 	 * 图标横向偏移，DIP。
 	 *
@@ -267,6 +294,7 @@ public final class 图标样式 {
 	public int 横偏移() {
 		return p横偏移;
 	}
+
 	/**
 	 * 图标横向偏移，DIP。
 	 *
@@ -278,6 +306,7 @@ public final class 图标样式 {
 	}
 
 	private int p纵偏移 = 0;
+
 	/**
 	 * 图标纵向偏移，DIP。
 	 *
@@ -287,6 +316,7 @@ public final class 图标样式 {
 	public int 纵偏移() {
 		return p纵偏移;
 	}
+
 	/**
 	 * 图标纵向偏移，DIP。
 	 *
@@ -298,6 +328,7 @@ public final class 图标样式 {
 	}
 
 	private float p阴影半径 = 0f;
+
 	/**
 	 * 阴影半径，DIP。
 	 *
@@ -307,6 +338,7 @@ public final class 图标样式 {
 	public float 阴影半径() {
 		return p阴影半径;
 	}
+
 	/**
 	 * 阴影半径，DIP。
 	 *
@@ -318,6 +350,7 @@ public final class 图标样式 {
 	}
 
 	private float p阴影横偏移 = 0f;
+
 	/**
 	 * 阴影横向偏移，DIP。
 	 *
@@ -327,6 +360,7 @@ public final class 图标样式 {
 	public float 阴影横偏移() {
 		return p阴影横偏移;
 	}
+
 	/**
 	 * 阴影横向偏移，DIP。
 	 *
@@ -338,6 +372,7 @@ public final class 图标样式 {
 	}
 
 	private float p阴影纵偏移 = 0f;
+
 	/**
 	 * 阴影纵向偏移，DIP。
 	 *
@@ -347,6 +382,7 @@ public final class 图标样式 {
 	public float 阴影纵偏移() {
 		return p阴影纵偏移;
 	}
+
 	/**
 	 * 阴影纵向偏移，DIP。
 	 *
@@ -358,6 +394,7 @@ public final class 图标样式 {
 	}
 
 	private int p阴影颜色 = Color.BLACK;
+
 	/**
 	 * 阴影颜色。
 	 *
@@ -367,6 +404,7 @@ public final class 图标样式 {
 	public int 阴影颜色() {
 		return p阴影颜色;
 	}
+
 	/**
 	 * 阴影颜色。
 	 *
@@ -378,6 +416,7 @@ public final class 图标样式 {
 	}
 
 	private boolean p遵循字体边界 = false;
+
 	/**
 	 * 是否按照字体边界缩放。
 	 *
@@ -387,6 +426,7 @@ public final class 图标样式 {
 	public boolean 遵循字体边界() {
 		return p遵循字体边界;
 	}
+
 	/**
 	 * 是否按照字体边界缩放。
 	 *
@@ -398,6 +438,7 @@ public final class 图标样式 {
 	}
 
 	private boolean p自动镜像 = false;
+
 	/**
 	 * 是否在 RTL 布局中镜像。
 	 *
@@ -407,6 +448,7 @@ public final class 图标样式 {
 	public boolean 自动镜像() {
 		return p自动镜像;
 	}
+
 	/**
 	 * 是否在 RTL 布局中镜像。
 	 *
@@ -418,6 +460,7 @@ public final class 图标样式 {
 	}
 
 	private int p绘画方式 = 0;
+
 	/**
 	 * 0 填充，1 描边，2 填充及描边。
 	 *
@@ -427,6 +470,7 @@ public final class 图标样式 {
 	public int 绘画方式() {
 		return p绘画方式;
 	}
+
 	/**
 	 * 0 填充，1 描边，2 填充及描边。
 	 *
@@ -438,6 +482,7 @@ public final class 图标样式 {
 	}
 
 	private int p着色模式 = 5;
+
 	/**
 	 * Android PorterDuff 模式序号。
 	 *
@@ -447,6 +492,7 @@ public final class 图标样式 {
 	public int 着色模式() {
 		return p着色模式;
 	}
+
 	/**
 	 * Android PorterDuff 模式序号。
 	 *
@@ -458,6 +504,7 @@ public final class 图标样式 {
 	}
 
 	private 图标状态颜色 p图标状态色 = null;
+
 	/**
 	 * 图标状态色，空引用使用固定颜色。
 	 *
@@ -467,6 +514,7 @@ public final class 图标样式 {
 	public 图标状态颜色 图标状态色() {
 		return p图标状态色;
 	}
+
 	/**
 	 * 图标状态色，空引用使用固定颜色。
 	 *
@@ -478,6 +526,7 @@ public final class 图标样式 {
 	}
 
 	private 图标状态颜色 p背景状态色 = null;
+
 	/**
 	 * 背景状态色。
 	 *
@@ -487,6 +536,7 @@ public final class 图标样式 {
 	public 图标状态颜色 背景状态色() {
 		return p背景状态色;
 	}
+
 	/**
 	 * 背景状态色。
 	 *
@@ -498,6 +548,7 @@ public final class 图标样式 {
 	}
 
 	private 图标状态颜色 p描边状态色 = null;
+
 	/**
 	 * 图标描边状态色。
 	 *
@@ -507,6 +558,7 @@ public final class 图标样式 {
 	public 图标状态颜色 描边状态色() {
 		return p描边状态色;
 	}
+
 	/**
 	 * 图标描边状态色。
 	 *
@@ -518,6 +570,7 @@ public final class 图标样式 {
 	}
 
 	private 图标状态颜色 p背景描边状态色 = null;
+
 	/**
 	 * 背景描边状态色。
 	 *
@@ -527,6 +580,7 @@ public final class 图标样式 {
 	public 图标状态颜色 背景描边状态色() {
 		return p背景描边状态色;
 	}
+
 	/**
 	 * 背景描边状态色。
 	 *
@@ -536,10 +590,12 @@ public final class 图标样式 {
 	public void 背景描边状态色(图标状态颜色 value) {
 		p背景描边状态色 = value;
 	}
+
 	/**
 	 * 创建独立实例。
 	 */
-	public 图标样式() {}
+	public 图标样式() {
+	}
 
 	/**
 	 * 验证并应用样式。
@@ -547,21 +603,8 @@ public final class 图标样式 {
 	 * @param x 独立图标。
 	 */
 	void apply(IconicsDrawable x) {
-		if (p宽度 <= 0
-				|| p高度 <= 0
-				|| p宽度 > 4096
-				|| p高度 > 4096
-				|| p透明度 < 0
-				|| p透明度 > 255
-				|| p内边距 < 0
-				|| p描边宽度 < 0
-				|| p背景描边宽度 < 0
-				|| p圆角横半径 < 0
-				|| p圆角纵半径 < 0
-				|| p阴影半径 < 0
-				|| p绘画方式 < 0
-				|| p绘画方式 > 2
-				|| p着色模式 < 0
+		if (p宽度 <= 0 || p高度 <= 0 || p宽度 > 4096 || p高度 > 4096 || p透明度 < 0 || p透明度 > 255 || p内边距 < 0 || p描边宽度 < 0
+				|| p背景描边宽度 < 0 || p圆角横半径 < 0 || p圆角纵半径 < 0 || p阴影半径 < 0 || p绘画方式 < 0 || p绘画方式 > 2 || p着色模式 < 0
 				|| p着色模式 >= PorterDuff.Mode.values().length) {
 			throw new 图标错误("图标尺寸或样式越界");
 		}
@@ -572,17 +615,14 @@ public final class 图标样式 {
 		x.setSizeYPx(Support.dp(p高度));
 		x.setAlpha(p透明度);
 		x.setColorList(p图标状态色 == null ? ColorStateList.valueOf(p颜色) : p图标状态色.nativeValue());
-		x.setBackgroundColorList(
-				p背景状态色 == null ? ColorStateList.valueOf(p背景颜色) : p背景状态色.nativeValue());
-		x.setContourColorList(
-				p描边状态色 == null ? ColorStateList.valueOf(p描边颜色) : p描边状态色.nativeValue());
-		x.setBackgroundContourColorList(
-				p背景描边状态色 == null ? ColorStateList.valueOf(p背景描边颜色) : p背景描边状态色.nativeValue());
-		x.setPaddingPx(Support.dp(p内边距));
+		x.setBackgroundColorList(p背景状态色 == null ? ColorStateList.valueOf(p背景颜色) : p背景状态色.nativeValue());
+		x.setContourColorList(p描边状态色 == null ? ColorStateList.valueOf(p描边颜色) : p描边状态色.nativeValue());
+		x.setBackgroundContourColorList(p背景描边状态色 == null ? ColorStateList.valueOf(p背景描边颜色) : p背景描边状态色.nativeValue());
 		x.setContourWidthPx(Support.dp(p描边宽度));
 		x.setDrawContour(p绘制描边 && p描边宽度 > 0);
 		x.setBackgroundContourWidthPx(Support.dp(p背景描边宽度));
 		x.setDrawBackgroundContour(p绘制背景描边 && p背景描边宽度 > 0);
+		Support.padding(x, Support.dp(p内边距));
 		x.setRoundedCornerRxPx(Support.dpf(p圆角横半径));
 		x.setRoundedCornerRyPx(Support.dpf(p圆角纵半径));
 		x.setIconOffsetXPx(Support.dp(p横偏移));
@@ -601,6 +641,7 @@ public final class 图标样式 {
 
 	private 图标状态颜色 p着色状态色;
 	private ColorFilter filter;
+
 	/**
 	 * 取得整体状态着色。
 	 *
@@ -610,6 +651,7 @@ public final class 图标样式 {
 	public 图标状态颜色 着色状态色() {
 		return p着色状态色;
 	}
+
 	/**
 	 * 设置整体状态着色。
 	 *
@@ -653,17 +695,11 @@ public final class 图标样式 {
 		out.p透明度 = x.getAlpha();
 		out.p内边距 = Math.round(x.getPaddingPx() / density);
 		out.p描边宽度 = Math.round(x.getContourWidthPx() / density);
-		out.p描边颜色 =
-				(x.getContourColorList() == null ? 0 : x.getContourColorList().getDefaultColor());
-		out.p背景颜色 =
-				(x.getBackgroundColorList() == null
-						? 0
-						: x.getBackgroundColorList().getDefaultColor());
+		out.p描边颜色 = (x.getContourColorList() == null ? 0 : x.getContourColorList().getDefaultColor());
+		out.p背景颜色 = (x.getBackgroundColorList() == null ? 0 : x.getBackgroundColorList().getDefaultColor());
 		out.p背景描边宽度 = Math.round(x.getBackgroundContourWidthPx() / density);
-		out.p背景描边颜色 =
-				(x.getBackgroundContourColorList() == null
-						? 0
-						: x.getBackgroundContourColorList().getDefaultColor());
+		out.p背景描边颜色 = (x.getBackgroundContourColorList() == null ? 0
+				: x.getBackgroundContourColorList().getDefaultColor());
 		out.p圆角横半径 = x.getRoundedCornerRxPx() / density;
 		out.p圆角纵半径 = x.getRoundedCornerRyPx() / density;
 		out.p横偏移 = Math.round(x.getIconOffsetXPx() / density);
@@ -729,6 +765,7 @@ public final class 图标样式 {
 	}
 
 	private boolean p绘制描边 = true;
+
 	/**
 	 * 读取是否允许绘制描边，宽度为零时仍不绘制。
 	 *
@@ -738,6 +775,7 @@ public final class 图标样式 {
 	public boolean 绘制描边() {
 		return p绘制描边;
 	}
+
 	/**
 	 * 设置是否允许绘制描边。
 	 *
@@ -749,6 +787,7 @@ public final class 图标样式 {
 	}
 
 	private boolean p绘制背景描边 = true;
+
 	/**
 	 * 读取是否允许绘制背景描边，宽度为零时仍不绘制。
 	 *
@@ -758,6 +797,7 @@ public final class 图标样式 {
 	public boolean 绘制背景描边() {
 		return p绘制背景描边;
 	}
+
 	/**
 	 * 设置是否允许绘制背景描边。
 	 *

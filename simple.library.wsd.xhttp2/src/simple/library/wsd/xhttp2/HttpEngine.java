@@ -60,8 +60,7 @@ import okhttp3.Route;
 import retrofit2.Response;
 
 /**
- * 请求快照到 XHttp2/Retrofit 响应链的适配，保留响应元数据、二进制和可取消的文件流。
- * 本层只在工作线程订阅，不直接分发 Simple 事件，也不读取窗口的可变配置。
+ * 请求快照到 XHttp2/Retrofit 响应链的适配，保留响应元数据、二进制和可取消的文件流。 本层只在工作线程订阅，不直接分发 Simple 事件，也不读取窗口的可变配置。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -71,7 +70,7 @@ final class HttpEngine {
 	private final Context context;
 	private final SessionState session;
 	private final ClientSettings settings;
-	private final XH请求 request;
+	private final XH2请求 request;
 	private final TransferControl control;
 	private final String id;
 	private final long started = SystemClock.elapsedRealtime();
@@ -80,7 +79,18 @@ final class HttpEngine {
 	private long cacheSeconds;
 	private HttpUrl url;
 
-	HttpEngine(Context context, SessionState session, ClientSettings settings, XH请求 request, TransferControl control, String id) {
+	/**
+	 * 绑定本次传输上下文或失败响应，保留独立请求状态。
+	 *
+	 * @param context  用于访问应用文件及资产的上下文。
+	 * @param session  本次持有引用的会话。
+	 * @param settings 已复制的默认配置。
+	 * @param request  本次请求配置或单项优先值。
+	 * @param control  共享的取消和提交状态。
+	 * @param id       本次请求或批次的实际唯一标识。
+	 */
+	HttpEngine(Context context, SessionState session, ClientSettings settings, XH2请求 request, TransferControl control,
+			String id) {
 		this.context = context;
 		this.session = session;
 		this.settings = settings;
@@ -91,34 +101,41 @@ final class HttpEngine {
 
 	/**
 	 * defer 保证文件、缓存和证书处理在订阅线程执行；每次重试仍由 Retrofit 克隆真实调用。
+	 *
+	 * @return 独立的结果值或快照，语义与方法说明一致。
 	 */
-	Observable<XH响应> execute() {
-		return Observable.defer(new Callable<ObservableSource<XH响应>>() {
+	Observable<XH2响应> execute() {
+		return Observable.defer(new Callable<ObservableSource<XH2响应>>() {
 			@Override
-			public ObservableSource<XH响应> call() throws Exception {
+			public ObservableSource<XH2响应> call() throws Exception {
 				control.check();
 				prepare();
 				Observable<WireReply> remote = remote();
 				RxCache memory;
 				try {
 					memory = cacheMode < 2 ? new RxCache.Builder().isDiskCache(false).memoryMaxSize(1).build()
-						: session.cache.view(cacheKey, cacheSeconds);
+							: session.cache.view(cacheKey, cacheSeconds, cacheMode == XH2缓存策略.仅缓存);
 				} catch (Exception failure) {
 					throw new TransferFailure("缓存", "读取响应缓存失败。", failure);
 				}
 				return strategy(cacheMode).execute(memory, cacheKey, -1, remote, WireReply.class)
-					.map(new Function<CacheResult<WireReply>, XH响应>() {
-						@Override
-						public XH响应 apply(CacheResult<WireReply> result) throws Exception {
-							control.check();
-							return result.data.response(id, cacheKey, SystemClock.elapsedRealtime() - started,
-								result.isFromCache || result.data.httpCache);
-						}
-					});
+						.map(new Function<CacheResult<WireReply>, XH2响应>() {
+							@Override
+							public XH2响应 apply(CacheResult<WireReply> result) throws Exception {
+								control.check();
+								return result.data.response(id, cacheKey, SystemClock.elapsedRealtime() - started,
+										result.isFromCache || result.data.httpCache);
+							}
+						});
 			}
 		});
 	}
 
+	/**
+	 * 解析地址和字段，校验请求体约束并生成缓存身份。
+	 *
+	 * @throws Exception 当前读取、校验或传输无法完成。
+	 */
 	private void prepare() throws Exception {
 		HttpUrl base = settings.baseUrl.isEmpty() ? null : HttpUrl.parse(settings.baseUrl);
 		url = base == null ? HttpUrl.parse(request.address) : base.resolve(request.address);
@@ -150,24 +167,38 @@ final class HttpEngine {
 		appendKey(material.append("headers\n"), request.headers);
 		appendKey(material.append("form\n"), request.form);
 		material.append(session.cookies.loadForRequest(url)).append('\n').append(request.mediaType).append('\n')
-			.append(request.cacheKey).append('\n').append(request.body == null ? "" : HttpSupport.digest(request.body))
-			.append('\n').append(settings.proxyHost).append(':').append(settings.proxyPort)
-			.append('\n').append(settings.proxyUser).append('\n').append(settings.proxyPassword)
-			.append('\n').append(settings.includeSystem).append('\n').append(HttpSupport.digest(settings.clientCertificate));
+				.append(request.cacheKey).append('\n')
+				.append(request.body == null ? "" : HttpSupport.digest(request.body)).append('\n')
+				.append(settings.proxyHost).append(':').append(settings.proxyPort).append('\n')
+				.append(settings.socksProxy).append('\n').append(settings.proxyUser).append('\n')
+				.append(settings.proxyPassword).append('\n').append(settings.includeSystem).append('\n')
+				.append(HttpSupport.digest(settings.clientCertificate));
 		for (byte[] authority : settings.authorities) {
 			material.append('\n').append(HttpSupport.digest(authority));
 		}
 		cacheKey = HttpSupport.digest(material.toString().getBytes(StandardCharsets.UTF_8));
 	}
 
+	/**
+	 * 按长度和原始顺序编码字段，避免分隔符造成缓存键冲突。
+	 *
+	 * @param result 接收字段编码的缓冲区。
+	 * @param pairs  按顺序保存的字段对。
+	 */
 	private static void appendKey(StringBuilder result, List<String[]> pairs) {
 		for (String[] pair : pairs) {
 			// 长度前缀避免任意字段中的换行或分隔符使两个请求产生相同序列。
-			result.append(pair[0].length()).append(':').append(pair[0])
-				.append(pair[1].length()).append(':').append(pair[1]).append('\n');
+			result.append(pair[0].length()).append(':').append(pair[0]).append(pair[1].length()).append(':')
+					.append(pair[1]).append('\n');
 		}
 	}
 
+	/**
+	 * 构建独立客户端并执行带重试的远程请求。
+	 *
+	 * @return 构建独立客户端并执行带重试的远程请求。
+	 * @throws Exception 当前读取、校验或传输无法完成。
+	 */
 	private Observable<WireReply> remote() throws Exception {
 		OkHttpClient.Builder builder = session.baseClient.newBuilder();
 		int timeout = request.timeout < 0 ? settings.timeout : request.timeout;
@@ -176,25 +207,27 @@ final class HttpEngine {
 		int write = timeout(request.writeTimeout, settings.writeTimeout, timeout);
 		int total = request.callTimeout < 0 ? settings.callTimeout : request.callTimeout;
 		builder.connectTimeout(connect, TimeUnit.MILLISECONDS).readTimeout(read, TimeUnit.MILLISECONDS)
-			.writeTimeout(write, TimeUnit.MILLISECONDS).callTimeout(total, TimeUnit.MILLISECONDS)
-			.followRedirects(settings.redirects).followSslRedirects(settings.redirects);
+				.writeTimeout(write, TimeUnit.MILLISECONDS).callTimeout(total, TimeUnit.MILLISECONDS)
+				.followRedirects(settings.redirects).followSslRedirects(settings.redirects);
 		boolean credentials = !HttpSupport.first(settings.headers, "Authorization").isEmpty()
-			|| !HttpSupport.first(request.headers, "Authorization").isEmpty()
-			|| !HttpSupport.first(settings.headers, "Cookie").isEmpty()
-			|| !HttpSupport.first(request.headers, "Cookie").isEmpty()
-			|| !session.cookies.loadForRequest(url).isEmpty();
+				|| !HttpSupport.first(request.headers, "Authorization").isEmpty()
+				|| !HttpSupport.first(settings.headers, "Cookie").isEmpty()
+				|| !HttpSupport.first(request.headers, "Cookie").isEmpty()
+				|| !session.cookies.loadForRequest(url).isEmpty();
 		// 显式身份请求走带身份键的应用缓存；HTTP 默认缓存不跨凭据复用未声明 Vary 的响应。
 		if (cacheMode != 1 || credentials) {
 			builder.cache(null);
 		}
 		try {
-			StrictTls.apply(builder, settings.authorities, settings.includeSystem, settings.clientCertificate, settings.certificatePassword);
+			StrictTls.apply(builder, settings.authorities, settings.includeSystem, settings.clientCertificate,
+					settings.certificatePassword);
 		} catch (Exception failure) {
 			throw new TransferFailure("证书", "初始化证书配置失败。", failure);
 		}
 		if (!settings.proxyHost.isEmpty()) {
-			builder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(settings.proxyHost, settings.proxyPort)));
-			if (!settings.proxyUser.isEmpty()) {
+			builder.proxy(new Proxy(settings.socksProxy ? Proxy.Type.SOCKS : Proxy.Type.HTTP,
+					new InetSocketAddress(settings.proxyHost, settings.proxyPort)));
+			if (!settings.socksProxy && !settings.proxyUser.isEmpty()) {
 				builder.proxyAuthenticator(new Authenticator() {
 					@Override
 					public Request authenticate(Route route, okhttp3.Response response) {
@@ -202,7 +235,7 @@ final class HttpEngine {
 							return null;
 						}
 						return response.request().newBuilder().header("Proxy-Authorization",
-							Credentials.basic(settings.proxyUser, settings.proxyPassword)).build();
+								Credentials.basic(settings.proxyUser, settings.proxyPassword)).build();
 					}
 				});
 			}
@@ -227,9 +260,10 @@ final class HttpEngine {
 				return chain.proceed(outgoing.build());
 			}
 		});
-		final ScopedRequest scoped = new ScopedRequest(builder.build(), request.retries < 0 ? settings.retries : request.retries,
-			request.retryDelay < 0 ? settings.retryDelay : request.retryDelay,
-			request.retryIncrease < 0 ? settings.retryIncrease : request.retryIncrease);
+		final ScopedRequest scoped = new ScopedRequest(builder.build(),
+				request.retries < 0 ? settings.retries : request.retries,
+				request.retryDelay < 0 ? settings.retryDelay : request.retryDelay,
+				request.retryIncrease < 0 ? settings.retryIncrease : request.retryIncrease);
 		HttpService service = scoped.create(HttpService.class);
 		Observable<WireReply> source;
 		if (request.method.equals("HEAD")) {
@@ -280,6 +314,11 @@ final class HttpEngine {
 		});
 	}
 
+	/**
+	 * 构建普通、表单或多文件请求体并包装上传进度。
+	 *
+	 * @return 构建普通、表单或多文件请求体并包装上传进度。
+	 */
 	private RequestBody body() {
 		RequestBody result;
 		if (request.body != null) {
@@ -293,7 +332,7 @@ final class HttpEngine {
 				multipart.addFormDataPart(pair[0], pair[1]);
 			}
 			for (UploadPart part : request.files) {
-				multipart.addFormDataPart(part.name, part.filename, part.body(context));
+				multipart.addFormDataPart(part.name, part.filename, part.body(context, control));
 			}
 			result = multipart.build();
 		} else if (!request.form.isEmpty()) {
@@ -313,29 +352,52 @@ final class HttpEngine {
 		});
 	}
 
+	/**
+	 * 依次选取单次、客户端或统一超时。
+	 *
+	 * @param request  本次请求配置或单项优先值。
+	 * @param client   客户端配置或次级默认值。
+	 * @param fallback 没有单项配置时采用的值。
+	 * @return 依次选取单次、客户端或统一超时。
+	 */
 	private static int timeout(int request, int client, int fallback) {
 		return request >= 0 ? request : client >= 0 ? client : fallback;
 	}
 
+	/**
+	 * 按 HTTP 方法选择相应 Retrofit 调用。
+	 *
+	 * @param service 当前独立的 Retrofit 接口。
+	 * @param body    响应体或已构建的请求体。
+	 * @return 按 HTTP 方法选择相应 Retrofit 调用。
+	 */
 	private Observable<Response<ResponseBody>> call(HttpService service, RequestBody body) {
 		switch (request.method) {
-			case "GET":
-				return service.get(url.toString());
-			case "POST":
-				return service.post(url.toString(), body);
-			case "PUT":
-				return service.put(url.toString(), body);
-			case "PATCH":
-				return service.patch(url.toString(), body);
-			case "DELETE":
-				return service.delete(url.toString(), body);
-			case "OPTIONS":
-				return service.options(url.toString(), body);
-			default:
-				throw new IllegalArgumentException("HTTP 方法无效。");
+		case "GET":
+			return service.get(url.toString());
+		case "POST":
+			return service.post(url.toString(), body);
+		case "PUT":
+			return service.put(url.toString(), body);
+		case "PATCH":
+			return service.patch(url.toString(), body);
+		case "DELETE":
+			return service.delete(url.toString(), body);
+		case "OPTIONS":
+			return service.options(url.toString(), body);
+		default:
+			throw new IllegalArgumentException("HTTP 方法无效。");
 		}
 	}
 
+	/**
+	 * 读取响应元数据和内容，保留 HTTP 失败及本地处理错误。
+	 *
+	 * @param response   保留状态码及响应头的原始响应。
+	 * @param successful 成功状态下的响应体，可为空。
+	 * @return 读取响应元数据和内容，保留 HTTP 失败及本地处理错误。
+	 * @throws Exception 当前读取、校验或传输无法完成。
+	 */
 	private WireReply read(Response<?> response, ResponseBody successful) throws Exception {
 		control.check();
 		WireReply result = new WireReply();
@@ -346,7 +408,7 @@ final class HttpEngine {
 		result.httpCache = response.raw().cacheResponse() != null && response.raw().networkResponse() == null;
 		Headers headers = response.headers();
 		for (int index = 0; index < headers.size(); index++) {
-			result.headers.add(new String[] {headers.name(index), headers.value(index)});
+			result.headers.add(new String[] { headers.name(index), headers.value(index) });
 		}
 		try (ResponseBody body = successful == null ? response.errorBody() : successful) {
 			if (body != null) {
@@ -354,30 +416,55 @@ final class HttpEngine {
 				if (response.isSuccessful() && !request.download.isEmpty()) {
 					try {
 						download(body, result);
-					} catch (InterruptedIOException | SocketException | ProtocolException | EOFException | SSLException transport) {
+					} catch (InterruptedIOException | SocketException | ProtocolException | EOFException
+							| SSLException transport) {
 						throw transport;
 					} catch (IOException failure) {
 						throw new TransferFailure("文件", "处理下载文件失败。", failure);
 					}
 				} else if (!request.method.equals("HEAD")) {
 					try (InputStream input = body.byteStream()) {
-						byte[] bytes = HttpSupport.read(input, settings.maxBytes);
+						byte[] bytes = HttpSupport.read(input, settings.maxBytes, control, body.contentLength());
 						result.length = bytes.length;
+						result.sha256 = HttpSupport.digest(bytes);
 						result.encoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
 					}
 				}
 			}
+		} catch (HttpSupport.LimitExceeded limit) {
+			TransferFailure failure = new TransferFailure("响应", limit.getMessage(), limit);
+			failure.reply = result;
+			failure.key = cacheKey;
+			throw failure;
+		} catch (TransferFailure failure) {
+			failure.reply = result;
+			failure.key = cacheKey;
+			throw failure;
 		}
 		if (!response.isSuccessful()) {
-			throw new HttpFailure(result);
+			throw new HttpFailure(result, cacheKey);
 		}
 		return result;
 	}
 
+	/**
+	 * 流式写入同目录临时文件，核对长度和摘要后原子提交。
+	 *
+	 * @param body  响应体或已构建的请求体。
+	 * @param reply 已读取的原始响应快照。
+	 * @throws Exception 当前读取、校验或传输无法完成。
+	 */
 	private void download(ResponseBody body, WireReply reply) throws Exception {
 		File target = new File(request.download);
+		if (request.download.contains("://")) {
+			throw new IOException("下载目标须为文件路径。");
+		}
 		if (!target.isAbsolute()) {
-			throw new IOException("下载目标必须为绝对路径。");
+			File base = context.getFilesDir().getCanonicalFile();
+			target = new File(base, request.download).getCanonicalFile();
+			if (!target.getPath().startsWith(base.getPath() + File.separator)) {
+				throw new IOException("相对下载路径不能越出应用私有目录。");
+			}
 		}
 		target = target.getCanonicalFile();
 		String identity = target.getPath();
@@ -421,6 +508,7 @@ final class HttpEngine {
 			}
 			control.commit(temporary, target);
 			reply.file = target.getAbsolutePath();
+			reply.sha256 = actual;
 			reply.length = size;
 			control.progress.report(false, size, total);
 		} finally {
@@ -434,38 +522,54 @@ final class HttpEngine {
 		}
 	}
 
+	/**
+	 * 将导出的整数策略映射为上游缓存策略。
+	 *
+	 * @param mode 导出缓存策略对应的整数。
+	 * @return 将导出的整数策略映射为上游缓存策略。
+	 */
 	private static IStrategy strategy(int mode) {
 		switch (mode) {
-			case 0:
-			case 1:
-				return new NoStrategy();
-			case 2:
-				return new FirstRemoteStrategy();
-			case 3:
-				return new FirstCacheStategy();
-			case 4:
-				return new OnlyRemoteStrategy();
-			case 5:
-				return new OnlyCacheStrategy();
-			case 6:
-				return new CacheAndRemoteStrategy();
-			case 7:
-				return new CacheAndRemoteDistinctStrategy();
-			default:
-				throw new IllegalArgumentException("缓存策略无效。");
+		case 0:
+		case 1:
+			return new NoStrategy();
+		case 2:
+			return new FirstRemoteStrategy();
+		case 3:
+			return new FirstCacheStategy();
+		case 4:
+			return new OnlyRemoteStrategy();
+		case 5:
+			return new OnlyCacheStrategy();
+		case 6:
+			return new CacheAndRemoteStrategy();
+		case 7:
+			return new CacheAndRemoteDistinctStrategy();
+		default:
+			throw new IllegalArgumentException("缓存策略无效。");
 		}
 	}
 
 	/**
 	 * 保留非成功 HTTP 的完整内容，供客户端生成可检查的失败响应，而非丢失为一段异常文本。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	static final class HttpFailure extends IOException {
 		private static final long serialVersionUID = 1L;
 		final WireReply reply;
+		final String key;
 
-		HttpFailure(WireReply reply) {
+		/**
+		 * 绑定本次传输上下文或失败响应，保留独立请求状态。
+		 *
+		 * @param reply 已读取的原始响应快照。
+		 * @param key   来自响应的实际缓存键或内部会话键。
+		 */
+		HttpFailure(WireReply reply, String key) {
 			super("HTTP " + reply.status + " " + reply.reason);
 			this.reply = reply;
+			this.key = key;
 		}
 	}
 }

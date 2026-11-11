@@ -1,14 +1,13 @@
 package simple.library.wsd.iconics;
 
 import android.content.res.ColorStateList;
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import android.graphics.Color;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
 
 /**
  * 状态颜色配置；原生颜色快照只读，清空后可重新配置。
@@ -21,10 +20,13 @@ public final class 图标状态颜色 {
 	private final List<Integer> colors = new ArrayList<Integer>();
 	int fallback = Color.BLACK;
 	private ColorStateList base;
+
 	/**
 	 * 创建独立实例。
 	 */
-	public 图标状态颜色() {}
+	public 图标状态颜色() {
+	}
+
 	/**
 	 * 添加一条状态；正值表示存在，负值表示不存在。原生快照需先清空。
 	 *

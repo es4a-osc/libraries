@@ -1,14 +1,12 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+
 import simple.runtime.components.impl.android.视图组件;
+import simple.runtime.components.组件容器;
 import simple.runtime.events.EventDispatcher;
 
 /**
@@ -16,8 +14,7 @@ import simple.runtime.events.EventDispatcher;
  *
  * @author 树先生 xhwsd@qq.com
  */
-abstract class WidgetBase extends 视图组件
-		implements 字体图标视图, simple.runtime.android.MainActivity.OnDestroyListener {
+abstract class WidgetBase extends 视图组件 implements 字体图标视图, simple.runtime.android.MainActivity.OnDestroyListener {
 	boolean destroyed;
 
 	/**
@@ -28,35 +25,30 @@ abstract class WidgetBase extends 视图组件
 	protected WidgetBase(组件容器 container) {
 		super(container);
 		simple.runtime.android.MainActivity.getContext().addOnDestroyListener(this);
-		getView()
-				.setOnClickListener(
-						new View.OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								check();
-								被单击();
-							}
-						});
-		getView()
-				.setOnLongClickListener(
-						new View.OnLongClickListener() {
-							@Override
-							public boolean onLongClick(View v) {
-								check();
-								被长按();
-								return true;
-							}
-						});
-		getView()
-				.setOnFocusChangeListener(
-						new View.OnFocusChangeListener() {
-							@Override
-							public void onFocusChange(View v, boolean focused) {
-								check();
-								焦点改变(focused);
-							}
-						});
+		getView().setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				check();
+				被单击();
+			}
+		});
+		getView().setOnLongClickListener(new View.OnLongClickListener() {
+			@Override
+			public boolean onLongClick(View v) {
+				check();
+				被长按();
+				return true;
+			}
+		});
+		getView().setOnFocusChangeListener(new View.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View v, boolean focused) {
+				check();
+				焦点改变(focused);
+			}
+		});
 	}
+
 	/**
 	 * 取得文本目标。
 	 *
@@ -151,6 +143,7 @@ abstract class WidgetBase extends 视图组件
 		}
 		image.应用文字附图(this, position);
 	}
+
 	/**
 	 * 验证组件仍可用。
 	 */
@@ -179,8 +172,7 @@ abstract class WidgetBase extends 视图组件
 			((CompoundButton) getView()).setOnCheckedChangeListener(null);
 		}
 		if (getView() instanceof com.mikepenz.iconics.view.IconicsCheckableTextView) {
-			((com.mikepenz.iconics.view.IconicsCheckableTextView) getView())
-					.setOnCheckedChangeListener(null);
+			((com.mikepenz.iconics.view.IconicsCheckableTextView) getView()).setOnCheckedChangeListener(null);
 		}
 		simple.runtime.android.MainActivity.getContext().removeOnDestroyListener(this);
 		super.销毁();
@@ -282,10 +274,7 @@ abstract class WidgetBase extends 视图组件
 	public float 取字号() {
 		check();
 		return text().getTextSize()
-				/ simple.runtime.android.MainActivity.getContext()
-						.getResources()
-						.getDisplayMetrics()
-						.scaledDensity;
+				/ simple.runtime.android.MainActivity.getContext().getResources().getDisplayMetrics().scaledDensity;
 	}
 
 	@Override

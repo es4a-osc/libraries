@@ -1,13 +1,11 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import simple.runtime.annotations.SimpleComponent;
+import simple.runtime.annotations.SimpleEvent;
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
+import simple.runtime.components.可视组件;
+import simple.runtime.components.组件;
 
 /**
  * 图标动画控制组件。
@@ -24,6 +22,7 @@ public interface 图标动画 extends 组件 {
 	 */
 	@SimpleEvent
 	void 动画开始(int index);
+
 	/**
 	 * 当前操作完成后在主线程异步通知；清空、移除、重绑或销毁丢弃旧通知。
 	 *
@@ -31,6 +30,7 @@ public interface 图标动画 extends 组件 {
 	 */
 	@SimpleEvent
 	void 动画结束(int index);
+
 	/**
 	 * 当前操作完成后在主线程异步通知；清空、移除、重绑或销毁丢弃旧通知。
 	 *
@@ -38,6 +38,7 @@ public interface 图标动画 extends 组件 {
 	 */
 	@SimpleEvent
 	void 动画重复(int index);
+
 	/**
 	 * 当前操作完成后在主线程异步通知；清空、移除、重绑或销毁丢弃旧通知。
 	 *
@@ -45,6 +46,7 @@ public interface 图标动画 extends 组件 {
 	 */
 	@SimpleEvent
 	void 动画取消(int index);
+
 	/**
 	 * 当前操作完成后在主线程异步通知；清空、移除、重绑或销毁丢弃旧通知。
 	 *
@@ -52,6 +54,7 @@ public interface 图标动画 extends 组件 {
 	 */
 	@SimpleEvent
 	void 动画暂停(int index);
+
 	/**
 	 * 当前操作完成后在主线程异步通知；清空、移除、重绑或销毁丢弃旧通知。
 	 *
@@ -59,15 +62,17 @@ public interface 图标动画 extends 组件 {
 	 */
 	@SimpleEvent
 	void 动画继续(int index);
+
 	/**
 	 * 绑定目标；-2背景，-1图片，0左1上2右3下4起始5结束；更换目标清空原动画。
 	 *
-	 * @param target 目标。
-	 * @param image 图像。
+	 * @param target   目标。
+	 * @param image    图像。
 	 * @param position 位置。
 	 */
 	@SimpleFunction
 	public void 绑定(可视组件 target, 图标图像 image, int position);
+
 	/**
 	 * 复制配置并返回稳定编号；移除其他项不改变编号，清空不复用旧编号。
 	 *
@@ -76,41 +81,49 @@ public interface 图标动画 extends 组件 {
 	 */
 	@SimpleFunction
 	public int 添加(图标动画配置 config);
+
 	/**
 	 * 开始全部动画。
 	 */
 	@SimpleFunction
 	public void 开始();
+
 	/**
 	 * 暂停全部动画。
 	 */
 	@SimpleFunction
 	public void 暂停();
+
 	/**
 	 * 继续已暂停动画。
 	 */
 	@SimpleFunction
 	public void 继续();
+
 	/**
 	 * 取消全部动画并保留当前位置。
 	 */
 	@SimpleFunction
 	public void 取消();
+
 	/**
 	 * 立即到达动画终点。
 	 */
 	@SimpleFunction
 	public void 结束();
+
 	/**
 	 * 反向播放全部动画。
 	 */
 	@SimpleFunction
 	public void 反向();
+
 	/**
 	 * 取消并移除全部配置。
 	 */
 	@SimpleFunction
 	public void 清空();
+
 	/**
 	 * 是否至少一个动画正在运行。
 	 *
@@ -223,7 +236,7 @@ public interface 图标动画 extends 组件 {
 	/**
 	 * 设置当前周期进度0至1，不自动开始计时。
 	 *
-	 * @param id 编号。
+	 * @param id       编号。
 	 * @param fraction 进度。
 	 */
 	@SimpleFunction
@@ -241,7 +254,7 @@ public interface 图标动画 extends 组件 {
 	/**
 	 * 设置播放时间，单位毫秒，不自动开始计时。
 	 *
-	 * @param id 编号。
+	 * @param id   编号。
 	 * @param time 时间。
 	 */
 	@SimpleFunction
@@ -285,6 +298,7 @@ public interface 图标动画 extends 组件 {
 	 */
 	@SimpleFunction
 	public boolean 是否已绑定();
+
 	/**
 	 * 将当前动画组合的绘制结果输出为PNG；导出尺寸采用图标固有像素尺寸。
 	 *

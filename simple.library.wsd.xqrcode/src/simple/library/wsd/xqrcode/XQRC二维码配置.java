@@ -16,6 +16,7 @@ public final class XQRC二维码配置 implements Cloneable {
 	private int width;
 	private int height;
 	private int margin;
+	private int quietModules;
 	private float dotScale;
 	private int dark;
 	private int light;
@@ -118,7 +119,7 @@ public final class XQRC二维码配置 implements Cloneable {
 	}
 
 	/**
-	 * 读取二维码边缘宽度，范围 0 至 256。
+	 * 读取二维码最小边距，单位像素，范围 0 至 256；实际边距还须满足静区模块数。
 	 *
 	 * @return 当前配置值。
 	 */
@@ -128,7 +129,7 @@ public final class XQRC二维码配置 implements Cloneable {
 	}
 
 	/**
-	 * 设置二维码边缘宽度，范围 0 至 256。
+	 * 设置二维码最小边距，单位像素，范围 0 至 256；实际边距取本值和静区要求中的较大值。
 	 *
 	 * @param value 新的配置值。
 	 * @throws IllegalArgumentException 输入为空、不是有限数值或超出允许范围。
@@ -142,6 +143,34 @@ public final class XQRC二维码配置 implements Cloneable {
 			throw new IllegalArgumentException("边距的值不合法。");
 		}
 		margin = value;
+	}
+
+	/**
+	 * 读取二维码每侧至少保留的空白模块数，默认 4。
+	 *
+	 * @return 静区模块数，范围 0 至 32。
+	 */
+	@SimpleProperty
+	public int 静区模块数() {
+		return quietModules;
+	}
+
+	/**
+	 * 设置二维码每侧的静区模块数，随内容密度及图像尺寸换算成像素。
+	 * 使用背景图片时应同时保留白色边缘；设为 0 可仅按像素边距生成，但可能降低识别率。
+	 *
+	 * @param value 静区模块数，范围 0 至 32，默认 4。
+	 * @throws IllegalArgumentException 模块数超出范围。
+	 */
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_INTEGER,
+		initializer = "4"
+	)
+	public void 静区模块数(int value) {
+		if (value < 0 || value > 32) {
+			throw new IllegalArgumentException("静区模块数须在 0 至 32 之间");
+		}
+		quietModules = value;
 	}
 
 	/**

@@ -13,8 +13,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.RequiresApi;
 
 /**
- * 将网页视频覆盖到现有 Activity 内容帧，退出时恢复本次改变的系统栏状态。
- * 不强制旋转宿主，不创建第二个 Simple 窗口。
+ * 将网页视频覆盖到现有 Activity 内容帧，退出时恢复本次改变的系统栏状态。 不强制旋转宿主，不创建第二个 Simple 窗口。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -39,7 +38,7 @@ final class BrowserFullscreen {
 	/**
 	 * 显示视频全屏视图；已有全屏时拒绝替换并完成新请求的回调。
 	 *
-	 * @param view WebView 提供的视频视图。
+	 * @param view   WebView 提供的视频视图。
 	 * @param result 退出视频全屏的回调。
 	 * @return 是否创建了新的全屏层。
 	 */
@@ -143,8 +142,8 @@ final class BrowserFullscreen {
 	private void hideLegacy() {
 		View decor = activity.getWindow().getDecorView();
 		legacyFlags = decor.getSystemUiVisibility();
-		decor.setSystemUiVisibility(legacyFlags | View.SYSTEM_UI_FLAG_FULLSCREEN
-				| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+		decor.setSystemUiVisibility(legacyFlags | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+				| View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 	}
 
 	/**

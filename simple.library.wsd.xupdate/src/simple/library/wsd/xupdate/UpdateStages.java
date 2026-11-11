@@ -15,24 +15,80 @@ import com.xuexiang.xupdate.proxy.impl.DefaultUpdateChecker;
 import com.xuexiang.xupdate.service.OnFileDownloadListener;
 
 /**
- * 把实例检查、解析、提示和下载适配到官方 UpdateManager；流程不改写进程级默认实现。
- * 各环节通过官方接口组合，取消后的结果由所属实例拒绝。
+ * 把实例检查、解析、提示和下载适配到官方 UpdateManager；流程不改写进程级默认实现。 各环节通过官方接口组合，取消后的结果由所属实例拒绝。
  *
  * @author 树先生 xhwsd@qq.com
  */
 final class UpdateStages {
 
-	/** 窗口适配层消费结果，内部接口不进入 Simple 清单。 */
+	/**
+	 * 窗口适配层消费结果，内部接口不进入 Simple 清单。
+	 */
 	interface Host {
+		/**
+		 * 判断本次流程的结果是否仍可交给所属实例。
+		 *
+		 * @return 任务序号有效且实例未销毁时为真。
+		 */
 		boolean accepts();
+
+		/**
+		 * 用当前解析策略处理响应，不修改其它实例的解析器。
+		 *
+		 * @param response 版本响应文本。
+		 * @return 本次解析的更新实体。
+		 * @throws Exception 响应或解析策略无效。
+		 */
 		UpdateEntity parse(String response) throws Exception;
+
+		/**
+		 * 通知检查阶段已经结束。
+		 */
 		void checked();
+
+		/**
+		 * 把发现的更新信息交给当前实例决定提示或下载方式。
+		 *
+		 * @param info 独立更新信息快照。
+		 */
 		void found(XU更新信息 info);
+
+		/**
+		 * 通知本次无需更新，包含已被忽略的可忽略版本。
+		 */
 		void none();
+
+		/**
+		 * 终止检查并报告实际错误。
+		 *
+		 * @param error 检查或解析异常。
+		 */
 		void failure(Exception error);
+
+		/**
+		 * 把下载交给当前实例的下载及校验边界。
+		 *
+		 * @param info     待下载版本信息。
+		 * @param listener 原生提示框的下载观察者。
+		 */
 		void download(XU更新信息 info, OnFileDownloadListener listener);
+
+		/**
+		 * 取消本次流程的下载。
+		 */
 		void cancelDownload();
+
+		/**
+		 * 请求由前台服务接管当前文件任务。
+		 */
 		void background();
+
+		/**
+		 * 查询当前应用是否忽略该版本，强制更新不参与忽略。
+		 *
+		 * @param info 本次候选版本。
+		 * @return 该版本已经被忽略时为真。
+		 */
 		boolean ignored(XU更新信息 info);
 	}
 
@@ -44,28 +100,28 @@ final class UpdateStages {
 	/**
 	 * 为一次流程创建官方调度器和独立适配器。
 	 *
-	 * @param builder 本次流程独立使用的原生构建器。
-	 * @param address 检查地址，直接解析时可为空。
-	 * @param post 是否使用 POST。
-	 * @param directory APK 缓存目录。
-	 * @param transport 本次网络服务。
+	 * @param builder    本次流程独立使用的原生构建器。
+	 * @param address    检查地址，直接解析时可为空。
+	 * @param post       是否使用 POST。
+	 * @param directory  APK 缓存目录。
+	 * @param transport  本次网络服务。
 	 * @param parameters 检查参数快照。
-	 * @param checker 可替换检查器，空值使用默认网络检查。
-	 * @param host 本次流程的事件和生命周期边界。
+	 * @param checker    可替换检查器，空值使用默认网络检查。
+	 * @param host       本次流程的事件和生命周期边界。
 	 */
 	UpdateStages(UpdateManager.Builder builder, String address, boolean post, String directory,
 			IUpdateHttpService transport, Map<String, Object> parameters, XU检查器 checker, Host host) {
 		this.host = host;
 		this.checker = checker;
 		this.parameters = parameters;
-		manager = builder.updateUrl(address)
-				.isGet(!post).isWifiOnly(false).isAutoMode(false)
-				.apkCacheDir(directory).params(parameters).updateHttpService(transport)
-				.updateChecker(new Checker()).updateParser(new Parser())
+		manager = builder.updateUrl(address).isGet(!post).isWifiOnly(false).isAutoMode(false).apkCacheDir(directory)
+				.params(parameters).updateHttpService(transport).updateChecker(new Checker()).updateParser(new Parser())
 				.updatePrompter(new Prompter()).updateDownLoader(new Downloader()).build();
 	}
 
-	/** 开始检查，网络条件和开始事件由宿主在调用前处理。 */
+	/**
+	 * 开始检查，网络条件和开始事件由宿主在调用前处理。
+	 */
 	void check() {
 		manager.checkVersion();
 	}
@@ -101,7 +157,9 @@ final class UpdateStages {
 		}
 	}
 
-	/** 取消仅属于本次流程的可替换检查器。 */
+	/**
+	 * 取消仅属于本次流程的可替换检查器。
+	 */
 	void cancel() {
 		if (checker != null) {
 			checker.取消();
@@ -115,14 +173,11 @@ final class UpdateStages {
 	 * @return 提示和下载接口使用的原生对象。
 	 */
 	static UpdateEntity toEntity(XU更新信息 info) {
-		return new Entity(info).setHasUpdate(info.有更新()).setVersionCode(info.版本号())
-				.setVersionName(info.版本名()).setUpdateContent(info.更新内容())
-				.setDownloadUrl(info.下载地址()).setSize(info.文件大小() / 1024)
-				.setMd5(info.MD5()).setForce(info.强制更新())
-				.setIsIgnorable(info.允许忽略() && !info.强制更新())
-				.setIsSilent(false).setIsAutoInstall(false);
+		return new Entity(info).setHasUpdate(info.有更新()).setVersionCode(info.版本号()).setVersionName(info.版本名())
+				.setUpdateContent(info.更新内容()).setDownloadUrl(info.下载地址()).setSize(info.文件大小() / 1024)
+				.setMd5(info.MD5()).setForce(info.强制更新()).setIsIgnorable(info.允许忽略() && !info.强制更新()).setIsSilent(false)
+				.setIsAutoInstall(false);
 	}
-
 
 	/**
 	 * 直接下载不经过版本检查；仍由官方调度器选取下载实现。
@@ -133,21 +188,35 @@ final class UpdateStages {
 		manager.startDownload(toEntity(info), null);
 	}
 
-	/** 保留 Simple 以字节表示的精确大小，不从官方界面使用的 KB 反向恢复。 */
+	/**
+	 * 保留 Simple 以字节表示的精确大小，不从官方界面使用的 KB 反向恢复。
+	 *
+	 * @param entity 原生流程中的更新实体。
+	 * @return 本次版本信息的独立快照。
+	 */
 	private static XU更新信息 snapshot(UpdateEntity entity) {
 		return entity instanceof Entity ? ((Entity) entity).information.copy() : XU更新信息.fromEntity(entity);
 	}
 
-	/** 原生通信媒介携带精确快照，内部类型不导出。 */
+	/**
+	 * 原生通信媒介携带精确快照，内部类型不导出。
+	 */
 	private static final class Entity extends UpdateEntity {
 		private final XU更新信息 information;
 
+		/**
+		 * 将本次信息快照附加到原生实体，避免多个请求共享可变信息。
+		 *
+		 * @param information 当前版本信息快照。
+		 */
 		Entity(XU更新信息 information) {
 			this.information = information.copy();
 		}
 	}
 
-	/** 官方检查接口的实例适配，避免以 URL 为键的全局检查状态串入。 */
+	/**
+	 * 官方检查接口的实例适配，避免以 URL 为键的全局检查状态串入。
+	 */
 	private final class Checker extends DefaultUpdateChecker {
 		@Override
 		public void checkVersion(boolean isGet, String url, Map<String, Object> values, final IUpdateProxy proxy) {
@@ -217,7 +286,9 @@ final class UpdateStages {
 		}
 	}
 
-	/** 解析策略只负责协议转换，不混入下载、提示或安装状态。 */
+	/**
+	 * 解析策略只负责协议转换，不混入下载、提示或安装状态。
+	 */
 	private final class Parser extends AbstractUpdateParser {
 		@Override
 		public UpdateEntity parseJson(String response) throws Exception {
@@ -225,7 +296,9 @@ final class UpdateStages {
 		}
 	}
 
-	/** 官方提示接口只把已确认的信息交给当前宿主。 */
+	/**
+	 * 官方提示接口只把已确认的信息交给当前宿主。
+	 */
 	private final class Prompter implements IUpdatePrompter {
 		@Override
 		public void showPrompt(UpdateEntity entity, IUpdateProxy proxy, PromptEntity prompt) {
@@ -235,7 +308,9 @@ final class UpdateStages {
 		}
 	}
 
-	/** 官方下载接口与实际传输实现分离，默认下载与替换下载共用结果校验。 */
+	/**
+	 * 官方下载接口与实际传输实现分离，默认下载与替换下载共用结果校验。
+	 */
 	private final class Downloader implements IUpdateDownloader {
 		@Override
 		public void startDownload(UpdateEntity entity, OnFileDownloadListener listener) {

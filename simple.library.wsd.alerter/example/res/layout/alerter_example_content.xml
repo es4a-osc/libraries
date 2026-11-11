@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent" android:layout_height="wrap_content"
+	android:orientation="vertical" android:padding="8dp">
+	<TextView android:id="@+id/example_message"
+		android:layout_width="match_parent" android:layout_height="wrap_content"
+		android:textColor="#FFFFFFFF" android:textSize="18sp" />
+	<Button android:id="@+id/example_action"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:text="确认这条提示" />
+</LinearLayout>

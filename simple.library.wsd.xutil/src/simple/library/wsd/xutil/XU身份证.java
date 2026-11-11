@@ -31,7 +31,7 @@ public final class XU身份证 {
 	}
 
 	/**
-	 * 按 XUtil 本地规则取生日身份证号码；提取信息前应先校验。
+	 * 提取已校验身份证的出生日期。
 	 *
 	 * @param text 文本。
 	 * @return 返回的文本。
@@ -42,7 +42,7 @@ public final class XU身份证 {
 	}
 
 	/**
-	 * 按 XUtil 本地规则取性别身份证号码；提取信息前应先校验。
+	 * 提取已校验身份证的性别。
 	 *
 	 * @param text 文本。
 	 * @return 返回的文本。
@@ -53,7 +53,7 @@ public final class XU身份证 {
 	}
 
 	/**
-	 * 按 XUtil 本地规则取省份身份证号码；提取信息前应先校验。
+	 * 提取已校验身份证的省份。
 	 *
 	 * @param text 文本。
 	 * @return 返回的文本。
@@ -64,7 +64,7 @@ public final class XU身份证 {
 	}
 
 	/**
-	 * 按 XUtil 本地规则脱敏身份证号码；提取信息前应先校验。
+	 * 按上游规则隐藏身份证中间部分。
 	 *
 	 * @param text 文本。
 	 * @return 返回的文本。

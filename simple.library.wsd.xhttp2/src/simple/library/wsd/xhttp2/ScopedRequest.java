@@ -9,13 +9,21 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * 使用 XHttp2 原生错误、重试及调度链，但不使用其可变的全局 Retrofit/OkHttp 构建器。
- * 每次请求持有独立的 Retrofit 与客户端配置；响应体在工作线程读取完后才交付界面。
+ * 使用 XHttp2 原生错误、重试及调度链，但不使用其可变的全局 Retrofit/OkHttp 构建器。 每次请求持有独立的 Retrofit
+ * 与客户端配置；响应体在工作线程读取完后才交付界面。
  *
  * @author 树先生 xhwsd@qq.com
  */
 final class ScopedRequest extends CustomRequest {
 
+	/**
+	 * 设置本次独立客户端和重试参数，保持响应体在工作线程读取。
+	 *
+	 * @param client        客户端配置或次级默认值。
+	 * @param retries       最大额外重试次数。
+	 * @param retryDelay    首次重试等待的毫秒数。
+	 * @param retryIncrease 后续每次追加的等待毫秒数。
+	 */
 	ScopedRequest(OkHttpClient client, int retries, long retryDelay, long retryIncrease) {
 		mOkHttpClient = client;
 		mRetryCount = retries;
@@ -32,11 +40,9 @@ final class ScopedRequest extends CustomRequest {
 	@Override
 	public CustomRequest build() {
 		if (mRetrofit == null) {
-			mRetrofit = new Retrofit.Builder().baseUrl("https://localhost/")
-				.client(mOkHttpClient)
-				.addConverterFactory(GsonConverterFactory.create())
-				.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-				.build();
+			mRetrofit = new Retrofit.Builder().baseUrl("https://localhost/").client(mOkHttpClient)
+					.addConverterFactory(GsonConverterFactory.create())
+					.addCallAdapterFactory(RxJava2CallAdapterFactory.create()).build();
 		}
 		return this;
 	}

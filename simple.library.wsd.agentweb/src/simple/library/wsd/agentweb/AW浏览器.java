@@ -1,6 +1,7 @@
 package simple.library.wsd.agentweb;
 
 import simple.runtime.annotations.SimpleComponent;
+import simple.runtime.annotations.SimpleDataElement;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleEvent;
 import simple.runtime.annotations.SimpleFunction;
@@ -9,8 +10,7 @@ import simple.runtime.components.可视组件;
 import simple.runtime.parameters.BooleanReferenceParameter;
 
 /**
- * 基于系统 WebView 与 AgentWeb 的浏览器，提供导航、脚本、文件交互和视频全屏。
- * 界面线程调用；所属窗口离开时暂停浏览、退出全屏并取消未完成的文件交互及下载。
+ * 基于系统 WebView 与 AgentWeb 的浏览器，提供导航、脚本、文件交互和视频全屏。 界面线程调用；所属窗口离开时暂停浏览、退出全屏并取消未完成的文件交互及下载。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -20,9 +20,33 @@ import simple.runtime.parameters.BooleanReferenceParameter;
 public interface AW浏览器 extends 可视组件 {
 
 	/**
+	 * 按网页协议和响应头决定缓存。
+	 */
+	@SimpleDataElement
+	int 缓存_默认 = -1;
+
+	/**
+	 * 优先使用已有缓存，没有时访问网络。
+	 */
+	@SimpleDataElement
+	int 缓存_优先缓存 = 1;
+
+	/**
+	 * 不使用网页缓存。
+	 */
+	@SimpleDataElement
+	int 缓存_仅网络 = 2;
+
+	/**
+	 * 只使用缓存，不访问网络。
+	 */
+	@SimpleDataElement
+	int 缓存_仅缓存 = 3;
+
+	/**
 	 * 网页发起主框架导航时触发，可同步屏蔽；主动加载和部分 POST 导航不会保证触发。
 	 *
-	 * @param url 即将跳转的网址。
+	 * @param url   即将跳转的网址。
 	 * @param block 是否屏蔽，初始为假。
 	 */
 	@SimpleEvent
@@ -47,9 +71,9 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 主页面发生网络或证书错误。
 	 *
-	 * @param code WebView 错误码，证书错误使用 -11。
+	 * @param code    WebView 错误码，证书错误使用 -11。
 	 * @param message 错误说明。
-	 * @param url 失败网址。
+	 * @param url     失败网址。
 	 */
 	@SimpleEvent
 	void 载入失败(int code, String message, String url);
@@ -58,7 +82,7 @@ public interface AW浏览器 extends 可视组件 {
 	 * 主页面返回 HTTP 错误响应。
 	 *
 	 * @param status HTTP 状态码。
-	 * @param url 请求网址。
+	 * @param url    请求网址。
 	 */
 	@SimpleEvent
 	void HTTP错误(int status, String url);
@@ -82,7 +106,7 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * JavaScript 执行结果返回。
 	 *
-	 * @param mark 调用时的自定义标记。
+	 * @param mark   调用时的自定义标记。
 	 * @param result WebView 返回的 JSON 文本。
 	 */
 	@SimpleEvent
@@ -91,7 +115,7 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 网页向已注册的消息接口发送文本，事件在界面线程触发。
 	 *
-	 * @param name 消息接口名称。
+	 * @param name    消息接口名称。
 	 * @param message 网页传来的文本。
 	 */
 	@SimpleEvent
@@ -108,11 +132,11 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 网页请求下载文件；应用可在事件中调用下载文件以确定目标路径。
 	 *
-	 * @param url 下载网址。
-	 * @param userAgent 网页 User-Agent。
+	 * @param url         下载网址。
+	 * @param userAgent   网页 User-Agent。
 	 * @param disposition Content-Disposition。
-	 * @param mime MIME 类型。
-	 * @param length 已知字节长度，未知时可能为 -1。
+	 * @param mime        MIME 类型。
+	 * @param length      已知字节长度，未知时可能为 -1。
 	 */
 	@SimpleEvent
 	void 下载已请求(String url, String userAgent, String disposition, String mime, long length);
@@ -120,9 +144,9 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 本组件的下载进度更新，事件在界面线程触发。
 	 *
-	 * @param url 下载网址。
+	 * @param url      下载网址。
 	 * @param received 已下载字节数。
-	 * @param total 总字节数，未知时为 -1。
+	 * @param total    总字节数，未知时为 -1。
 	 */
 	@SimpleEvent
 	void 下载进度(String url, long received, long total);
@@ -130,7 +154,7 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 文件下载成功，已关闭写入。
 	 *
-	 * @param url 下载网址。
+	 * @param url  下载网址。
 	 * @param path 实际目标文件完整路径。
 	 */
 	@SimpleEvent
@@ -139,7 +163,7 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 本组件下载失败，不把部分文件当作成功。
 	 *
-	 * @param url 下载网址。
+	 * @param url     下载网址。
 	 * @param message 错误说明。
 	 */
 	@SimpleEvent
@@ -164,7 +188,7 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 异步 Cookie 写入完成。
 	 *
-	 * @param url Cookie 所属网址。
+	 * @param url     Cookie 所属网址。
 	 * @param success 是否成功写入。
 	 */
 	@SimpleEvent
@@ -187,7 +211,7 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 以给定基准网址加载 UTF-8 HTML；基准网址决定相对链接与页面源。
 	 *
-	 * @param html HTML 内容。
+	 * @param html    HTML 内容。
 	 * @param baseUrl 基准网址，空文本使用 about:blank。
 	 */
 	@SimpleFunction
@@ -311,7 +335,7 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 为网址写入一条 Cookie，完成后触发 Cookie已写入。Cookie 由同应用的 WebView 共享。
 	 *
-	 * @param url Cookie 所属 HTTP 或 HTTPS 网址。
+	 * @param url   Cookie 所属 HTTP 或 HTTPS 网址。
 	 * @param value Set-Cookie 格式内容。
 	 */
 	@SimpleFunction
@@ -344,7 +368,7 @@ public interface AW浏览器 extends 可视组件 {
 	 * 执行 JavaScript 并异步返回 JSON 格式结果；页面变化或组件离开后不派发旧结果。
 	 *
 	 * @param script JavaScript 表达式或语句。
-	 * @param mark 用于对应脚本返回事件的自定义标记。
+	 * @param mark   用于对应脚本返回事件的自定义标记。
 	 */
 	@SimpleFunction
 	void 执行脚本(String script, String mark);
@@ -368,11 +392,22 @@ public interface AW浏览器 extends 可视组件 {
 	/**
 	 * 下载到应用可写文件；同网址已有任务或目标已存在时拒绝，不自动打开文件。离开所属窗口时取消本组件的未完成任务。
 	 *
-	 * @param url HTTP 或 HTTPS 下载地址。
+	 * @param url  HTTP 或 HTTPS 下载地址。
 	 * @param path 完整可写路径；相对路径以应用内部文件目录为基准，父目录必须存在。
 	 */
 	@SimpleFunction
 	void 下载文件(String url, String path);
+
+	/**
+	 * 附加本次请求头下载到指定文件，可显式传入 Cookie 或认证信息；不会自动读取网页 Cookie。
+	 *
+	 * @param url    HTTP 或 HTTPS 下载网址，凭据只用于可信地址及其重定向目标。
+	 * @param path   完整可写路径，或以应用内部 files 目录为基准的相对路径。
+	 * @param names  请求头名称数组。
+	 * @param values 与名称一一对应的值数组。
+	 */
+	@SimpleFunction
+	void 下载文件带请求头(String url, String path, String[] names, String[] values);
 
 	/**
 	 * 取消本组件指定网址的任务，不取消其它浏览框的任务。
@@ -412,4 +447,104 @@ public interface AW浏览器 extends 可视组件 {
 	 */
 	@SimpleFunction
 	boolean 是否已销毁();
+
+	/**
+	 * 加载网页并附加本次请求头，同名字段覆盖已配置值。本次附加项不会保存到同源配置；请求头不保证传给重定向或子资源。
+	 *
+	 * @param url    完整 HTTP 或 HTTPS 网址。
+	 * @param names  附加请求头名称数组。
+	 * @param values 对应的值数组，数量与名称相同。
+	 */
+	@SimpleFunction
+	void 加载带请求头(String url, String[] names, String[] values);
+
+	/**
+	 * 以 POST 方式加载表单响应页面。此入口采用 WebView 的表单 POST，不支持任意请求头或 JSON 请求体。
+	 *
+	 * @param url  完整 HTTP 或 HTTPS 网址。
+	 * @param data application/x-www-form-urlencoded 编码的表单字节。
+	 */
+	@SimpleFunction
+	void 提交表单(String url, byte[] data);
+
+	/**
+	 * 按指定 MIME 加载 UTF-8 文本，不设置基准网址或历史地址，保留中文、百分号和井号等内容。
+	 *
+	 * @param data 原始 UTF-8 文本内容。
+	 * @param mime 例如 text/plain 或 text/html，不能为空。
+	 */
+	@SimpleFunction
+	void 加载数据(String data, String mime);
+
+	/**
+	 * 按 MIME 加载 UTF-8 内容，并指定基准网址及历史地址；data 基准不支持自定义历史地址。
+	 *
+	 * @param data       原始 UTF-8 文本内容。
+	 * @param mime       例如 text/html，不能为空。
+	 * @param baseUrl    用于相对地址和页面源，空文本使用 about:blank。
+	 * @param historyUrl 历史记录中的地址，空文本不指定；不改变实际页面源。
+	 */
+	@SimpleFunction
+	void 加载带基准数据(String data, String mime, String baseUrl, String historyUrl);
+
+	/**
+	 * 设置本浏览框同源网页主动加载时的请求头，同名字段覆盖。配置按协议、主机和端口区分，不保证传给重定向、表单 POST 或子资源。
+	 *
+	 * @param url   完整 HTTP 或 HTTPS 网址，按同源保存。
+	 * @param name  有效的 HTTP 字段名称，不区分大小写。
+	 * @param value 字段值，可为空文本，不得包含换行。
+	 */
+	@SimpleFunction
+	void 置请求头(String url, String name, String value);
+
+	/**
+	 * 读取本浏览框保存的同源请求头，没有时返回空文本。
+	 *
+	 * @param url  完整 HTTP 或 HTTPS 网址。
+	 * @param name 不区分大小写的字段名称。
+	 * @return 读取本浏览框保存的同源请求头，没有时返回空文本。
+	 */
+	@SimpleFunction
+	String 取请求头(String url, String name);
+
+	/**
+	 * 取得本浏览框保存的同源请求头名称数组。
+	 *
+	 * @param url 完整 HTTP 或 HTTPS 网址。
+	 * @return 取得本浏览框保存的同源请求头名称数组。
+	 */
+	@SimpleFunction
+	String[] 取请求头名称(String url);
+
+	/**
+	 * 取得本浏览框仍保存请求头的同源地址。
+	 *
+	 * @return 归一化的协议、主机和端口地址数组。
+	 */
+	@SimpleFunction
+	String[] 取请求头来源();
+
+	/**
+	 * 移除本浏览框保存的一个同源请求头，返回是否存在该字段。
+	 *
+	 * @param url  完整 HTTP 或 HTTPS 网址。
+	 * @param name 不区分大小写的字段名称。
+	 * @return 移除本浏览框保存的一个同源请求头，返回是否存在该字段。
+	 */
+	@SimpleFunction
+	boolean 移除请求头(String url, String name);
+
+	/**
+	 * 清除本浏览框指定同源的请求头，不改变 Cookie。
+	 *
+	 * @param url 完整 HTTP 或 HTTPS 网址。
+	 */
+	@SimpleFunction
+	void 清除请求头(String url);
+
+	/**
+	 * 清除本浏览框保存的全部同源请求头，不影响其它浏览框。
+	 */
+	@SimpleFunction
+	void 清除全部请求头();
 }

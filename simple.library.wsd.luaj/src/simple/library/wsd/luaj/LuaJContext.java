@@ -3,13 +3,19 @@ package simple.library.wsd.luaj;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PushbackInputStream;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import org.luaj.vm2.LoadState;
 import org.luaj.vm2.LuaBoolean;
+import org.luaj.vm2.LuaClosure;
+import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaNil;
 import org.luaj.vm2.LuaNumber;
@@ -18,9 +24,14 @@ import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaThread;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.Varargs;
+import org.luaj.vm2.UpValue;
 import org.luaj.vm2.compiler.LuaC;
 import org.luaj.vm2.lib.BaseLib;
+import org.luaj.vm2.lib.DebugLib;
+import org.luaj.vm2.lib.MathLib;
 import org.luaj.vm2.lib.PackageLib;
+import org.luaj.vm2.lib.ResourceFinder;
+import org.luaj.vm2.lib.StringLib;
 import org.luaj.vm2.lib.VarArgFunction;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
@@ -57,7 +68,7 @@ final class LuaJContext {
 	 */
 	LuaJContext() {
 		if (OWNER.get() != null) {
-			throw new LuaJ错误("不能在 LuaJ 协程或宿主回调中创建另一个实例");
+			throw new LuaJ错误("不能在 LuaJ 执行或宿主回调中创建另一个实例");
 		}
 		synchronized (VM_LOCK) {
 			LuaThread running = LuaThread.getRunning();
@@ -67,6 +78,8 @@ final class LuaJContext {
 				// StringLib 只在静态元表为空时初始化，不能沿用另一实例的 __index。
 				VmState.clear();
 				globals = JsePlatform.standardGlobals();
+				// 标准 load/loadstring/loadfile 同样经过二进制捕获槽初始化。
+				LoadState.compiler = LuaJContext::compileInput;
 				installCoroutines();
 				state = new VmState();
 			} finally {
@@ -95,7 +108,7 @@ final class LuaJContext {
 				// 标准 resume 对运行中的协程返回失败，不能进入上游的等待路径。
 				if (!"suspended".equals(status) && !"dead".equals(status)) {
 					return LuaValue.varargsOf(LuaValue.FALSE,
-						LuaJContext.text("cannot resume " + status + " coroutine"));
+							LuaJContext.text("cannot resume " + status + " coroutine"));
 				}
 				LuaValue[] values = new LuaValue[arguments.narg() - 1];
 				for (int i = 0; i < values.length; i++) {
@@ -113,11 +126,11 @@ final class LuaJContext {
 					public Varargs invoke(Varargs arguments) {
 						String status = coroutine.getStatus();
 						if (!"suspended".equals(status) && !"dead".equals(status)) {
-							throw new org.luaj.vm2.LuaError("cannot resume " + status + " coroutine");
+							throw new LuaError("cannot resume " + status + " coroutine");
 						}
 						Varargs result = coroutine.resume(arguments);
 						if (!result.arg1().toboolean()) {
-							throw new org.luaj.vm2.LuaError(result.arg(2).tojstring());
+							throw new LuaError(result.arg(2).tojstring());
 						}
 						LuaValue[] values = new LuaValue[result.narg() - 1];
 						for (int i = 0; i < values.length; i++) {
@@ -173,7 +186,7 @@ final class LuaJContext {
 	/**
 	 * 串行顶层调用；协程中的已登记宿主回调沿用父调用所有权，避免跨线程互锁。
 	 *
-	 * @param <T> 结果类型。
+	 * @param <T>    结果类型。
 	 * @param action 要执行的操作。
 	 * @return 操作结果。
 	 */
@@ -181,9 +194,10 @@ final class LuaJContext {
 		LuaJContext callback = OWNER.get();
 		if (callback != null) {
 			if (callback != this) {
-				throw new LuaJ错误("LuaJ 协程或宿主回调不能重入另一个实例");
+				throw new LuaJ错误("LuaJ 执行或宿主回调不能重入另一个实例");
 			}
-			return evaluate(action);
+			// 同一执行链已经选择本实例；再次安装快照会撤销回调中的元表修改。
+			return invoke(action);
 		}
 		synchronized (VM_LOCK) {
 			return evaluate(action);
@@ -193,7 +207,7 @@ final class LuaJContext {
 	/**
 	 * 临时选择本实例的运行环境，结束时恢复调用方环境并统一错误边界。
 	 *
-	 * @param <T> 结果类型。
+	 * @param <T>    结果类型。
 	 * @param action 已取得执行所有权的操作。
 	 * @return 操作结果。
 	 */
@@ -201,9 +215,34 @@ final class LuaJContext {
 		LuaThread running = LuaThread.getRunning();
 		LuaValue previous = running.getfenv();
 		VmState previousState = new VmState();
+		LuaJContext previousOwner = OWNER.get();
 		try {
+			// Java 互操作同样可能回到本库，所有执行入口都必须登记所有权。
+			OWNER.set(this);
 			state.install();
 			running.setfenv(globals);
+			return invoke(action);
+		} finally {
+			state.capture();
+			previousState.install();
+			running.setfenv(previous);
+			if (previousOwner == null) {
+				OWNER.remove();
+			} else {
+				OWNER.set(previousOwner);
+			}
+		}
+	}
+
+	/**
+	 * 执行当前所有权内的操作并保存统一错误，不重新切换全局状态。
+	 *
+	 * @param <T>    结果类型。
+	 * @param action 已取得执行所有权的操作。
+	 * @return 操作结果。
+	 */
+	private <T> T invoke(Action<T> action) {
+		try {
 			return action.run();
 		} catch (LuaJ错误 error) {
 			lastError = error.getMessage();
@@ -211,10 +250,6 @@ final class LuaJContext {
 		} catch (Exception error) {
 			lastError = "LuaJ 操作失败：" + error.getMessage();
 			throw new LuaJ错误("LuaJ 操作失败：" + error.getMessage(), error);
-		} finally {
-			state.capture();
-			previousState.install();
-			running.setfenv(previous);
 		}
 	}
 
@@ -226,6 +261,12 @@ final class LuaJContext {
 	private static final class VmState {
 		private BaseLib base;
 		private PackageLib packages;
+		private ResourceFinder finder;
+		private LuaTable stringLibrary;
+		private MathLib mathLibrary;
+		private LoadState.LuaCompiler compiler;
+		private boolean debugEnabled;
+		private Object debugState;
 		private LuaValue strings;
 		private LuaValue numbers;
 		private LuaValue booleans;
@@ -246,6 +287,12 @@ final class LuaJContext {
 		static void clear() {
 			BaseLib.instance = null;
 			PackageLib.instance = null;
+			BaseLib.FINDER = null;
+			StringLib.instance = null;
+			MathLib.MATHLIB = null;
+			LoadState.compiler = null;
+			DebugLib.DEBUG_ENABLED = false;
+			LuaThread.getRunning().debugState = null;
 			LuaString.s_metatable = null;
 			LuaNumber.s_metatable = null;
 			LuaBoolean.s_metatable = null;
@@ -260,6 +307,12 @@ final class LuaJContext {
 		void capture() {
 			base = BaseLib.instance;
 			packages = PackageLib.instance;
+			finder = BaseLib.FINDER;
+			stringLibrary = StringLib.instance;
+			mathLibrary = MathLib.MATHLIB;
+			compiler = LoadState.compiler;
+			debugEnabled = DebugLib.DEBUG_ENABLED;
+			debugState = LuaThread.getRunning().debugState;
 			strings = LuaString.s_metatable;
 			numbers = LuaNumber.s_metatable;
 			booleans = LuaBoolean.s_metatable;
@@ -274,6 +327,12 @@ final class LuaJContext {
 		void install() {
 			BaseLib.instance = base;
 			PackageLib.instance = packages;
+			BaseLib.FINDER = finder;
+			StringLib.instance = stringLibrary;
+			MathLib.MATHLIB = mathLibrary;
+			LoadState.compiler = compiler;
+			DebugLib.DEBUG_ENABLED = debugEnabled;
+			LuaThread.getRunning().debugState = debugState;
 			LuaString.s_metatable = strings;
 			LuaNumber.s_metatable = numbers;
 			LuaBoolean.s_metatable = booleans;
@@ -296,9 +355,7 @@ final class LuaJContext {
 		if (value instanceof BooleanVariant) {
 			return LuaValue.valueOf(value.getBoolean());
 		}
-		if (value instanceof ByteVariant
-				|| value instanceof ShortVariant
-				|| value instanceof IntegerVariant) {
+		if (value instanceof ByteVariant || value instanceof ShortVariant || value instanceof IntegerVariant) {
 			return LuaValue.valueOf(value.getInteger());
 		}
 		if (value instanceof LongVariant) {
@@ -399,14 +456,14 @@ final class LuaJContext {
 	LuaJ函数 load(String code, String name) throws Exception {
 		byte[] bytes = requireText(code).getBytes(StandardCharsets.UTF_8);
 		try (ByteArrayInputStream input = new ByteArrayInputStream(bytes)) {
-			return (LuaJ函数) wrap(LuaC.instance.load(input, requireText(name), globals));
+			return loadInput(input, name);
 		}
 	}
 
 	/**
 	 * 读取并编译指定编码的文件；相对路径位于应用私有 files 目录。
 	 *
-	 * @param path 可读取文件的路径。
+	 * @param path     可读取文件的路径。
 	 * @param encoding 字符集名称，例如 UTF-8。
 	 * @return 尚未执行的函数。
 	 * @throws Exception 文件或编译失败。
@@ -417,21 +474,14 @@ final class LuaJContext {
 			file = new File(MainActivity.getContext().getFilesDir(), path);
 		}
 		StringBuilder text = new StringBuilder();
-		try (Reader reader =
-				new InputStreamReader(
-						new FileInputStream(file),
-						Charset.forName(requireText(encoding))
-								.newDecoder()
-								.onMalformedInput(CodingErrorAction.REPORT)
-								.onUnmappableCharacter(CodingErrorAction.REPORT))) {
+		try (Reader reader = new InputStreamReader(new FileInputStream(file),
+				Charset.forName(requireText(encoding)).newDecoder().onMalformedInput(CodingErrorAction.REPORT)
+						.onUnmappableCharacter(CodingErrorAction.REPORT))) {
 			char[] buffer = new char[4096];
 			int count;
 			while ((count = reader.read(buffer)) != -1) {
 				text.append(buffer, 0, count);
 			}
-		}
-		if (text.length() != 0 && text.charAt(0) == '\ufeff') {
-			text.deleteCharAt(0);
 		}
 		return load(text.toString(), "@" + file.getAbsolutePath());
 	}
@@ -481,5 +531,116 @@ final class LuaJContext {
 			throw new LuaJ错误("文本不能是空引用");
 		}
 		return text;
+	}
+
+	/**
+	 * 建立同实例的宿主函数，供全局注册和直接传参共用。
+	 *
+	 * @param callback 非空回调对象。
+	 * @return 当前实例拥有的函数。
+	 */
+	LuaJ函数 function(LuaJ回调 callback) {
+		if (callback == null) {
+			throw new LuaJ错误("宿主回调不能为空。");
+		}
+		return (LuaJ函数) wrap(new VarArgFunction() {
+			@Override
+			public Varargs invoke(Varargs arguments) {
+				LuaJContext previous = OWNER.get();
+				OWNER.set(LuaJContext.this);
+				try {
+					LuaJ参数 result = callback.处理调用(new LuaJ参数(LuaJContext.this, arguments));
+					if (result == null) {
+						return LuaValue.NONE;
+					}
+					if (result.context != LuaJContext.this) {
+						throw new LuaJ错误("回调结果属于另一个 LuaJ 实例");
+					}
+					return result.values;
+				} catch (RuntimeException error) {
+					throw new LuaError(new LuaJ错误("宿主回调失败：" + error.getMessage(), error));
+				} finally {
+					if (previous == null) {
+						OWNER.remove();
+					} else {
+						OWNER.set(previous);
+					}
+				}
+			}
+		});
+	}
+
+	/**
+	 * 加载原始字节快照，支持 UTF-8 源码和本版本 Lua 字节码。
+	 *
+	 * @param data 原始内容。
+	 * @param name 来源名称。
+	 * @return 尚未执行的代码块。
+	 * @throws Exception 输入或编译失败。
+	 */
+	LuaJ函数 loadBytes(byte[] data, String name) throws Exception {
+		if (data == null) {
+			throw new LuaJ错误("脚本字节集不得为空。");
+		}
+		try (ByteArrayInputStream input = new ByteArrayInputStream(data.clone())) {
+			return loadInput(input, name);
+		}
+	}
+
+	/**
+	 * 加载资产中的 UTF-8 源码或本版本字节码，结束前关闭输入流。
+	 *
+	 * @param name 资产相对路径。
+	 * @return 尚未执行的代码块。
+	 * @throws Exception 资产读取或编译失败。
+	 */
+	LuaJ函数 loadAsset(String name) throws Exception {
+		try (InputStream input = MainActivity.getContext().getAssets().open(requireText(name))) {
+			return loadInput(input, "@assets/" + name);
+		}
+	}
+
+	/**
+	 * 统一移除单个 UTF-8 BOM，并由上游识别源码或二进制块；输入流由调用者管理。
+	 *
+	 * @param source 原始输入流。
+	 * @param name   来源名称。
+	 * @return 同实例代码块。
+	 * @throws Exception 输入或编译失败。
+	 */
+	private LuaJ函数 loadInput(InputStream source, String name) throws Exception {
+		return (LuaJ函数) wrap(compileInput(source, name, globals));
+	}
+
+	/**
+	 * 为宿主和 Lua 标准加载函数共用编译入口，保留传入的环境表。
+	 *
+	 * @param source      调用者管理的输入流。
+	 * @param name        来源名称。
+	 * @param environment 代码块的执行环境。
+	 * @return 已初始化捕获槽的代码块。
+	 * @throws IOException 读取或二进制编译失败。
+	 */
+	private static LuaFunction compileInput(InputStream source, String name, LuaValue environment) throws IOException {
+		requireText(name);
+		PushbackInputStream input = new PushbackInputStream(source, 3);
+		byte[] prefix = new byte[3];
+		int count = 0;
+		while (count < prefix.length) {
+			int next = input.read();
+			if (next < 0) {
+				break;
+			}
+			prefix[count++] = (byte) next;
+		}
+		if (count != 3 || (prefix[0] & 255) != 239 || (prefix[1] & 255) != 187 || (prefix[2] & 255) != 191) {
+			input.unread(prefix, 0, count);
+		}
+		LuaClosure chunk = LuaC.instance.load(input, name, environment).checkclosure();
+		// 二进制块不保存闭包捕获值；上游只分配空槽，须初始化为可读写的 nil。
+		for (int i = 0; i < chunk.upValues.length; i++) {
+			chunk.upValues[i] = new UpValue(new LuaValue[] { LuaValue.NIL }, 0);
+		}
+		return chunk;
 	}
 }

@@ -1,7 +1,6 @@
 package simple.library.wsd.xui;
 
 import android.view.View;
-import android.widget.ImageView;
 
 import com.xuexiang.xui.widget.imageview.RadiusImageView;
 
@@ -121,17 +120,6 @@ public final class XUI圆角图片Impl extends XUI视图组件基类 implements 
 	@Override
 	public boolean 是否触摸选择模式启用() {
 		return view.isTouchSelectModeEnabled();
-	}
-
-	@Override
-	public void 置图片(String image) {
-		view.setImageDrawable(ComponentSupport.getDrawable(image));
-	}
-
-	@Override
-	public void 置图片缩放模式(int mode) {
-		ComponentSupport.validateIndex(mode, ImageView.ScaleType.values().length);
-		view.setScaleType(ImageView.ScaleType.values()[mode]);
 	}
 
 	@Override

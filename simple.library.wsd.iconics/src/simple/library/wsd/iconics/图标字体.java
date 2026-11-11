@@ -1,13 +1,10 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import com.mikepenz.iconics.typeface.GenericFont;
+import com.mikepenz.iconics.typeface.ITypeface;
+
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
 
 /**
  * 字体信息和自定义映射。
@@ -18,10 +15,13 @@ import simple.runtime.components.*;
 public final class 图标字体 {
 	ITypeface value;
 	boolean registered;
+
 	/**
 	 * 创建独立实例。
 	 */
-	public 图标字体() {}
+	public 图标字体() {
+	}
+
 	/**
 	 * 字体名称。
 	 *

@@ -1,12 +1,5 @@
 package simple.library.wsd.notification;
 
-import simple.runtime.android.MainActivity;
-import simple.runtime.components.组件容器;
-import simple.runtime.components.impl.组件Impl;
-import simple.runtime.events.EventDispatcher;
-
-import java.util.UUID;
-
 import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -17,12 +10,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.service.notification.StatusBarNotification;
+import java.util.UUID;
+import simple.runtime.android.MainActivity;
+import simple.runtime.components.impl.组件Impl;
+import simple.runtime.components.组件容器;
+import simple.runtime.events.EventDispatcher;
 
 /**
- * 通知管理器组件的 Android 实现。
- * 负责通知渠道、发布与当前窗口存活期间的点击广播分发。
+ * 通知管理器组件的 Android 实现。 负责通知渠道、发布与当前窗口存活期间的点击广播分发。
+ *
+ * @author 树先生 xhwsd@qq.com
  */
 public final class 通知管理器Impl extends 组件Impl implements 通知管理器 {
 
@@ -90,6 +92,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 		IntentFilter filter = new IntentFilter(clickAction);
 
 		filter.addAction(operationAction);
+		filter.addAction(clickAction + ".DISMISS");
 		activity.registerReceiver(clickReceiver, filter);
 		receiverRegistered = true;
 
@@ -111,6 +114,11 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	}
 
 	@Override
+	public void 通知被清除(int notificationId) {
+		EventDispatcher.dispatchEvent(this, "通知被清除", notificationId);
+	}
+
+	@Override
 	public void 按钮被单击(int notificationId, String mark) {
 		EventDispatcher.dispatchEvent(this, "按钮被单击", notificationId, mark);
 	}
@@ -118,6 +126,37 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	@Override
 	public void 收到回复(int notificationId, String mark, String reply) {
 		EventDispatcher.dispatchEvent(this, "收到回复", notificationId, mark, reply);
+	}
+
+	@Override
+	public boolean 是否允许通知() {
+		return notificationManager.areNotificationsEnabled();
+	}
+
+	@Override
+	public int[] 取活动通知编号() {
+		if (Build.VERSION.SDK_INT < 23) {
+			throw new UnsupportedOperationException("查询活动通知需要 Android API 23");
+		}
+		StatusBarNotification[] items = notificationManager.getActiveNotifications();
+		int[] ids = new int[items.length];
+		for (int i = 0; i < items.length; i++) {
+			ids[i] = items[i].getId();
+		}
+		return ids;
+	}
+
+	@Override
+	public void 打开通知设置() {
+		Intent intent;
+		if (Build.VERSION.SDK_INT >= 26) {
+			intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+			intent.putExtra(Settings.EXTRA_APP_PACKAGE, activity.getPackageName());
+		} else {
+			intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+					Uri.parse("package:" + activity.getPackageName()));
+		}
+		activity.startActivity(intent);
 	}
 
 	/* 方法 */
@@ -142,8 +181,9 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 
 		notification.bindActions(notificationId, operationAction);
 
-		builder.setWhen(System.currentTimeMillis()).setContentIntent(createClickPendingIntent(notificationId));
-		notificationManager.notify(notificationId, buildNotification(builder));
+		builder.setContentIntent(createClickPendingIntent(notificationId, 通知构建器.ACTION_CONTENT));
+		builder.setDeleteIntent(createClickPendingIntent(notificationId, 通知构建器.ACTION_DISMISS));
+		notificationManager.notify(notificationId, notification.build());
 	}
 
 	@Override
@@ -172,8 +212,8 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 */
 	private void handleNotificationBroadcast(Intent intent) {
 		// 只处理本组件发出的有效通知广播。
-		if (intent == null || (!clickAction.equals(intent.getAction())
-				&& !operationAction.equals(intent.getAction()))) {
+		if (intent == null || (!clickAction.equals(intent.getAction()) && !operationAction.equals(intent.getAction())
+				&& !(clickAction + ".DISMISS").equals(intent.getAction()))) {
 			return;
 		}
 
@@ -194,11 +234,9 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 			Bundle results = RemoteInput.getResultsFromIntent(intent);
 			CharSequence reply = results == null ? null : results.getCharSequence(通知构建器.REPLY_RESULT_KEY);
 
-			收到回复(
-				notificationId,
-				extras.getString(通知构建器.EXTRA_ACTION_MARK),
-				reply == null ? "" : reply.toString()
-			);
+			收到回复(notificationId, extras.getString(通知构建器.EXTRA_ACTION_MARK), reply == null ? "" : reply.toString());
+		} else if (kind == 通知构建器.ACTION_DISMISS) {
+			通知被清除(notificationId);
 		} else if (kind == 通知构建器.ACTION_CONTENT) {
 			通知被单击(notificationId);
 		}
@@ -218,14 +256,16 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 * 为通知创建携带编号的点击广播。
 	 *
 	 * @param notificationId 通知编号，同时用作 PendingIntent 的请求码
+	 * @param kind           通知正文或清除操作类型
 	 * @return 通知点击时发送的 PendingIntent
 	 */
-	private PendingIntent createClickPendingIntent(int notificationId) {
+	private PendingIntent createClickPendingIntent(int notificationId, int kind) {
 		// 请求码以通知编号区分，更新通知时复用并刷新原有意图。
-		Intent intent = new Intent(clickAction);
+		Intent intent = new Intent(kind == 通知构建器.ACTION_CONTENT ? clickAction : clickAction + ".DISMISS");
 
 		intent.setPackage(activity.getPackageName());
 		intent.putExtra(通知构建器.EXTRA_NOTIFICATION_ID, notificationId);
+		intent.putExtra(通知构建器.EXTRA_ACTION_KIND, kind);
 
 		// Android 12 起要求明确指定可变性；通知主体点击不需要修改意图。
 		int flags = PendingIntent.FLAG_UPDATE_CURRENT;
@@ -261,7 +301,7 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 * 根据声音和优先级选择渠道；渠道创建后的设置由系统管理。
 	 *
 	 * @param playSound 是否使用有声渠道
-	 * @param priority 通知优先级
+	 * @param priority  通知优先级
 	 * @return 当前通知使用的渠道编号
 	 */
 	@TargetApi(Build.VERSION_CODES.O)
@@ -275,11 +315,8 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 		}
 
 		// 静音渠道同时关闭声音和振动，避免系统默认行为产生提醒。
-		NotificationChannel channel = new NotificationChannel(
-			channelId,
-			channelName(playSound, priority),
-			channelImportance(priority)
-		);
+		NotificationChannel channel = new NotificationChannel(channelId, channelName(playSound, priority),
+				channelImportance(priority));
 
 		if (!playSound) {
 			channel.setSound(null, null);
@@ -299,15 +336,15 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	@TargetApi(Build.VERSION_CODES.O)
 	private static int channelImportance(int priority) {
 		switch (priority) {
-			case 通知构建器.优先级_最低:
-				return NotificationManager.IMPORTANCE_MIN;
-			case 通知构建器.优先级_低:
-				return NotificationManager.IMPORTANCE_LOW;
-			case 通知构建器.优先级_高:
-			case 通知构建器.优先级_最高:
-				return NotificationManager.IMPORTANCE_HIGH;
-			default:
-				return NotificationManager.IMPORTANCE_DEFAULT;
+		case 通知构建器.优先级_最低:
+			return NotificationManager.IMPORTANCE_MIN;
+		case 通知构建器.优先级_低:
+			return NotificationManager.IMPORTANCE_LOW;
+		case 通知构建器.优先级_高:
+		case 通知构建器.优先级_最高:
+			return NotificationManager.IMPORTANCE_HIGH;
+		default:
+			return NotificationManager.IMPORTANCE_DEFAULT;
 		}
 	}
 
@@ -315,39 +352,24 @@ public final class 通知管理器Impl extends 组件Impl implements 通知管�
 	 * 生成用户在系统设置中看到的渠道名称。
 	 *
 	 * @param playSound 是否使用有声渠道
-	 * @param priority 通知优先级
+	 * @param priority  通知优先级
 	 * @return 中文渠道名称
 	 */
 	private static String channelName(boolean playSound, int priority) {
 		String prefix = playSound ? "通知" : "静音通知";
 
 		switch (priority) {
-			case 通知构建器.优先级_最低:
-				return prefix + " · 最低";
-			case 通知构建器.优先级_低:
-				return prefix + " · 低";
-			case 通知构建器.优先级_高:
-				return prefix + " · 高";
-			case 通知构建器.优先级_最高:
-				return prefix + " · 最高";
-			default:
-				return prefix;
+		case 通知构建器.优先级_最低:
+			return prefix + " · 最低";
+		case 通知构建器.优先级_低:
+			return prefix + " · 低";
+		case 通知构建器.优先级_高:
+			return prefix + " · 高";
+		case 通知构建器.优先级_最高:
+			return prefix + " · 最高";
+		default:
+			return prefix;
 		}
 	}
 
-	/**
-	 * API 16 起使用 build，API 14 至 15 使用旧版 getNotification。
-	 *
-	 * @param builder 已设置内容的通知构建器
-	 * @return 可交给 NotificationManager 发布的通知
-	 */
-	@SuppressWarnings("deprecation")
-	private Notification buildNotification(Notification.Builder builder) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-			return builder.build();
-		}
-
-		// API 14 至 15 没有 build，使用旧版完成方法。
-		return builder.getNotification();
-	}
 }

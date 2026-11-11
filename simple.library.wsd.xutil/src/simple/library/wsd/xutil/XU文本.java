@@ -64,14 +64,14 @@ public final class XU文本 {
 	}
 
 	/**
-	 * 按上游规则反转文本。
+	 * 反转文本并保留完整的 Unicode 代理对；组合字符不作字素聚合。
 	 *
 	 * @param text 文本。
 	 * @return 返回的文本。
 	 */
 	@SimpleFunction
 	public static String 反转(String text) {
-		return StringUtils.reverse(text);
+		return text == null ? null : new StringBuilder(text).reverse().toString();
 	}
 
 	/**
@@ -99,7 +99,7 @@ public final class XU文本 {
 	/**
 	 * 忽略大小写比较两段文本。
 	 *
-	 * @param first 第一文本。
+	 * @param first  第一文本。
 	 * @param second 第二文本。
 	 * @return 判断或操作的结果。
 	 */
@@ -111,7 +111,7 @@ public final class XU文本 {
 	/**
 	 * 比较点分隔的数字版本；大于、等于、小于分别返回正数、零、负数。
 	 *
-	 * @param first 第一文本。
+	 * @param first  第一文本。
 	 * @param second 第二文本。
 	 * @return 返回的整数值。
 	 */
@@ -123,7 +123,7 @@ public final class XU文本 {
 	/**
 	 * 转换数值，失败时返回指定默认值。
 	 *
-	 * @param text 文本。
+	 * @param text     文本。
 	 * @param fallback 默认值。
 	 * @return 返回的整数值。
 	 */
@@ -135,7 +135,7 @@ public final class XU文本 {
 	/**
 	 * 转换数值，失败时返回指定默认值。
 	 *
-	 * @param text 文本。
+	 * @param text     文本。
 	 * @param fallback 默认值。
 	 * @return 返回的长整数值。
 	 */
@@ -147,12 +147,58 @@ public final class XU文本 {
 	/**
 	 * 转换数值，失败时返回指定默认值。
 	 *
-	 * @param text 文本。
+	 * @param text     文本。
 	 * @param fallback 默认值。
 	 * @return 返回的双精度数值。
 	 */
 	@SimpleFunction
 	public static double 到小数(String text, double fallback) {
 		return StringUtils.toDouble(text, fallback);
+	}
+
+	/**
+	 * 转换 true/false 文本，不能转换时返回默认值。
+	 *
+	 * @param text     文本。
+	 * @param fallback 默认值。
+	 * @return 转换 true/false 文本，不能转换时返回默认值。
+	 */
+	@SimpleFunction
+	public static boolean 到逻辑(String text, boolean fallback) {
+		return StringUtils.toBoolean(text, fallback);
+	}
+
+	/**
+	 * 判断文本是否符合上游整数规则。
+	 *
+	 * @param text 文本。
+	 * @return 判断文本是否符合上游整数规则。
+	 */
+	@SimpleFunction
+	public static boolean 是否整数(String text) {
+		return StringUtils.isInteger(text);
+	}
+
+	/**
+	 * 判断文本是否符合上游数值规则。
+	 *
+	 * @param text 文本。
+	 * @return 判断文本是否符合上游数值规则。
+	 */
+	@SimpleFunction
+	public static boolean 是否数值(String text) {
+		return StringUtils.isNumber(text);
+	}
+
+	/**
+	 * 按分隔符连接文本数组，空数组返回空文本。
+	 *
+	 * @param items     文本数组。
+	 * @param separator 分隔符。
+	 * @return 按分隔符连接文本数组，空数组返回空文本。
+	 */
+	@SimpleFunction
+	public static String 连接(String[] items, String separator) {
+		return String.join(separator, items);
 	}
 }

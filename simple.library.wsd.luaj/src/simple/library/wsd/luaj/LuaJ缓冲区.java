@@ -1,7 +1,7 @@
 package simple.library.wsd.luaj;
 
+import java.io.ByteArrayOutputStream;
 import org.luaj.vm2.LuaString;
-
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 
@@ -15,7 +15,7 @@ public final class LuaJ缓冲区 {
 
 	final LuaJContext context;
 	// 保持字节顺序，避开上游旧 Buffer 在首部插入后追加的扩容问题。
-	private java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
+	private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
 	/**
 	 * 创建空缓冲区。
@@ -33,15 +33,11 @@ public final class LuaJ缓冲区 {
 	 */
 	@SimpleFunction
 	public void 添加文本(String text) {
-		context.perform(
-				new LuaJContext.Action<Void>() {
-					@Override
-					public Void run() throws Exception {
-						byte[] bytes = LuaJContext.text(text).m_bytes;
-						buffer.write(bytes, 0, bytes.length);
-						return null;
-					}
-				});
+		context.perform(() -> {
+			byte[] bytes = LuaJContext.text(text).m_bytes;
+			buffer.write(bytes, 0, bytes.length);
+			return null;
+		});
 	}
 
 	/**
@@ -51,17 +47,13 @@ public final class LuaJ缓冲区 {
 	 */
 	@SimpleFunction
 	public void 添加字节集(byte[] bytes) {
-		context.perform(
-				new LuaJContext.Action<Void>() {
-					@Override
-					public Void run() throws Exception {
-						if (bytes == null) {
-							throw new LuaJ错误("字节集不能为空引用");
-						}
-						buffer.write(bytes, 0, bytes.length);
-						return null;
-					}
-				});
+		context.perform(() -> {
+			if (bytes == null) {
+				throw new LuaJ错误("字节集不能为空引用");
+			}
+			buffer.write(bytes, 0, bytes.length);
+			return null;
+		});
 	}
 
 	/**
@@ -71,15 +63,11 @@ public final class LuaJ缓冲区 {
 	 */
 	@SimpleFunction
 	public void 添加值(LuaJ值 value) {
-		context.perform(
-				new LuaJContext.Action<Void>() {
-					@Override
-					public Void run() throws Exception {
-						byte[] bytes = LuaJContext.bytes(context.unwrap(value));
-						buffer.write(bytes, 0, bytes.length);
-						return null;
-					}
-				});
+		context.perform(() -> {
+			byte[] bytes = LuaJContext.bytes(context.unwrap(value));
+			buffer.write(bytes, 0, bytes.length);
+			return null;
+		});
 	}
 
 	/**
@@ -89,18 +77,14 @@ public final class LuaJ缓冲区 {
 	 */
 	@SimpleFunction
 	public void 插入首部(String text) {
-		context.perform(
-				new LuaJContext.Action<Void>() {
-					@Override
-					public Void run() throws Exception {
-						byte[] prefix = LuaJContext.bytes(LuaJContext.text(text));
-						byte[] suffix = buffer.toByteArray();
-						buffer = new java.io.ByteArrayOutputStream();
-						buffer.write(prefix, 0, prefix.length);
-						buffer.write(suffix, 0, suffix.length);
-						return null;
-					}
-				});
+		context.perform(() -> {
+			byte[] prefix = LuaJContext.bytes(LuaJContext.text(text));
+			byte[] suffix = buffer.toByteArray();
+			buffer = new ByteArrayOutputStream();
+			buffer.write(prefix, 0, prefix.length);
+			buffer.write(suffix, 0, suffix.length);
+			return null;
+		});
 	}
 
 	/**
@@ -110,13 +94,7 @@ public final class LuaJ缓冲区 {
 	 */
 	@SimpleFunction
 	public LuaJ值 取值() {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(LuaString.valueOf(buffer.toByteArray()));
-					}
-				});
+		return context.perform(() -> context.wrap(LuaString.valueOf(buffer.toByteArray())));
 	}
 
 	/**
@@ -126,14 +104,9 @@ public final class LuaJ缓冲区 {
 	 */
 	@SimpleFunction
 	public String 到文本() {
-		return context.perform(
-				new LuaJContext.Action<String>() {
-					@Override
-					public String run() throws Exception {
-						return new String(
-								buffer.toByteArray(), java.nio.charset.StandardCharsets.UTF_8);
-					}
-				});
+		return context.perform(() -> {
+			return new String(buffer.toByteArray(), java.nio.charset.StandardCharsets.UTF_8);
+		});
 	}
 
 	/**
@@ -143,13 +116,7 @@ public final class LuaJ缓冲区 {
 	 */
 	@SimpleFunction
 	public byte[] 到字节集() {
-		return context.perform(
-				new LuaJContext.Action<byte[]>() {
-					@Override
-					public byte[] run() throws Exception {
-						return buffer.toByteArray();
-					}
-				});
+		return context.perform(() -> buffer.toByteArray());
 	}
 
 	/**
@@ -157,13 +124,9 @@ public final class LuaJ缓冲区 {
 	 */
 	@SimpleFunction
 	public void 清空() {
-		context.perform(
-				new LuaJContext.Action<Void>() {
-					@Override
-					public Void run() throws Exception {
-						buffer.reset();
-						return null;
-					}
-				});
+		context.perform(() -> {
+			buffer.reset();
+			return null;
+		});
 	}
 }

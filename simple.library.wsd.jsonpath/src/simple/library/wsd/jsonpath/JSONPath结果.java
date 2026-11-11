@@ -11,8 +11,9 @@ import simple.runtime.collections.JSON值;
 /**
  * 路径查询的独立结果快照，区分未匹配与 JSON null。
  *
- * <p>确定路径返回其实际值；通配符、过滤等不确定路径返回数组。
- * 结果不随文档后续修改变化，也不会通过取成员或转换 JSON值 改写原文档。</p>
+ * <p>
+ * 确定路径返回其实际值；通配符、过滤等不确定路径返回数组。 结果不随文档后续修改变化，也不会通过取成员或转换 JSON值 改写原文档。
+ * </p>
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -75,7 +76,7 @@ public final class JSONPath结果 {
 	 * 深复制查询值，创建不随源文档变化的结果快照。
 	 *
 	 * @param present 是否有匹配。
-	 * @param value JSON 标准值或结果数组；允许 Java 空引用表示 JSON null。
+	 * @param value   JSON 标准值或结果数组；允许 Java 空引用表示 JSON null。
 	 */
 	JSONPath结果(boolean present, Object value) {
 		this.present = present;
@@ -85,9 +86,9 @@ public final class JSONPath结果 {
 	/* 匹配状态与类型；未匹配不冒充 JSON null。 */
 
 	/**
-	 * 查询是否实际匹配；确定路径中的空数组仍算匹配。
+	 * 默认查询表示是否实际匹配；按选项查询生成的默认值和空数组同样是存在结果。
 	 *
-	 * @return 匹配时为真；不确定查询结果为空数组时为假。
+	 * @return 结果可读取时为真；默认不确定查询为空数组时为假。
 	 */
 	@SimpleFunction
 	public boolean 是否存在() {
@@ -221,7 +222,7 @@ public final class JSONPath结果 {
 	 *
 	 * @param index 从 0 开始的成员索引。
 	 * @return 成员值，数组内的 null 仍算存在。
-	 * @throws IllegalArgumentException 没有匹配或不是数组。
+	 * @throws IllegalArgumentException       没有匹配或不是数组。
 	 * @throws ArrayIndexOutOfBoundsException 索引越界。
 	 */
 	@SimpleFunction

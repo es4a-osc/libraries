@@ -30,10 +30,8 @@ public final class SideIndexBar extends View {
 		void selected(String section);
 	}
 
-	private static final String[] SECTIONS = {
-		"定位", "热门", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K",
-		"L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "#"
-	};
+	private static final String[] SECTIONS = { "定位", "热门", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+			"M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "#" };
 	private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final int normalColor;
 	private final int selectedColor;
@@ -44,7 +42,7 @@ public final class SideIndexBar extends View {
 	/**
 	 * 从布局和 Dialog 主题创建字母索引条。
 	 *
-	 * @param context 当前主题上下文。
+	 * @param context    当前主题上下文。
 	 * @param attributes XML 属性。
 	 */
 	public SideIndexBar(Context context, AttributeSet attributes) {
@@ -59,7 +57,7 @@ public final class SideIndexBar extends View {
 	/**
 	 * 绑定字母悬浮提示及列表滚动回调。
 	 *
-	 * @param overlay 显示当前字母的提示视图。
+	 * @param overlay  显示当前字母的提示视图。
 	 * @param listener 分组切换监听器。
 	 */
 	public void bind(TextView overlay, Listener listener) {
@@ -87,8 +85,8 @@ public final class SideIndexBar extends View {
 		int action = event.getActionMasked();
 		if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_MOVE) {
 			getParent().requestDisallowInterceptTouchEvent(true);
-			int index = Math.max(0, Math.min(SECTIONS.length - 1,
-					(int) (event.getY() * SECTIONS.length / getHeight())));
+			int index = Math.max(0,
+					Math.min(SECTIONS.length - 1, (int) (event.getY() * SECTIONS.length / getHeight())));
 			if (selected != index) {
 				selected = index;
 				if (overlay != null) {

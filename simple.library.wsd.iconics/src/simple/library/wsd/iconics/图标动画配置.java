@@ -1,13 +1,8 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import simple.runtime.annotations.SimpleFunction;
+import simple.runtime.annotations.SimpleObject;
+import simple.runtime.annotations.SimpleProperty;
 
 /**
  * 图标动画参数。
@@ -17,6 +12,7 @@ import simple.runtime.components.*;
 @SimpleObject
 public final class 图标动画配置 {
 	private int p类型 = 0;
+
 	/**
 	 * 0旋转，1透明，2缩放。
 	 *
@@ -26,6 +22,7 @@ public final class 图标动画配置 {
 	public int 类型() {
 		return p类型;
 	}
+
 	/**
 	 * 0旋转，1透明，2缩放。
 	 *
@@ -37,6 +34,7 @@ public final class 图标动画配置 {
 	}
 
 	private long p时长 = 1000L;
+
 	/**
 	 * 单次动画时长，毫秒，大于零。
 	 *
@@ -46,6 +44,7 @@ public final class 图标动画配置 {
 	public long 时长() {
 		return p时长;
 	}
+
 	/**
 	 * 单次动画时长，毫秒，大于零。
 	 *
@@ -57,6 +56,7 @@ public final class 图标动画配置 {
 	}
 
 	private long p延时 = 0L;
+
 	/**
 	 * 开始延迟，毫秒。
 	 *
@@ -66,6 +66,7 @@ public final class 图标动画配置 {
 	public long 延时() {
 		return p延时;
 	}
+
 	/**
 	 * 开始延迟，毫秒。
 	 *
@@ -77,6 +78,7 @@ public final class 图标动画配置 {
 	}
 
 	private int p重复次数 = -1;
+
 	/**
 	 * 重复次数，-1为无限。
 	 *
@@ -86,6 +88,7 @@ public final class 图标动画配置 {
 	public int 重复次数() {
 		return p重复次数;
 	}
+
 	/**
 	 * 重复次数，-1为无限。
 	 *
@@ -97,6 +100,7 @@ public final class 图标动画配置 {
 	}
 
 	private boolean p往返 = false;
+
 	/**
 	 * 是否往返重复。
 	 *
@@ -106,6 +110,7 @@ public final class 图标动画配置 {
 	public boolean 往返() {
 		return p往返;
 	}
+
 	/**
 	 * 是否往返重复。
 	 *
@@ -117,6 +122,7 @@ public final class 图标动画配置 {
 	}
 
 	private int p插值 = 0;
+
 	/**
 	 * 0线性，1加速，2减速，3先加速后减速，4弹跳。
 	 *
@@ -126,6 +132,7 @@ public final class 图标动画配置 {
 	public int 插值() {
 		return p插值;
 	}
+
 	/**
 	 * 0线性，1加速，2减速，3先加速后减速，4弹跳。
 	 *
@@ -137,6 +144,7 @@ public final class 图标动画配置 {
 	}
 
 	private float p起值 = 0f;
+
 	/**
 	 * 旋转单位为度；透明度为0至255；缩放为非负比例。
 	 *
@@ -146,6 +154,7 @@ public final class 图标动画配置 {
 	public float 起值() {
 		return p起值;
 	}
+
 	/**
 	 * 旋转单位为度；透明度为0至255；缩放为非负比例。
 	 *
@@ -157,6 +166,7 @@ public final class 图标动画配置 {
 	}
 
 	private float p止值 = 360f;
+
 	/**
 	 * 结束值；透明闪烁宜设255，缩放宜设1。
 	 *
@@ -166,6 +176,7 @@ public final class 图标动画配置 {
 	public float 止值() {
 		return p止值;
 	}
+
 	/**
 	 * 结束值；透明闪烁宜设255，缩放宜设1。
 	 *
@@ -175,10 +186,12 @@ public final class 图标动画配置 {
 	public void 止值(float value) {
 		p止值 = value;
 	}
+
 	/**
 	 * 创建独立实例。
 	 */
-	public 图标动画配置() {}
+	public 图标动画配置() {
+	}
 
 	/**
 	 * 复制动画配置，后续修改互不影响。

@@ -1,15 +1,24 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.view.View;
+import android.widget.TextView;
+
+import com.mikepenz.iconics.Iconics;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.iconics.typeface.GenericFont;
+import com.mikepenz.iconics.typeface.IIcon;
+import com.mikepenz.iconics.typeface.ITypeface;
+
+import java.util.Map;
+import java.util.TreeMap;
+
 import simple.runtime.android.MainActivity;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
 import simple.runtime.components.impl.android.视图组件;
+import simple.runtime.components.可视组件;
 
 /**
  * 字体注册与 Android 适配边界。
@@ -20,10 +29,14 @@ final class Support {
 
 	static final Map<String, ITypeface> fonts = new TreeMap<String, ITypeface>();
 	private static boolean ready;
+	private static final java.util.regex.Pattern ICON_MARKER = java.util.regex.Pattern.compile("\\{([^{}]+)\\}");
+
 	/**
 	 * 工具不创建实例。
 	 */
-	private Support() {}
+	private Support() {
+	}
+
 	/**
 	 * 只在 Android 主线程操作视图及字体注册。
 	 */
@@ -32,6 +45,7 @@ final class Support {
 			throw new 图标错误("请在主线程调用字体图标");
 		}
 	}
+
 	/**
 	 * 注册交付中的字体，保留字体包自身元数据。
 	 */
@@ -44,8 +58,27 @@ final class Support {
 		for (ITypeface f : Iconics.getRegisteredFonts(MainActivity.getContext())) {
 			fonts.put(f.getMappingPrefix(), f);
 		}
-		GenericFont f =
-				new GenericFont("XUIIconFont", "xuexiangjys", "xui", R.font.es4a_iconics_xui);
+		GenericFont f = new GenericFont("XUIIconFont", "xuexiangjys", "xui", R.font.es4a_iconics_xui) {
+			/**
+			 * 返回配套 XUI 字体的说明。
+			 *
+			 * @return 字体说明。
+			 */
+			@Override
+			public String getDescription() {
+				return "XUI字体图标库";
+			}
+
+			/**
+			 * 返回配套 XUI 字体的项目地址。
+			 *
+			 * @return 上游项目地址。
+			 */
+			@Override
+			public String getUrl() {
+				return "https://github.com/xuexiangjys/XUI";
+			}
+		};
 		f.registerIcon("file", (char) 58880);
 		f.registerIcon("chat", (char) 58881);
 		f.registerIcon("voice", (char) 58882);
@@ -68,15 +101,17 @@ final class Support {
 		fonts.put("xui", f);
 		ready = true;
 	}
+
 	/**
 	 * 获取独立 AppCompat 主题。
 	 *
 	 * @return 主题上下文。
 	 */
 	static android.content.Context context() {
-		return new androidx.appcompat.view.ContextThemeWrapper(
-				MainActivity.getContext(), androidx.appcompat.R.style.Theme_AppCompat_Light);
+		return new androidx.appcompat.view.ContextThemeWrapper(MainActivity.getContext(),
+				androidx.appcompat.R.style.Theme_AppCompat_Light);
 	}
+
 	/**
 	 * 验证前缀。
 	 *
@@ -87,6 +122,7 @@ final class Support {
 			throw new 图标错误("字体前缀须为三个小写字母或数字");
 		}
 	}
+
 	/**
 	 * 验证映射短名。
 	 *
@@ -97,6 +133,7 @@ final class Support {
 			throw new 图标错误("图标短名须为字母数字或下划线");
 		}
 	}
+
 	/**
 	 * 解析图标，拒绝缺字静默回退。
 	 *
@@ -118,6 +155,7 @@ final class Support {
 		}
 		return icon(f, n);
 	}
+
 	/**
 	 * 在字体内查找字符。
 	 *
@@ -136,6 +174,19 @@ final class Support {
 			throw new 图标错误("图标不存在：" + n);
 		}
 	}
+
+	/**
+	 * 在更新文本前检查其中的全部图标标记。
+	 *
+	 * @param text 待显示的非空引用文本。
+	 */
+	static void validateText(String text) {
+		java.util.regex.Matcher matcher = ICON_MARKER.matcher(text);
+		while (matcher.find()) {
+			resolve(matcher.group(1));
+		}
+	}
+
 	/**
 	 * 获取原生视图。
 	 *
@@ -152,6 +203,7 @@ final class Support {
 		}
 		return ((视图组件) target).getView();
 	}
+
 	/**
 	 * DIP 转像素。
 	 *
@@ -161,6 +213,79 @@ final class Support {
 	static int dp(int v) {
 		return Math.round(dpf(v));
 	}
+
+	/**
+	 * 创建保留图标边界内透明区域的绘制对象。
+	 *
+	 * @return 独立字体图标。
+	 */
+	static IconicsDrawable drawable() {
+		return new IconicsDrawable(MainActivity.getContext()) {
+			/**
+			 * 设置图标整体透明度，保留各颜色本身的透明通道。
+			 *
+			 * @param alpha 0 至 255 的整体透明度。
+			 */
+			@Override
+			public void setAlpha(int alpha) {
+				// 上游 setAlpha 会把透明背景画笔也变成实色，整体透明度在绘制层合成。
+				setCompatAlpha(alpha);
+			}
+
+			/**
+			 * 绘制图标并隔离透明度、镜像操作对画布的影响。
+			 *
+			 * @param canvas 目标画布。
+			 */
+			@Override
+			public void draw(Canvas canvas) {
+				int alpha = getAlpha();
+				if (alpha == 0) {
+					return;
+				}
+				int saved = alpha == 255 ? canvas.save() : canvas.saveLayerAlpha(null, alpha);
+				try {
+					super.draw(canvas);
+				} finally {
+					canvas.restoreToCount(saved);
+				}
+			}
+
+			/**
+			 * 图形笔画之外可能透明，不能按整个矩形完全不透明处理。
+			 *
+			 * @return 包含透明像素的类型。
+			 */
+			@Override
+			@SuppressWarnings("deprecation")
+			public int getOpacity() {
+				// 保留 Drawable 的抽象契约；上游只看画笔 alpha 会误报 OPAQUE。
+				return android.graphics.PixelFormat.TRANSLUCENT;
+			}
+		};
+	}
+
+	/**
+	 * 设置精确的总内边距，抵消上游描边 setter 对内边距的联动。
+	 *
+	 * @param image  独立字体图标。
+	 * @param pixels 最终像素内边距。
+	 * @throws 图标错误 描边补偿超出整数范围。
+	 */
+	static void padding(IconicsDrawable image, int pixels) {
+		long added = (image.getDrawContour() ? (long) image.getContourWidthPx() : 0L)
+				+ (image.getDrawBackgroundContour() ? (long) image.getBackgroundContourWidthPx() : 0L);
+		long base = (long) pixels - added;
+		if (base < Integer.MIN_VALUE || base > Integer.MAX_VALUE) {
+			throw new 图标错误("内边距与描边宽度超出整数范围");
+		}
+		if (image.getPaddingPx() != pixels) {
+			// 先改变当前值，再补偿，避免上游相等值短路跳过赋值。
+			image.setPaddingPx(pixels);
+			image.setPaddingPx((int) base);
+		}
+	}
+
 	/**
 	 * DIP 转浮点像素。
 	 *
@@ -185,7 +310,7 @@ final class Support {
 	 * @return 独立图标。
 	 */
 	static IconicsDrawable copy(IconicsDrawable source) {
-		IconicsDrawable out = new IconicsDrawable(MainActivity.getContext());
+		IconicsDrawable out = drawable();
 		out.setIcon(source.getIcon());
 		out.setIconText(source.getIconText());
 		out.setTypeface(source.getTypeface());
@@ -194,18 +319,20 @@ final class Support {
 		out.setBackgroundContourColorList(source.getBackgroundContourColorList());
 		out.setBackgroundColorList(source.getBackgroundColorList());
 		out.setContourColorList(source.getContourColorList());
-		out.setCompatAlpha(source.getCompatAlpha());
+		// 使用封装中的整体透明度，保留颜色自身的透明通道。
+		out.setAlpha(source.getAlpha());
 		out.setAutoMirroredCompat(source.getAutoMirroredCompat());
 		out.setSizeXPx(source.getSizeXPx());
 		out.setSizeYPx(source.getSizeYPx());
 		out.setRespectFontBounds(source.getRespectFontBounds());
-		out.setDrawContour(source.getDrawContour());
-		out.setDrawBackgroundContour(source.getDrawBackgroundContour());
 		out.setRoundedCornerRxPx(source.getRoundedCornerRxPx());
 		out.setRoundedCornerRyPx(source.getRoundedCornerRyPx());
-		out.setPaddingPx(source.getPaddingPx());
 		out.setContourWidthPx(source.getContourWidthPx());
 		out.setBackgroundContourWidthPx(source.getBackgroundContourWidthPx());
+		// 上游的描边宽度 setter 会开启描边，因此最后还原两个显式开关。
+		out.setDrawContour(source.getDrawContour());
+		out.setDrawBackgroundContour(source.getDrawBackgroundContour());
+		padding(out, source.getPaddingPx());
 		out.setIconOffsetXPx(source.getIconOffsetXPx());
 		out.setIconOffsetYPx(source.getIconOffsetYPx());
 		out.setShadowRadiusPx(source.getShadowRadiusPx());
@@ -230,8 +357,7 @@ final class Support {
 		view.setText(text.toString(), TextView.BufferType.SPANNABLE);
 		android.text.Spannable target = (android.text.Spannable) view.getText();
 		for (Object span : text.getSpans(0, text.length(), Object.class)) {
-			target.setSpan(
-					span, text.getSpanStart(span), text.getSpanEnd(span), text.getSpanFlags(span));
+			target.setSpan(span, text.getSpanStart(span), text.getSpanEnd(span), text.getSpanFlags(span));
 		}
 	}
 

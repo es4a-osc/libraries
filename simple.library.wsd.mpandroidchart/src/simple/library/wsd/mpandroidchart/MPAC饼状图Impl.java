@@ -1,10 +1,8 @@
 package simple.library.wsd.mpandroidchart;
 
 import android.content.Context;
-
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.PieChart;
-
 import simple.runtime.components.组件容器;
 
 /**

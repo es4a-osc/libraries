@@ -39,7 +39,8 @@ public final class CV日历布局Impl extends 视图组件 implements CV日历�
 				}
 				queryDepth++;
 				try {
-					simple.runtime.parameters.BooleanReferenceParameter result = new simple.runtime.parameters.BooleanReferenceParameter(defaultValue);
+					simple.runtime.parameters.BooleanReferenceParameter result = new simple.runtime.parameters.BooleanReferenceParameter(
+							defaultValue);
 					判断内容顶部(result);
 					return result.get();
 				} finally {

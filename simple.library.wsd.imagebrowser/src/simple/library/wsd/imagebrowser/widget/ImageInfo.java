@@ -8,7 +8,6 @@
 package simple.library.wsd.imagebrowser.widget;
 
 import android.graphics.RectF;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.widget.ImageView;

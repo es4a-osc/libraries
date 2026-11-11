@@ -20,8 +20,17 @@ import simple.runtime.annotations.SimpleObject;
 public final class XU下载回调 {
 
 	private final Handler main = new Handler(Looper.getMainLooper());
-	/** 核心接收精确字节数，不将 long 进度转为浮点比例再反推。 */
+
+	/**
+	 * 核心接收精确字节数，不将 long 进度转为浮点比例再反推。
+	 */
 	interface Progress {
+		/**
+		 * 接收下载器报告的精确字节进度。
+		 *
+		 * @param received 已接收字节数。
+		 * @param total    总字节数，未知时为零。
+		 */
 		void received(long received, long total);
 	}
 
@@ -44,19 +53,16 @@ public final class XU下载回调 {
 	 * 汇报下载进度，尚未校验时不会作为最终完成。
 	 *
 	 * @param received 已下载字节数。
-	 * @param total 总字节数，未知时为零。
+	 * @param total    总字节数，未知时为零。
 	 */
 	@SimpleFunction
 	public void 报告进度(final long received, final long total) {
 		if (received < 0 || total < 0 || (total > 0 && received > total)) {
 			throw new IllegalArgumentException("下载字节数无效。");
 		}
-		main.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!finished) {
-					progress.received(received, total);
-				}
+		main.post(() -> {
+			if (!finished) {
+				progress.received(received, total);
 			}
 		});
 	}
@@ -68,13 +74,10 @@ public final class XU下载回调 {
 	 */
 	@SimpleFunction
 	public void 提交文件(final String path) {
-		main.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!finished) {
-					finished = true;
-					callback.onSuccess(new File(path));
-				}
+		main.post(() -> {
+			if (!finished) {
+				finished = true;
+				callback.onSuccess(new File(path));
 			}
 		});
 	}
@@ -86,13 +89,10 @@ public final class XU下载回调 {
 	 */
 	@SimpleFunction
 	public void 报告失败(final String message) {
-		main.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!finished) {
-					finished = true;
-					callback.onError(new IOException(message));
-				}
+		main.post(() -> {
+			if (!finished) {
+				finished = true;
+				callback.onError(new IOException(message));
 			}
 		});
 	}

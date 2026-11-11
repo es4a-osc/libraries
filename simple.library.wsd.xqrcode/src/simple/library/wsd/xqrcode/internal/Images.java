@@ -9,6 +9,8 @@ import java.util.*;
 import simple.library.wsd.xqrcode.*;
 import simple.library.wsd.xqrcode.internal.zxing.*;
 import simple.library.wsd.xqrcode.internal.zxing.common.HybridBinarizer;
+import simple.library.wsd.xqrcode.internal.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import simple.library.wsd.xqrcode.internal.zxing.qrcode.encoder.Encoder;
 import simple.library.wsd.xqrcode.vendor.util.QRCodeProduceUtils;
 
 /**
@@ -176,7 +178,7 @@ public final class Images {
 			int width = options.图像宽度() == 0 ? options.尺寸() : options.图像宽度();
 			int height = options.图像高度() == 0 ? options.尺寸() : options.图像高度();
 			int side = Math.min(width, height);
-			code = QRCodeProduceUtils.newBuilder(text).setSize(side).setMargin(options.边距())
+			code = QRCodeProduceUtils.newBuilder(text).setSize(side).setMargin(quietMargin(text, side, options))
 				.setDataDotScale(options.数据点比例()).setColorDark(options.深色()).setColorLight(options.浅色())
 				.setBackgroundImage(background).setWhiteMargin(options.白色边缘()).setAutoColor(options.自动取色())
 				.setBinarize(options.二值化()).setBinarizeThreshold(options.二值化阈值()).build();
@@ -201,6 +203,32 @@ public final class Images {
 					image.recycle();
 				}
 			}
+		}
+	}
+
+	/**
+	 * 按与上游相同的字符集和纠错级别计算码点数，使静区随最终图像尺寸缩放。
+	 *
+	 * @param text 二维码内容。
+	 * @param side 正方形二维码图像边长。
+	 * @param options 本次生成配置。
+	 * @return 满足像素边距和静区要求的实际像素边距。
+	 * @throws IOException 内容无法编码。
+	 */
+	private static int quietMargin(String text, int side, XQRC二维码配置 options) throws IOException {
+		int quiet = options.静区模块数();
+		if (quiet == 0) {
+			return options.边距();
+		}
+		Map<EncodeHintType, Object> hints = new EnumMap<>(EncodeHintType.class);
+		hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+		try {
+			int modules = Encoder.encode(text, ErrorCorrectionLevel.H, hints).getMatrix().getWidth();
+			int total = modules + 2 * quiet;
+			int margin = (side * quiet + total - 1) / total;
+			return Math.max(options.边距(), margin);
+		} catch (WriterException error) {
+			throw new IOException("内容无法编码为二维码", error);
 		}
 	}
 
@@ -281,10 +309,8 @@ public final class Images {
 			for (int rotation = 0; rotation < 4; rotation++) {
 				int width = image.getWidth();
 				int height = image.getHeight();
-				int[] pixels = new int[width * height];
-				image.getPixels(pixels, 0, width, 0, 0, width, height);
 				try {
-					Result result = decode(new RGBLuminanceSource(width, height, pixels), options);
+					Result result = decodeImage(image, options);
 					return XQRC识别结果.from(result, options.返回识别图像() ? png(image) : new byte[0]);
 				} catch (NotFoundException error) {
 					if (rotation == 3) {
@@ -300,6 +326,62 @@ public final class Images {
 			throw new IOException("没有识别到二维码");
 		} finally {
 			image.recycle();
+		}
+	}
+
+	/**
+	 * 在原图和逐级缩小图上解码，避免大尺寸规则图像的细缝干扰局部二值化。
+	 * 缩小图命中时将结果点映回本次方向的原图，返回图像和坐标仍使用同一尺度。
+	 *
+	 * @param image 已按方向调整的位图，仍由调用方持有。
+	 * @param options 本次识别配置。
+	 * @return 包含原图坐标及原始元数据的识别结果。
+	 * @throws NotFoundException 所有采样尺度均未识别到码。
+	 */
+	private static Result decodeImage(Bitmap image, XQRC扫码配置 options) throws NotFoundException {
+		Bitmap candidate = image;
+		try {
+			while (true) {
+				int width = candidate.getWidth();
+				int height = candidate.getHeight();
+				int[] pixels = new int[width * height];
+				candidate.getPixels(pixels, 0, width, 0, 0, width, height);
+				try {
+					Result result = decode(new RGBLuminanceSource(width, height, pixels), options);
+					if (candidate == image) {
+						return result;
+					}
+					ResultPoint[] points = result.getResultPoints();
+					ResultPoint[] mapped = null;
+					if (points != null) {
+						mapped = new ResultPoint[points.length];
+						for (int i = 0; i < points.length; i++) {
+							if (points[i] != null) {
+								mapped[i] = new ResultPoint(points[i].getX() * image.getWidth() / width,
+										points[i].getY() * image.getHeight() / height);
+							}
+						}
+					}
+					Result restored = new Result(result.getText(), result.getRawBytes(), result.getNumBits(),
+							mapped, result.getBarcodeFormat(), result.getTimestamp());
+					restored.putAllMetadata(result.getResultMetadata());
+					return restored;
+				} catch (NotFoundException error) {
+					if (Math.max(width, height) <= 320) {
+						throw error;
+					}
+				}
+				Bitmap smaller = Bitmap.createScaledBitmap(candidate, Math.max(1, (width + 1) / 2),
+						Math.max(1, (height + 1) / 2), false);
+				if (candidate != image) {
+					candidate.recycle();
+				}
+				candidate = smaller;
+			}
+		} finally {
+			if (candidate != image) {
+				candidate.recycle();
+			}
 		}
 	}
 }

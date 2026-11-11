@@ -1,7 +1,6 @@
 package simple.library.wsd.mpandroidchart;
 
 import android.graphics.RectF;
-
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -18,8 +17,7 @@ import com.github.mikephil.charting.utils.Transformer;
 import com.github.mikephil.charting.utils.Utils;
 
 /**
- * 按实际柱条矩形选择数据，保留直接点击组合图中折线或散点的精确命中。
- * 避免上游仅比较数据点距离时，将柱条内部点击分配给附近的其它数据组。
+ * 按实际柱条矩形选择数据，保留直接点击组合图中折线或散点的精确命中。 避免上游仅比较数据点距离时，将柱条内部点击分配给附近的其它数据组。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -31,7 +29,7 @@ final class BarSelectionHighlighter extends ChartHighlighter<BarLineChartBase<?>
 	/**
 	 * 保存上游选择器，未命中柱条时仍由其处理其它图形。
 	 *
-	 * @param chart 当前直角坐标图表。
+	 * @param chart    当前直角坐标图表。
 	 * @param fallback 图表原有选择器。
 	 */
 	private BarSelectionHighlighter(BarLineChartBase<?> chart, IHighlighter fallback) {
@@ -80,26 +78,36 @@ final class BarSelectionHighlighter extends ChartHighlighter<BarLineChartBase<?>
 			Transformer transformer = mChart.getTransformer(set.getAxisDependency());
 			MPPointD values = transformer.getValuesByTouchPoint(x, y);
 			float category = (float) (horizontal ? values.y : values.x);
+			float touchedValue = (float) (horizontal ? values.x : values.y);
 			MPPointD.recycleInstance(values);
 			BarEntry entry = set.getEntryForXValue(category, Float.NaN, DataSet.Rounding.CLOSEST);
 			if (entry == null || set.getEntryIndex(entry) >= set.getEntryCount() * mChart.getAnimator().getPhaseX()) {
 				continue;
 			}
 			float halfWidth = data.getBarWidth() / 2;
-			float value = entry.getY() * mChart.getAnimator().getPhaseY();
+			float phase = mChart.getAnimator().getPhaseY();
+			float low = entry.isStacked() ? -entry.getNegativeSum() * phase : Math.min(0, entry.getY() * phase);
+			float high = entry.isStacked() ? entry.getPositiveSum() * phase : Math.max(0, entry.getY() * phase);
 			if (horizontal) {
-				bounds.set(Math.min(0, value), entry.getX() + halfWidth,
-					Math.max(0, value), entry.getX() - halfWidth);
+				bounds.set(low, entry.getX() + halfWidth, high, entry.getX() - halfWidth);
 			} else {
-				bounds.set(entry.getX() - halfWidth, Math.max(0, value),
-					entry.getX() + halfWidth, Math.min(0, value));
+				bounds.set(entry.getX() - halfWidth, high, entry.getX() + halfWidth, low);
 			}
 			transformer.rectValueToPixel(bounds);
 			if (bounds.contains(x, y)) {
 				MPPointD pixel = transformer.getPixelForValues(horizontal ? entry.getY() : entry.getX(),
-					horizontal ? entry.getX() : entry.getY());
-				Highlight result = new Highlight(entry.getX(), entry.getY(), (float) pixel.x, (float) pixel.y,
-					index, set.getAxisDependency());
+						horizontal ? entry.getX() : entry.getY());
+				int stack = -1;
+				if (entry.isStacked() && phase > 0) {
+					for (int layer = 0; layer < entry.getRanges().length; layer++) {
+						if (entry.getRanges()[layer].contains(touchedValue / phase)) {
+							stack = layer;
+							break;
+						}
+					}
+				}
+				Highlight result = new Highlight(entry.getX(), entry.getY(), (float) pixel.x, (float) pixel.y, index,
+						stack, set.getAxisDependency());
 				MPPointD.recycleInstance(pixel);
 				result.setDataIndex(dataIndex);
 				return result;

@@ -74,7 +74,7 @@
 						{
 							"name": "反转",
 							"static": true,
-							"description": "按上游规则反转文本。",
+							"description": "反转文本并保留完整的 Unicode 代理对；组合字符不作字素聚合。",
 							"params": [
 								{
 									"name": "文本",
@@ -199,6 +199,68 @@
 								}
 							],
 							"return": "双精度小数型"
+						},
+						{
+							"name": "到逻辑",
+							"static": true,
+							"description": "转换 true/false 文本，不能转换时返回默认值。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								},
+								{
+									"name": "默认值",
+									"type": "逻辑型",
+									"description": "默认值。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否整数",
+							"static": true,
+							"description": "判断文本是否符合上游整数规则。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否数值",
+							"static": true,
+							"description": "判断文本是否符合上游数值规则。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "连接",
+							"static": true,
+							"description": "按分隔符连接文本数组，空数组返回空文本。",
+							"params": [
+								{
+									"name": "文本数组",
+									"type": "文本型()",
+									"description": "文本数组。"
+								},
+								{
+									"name": "分隔符",
+									"type": "文本型",
+									"description": "分隔符。"
+								}
+							],
+							"return": "文本型"
 						}
 					],
 					"icon": "icons/text-spellcheck.svg"
@@ -464,7 +526,7 @@
 						{
 							"name": "HTML编码",
 							"static": true,
-							"description": "使用上游规则进行HTML编码；URL 文本使用 UTF-8。",
+							"description": "将文本中的 HTML 特殊字符编码为实体。",
 							"params": [
 								{
 									"name": "文本",
@@ -499,7 +561,7 @@
 						{
 							"name": "MD5",
 							"static": true,
-							"description": "计算 UTF-8 文本的 MD5 大写十六进制摘要，支持空文本。",
+							"description": "计算 UTF-8 文本的大写十六进制 MD5 摘要，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -512,7 +574,7 @@
 						{
 							"name": "SHA1",
 							"static": true,
-							"description": "计算 UTF-8 文本的 SHA1 大写十六进制摘要，支持空文本。",
+							"description": "计算 UTF-8 文本的大写十六进制 SHA1 摘要，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -525,7 +587,7 @@
 						{
 							"name": "SHA256",
 							"static": true,
-							"description": "计算 UTF-8 文本的 SHA256 大写十六进制摘要，支持空文本。",
+							"description": "计算 UTF-8 文本的大写十六进制 SHA256 摘要，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -538,7 +600,7 @@
 						{
 							"name": "SHA512",
 							"static": true,
-							"description": "计算 UTF-8 文本的 SHA512 大写十六进制摘要，支持空文本。",
+							"description": "计算 UTF-8 文本的大写十六进制 SHA512 摘要，支持空文本。",
 							"params": [
 								{
 									"name": "文本",
@@ -593,6 +655,73 @@
 									"name": "路径",
 									"type": "文本型",
 									"description": "路径。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "SHA224",
+							"static": true,
+							"description": "计算 UTF-8 文本的 SHA-224 大写十六进制摘要。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "SHA384",
+							"static": true,
+							"description": "计算 UTF-8 文本的 SHA-384 大写十六进制摘要。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "字节集摘要",
+							"static": true,
+							"description": "计算字节集的大写十六进制摘要；空数据有效，算法不可用时抛出错误。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "算法",
+									"type": "文本型",
+									"description": "如 MD5、SHA-1、SHA-224、SHA-256、SHA-384、SHA-512。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "字节集HMAC",
+							"static": true,
+							"description": "计算任意二进制消息的 HMAC；返回大写十六进制，失败抛出错误。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "密钥",
+									"type": "字节型()",
+									"description": "可为空字节集。"
+								},
+								{
+									"name": "算法",
+									"type": "文本型",
+									"description": "如 HmacMD5、HmacSHA1、HmacSHA224、HmacSHA256、HmacSHA384、HmacSHA512。"
 								}
 							],
 							"return": "文本型"
@@ -689,6 +818,119 @@
 							"name": "取友好间隔",
 							"static": true,
 							"description": "取得相对当前时间的中文时间描述。",
+							"params": [
+								{
+									"name": "时间戳",
+									"type": "长整数型",
+									"description": "时间戳。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "是否闰年",
+							"static": true,
+							"description": "按公历判断闰年。",
+							"params": [
+								{
+									"name": "年份",
+									"type": "整数型",
+									"description": "年份。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "偏移",
+							"static": true,
+							"description": "按指定时区的日历字段偏移，月份末日按日历规则调整。",
+							"params": [
+								{
+									"name": "时间戳",
+									"type": "长整数型",
+									"description": "时间戳。"
+								},
+								{
+									"name": "字段",
+									"type": "整数型",
+									"description": "1=年，2=月，5=日，11=小时，12=分钟，13=秒，14=毫秒。"
+								},
+								{
+									"name": "数量",
+									"type": "整数型",
+									"description": "可为负数。"
+								},
+								{
+									"name": "时区",
+									"type": "文本型",
+									"description": "时区。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "取间隔",
+							"static": true,
+							"description": "计算第一时间减第二时间后按单位截断的有符号间隔；溢出拒绝。",
+							"params": [
+								{
+									"name": "第一时间",
+									"type": "长整数型",
+									"description": "第一时间。"
+								},
+								{
+									"name": "第二时间",
+									"type": "长整数型",
+									"description": "第二时间。"
+								},
+								{
+									"name": "单位毫秒",
+									"type": "长整数型",
+									"description": "必须大于零，例如一天为86400000。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "是否同一天",
+							"static": true,
+							"description": "按指定时区比较两个时间戳是否属于同一公历日。",
+							"params": [
+								{
+									"name": "第一时间",
+									"type": "长整数型",
+									"description": "第一时间。"
+								},
+								{
+									"name": "第二时间",
+									"type": "长整数型",
+									"description": "第二时间。"
+								},
+								{
+									"name": "时区",
+									"type": "文本型",
+									"description": "时区。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "取生肖",
+							"static": true,
+							"description": "按设备时区取得生肖。",
+							"params": [
+								{
+									"name": "时间戳",
+									"type": "长整数型",
+									"description": "时间戳。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取星座",
+							"static": true,
+							"description": "按设备时区取得星座。",
 							"params": [
 								{
 									"name": "时间戳",
@@ -1169,6 +1411,60 @@
 								}
 							],
 							"return": "逻辑型"
+						},
+						{
+							"name": "取键名",
+							"static": true,
+							"description": "返回配置键名的稳定排序快照。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "配置名。"
+								}
+							],
+							"return": "文本型()"
+						},
+						{
+							"name": "写文本集",
+							"static": true,
+							"description": "保存去重后的文本集合；同步提交并返回实际结果。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "配置名。"
+								},
+								{
+									"name": "键名",
+									"type": "文本型",
+									"description": "键名。"
+								},
+								{
+									"name": "文本数组",
+									"type": "文本型()",
+									"description": "文本数组。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "读文本集",
+							"static": true,
+							"description": "读取文本集合的排序快照；键不存在返回空数组。",
+							"params": [
+								{
+									"name": "配置名",
+									"type": "文本型",
+									"description": "配置名。"
+								},
+								{
+									"name": "键名",
+									"type": "文本型",
+									"description": "键名。"
+								}
+							],
+							"return": "文本型()"
 						}
 					],
 					"icon": "icons/adjustments-horizontal.svg"
@@ -1355,14 +1651,14 @@
 						{
 							"name": "取缓存目录",
 							"static": true,
-							"description": "取得应用私有目录的绝对路径，不需要存储权限。",
+							"description": "取得应用私有缓存目录的绝对路径，不需要存储权限。",
 							"params": [],
 							"return": "文本型"
 						},
 						{
 							"name": "是否存在",
 							"static": true,
-							"description": "按给定路径是否存在；删除目录时递归删除，请先确认目标。",
+							"description": "判断路径指向的文件或目录是否存在。",
 							"params": [
 								{
 									"name": "路径",
@@ -1375,7 +1671,7 @@
 						{
 							"name": "是否文件",
 							"static": true,
-							"description": "按给定路径是否文件；删除目录时递归删除，请先确认目标。",
+							"description": "判断路径是否为普通文件。",
 							"params": [
 								{
 									"name": "路径",
@@ -1388,7 +1684,7 @@
 						{
 							"name": "是否目录",
 							"static": true,
-							"description": "按给定路径是否目录；删除目录时递归删除，请先确认目标。",
+							"description": "判断路径是否为目录。",
 							"params": [
 								{
 									"name": "路径",
@@ -1401,7 +1697,7 @@
 						{
 							"name": "创建目录",
 							"static": true,
-							"description": "按给定路径创建目录；删除目录时递归删除，请先确认目标。",
+							"description": "创建目录及缺失的父目录；目录已存在也视为成功。",
 							"params": [
 								{
 									"name": "路径",
@@ -1414,7 +1710,7 @@
 						{
 							"name": "创建文件",
 							"static": true,
-							"description": "按给定路径创建文件；删除目录时递归删除，请先确认目标。",
+							"description": "创建文件及缺失的父目录；普通文件已存在也视为成功。",
 							"params": [
 								{
 									"name": "路径",
@@ -1497,6 +1793,111 @@
 								}
 							],
 							"return": "文本型()"
+						},
+						{
+							"name": "读字节集",
+							"static": true,
+							"description": "读取完整二进制文件；大文件应使用流式接口，读取失败抛出错误。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "写字节集",
+							"static": true,
+							"description": "写入二进制数据，自动创建父目录；假为覆盖，真为追加。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								},
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "追加",
+									"type": "逻辑型",
+									"description": "追加。"
+								}
+							]
+						},
+						{
+							"name": "取文件名",
+							"static": true,
+							"description": "取得路径末尾的文件名。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取扩展名",
+							"static": true,
+							"description": "取得不含点号的文件扩展名。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取父目录",
+							"static": true,
+							"description": "取得路径的父目录文本。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取修改时间",
+							"static": true,
+							"description": "取得文件最后修改的毫秒时间戳；不存在返回0。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								}
+							],
+							"return": "长整数型"
+						},
+						{
+							"name": "重命名",
+							"static": true,
+							"description": "在原目录内重命名文件或目录，目标存在时返回假。",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "路径。"
+								},
+								{
+									"name": "新名称",
+									"type": "文本型",
+									"description": "仅为文件名，不能包含路径分隔符。"
+								}
+							],
+							"return": "逻辑型"
 						}
 					],
 					"icon": "icons/folder.svg"
@@ -1659,7 +2060,7 @@
 						{
 							"name": "是否调试版",
 							"static": true,
-							"description": "查询当前应用的否调试版。",
+							"description": "判断当前应用是否为调试版。",
 							"params": [],
 							"return": "逻辑型"
 						},
@@ -2181,7 +2582,7 @@
 						{
 							"name": "取生日",
 							"static": true,
-							"description": "按 XUtil 本地规则取生日身份证号码；提取信息前应先校验。",
+							"description": "提取已校验身份证的出生日期。",
 							"params": [
 								{
 									"name": "文本",
@@ -2194,7 +2595,7 @@
 						{
 							"name": "取性别",
 							"static": true,
-							"description": "按 XUtil 本地规则取性别身份证号码；提取信息前应先校验。",
+							"description": "提取已校验身份证的性别。",
 							"params": [
 								{
 									"name": "文本",
@@ -2207,7 +2608,7 @@
 						{
 							"name": "取省份",
 							"static": true,
-							"description": "按 XUtil 本地规则取省份身份证号码；提取信息前应先校验。",
+							"description": "提取已校验身份证的省份。",
 							"params": [
 								{
 									"name": "文本",
@@ -2220,7 +2621,7 @@
 						{
 							"name": "脱敏",
 							"static": true,
-							"description": "按 XUtil 本地规则脱敏身份证号码；提取信息前应先校验。",
+							"description": "按上游规则隐藏身份证中间部分。",
 							"params": [
 								{
 									"name": "文本",
@@ -2260,7 +2661,7 @@
 						{
 							"name": "查找",
 							"static": true,
-							"description": "返回子字节集首次出现的零基索引；不存在返回 -1。",
+							"description": "返回子字节集首次出现的零基索引；不存在返回 -1，空模式返回0。",
 							"params": [
 								{
 									"name": "数据",
@@ -2278,7 +2679,7 @@
 						{
 							"name": "反向查找",
 							"static": true,
-							"description": "返回子字节集最后出现的零基索引；不存在返回 -1。",
+							"description": "返回子字节集最后出现的零基索引；不存在返回 -1，空模式返回数据长度。",
 							"params": [
 								{
 									"name": "数据",
@@ -2315,6 +2716,155 @@
 								}
 							],
 							"return": "字节型()"
+						},
+						{
+							"name": "到十六进制",
+							"static": true,
+							"description": "转换为大写十六进制，空字节集返回空文本。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "从十六进制",
+							"static": true,
+							"description": "解析偶数位十六进制，空文本返回空字节集；非法字符拒绝。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "文本。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "短整数到字节集",
+							"static": true,
+							"description": "将短整数编码为固定 2 字节的二进制。",
+							"params": [
+								{
+									"name": "数值",
+									"type": "整数型",
+									"description": "数值。"
+								},
+								{
+									"name": "小端序",
+									"type": "逻辑型",
+									"description": "真为低字节在前；假为大端序。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "读短整数",
+							"static": true,
+							"description": "从完整范围读取有符号短整数，不足 2 字节时拒绝。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "偏移",
+									"type": "整数型",
+									"description": "零基字节偏移。"
+								},
+								{
+									"name": "小端序",
+									"type": "逻辑型",
+									"description": "小端序。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "整数到字节集",
+							"static": true,
+							"description": "将整数编码为固定 4 字节的二进制。",
+							"params": [
+								{
+									"name": "数值",
+									"type": "整数型",
+									"description": "数值。"
+								},
+								{
+									"name": "小端序",
+									"type": "逻辑型",
+									"description": "真为低字节在前；假为大端序。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "读整数",
+							"static": true,
+							"description": "从完整范围读取有符号整数，不足 4 字节时拒绝。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "偏移",
+									"type": "整数型",
+									"description": "零基字节偏移。"
+								},
+								{
+									"name": "小端序",
+									"type": "逻辑型",
+									"description": "小端序。"
+								}
+							],
+							"return": "整数型"
+						},
+						{
+							"name": "长整数到字节集",
+							"static": true,
+							"description": "将长整数编码为固定 8 字节的二进制。",
+							"params": [
+								{
+									"name": "数值",
+									"type": "长整数型",
+									"description": "数值。"
+								},
+								{
+									"name": "小端序",
+									"type": "逻辑型",
+									"description": "真为低字节在前；假为大端序。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "读长整数",
+							"static": true,
+							"description": "从完整范围读取有符号长整数，不足 8 字节时拒绝。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "偏移",
+									"type": "整数型",
+									"description": "零基字节偏移。"
+								},
+								{
+									"name": "小端序",
+									"type": "逻辑型",
+									"description": "小端序。"
+								}
+							],
+							"return": "长整数型"
 						}
 					],
 					"icon": "icons/file-code.svg"
@@ -2489,7 +3039,7 @@
 						{
 							"name": "打开拨号",
 							"static": true,
-							"description": "打开系统拨号界面供用户确认，不会直接拨出；无可处理应用时返回假。",
+							"description": "打开系统拨号界面供用户确认；不会直接拨出电话。",
 							"params": [
 								{
 									"name": "号码",
@@ -2518,7 +3068,7 @@
 						{
 							"name": "拨打",
 							"static": true,
-							"description": "直接请求拨号；未授权抛出异常，无处理应用时返回假；真仅表示请求已发出，不表示接通。",
+							"description": "直接请求拨号；未授权抛出异常，需设备支持通话。",
 							"params": [
 								{
 									"name": "号码",
@@ -2530,6 +3080,70 @@
 						}
 					],
 					"icon": "icons/phone-call.svg"
+				},
+				{
+					"name": "XU加密",
+					"description": "AES、DES、DESede 对称加解密；使用字节密钥和显式变换及初始向量。",
+					"kind": "object",
+					"type": "simple.library.wsd.xutil.XU加密",
+					"functions": [
+						{
+							"name": "加密",
+							"static": true,
+							"description": "加密二进制数据；GCM 返回密文及128位认证标签。同一密钥的 GCM nonce 不可重复。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "密钥",
+									"type": "字节型()",
+									"description": "AES为16/24/32字节；DES为8字节；DESede为24字节。"
+								},
+								{
+									"name": "变换",
+									"type": "文本型",
+									"description": "如 AES/CBC/PKCS5Padding、AES/GCM/NoPadding；DES及DESede仅用于旧协议兼容。"
+								},
+								{
+									"name": "初始向量",
+									"type": "字节型()",
+									"description": "CBC须为分组长度；GCM须为12字节nonce；ECB传空字节集。"
+								}
+							],
+							"return": "字节型()"
+						},
+						{
+							"name": "解密",
+							"static": true,
+							"description": "解密二进制数据；填充、密钥或 GCM 认证失败时抛出错误。",
+							"params": [
+								{
+									"name": "数据",
+									"type": "字节型()",
+									"description": "数据。"
+								},
+								{
+									"name": "密钥",
+									"type": "字节型()",
+									"description": "AES为16/24/32字节；DES为8字节；DESede为24字节。"
+								},
+								{
+									"name": "变换",
+									"type": "文本型",
+									"description": "如 AES/CBC/PKCS5Padding、AES/GCM/NoPadding；DES及DESede仅用于旧协议兼容。"
+								},
+								{
+									"name": "初始向量",
+									"type": "字节型()",
+									"description": "CBC须为分组长度；GCM须为12字节nonce；ECB传空字节集。"
+								}
+							],
+							"return": "字节型()"
+						}
+					]
 				}
 			]
 		}

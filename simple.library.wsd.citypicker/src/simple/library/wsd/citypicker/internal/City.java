@@ -2,6 +2,8 @@ package simple.library.wsd.citypicker.internal;
 
 import java.util.Locale;
 
+import simple.library.wsd.citypicker.CP城市错误;
+
 /**
  * 一条独立城市记录；沿用 CityPicker 1.0.2 的名称、省份、拼音及代码语义。
  *
@@ -18,14 +20,14 @@ public final class City {
 	/**
 	 * 创建不可变城市记录，不替调用方推断拼音或城市代码。
 	 *
-	 * @param name 非空城市名称。
+	 * @param name     非空城市名称。
 	 * @param province 省份。
-	 * @param pinyin 完整拼音，用于搜索及分组。
-	 * @param code 数据源中的城市代码。
+	 * @param pinyin   完整拼音，用于搜索及分组。
+	 * @param code     数据源中的城市代码。
 	 */
 	public City(String name, String province, String pinyin, String code) {
 		if (name == null || name.trim().isEmpty() || province == null || pinyin == null || code == null) {
-			throw new IllegalArgumentException("城市名称不能为空，其余字段不能为 null。");
+			throw new CP城市错误("城市名称不能为空，其余字段不能为 null。");
 		}
 		this.name = name;
 		this.province = province;

@@ -12,6 +12,9 @@ import java.io.IOException;
  */
 final class UpdateFiles {
 
+	/**
+	 * 文件复制工具不创建实例。
+	 */
 	private UpdateFiles() {
 	}
 

@@ -6,7 +6,7 @@ import simple.runtime.annotations.SimpleObject;
 import simple.runtime.annotations.SimpleProperty;
 
 /**
- * 节点的动作只读描述；仅表达元数据，不修改真实界面。
+ * 节点动作或系统全局动作的只读描述；仅表达元数据，不修改真实界面。
  *
  * @author 树先生 xhwsd@qq.com
  */

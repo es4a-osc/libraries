@@ -1,7 +1,6 @@
 package simple.library.wsd.xui;
 
 import android.view.View;
-import android.widget.ImageView;
 
 import com.xuexiang.xui.widget.imageview.IconImageView;
 
@@ -44,19 +43,8 @@ public final class XUI图标图片Impl extends XUI视图组件基类 implements 
 	}
 
 	@Override
-	public void 置图片(String image) {
-		view.setImageDrawable(ComponentSupport.getDrawable(image));
-	}
-
-	@Override
 	public void 置图标图像(String image) {
 		view.setIconDrawable(ComponentSupport.getDrawable(image));
-	}
-
-	@Override
-	public void 置图片缩放模式(int mode) {
-		ComponentSupport.validateIndex(mode, ImageView.ScaleType.values().length);
-		view.setScaleType(ImageView.ScaleType.values()[mode]);
 	}
 
 }

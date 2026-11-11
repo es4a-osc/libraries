@@ -1,6 +1,6 @@
 # CP城市选择库
 
-基于 [CityPicker](https://github.com/xuexiangjys/CityPicker) 封装，提供城市选择弹层，支持中文或拼音搜索、字母索引、热门城市、自定义数据和定位结果回填。
+基于 [CityPicker](https://github.com/xuexiangjys/CityPicker) 封装，提供城市选择弹层，支持中文或拼音搜索、字母索引、热门城市、主题与动画、自定义数据、定位回填和自定义异步搜索。
 
 需要 Android 7.0（API 24）及以上及 AndroidX，在所属窗口显示后于界面线程使用。定位由应用自行实现。
 

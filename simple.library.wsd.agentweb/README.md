@@ -1,6 +1,6 @@
 # AW浏览器库
 
-基于 [AgentWeb](https://github.com/Justson/AgentWeb) 封装，提供嵌入式网页浏览、JavaScript 交互、Cookie、文件上传下载和视频全屏。
+基于 [AgentWeb](https://github.com/Justson/AgentWeb) 和 [Downloader](https://github.com/Justson/Downloader) 封装，提供嵌入式网页浏览、数据加载、请求头、JavaScript 交互、Cookie、文件上传下载和视频全屏。
 
 需要 Android 7.0（API 24）及以上、AndroidX 和 AppCompat 主题，组件在界面线程使用。切换窗口会暂停浏览并取消未完成的文件选择和下载。
 

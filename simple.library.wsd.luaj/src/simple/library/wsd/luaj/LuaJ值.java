@@ -1,7 +1,6 @@
 package simple.library.wsd.luaj;
 
 import org.luaj.vm2.LuaValue;
-
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 import simple.runtime.variants.Variant;
@@ -21,7 +20,7 @@ public class LuaJ值 {
 	 * 持有所属实例与底层值。
 	 *
 	 * @param context 所属实例。
-	 * @param value 有效底层值。
+	 * @param value   有效底层值。
 	 */
 	LuaJ值(LuaJContext context, LuaValue value) {
 		this.context = context;
@@ -35,13 +34,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public int 取类型() {
-		return context.perform(
-				new LuaJContext.Action<Integer>() {
-					@Override
-					public Integer run() throws Exception {
-						return value.type();
-					}
-				});
+		return context.perform(() -> value.type());
 	}
 
 	/**
@@ -51,13 +44,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public String 取类型名() {
-		return context.perform(
-				new LuaJContext.Action<String>() {
-					@Override
-					public String run() throws Exception {
-						return value.typename();
-					}
-				});
+		return context.perform(() -> value.typename());
 	}
 
 	/**
@@ -67,13 +54,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否为空() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.isnil();
-					}
-				});
+		return context.perform(() -> value.isnil());
 	}
 
 	/**
@@ -83,13 +64,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否逻辑() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.isboolean();
-					}
-				});
+		return context.perform(() -> value.isboolean());
 	}
 
 	/**
@@ -99,13 +74,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否数值() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.isnumber();
-					}
-				});
+		return context.perform(() -> value.isnumber());
 	}
 
 	/**
@@ -115,13 +84,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否整数() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.isint();
-					}
-				});
+		return context.perform(() -> value.isint());
 	}
 
 	/**
@@ -131,13 +94,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否文本() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.isstring();
-					}
-				});
+		return context.perform(() -> value.isstring());
 	}
 
 	/**
@@ -147,13 +104,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否为表() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.istable();
-					}
-				});
+		return context.perform(() -> value.istable());
 	}
 
 	/**
@@ -163,13 +114,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否函数() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.isfunction();
-					}
-				});
+		return context.perform(() -> value.isfunction());
 	}
 
 	/**
@@ -179,13 +124,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否协程() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.isthread();
-					}
-				});
+		return context.perform(() -> value.isthread());
 	}
 
 	/**
@@ -195,13 +134,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否用户数据() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.isuserdata();
-					}
-				});
+		return context.perform(() -> value.isuserdata());
 	}
 
 	/**
@@ -211,13 +144,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 到逻辑() {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.toboolean();
-					}
-				});
+		return context.perform(() -> value.toboolean());
 	}
 
 	/**
@@ -227,13 +154,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public int 到整数() {
-		return context.perform(
-				new LuaJContext.Action<Integer>() {
-					@Override
-					public Integer run() throws Exception {
-						return value.checkint();
-					}
-				});
+		return context.perform(() -> value.checkint());
 	}
 
 	/**
@@ -243,13 +164,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public long 到长整数() {
-		return context.perform(
-				new LuaJContext.Action<Long>() {
-					@Override
-					public Long run() throws Exception {
-						return value.checklong();
-					}
-				});
+		return context.perform(() -> value.checklong());
 	}
 
 	/**
@@ -259,13 +174,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public double 到小数() {
-		return context.perform(
-				new LuaJContext.Action<Double>() {
-					@Override
-					public Double run() throws Exception {
-						return value.checkdouble();
-					}
-				});
+		return context.perform(() -> value.checkdouble());
 	}
 
 	/**
@@ -275,13 +184,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public String 到文本() {
-		return context.perform(
-				new LuaJContext.Action<String>() {
-					@Override
-					public String run() throws Exception {
-						return LuaJContext.display(value);
-					}
-				});
+		return context.perform(() -> LuaJContext.display(value));
 	}
 
 	/**
@@ -291,13 +194,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public byte[] 到字节集() {
-		return context.perform(
-				new LuaJContext.Action<byte[]>() {
-					@Override
-					public byte[] run() throws Exception {
-						return LuaJContext.bytes(value);
-					}
-				});
+		return context.perform(() -> LuaJContext.bytes(value));
 	}
 
 	/**
@@ -307,13 +204,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public Object 到对象() {
-		return context.perform(
-				new LuaJContext.Action<Object>() {
-					@Override
-					public Object run() throws Exception {
-						return value.checkuserdata();
-					}
-				});
+		return context.perform(() -> value.checkuserdata());
 	}
 
 	/**
@@ -323,13 +214,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ表 作为表() {
-		return context.perform(
-				new LuaJContext.Action<LuaJ表>() {
-					@Override
-					public LuaJ表 run() throws Exception {
-						return new LuaJ表(context, value.checktable());
-					}
-				});
+		return context.perform(() -> new LuaJ表(context, value.checktable()));
 	}
 
 	/**
@@ -339,13 +224,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ函数 作为函数() {
-		return context.perform(
-				new LuaJContext.Action<LuaJ函数>() {
-					@Override
-					public LuaJ函数 run() throws Exception {
-						return (LuaJ函数) context.wrap(value.checkfunction());
-					}
-				});
+		return context.perform(() -> (LuaJ函数) context.wrap(value.checkfunction()));
 	}
 
 	/**
@@ -355,13 +234,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ协程 作为协程() {
-		return context.perform(
-				new LuaJContext.Action<LuaJ协程>() {
-					@Override
-					public LuaJ协程 run() throws Exception {
-						return new LuaJ协程(context, value.checkthread());
-					}
-				});
+		return context.perform(() -> new LuaJ协程(context, value.checkthread()));
 	}
 
 	/**
@@ -371,13 +244,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public int 取长度() {
-		return context.perform(
-				new LuaJContext.Action<Integer>() {
-					@Override
-					public Integer run() throws Exception {
-						return value.length();
-					}
-				});
+		return context.perform(() -> value.length());
 	}
 
 	/**
@@ -387,13 +254,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 取元表() {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.getmetatable());
-					}
-				});
+		return context.perform(() -> context.wrap(value.getmetatable()));
 	}
 
 	/**
@@ -403,13 +264,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 取环境() {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.getfenv());
-					}
-				});
+		return context.perform(() -> context.wrap(value.getfenv()));
 	}
 
 	/**
@@ -419,86 +274,58 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 取相反数() {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.neg());
-					}
-				});
+		return context.perform(() -> context.wrap(value.neg()));
 	}
 
 	/**
 	 * 读取字段，允许触发 __index 元方法。
 	 *
-	 * @param key 文本、数值或同一实例的 LuaJ值；不能为 nil。
+	 * @param key Lua 键，可为可转换的基本值、对象或同实例值；写入时不能为 nil 或 NaN。
 	 * @return 字段值；不存在时为 nil。
 	 */
 	@SimpleFunction
 	public LuaJ值 取字段(Variant key) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.get(context.convert(key)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.get(context.convert(key))));
 	}
 
 	/**
 	 * 设置字段，允许触发 __newindex 元方法。
 	 *
-	 * @param key 文本、数值或同一实例的 LuaJ值；不能为 nil。
+	 * @param key   Lua 键，可为可转换的基本值、对象或同实例值；写入时不能为 nil 或 NaN。
 	 * @param value 基本值、字节集、Java 对象或同一实例的 LuaJ值；空值表示 nil。
 	 */
 	@SimpleFunction
 	public void 置字段(Variant key, Variant value) {
-		context.perform(
-				new LuaJContext.Action<Void>() {
-					@Override
-					public Void run() throws Exception {
-						LuaJ值.this.value.set(context.convert(key), context.convert(value));
-						return null;
-					}
-				});
+		context.perform(() -> {
+			LuaJ值.this.value.set(context.convert(key), context.convert(value));
+			return null;
+		});
 	}
 
 	/**
 	 * 直接读取表字段，不触发元方法；目标须为表。
 	 *
-	 * @param key 文本、数值或同一实例的 LuaJ值；不能为 nil。
+	 * @param key Lua 键，可为可转换的基本值、对象或同实例值；写入时不能为 nil 或 NaN。
 	 * @return 字段值；不存在时为 nil。
 	 */
 	@SimpleFunction
 	public LuaJ值 原样取字段(Variant key) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.checktable().rawget(context.convert(key)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.checktable().rawget(context.convert(key))));
 	}
 
 	/**
 	 * 直接设置表字段，不触发元方法；nil 删除字段。
 	 *
-	 * @param key 文本、数值或同一实例的 LuaJ值；不能为 nil。
+	 * @param key   Lua 键，可为可转换的基本值、对象或同实例值；写入时不能为 nil 或 NaN。
 	 * @param value 基本值、字节集、Java 对象或同一实例的 LuaJ值；空值表示 nil。
 	 */
 	@SimpleFunction
 	public void 原样置字段(Variant key, Variant value) {
-		context.perform(
-				new LuaJContext.Action<Void>() {
-					@Override
-					public Void run() throws Exception {
-						LuaJ值.this
-								.value
-								.checktable()
-								.rawset(context.convert(key), context.convert(value));
-						return null;
-					}
-				});
+		context.perform(() -> {
+			// 上游 rawset 假定调用者已经校验键，不能让 nil 或 NaN 进入哈希表。
+			LuaJ值.this.value.checktable().rawset(context.convert(key).checkvalidkey(), context.convert(value));
+			return null;
+		});
 	}
 
 	/**
@@ -509,16 +336,10 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 置元表(Variant value) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						LuaValue table = context.convert(value);
-						return context.wrap(
-								LuaJ值.this.value.setmetatable(
-										table.isnil() ? null : table.checktable()));
-					}
-				});
+		return context.perform(() -> {
+			LuaValue table = context.convert(value);
+			return context.wrap(LuaJ值.this.value.setmetatable(table.isnil() ? null : table.checktable()));
+		});
 	}
 
 	/**
@@ -528,14 +349,10 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public void 置环境(LuaJ表 environment) {
-		context.perform(
-				new LuaJContext.Action<Void>() {
-					@Override
-					public Void run() throws Exception {
-						value.setfenv(context.unwrap(environment).checktable());
-						return null;
-					}
-				});
+		context.perform(() -> {
+			value.setfenv(context.unwrap(environment).checktable());
+			return null;
+		});
 	}
 
 	/**
@@ -546,13 +363,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 相加(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.add(context.unwrap(other)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.add(context.unwrap(other))));
 	}
 
 	/**
@@ -563,13 +374,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 相减(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.sub(context.unwrap(other)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.sub(context.unwrap(other))));
 	}
 
 	/**
@@ -580,13 +385,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 相乘(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.mul(context.unwrap(other)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.mul(context.unwrap(other))));
 	}
 
 	/**
@@ -597,13 +396,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 相除(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.div(context.unwrap(other)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.div(context.unwrap(other))));
 	}
 
 	/**
@@ -614,13 +407,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 求余(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.mod(context.unwrap(other)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.mod(context.unwrap(other))));
 	}
 
 	/**
@@ -631,13 +418,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 求次方(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.pow(context.unwrap(other)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.pow(context.unwrap(other))));
 	}
 
 	/**
@@ -648,13 +429,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public LuaJ值 连接(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<LuaJ值>() {
-					@Override
-					public LuaJ值 run() throws Exception {
-						return context.wrap(value.concat(context.unwrap(other)));
-					}
-				});
+		return context.perform(() -> context.wrap(value.concat(context.unwrap(other))));
 	}
 
 	/**
@@ -665,13 +440,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否相等(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.eq_b(context.unwrap(other));
-					}
-				});
+		return context.perform(() -> value.eq_b(context.unwrap(other)));
 	}
 
 	/**
@@ -682,13 +451,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否原样相等(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.raweq(context.unwrap(other));
-					}
-				});
+		return context.perform(() -> value.raweq(context.unwrap(other)));
 	}
 
 	/**
@@ -699,13 +462,7 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否小于(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.lt_b(context.unwrap(other));
-					}
-				});
+		return context.perform(() -> value.lt_b(context.unwrap(other)));
 	}
 
 	/**
@@ -716,12 +473,93 @@ public class LuaJ值 {
 	 */
 	@SimpleFunction
 	public boolean 是否不大于(LuaJ值 other) {
-		return context.perform(
-				new LuaJContext.Action<Boolean>() {
-					@Override
-					public Boolean run() throws Exception {
-						return value.lteq_b(context.unwrap(other));
-					}
-				});
+		return context.perform(() -> value.lteq_b(context.unwrap(other)));
 	}
+
+	/**
+	 * 不传参数调用函数，保留全部结果。
+	 *
+	 * @return 全部返回值。
+	 */
+	@SimpleFunction
+	public LuaJ参数 调用() {
+		return context.perform(() -> new LuaJ参数(context, value.invoke()));
+	}
+
+	/**
+	 * 传入 Simple 参数并调用，保留全部结果及 nil 位置。
+	 *
+	 * @param arguments 按顺序传入的参数；空引用或空数组表示没有参数，空元素保留为 nil。
+	 * @return 全部返回值。
+	 */
+	@SimpleFunction
+	public LuaJ参数 带参调用(Variant[] arguments) {
+		return context.perform(() -> new LuaJ参数(context, value.invoke(context.arguments(arguments))));
+	}
+
+	/**
+	 * 使用同一实例的参数列表调用，保留全部结果。
+	 *
+	 * @param arguments 同一实例的参数列表；空引用表示无参数。
+	 * @return 全部返回值。
+	 */
+	@SimpleFunction
+	public LuaJ参数 使用参数调用(LuaJ参数 arguments) {
+		return context.perform(() -> {
+			if (arguments != null && arguments.context != context) {
+				throw new LuaJ错误("参数列表属于另一个 LuaJ 实例");
+			}
+			return new LuaJ参数(context, value.invoke(arguments == null ? LuaValue.NONE : arguments.values));
+		});
+	}
+
+	/**
+	 * 按 Lua 冒号调用规则调用成员函数，自动把当前值作为首个 self 实参。
+	 *
+	 * @param name      单个成员名称。
+	 * @param arguments 额外实参；空引用表示无额外实参。
+	 * @return 完整返回值。
+	 * @throws LuaJ错误 参数、转换或 Lua 操作失败。
+	 */
+	@SimpleFunction
+	public LuaJ参数 调用方法(String name, Variant[] arguments) {
+		return context.perform(
+				() -> new LuaJ参数(context, value.invokemethod(LuaJContext.text(name), context.arguments(arguments))));
+	}
+
+	/**
+	 * 按 Lua 真值规则取反，只有 nil 和 false 为假。
+	 *
+	 * @return Lua 真值的反值。
+	 * @throws LuaJ错误 参数、转换或 Lua 操作失败。
+	 */
+	@SimpleFunction
+	public boolean 逻辑非() {
+		return context.perform(() -> !value.toboolean());
+	}
+
+	/**
+	 * 按 Lua 真值规则选择两个值之一，返回值不强制转成逻辑。两参数在传入前已计算，不延迟执行右侧表达式。
+	 *
+	 * @param other 同实例的另一个值；空引用视为 nil。
+	 * @return 按 Lua 规则选出的值。
+	 * @throws LuaJ错误 参数、转换或 Lua 操作失败。
+	 */
+	@SimpleFunction
+	public LuaJ值 逻辑与(LuaJ值 other) {
+		return context.perform(() -> context.wrap(value.and(context.unwrap(other))));
+	}
+
+	/**
+	 * 按 Lua 真值规则选择两个值之一，返回值不强制转成逻辑。两参数在传入前已计算，不延迟执行右侧表达式。
+	 *
+	 * @param other 同实例的另一个值；空引用视为 nil。
+	 * @return 按 Lua 规则选出的值。
+	 * @throws LuaJ错误 参数、转换或 Lua 操作失败。
+	 */
+	@SimpleFunction
+	public LuaJ值 逻辑或(LuaJ值 other) {
+		return context.perform(() -> context.wrap(value.or(context.unwrap(other))));
+	}
+
 }

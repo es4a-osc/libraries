@@ -1,6 +1,6 @@
 {
 	"name": "HTML解析库",
-	"description": "基于 jsoup https://github.com/jhy/jsoup 封装，提供 HTML 文档解析、元素查询、内容提取及修改。",
+	"description": "基于 jsoup https://github.com/jhy/jsoup 封装，提供 HTML/XML 解析、CSS/XPath 查询、DOM 节点处理、正文清洗、表单字段提取和输出配置；不执行脚本或自动访问网络。",
 	"version": "0.1.0",
 	"authors": [
 		{
@@ -137,6 +137,234 @@
 									"description": "用于补全相对链接的 URL，空文本表示未指定。"
 								}
 							]
+						},
+						{
+							"name": "按配置解析",
+							"description": "按独立配置解析 HTML 或 XML，不联网或执行脚本。",
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"static": true,
+							"params": [
+								{
+									"name": "html",
+									"type": "文本型",
+									"description": "完整文本。"
+								},
+								{
+									"name": "baseUri",
+									"type": "文本型",
+									"description": "基本 URL，允许空文本。"
+								},
+								{
+									"name": "config",
+									"type": "simple.library.wsd.jsoup.HTML解析配置",
+									"description": "解析配置，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "按配置解析字节集",
+							"description": "按独立配置从字节解析 HTML 或 XML，支持 BOM 和编码声明识别。",
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"static": true,
+							"params": [
+								{
+									"name": "data",
+									"type": "字节型[]",
+									"description": "完整原始字节。"
+								},
+								{
+									"name": "encoding",
+									"type": "文本型",
+									"description": "字符集名，空文本自动识别。"
+								},
+								{
+									"name": "baseUri",
+									"type": "文本型",
+									"description": "基本 URL，允许空文本。"
+								},
+								{
+									"name": "config",
+									"type": "simple.library.wsd.jsoup.HTML解析配置",
+									"description": "HTML 或 XML 解析配置。"
+								}
+							]
+						},
+						{
+							"name": "按配置解析文件",
+							"description": "读取普通文件后按配置解析 HTML 或 XML；不支持 content URI，文件错误沿用运行库错误类型。",
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"static": true,
+							"params": [
+								{
+									"name": "path",
+									"type": "文本型",
+									"description": "普通文件路径；相对路径使用运行库文件规则。"
+								},
+								{
+									"name": "encoding",
+									"type": "文本型",
+									"description": "字符集名，空文本自动识别。"
+								},
+								{
+									"name": "baseUri",
+									"type": "文本型",
+									"description": "基本 URL。"
+								},
+								{
+									"name": "config",
+									"type": "simple.library.wsd.jsoup.HTML解析配置",
+									"description": "解析配置。"
+								}
+							]
+						},
+						{
+							"name": "按配置解析资产",
+							"description": "读取随 APK 打包的资产后按配置解析 HTML 或 XML；结束前关闭输入流。",
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"static": true,
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "资产相对路径。"
+								},
+								{
+									"name": "encoding",
+									"type": "文本型",
+									"description": "字符集名，空文本自动识别。"
+								},
+								{
+									"name": "baseUri",
+									"type": "文本型",
+									"description": "基本 URL。"
+								},
+								{
+									"name": "config",
+									"type": "simple.library.wsd.jsoup.HTML解析配置",
+									"description": "解析配置。"
+								}
+							]
+						},
+						{
+							"name": "清洗片段",
+							"description": "按允许名单清洗正文片段；只适用于 HTML 正文，不适用于脚本、样式或 URL 字符串。",
+							"return": "文本型",
+							"static": true,
+							"params": [
+								{
+									"name": "html",
+									"type": "文本型",
+									"description": "HTML 正文片段。"
+								},
+								{
+									"name": "baseUri",
+									"type": "文本型",
+									"description": "补全并校验相对链接的基本 URL。"
+								},
+								{
+									"name": "safelist",
+									"type": "simple.library.wsd.jsoup.HTML安全名单",
+									"description": "允许名单。"
+								},
+								{
+									"name": "settings",
+									"type": "simple.library.wsd.jsoup.HTML输出配置",
+									"description": "输出配置。"
+								}
+							]
+						},
+						{
+							"name": "片段是否安全",
+							"description": "检查正文片段是否符合允许名单，不返回清洗后的文本。 即便检查通过，展示和保存仍使用清洗后的输出。",
+							"return": "逻辑型",
+							"static": true,
+							"params": [
+								{
+									"name": "html",
+									"type": "文本型",
+									"description": "待检查的正文片段。"
+								},
+								{
+									"name": "safelist",
+									"type": "simple.library.wsd.jsoup.HTML安全名单",
+									"description": "允许名单。"
+								}
+							]
+						},
+						{
+							"name": "转义实体",
+							"description": "将纯文本转义为 HTML 文本内容；不作为脚本、样式或 URL 编码器。",
+							"return": "文本型",
+							"static": true,
+							"params": [
+								{
+									"name": "text",
+									"type": "文本型",
+									"description": "纯文本。"
+								},
+								{
+									"name": "settings",
+									"type": "simple.library.wsd.jsoup.HTML输出配置",
+									"description": "字符集和实体设置。"
+								}
+							]
+						},
+						{
+							"name": "解码实体",
+							"description": "把命名和数字字符实体解码为文本，不解析 HTML 标签。",
+							"return": "文本型",
+							"static": true,
+							"params": [
+								{
+									"name": "text",
+									"type": "文本型",
+									"description": "包含字符实体的文本。"
+								},
+								{
+									"name": "attribute",
+									"type": "逻辑型",
+									"description": "是否按属性值上下文解码。"
+								}
+							]
+						},
+						{
+							"name": "创建文本节点",
+							"description": "创建独立节点，不自动加入文档。",
+							"return": "simple.library.wsd.jsoup.HTML节点",
+							"static": true,
+							"params": [
+								{
+									"name": "text",
+									"type": "文本型",
+									"description": "节点原始内容，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "创建注释节点",
+							"description": "创建独立节点，不自动加入文档。",
+							"return": "simple.library.wsd.jsoup.HTML节点",
+							"static": true,
+							"params": [
+								{
+									"name": "text",
+									"type": "文本型",
+									"description": "节点原始内容，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "创建数据节点",
+							"description": "创建独立节点，不自动加入文档。",
+							"return": "simple.library.wsd.jsoup.HTML节点",
+							"static": true,
+							"params": [
+								{
+									"name": "text",
+									"type": "文本型",
+									"description": "节点原始内容，不得为空。"
+								}
+							]
 						}
 					]
 				},
@@ -157,12 +385,12 @@
 						},
 						{
 							"name": "取主体元素",
-							"description": "取得 HTML 正文元素。",
+							"description": "取得 HTML 正文元素。 缺失时按 HTML 文档规则创建。",
 							"return": "simple.library.wsd.jsoup.HTML元素"
 						},
 						{
 							"name": "取头元素",
-							"description": "取得 HTML 头部元素。",
+							"description": "取得 HTML 头部元素。 缺失时按 HTML 文档规则创建。",
 							"return": "simple.library.wsd.jsoup.HTML元素"
 						},
 						{
@@ -190,6 +418,54 @@
 									"name": "标签",
 									"type": "文本型",
 									"description": "新元素的标签名称。"
+								}
+							]
+						},
+						{
+							"name": "取输出配置",
+							"description": "取得输出配置副本；修改副本需重新应用。",
+							"return": "simple.library.wsd.jsoup.HTML输出配置"
+						},
+						{
+							"name": "置输出配置",
+							"description": "复制并应用输出配置，不共享配置对象。",
+							"params": [
+								{
+									"name": "settings",
+									"type": "simple.library.wsd.jsoup.HTML输出配置",
+									"description": "新的输出配置。"
+								}
+							]
+						},
+						{
+							"name": "取解析错误",
+							"description": "取得所属解析器最近一次解析的错误信息快照，含位置；片段写入也可能更新记录。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "清洗副本",
+							"description": "按名单清洗为独立正文文档，保留当前输出配置，不改变原文档。",
+							"return": "simple.library.wsd.jsoup.HTML文档",
+							"params": [
+								{
+									"name": "safelist",
+									"type": "simple.library.wsd.jsoup.HTML安全名单",
+									"description": "允许名单。"
+								}
+							]
+						},
+						{
+							"name": "规范结构",
+							"description": "按 HTML 文档规则规范头部和正文；XML 文档不应调用此方法。"
+						},
+						{
+							"name": "置文档编码",
+							"description": "设置输出字符集，并同步 HTML meta 或 XML 编码声明；不重新解码已解析的文本。",
+							"params": [
+								{
+									"name": "encoding",
+									"type": "文本型",
+									"description": "有效的输出字符集名称。"
 								}
 							]
 						}
@@ -493,14 +769,339 @@
 							]
 						},
 						{
-							"name": "移除",
-							"description": "将当前元素从父节点移除；已有包装引用仍可使用。"
-						},
-						{
 							"name": "复制",
 							"description": "深复制当前元素及后代，修改副本不会改变原元素。",
 							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "查询XPath",
+							"description": "按 XPath 查询元素，结果是成员快照；文本节点请调用查询XPath节点。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表",
+							"params": [
+								{
+									"name": "xpath",
+									"type": "文本型",
+									"description": "XPath 表达式，返回元素节点。"
+								}
+							]
+						},
+						{
+							"name": "查询XPath节点",
+							"description": "按 XPath 取得节点快照数组；仅返回 DOM 节点，不返回数值或文本标量。",
+							"return": "simple.library.wsd.jsoup.HTML节点[]",
+							"params": [
+								{
+									"name": "xpath",
+									"type": "文本型",
+									"description": "选择元素、文本或注释节点的 XPath。"
+								}
+							]
+						},
+						{
+							"name": "取最近匹配",
+							"description": "从自身向父级查找首个符合选择器的元素，找不到返回空引用。",
+							"return": "simple.library.wsd.jsoup.HTML元素",
+							"params": [
+								{
+									"name": "selector",
+									"type": "文本型",
+									"description": "CSS 选择器。"
+								}
+							]
+						},
+						{
+							"name": "取祖先元素",
+							"description": "取得所有祖先元素，近到远排列。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表"
+						},
+						{
+							"name": "取同级元素",
+							"description": "取得同级元素，不包含自身。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表"
+						},
+						{
+							"name": "取后续元素",
+							"description": "取得后续同级元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表"
+						},
+						{
+							"name": "取先前元素",
+							"description": "取得先前同级元素。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表"
+						},
+						{
+							"name": "取CSS路径",
+							"description": "取得当前元素的CSS路径。",
+							"return": "文本型"
+						},
+						{
+							"name": "取类名",
+							"description": "取得当前元素的类名。",
+							"return": "文本型"
+						},
+						{
+							"name": "取原始直接文本",
+							"description": "取得当前元素的原始直接文本。",
+							"return": "文本型"
+						},
+						{
+							"name": "取原始数据",
+							"description": "取得当前元素的原始数据；原始数据可能包含脚本和样式，读取不会执行。",
+							"return": "文本型"
+						},
+						{
+							"name": "取表单值",
+							"description": "取得当前元素的表单值。",
+							"return": "文本型"
+						},
+						{
+							"name": "置表单值",
+							"description": "设置元素值，不触发表单提交。",
+							"params": [
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "input 值或 textarea 文本。"
+								}
+							]
+						},
+						{
+							"name": "置逻辑属性",
+							"description": "按逻辑状态设置 HTML 属性。",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "逻辑属性名，例如 disabled、checked。"
+								},
+								{
+									"name": "value",
+									"type": "逻辑型",
+									"description": "真表示保留空值属性，假表示移除属性。"
+								}
+							]
+						},
+						{
+							"name": "清空属性",
+							"description": "移除当前元素全部属性，保留元素与子节点。"
+						},
+						{
+							"name": "按上下文解析片段",
+							"description": "按当前元素上下文解析为独立节点数组，不自动插入；表格片段和所属 XML 模式会影响解析。",
+							"return": "simple.library.wsd.jsoup.HTML节点[]",
+							"params": [
+								{
+									"name": "html",
+									"type": "文本型",
+									"description": "HTML 或 XML 片段。"
+								}
+							]
+						},
+						{
+							"name": "添加类名",
+							"description": "修改此元素的单个 CSS 类名。",
+							"params": [
+								{
+									"name": "className",
+									"type": "文本型",
+									"description": "单个类名，不含空白。"
+								}
+							]
+						},
+						{
+							"name": "移除类名",
+							"description": "修改此元素的单个 CSS 类名。",
+							"params": [
+								{
+									"name": "className",
+									"type": "文本型",
+									"description": "单个类名，不含空白。"
+								}
+							]
+						},
+						{
+							"name": "切换类名",
+							"description": "修改此元素的单个 CSS 类名。",
+							"params": [
+								{
+									"name": "className",
+									"type": "文本型",
+									"description": "单个类名，不含空白。"
+								}
+							]
+						},
+						{
+							"name": "是否有类名",
+							"description": "判断元素是否具有指定类名。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "className",
+									"type": "文本型",
+									"description": "单个类名。"
+								}
+							]
+						},
+						{
+							"name": "取数据属性名",
+							"description": "取得所有 data- 属性的后缀名称快照，不含 data- 前缀。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "取数据属性",
+							"description": "读取 data- 属性；不存在时返回空文本。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "不含 data- 前缀的属性后缀。"
+								}
+							]
+						},
+						{
+							"name": "置数据属性",
+							"description": "设置 data- 属性。",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "不含 data- 前缀的属性后缀。"
+								},
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "属性值。"
+								}
+							]
+						},
+						{
+							"name": "追加节点",
+							"description": "把独立或已有节点移入当前元素，禁止形成循环树。",
+							"params": [
+								{
+									"name": "value",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "待移动节点，先复制可保留原位置。"
+								}
+							]
+						},
+						{
+							"name": "首部插入节点",
+							"description": "把独立或已有节点移入当前元素，禁止形成循环树。",
+							"params": [
+								{
+									"name": "value",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "待移动节点，先复制可保留原位置。"
+								}
+							]
+						},
+						{
+							"name": "按位置插入节点",
+							"description": "把节点移入指定位置；同父节点移动时索引表示移动前子节点序列的插入边界。",
+							"params": [
+								{
+									"name": "index",
+									"type": "整数型",
+									"description": "插入位置，零到子节点数量，包含文本和注释。"
+								},
+								{
+									"name": "value",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "待移动节点，先复制可保留原位置。"
+								}
+							]
+						},
+						{
+							"name": "前面插入HTML",
+							"description": "在当前元素的相邻位置解析插入 HTML；当前元素必须有父节点。",
+							"params": [
+								{
+									"name": "html",
+									"type": "文本型",
+									"description": "HTML 片段。"
+								}
+							]
+						},
+						{
+							"name": "后面插入HTML",
+							"description": "在当前元素的相邻位置解析插入 HTML；当前元素必须有父节点。",
+							"params": [
+								{
+									"name": "html",
+									"type": "文本型",
+									"description": "HTML 片段。"
+								}
+							]
+						},
+						{
+							"name": "追加文本",
+							"description": "把纯文本插入当前元素内部，不解析为标签。",
+							"params": [
+								{
+									"name": "text",
+									"type": "文本型",
+									"description": "纯文本，特殊字符自动转义。"
+								}
+							]
+						},
+						{
+							"name": "首部插入文本",
+							"description": "把纯文本插入当前元素内部，不解析为标签。",
+							"params": [
+								{
+									"name": "text",
+									"type": "文本型",
+									"description": "纯文本，特殊字符自动转义。"
+								}
+							]
+						},
+						{
+							"name": "包裹HTML",
+							"description": "用 HTML 外层结构包裹此元素，元素移动到最内层首个元素中。",
+							"params": [
+								{
+									"name": "html",
+									"type": "文本型",
+									"description": "具有外层元素的非空片段。"
+								}
+							]
+						},
+						{
+							"name": "解开包裹",
+							"description": "移除此元素并把子节点提升到原父节点；返回提升后的首节点，无子节点则返回空。",
+							"return": "simple.library.wsd.jsoup.HTML节点"
+						},
+						{
+							"name": "取表单控件",
+							"description": "取得 form 关联控件的成员快照，仅用于 form 元素，不提交表单。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表"
+						},
+						{
+							"name": "关联表单控件",
+							"description": "把手动创建的控件关联到当前 form；不移动 DOM 位置，同一控件不会重复关联。",
+							"params": [
+								{
+									"name": "control",
+									"type": "simple.library.wsd.jsoup.HTML元素",
+									"description": "已创建的控件元素。"
+								}
+							]
+						},
+						{
+							"name": "取表单字段名",
+							"description": "取得可提交表单字段的名称数组，按控件顺序排列并保留重名；与另一个字段数组按索引对应。不发起请求。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "取表单字段值",
+							"description": "取得可提交表单字段的值数组，按控件顺序排列并保留重名；与另一个字段数组按索引对应。不发起请求。",
+							"return": "文本型[]"
 						}
+					],
+					"inherits": [
+						"simple.library.wsd.jsoup.HTML节点"
 					]
 				},
 				{
@@ -590,6 +1191,752 @@
 						{
 							"name": "移除",
 							"description": "从各自父节点中移除所有成员，不清空此快照列表。"
+						},
+						{
+							"name": "查询元素",
+							"description": "在每个成员范围内查询 CSS 并合并去重，返回新成员快照。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表",
+							"params": [
+								{
+									"name": "selector",
+									"type": "文本型",
+									"description": "CSS 选择器。"
+								}
+							]
+						},
+						{
+							"name": "排除匹配",
+							"description": "从当前成员中排除符合 CSS 的元素，返回新快照。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表",
+							"params": [
+								{
+									"name": "selector",
+									"type": "文本型",
+									"description": "CSS 选择器。"
+								}
+							]
+						},
+						{
+							"name": "是否有匹配",
+							"description": "判断至少一个成员是否符合 CSS 选择器。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "selector",
+									"type": "文本型",
+									"description": "CSS 选择器。"
+								}
+							]
+						},
+						{
+							"name": "复制",
+							"description": "分别深复制所有成员；副本列表的修改不影响原成员文档。",
+							"return": "simple.library.wsd.jsoup.HTML元素列表"
+						},
+						{
+							"name": "取内部HTML",
+							"description": "合并各成员内部 HTML。",
+							"return": "文本型"
+						},
+						{
+							"name": "取HTML文本",
+							"description": "合并各成员完整 HTML。",
+							"return": "文本型"
+						},
+						{
+							"name": "置文本",
+							"description": "批量修改固定列表中的成员；同时选择祖先和后代时按成员顺序增量执行。",
+							"params": [
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "纯文本内容。"
+								}
+							]
+						},
+						{
+							"name": "置内部HTML",
+							"description": "批量修改固定列表中的成员；同时选择祖先和后代时按成员顺序增量执行。",
+							"params": [
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "HTML 片段。"
+								}
+							]
+						},
+						{
+							"name": "追加HTML",
+							"description": "批量修改固定列表中的成员；同时选择祖先和后代时按成员顺序增量执行。",
+							"params": [
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "HTML 片段。"
+								}
+							]
+						},
+						{
+							"name": "首部插入HTML",
+							"description": "批量修改固定列表中的成员；同时选择祖先和后代时按成员顺序增量执行。",
+							"params": [
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "HTML 片段。"
+								}
+							]
+						},
+						{
+							"name": "移除属性",
+							"description": "从所有成员移除指定属性。",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "属性名。"
+								}
+							]
+						},
+						{
+							"name": "添加类名",
+							"description": "批量修改成员的单个 CSS 类名。",
+							"params": [
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "单个类名。"
+								}
+							]
+						},
+						{
+							"name": "移除类名",
+							"description": "批量修改成员的单个 CSS 类名。",
+							"params": [
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "单个类名。"
+								}
+							]
+						},
+						{
+							"name": "切换类名",
+							"description": "批量修改成员的单个 CSS 类名。",
+							"params": [
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "单个类名。"
+								}
+							]
+						},
+						{
+							"name": "清空子节点",
+							"description": "移除每个成员的子节点，保留成员和属性。"
+						}
+					]
+				},
+				{
+					"name": "HTML解析配置",
+					"description": "配置 HTML 或 XML 解析、大小写、错误记录和源码位置；解析时复制配置，不共享解析器状态。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsoup.HTML解析配置",
+					"functions": [
+						{
+							"name": "创建XML配置",
+							"description": "创建 XML 配置，默认保留标签和属性大小写。",
+							"return": "simple.library.wsd.jsoup.HTML解析配置",
+							"static": true
+						},
+						{
+							"name": "复制",
+							"description": "复制当前配置，之后修改互不影响。",
+							"return": "simple.library.wsd.jsoup.HTML解析配置"
+						}
+					],
+					"properties": [
+						{
+							"name": "保留标签大小写",
+							"type": "逻辑型",
+							"description": "标签大小写保留状态。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "保留属性大小写",
+							"type": "逻辑型",
+							"description": "属性大小写保留状态。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "记录源码位置",
+							"type": "逻辑型",
+							"description": "源码位置记录状态；后续 DOM 修改不会更新原始位置。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "错误记录上限",
+							"type": "整数型",
+							"description": "解析错误记录上限；零表示不记录，必须非负。",
+							"readable": true,
+							"writable": true
+						}
+					]
+				},
+				{
+					"name": "HTML输出配置",
+					"description": "控制 HTML 序列化的排版、编码、实体和 HTML/XML 语法；应用到文档时复制。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsoup.HTML输出配置",
+					"constants": [
+						{
+							"name": "语法_HTML",
+							"type": "整数型",
+							"value": "0",
+							"description": "输出 HTML 语法。"
+						},
+						{
+							"name": "语法_XML",
+							"type": "整数型",
+							"value": "1",
+							"description": "输出 XML 语法。"
+						},
+						{
+							"name": "实体_基本",
+							"type": "整数型",
+							"value": "0",
+							"description": "使用常见 HTML 实体。"
+						},
+						{
+							"name": "实体_扩展",
+							"type": "整数型",
+							"value": "1",
+							"description": "使用扩展 HTML 实体。"
+						},
+						{
+							"name": "实体_XHTML",
+							"type": "整数型",
+							"value": "2",
+							"description": "使用 XHTML 支持的实体。"
+						}
+					],
+					"properties": [
+						{
+							"name": "美化排版",
+							"type": "逻辑型",
+							"description": "是否插入排版换行和缩进。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "大纲排版",
+							"type": "逻辑型",
+							"description": "是否把各标签按块排版。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "缩进宽度",
+							"type": "整数型",
+							"description": "每层缩进空格数，必须非负。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "最大缩进宽度",
+							"type": "整数型",
+							"description": "缩进总宽度上限，-1 表示不限。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "编码",
+							"type": "文本型",
+							"description": "输出字符集名称；不修改已解析的文本。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "语法",
+							"type": "整数型",
+							"description": "HTML 或 XML 输出语法，使用本类语法常量。",
+							"readable": true,
+							"writable": true
+						},
+						{
+							"name": "实体模式",
+							"type": "整数型",
+							"description": "实体转义模式，使用本类实体常量。",
+							"readable": true,
+							"writable": true
+						}
+					],
+					"functions": [
+						{
+							"name": "复制",
+							"description": "复制当前输出配置。",
+							"return": "simple.library.wsd.jsoup.HTML输出配置"
+						}
+					]
+				},
+				{
+					"name": "HTML安全名单",
+					"description": "HTML 正文片段的标签、属性和协议允许名单；不适用于脚本、样式或 URL 字符串上下文。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsoup.HTML安全名单",
+					"functions": [
+						{
+							"name": "创建纯文本",
+							"description": "不允许任何标签。",
+							"return": "simple.library.wsd.jsoup.HTML安全名单",
+							"static": true
+						},
+						{
+							"name": "创建简单文本",
+							"description": "允许 b、em、i、strong、u。",
+							"return": "simple.library.wsd.jsoup.HTML安全名单",
+							"static": true
+						},
+						{
+							"name": "创建基本",
+							"description": "允许常见正文和链接，不允许图片。",
+							"return": "simple.library.wsd.jsoup.HTML安全名单",
+							"static": true
+						},
+						{
+							"name": "创建带图片基本",
+							"description": "在基本名单上允许图片。",
+							"return": "simple.library.wsd.jsoup.HTML安全名单",
+							"static": true
+						},
+						{
+							"name": "创建宽松",
+							"description": "允许较丰富正文、图片和表格；仍不允许脚本。",
+							"return": "simple.library.wsd.jsoup.HTML安全名单",
+							"static": true
+						},
+						{
+							"name": "添加标签",
+							"description": "调整名单中的一个标签。",
+							"params": [
+								{
+									"name": "tag",
+									"type": "文本型",
+									"description": "单个标签名称。"
+								}
+							]
+						},
+						{
+							"name": "移除标签",
+							"description": "调整名单中的一个标签。",
+							"params": [
+								{
+									"name": "tag",
+									"type": "文本型",
+									"description": "单个标签名称。"
+								}
+							]
+						},
+						{
+							"name": "添加属性",
+							"description": "调整某类标签允许的属性。",
+							"params": [
+								{
+									"name": "tag",
+									"type": "文本型",
+									"description": "标签名；:all 表示所有允许标签。"
+								},
+								{
+									"name": "attribute",
+									"type": "文本型",
+									"description": "单个属性名。"
+								}
+							]
+						},
+						{
+							"name": "移除属性",
+							"description": "调整某类标签允许的属性。",
+							"params": [
+								{
+									"name": "tag",
+									"type": "文本型",
+									"description": "标签名；:all 表示所有允许标签。"
+								},
+								{
+									"name": "attribute",
+									"type": "文本型",
+									"description": "单个属性名。"
+								}
+							]
+						},
+						{
+							"name": "强制属性",
+							"description": "为清洗后的指定标签强制设置属性。",
+							"params": [
+								{
+									"name": "tag",
+									"type": "文本型",
+									"description": "标签名。"
+								},
+								{
+									"name": "attribute",
+									"type": "文本型",
+									"description": "属性名。"
+								},
+								{
+									"name": "value",
+									"type": "文本型",
+									"description": "固定值，允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "移除强制属性",
+							"description": "取消某标签的强制属性。",
+							"params": [
+								{
+									"name": "tag",
+									"type": "文本型",
+									"description": "标签名。"
+								},
+								{
+									"name": "attribute",
+									"type": "文本型",
+									"description": "属性名。"
+								}
+							]
+						},
+						{
+							"name": "添加协议",
+							"description": "调整链接属性允许的协议；放宽名单前应核对内容来源。",
+							"params": [
+								{
+									"name": "tag",
+									"type": "文本型",
+									"description": "标签名。"
+								},
+								{
+									"name": "attribute",
+									"type": "文本型",
+									"description": "链接属性名。"
+								},
+								{
+									"name": "protocol",
+									"type": "文本型",
+									"description": "单个协议名，不含冒号；# 表示锚点。"
+								}
+							]
+						},
+						{
+							"name": "移除协议",
+							"description": "调整链接属性允许的协议；放宽名单前应核对内容来源。",
+							"params": [
+								{
+									"name": "tag",
+									"type": "文本型",
+									"description": "标签名。"
+								},
+								{
+									"name": "attribute",
+									"type": "文本型",
+									"description": "链接属性名。"
+								},
+								{
+									"name": "protocol",
+									"type": "文本型",
+									"description": "单个协议名，不含冒号；# 表示锚点。"
+								}
+							]
+						},
+						{
+							"name": "复制",
+							"description": "复制名单，之后修改互不影响。",
+							"return": "simple.library.wsd.jsoup.HTML安全名单"
+						}
+					],
+					"properties": [
+						{
+							"name": "保留相对链接",
+							"type": "逻辑型",
+							"description": "是否保留相对链接文本；协议校验仍需要有效基本 URL。",
+							"readable": true,
+							"writable": true
+						}
+					]
+				},
+				{
+					"name": "HTML节点",
+					"description": "DOM 节点视图，包含元素、文本、注释和原始数据；修改反映到所属文档。同一文档串行访问。",
+					"kind": "object",
+					"type": "simple.library.wsd.jsoup.HTML节点",
+					"functions": [
+						{
+							"name": "取节点名称",
+							"description": "取得原生节点名称，例如 p、#text、#comment。",
+							"return": "文本型"
+						},
+						{
+							"name": "是否元素",
+							"description": "判断节点是否为元素或文档。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "到元素",
+							"description": "取得元素视图；文本、注释等节点返回空引用。",
+							"return": "simple.library.wsd.jsoup.HTML元素"
+						},
+						{
+							"name": "取节点内容",
+							"description": "读取文本、注释或原始数据的完整内容；其他类型报告错误。",
+							"return": "文本型"
+						},
+						{
+							"name": "置节点内容",
+							"description": "设置文本、注释或原始数据内容；不解析为 HTML。原始数据不要写入不可信脚本。",
+							"params": [
+								{
+									"name": "text",
+									"type": "文本型",
+									"description": "完整新内容。"
+								}
+							]
+						},
+						{
+							"name": "取节点HTML",
+							"description": "序列化此节点和后代；不会执行脚本。",
+							"return": "文本型"
+						},
+						{
+							"name": "取子节点数",
+							"description": "取得直接子节点数量，包含文本和注释。",
+							"return": "整数型"
+						},
+						{
+							"name": "取子节点",
+							"description": "取得直接子节点，包含文本和注释。",
+							"return": "simple.library.wsd.jsoup.HTML节点",
+							"params": [
+								{
+									"name": "index",
+									"type": "整数型",
+									"description": "从零开始的子节点索引。"
+								}
+							]
+						},
+						{
+							"name": "取父节点",
+							"description": "取得父节点，没有时返回空引用。",
+							"return": "simple.library.wsd.jsoup.HTML节点"
+						},
+						{
+							"name": "取前节点",
+							"description": "取得上一个同级节点，包含文本和注释，没有时返回空引用。",
+							"return": "simple.library.wsd.jsoup.HTML节点"
+						},
+						{
+							"name": "取后节点",
+							"description": "取得下一个同级节点，包含文本和注释，没有时返回空引用。",
+							"return": "simple.library.wsd.jsoup.HTML节点"
+						},
+						{
+							"name": "取根节点",
+							"description": "取得当前树的根节点。",
+							"return": "simple.library.wsd.jsoup.HTML节点"
+						},
+						{
+							"name": "取所属文档",
+							"description": "取得所属文档视图；独立节点没有所属文档时返回空引用。",
+							"return": "simple.library.wsd.jsoup.HTML文档"
+						},
+						{
+							"name": "取同级索引",
+							"description": "取得节点在所有同级节点中的索引，文本和注释也计数。",
+							"return": "整数型"
+						},
+						{
+							"name": "是否同一节点",
+							"description": "判断两个视图是否指向同一原生节点。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "other",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "待比较视图；允许空引用。"
+								}
+							]
+						},
+						{
+							"name": "是否同值",
+							"description": "在统一 UTF-8、无美化排版配置下比较节点类型和序列化内容；不受所在位置或所属文档输出设置影响。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "other",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "待比较节点；允许空引用。"
+								}
+							]
+						},
+						{
+							"name": "复制节点",
+							"description": "深复制节点和后代，副本修改不影响原节点。",
+							"return": "simple.library.wsd.jsoup.HTML节点"
+						},
+						{
+							"name": "浅复制节点",
+							"description": "复制当前节点及属性，不包含子节点。",
+							"return": "simple.library.wsd.jsoup.HTML节点"
+						},
+						{
+							"name": "分割文本节点",
+							"description": "仅用于文本节点：保留前段，返回后段；有父节点时后段插在其后。",
+							"return": "simple.library.wsd.jsoup.HTML节点",
+							"params": [
+								{
+									"name": "offset",
+									"type": "整数型",
+									"description": "UTF-16 字符索引，零到完整文本长度。"
+								}
+							]
+						},
+						{
+							"name": "移除",
+							"description": "从父节点移除此节点；已经独立时不处理。已有引用仍可使用。"
+						},
+						{
+							"name": "清空子节点",
+							"description": "移除所有子节点，保留当前节点及其属性。"
+						},
+						{
+							"name": "置节点基本URL",
+							"description": "更新此节点及后代的基本 URL，不发起网络请求。",
+							"params": [
+								{
+									"name": "uri",
+									"type": "文本型",
+									"description": "基本 URL，允许空文本。"
+								}
+							]
+						},
+						{
+							"name": "取源码开始位置",
+							"description": "取得初次解析时节点的字符位置；未启用位置记录或节点为后来创建时返回 -1。DOM 修改不更新此位置。",
+							"return": "整数型"
+						},
+						{
+							"name": "取源码结束位置",
+							"description": "取得初次解析时节点的字符位置；未启用位置记录或节点为后来创建时返回 -1。DOM 修改不更新此位置。",
+							"return": "整数型"
+						},
+						{
+							"name": "在前面插入节点",
+							"description": "把已有节点移动到此节点相邻处或替换此节点；禁止构造循环树，当前节点须有父节点。",
+							"params": [
+								{
+									"name": "value",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "待移动节点；先复制可保留原位置。"
+								}
+							]
+						},
+						{
+							"name": "在后面插入节点",
+							"description": "把已有节点移动到此节点相邻处或替换此节点；禁止构造循环树，当前节点须有父节点。",
+							"params": [
+								{
+									"name": "value",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "待移动节点；先复制可保留原位置。"
+								}
+							]
+						},
+						{
+							"name": "替换为节点",
+							"description": "把已有节点移动到此节点相邻处或替换此节点；禁止构造循环树，当前节点须有父节点。",
+							"params": [
+								{
+									"name": "value",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "待移动节点；先复制可保留原位置。"
+								}
+							]
+						},
+						{
+							"name": "遍历",
+							"description": "深度优先遍历；访问器可跳过、移除非根节点或停止。回调不要直接修改树结构或重入遍历。过滤增量生效，异常不会回滚已完成移除。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "visitor",
+									"type": "simple.library.wsd.jsoup.HTML节点访问器",
+									"description": "进入和离开节点时回调。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "HTML节点访问器",
+					"description": "节点遍历回调；进入和离开各回调一次，跳过和移除指令可改变后续回调。回调不要直接修改树结构。",
+					"kind": "interface",
+					"type": "simple.library.wsd.jsoup.HTML节点访问器",
+					"constants": [
+						{
+							"name": "继续",
+							"type": "整数型",
+							"value": "0",
+							"description": "继续遍历。"
+						},
+						{
+							"name": "跳过子节点",
+							"type": "整数型",
+							"value": "1",
+							"description": "进入时跳过子节点，仍触发本节点离开。"
+						},
+						{
+							"name": "跳过整节点",
+							"type": "整数型",
+							"value": "2",
+							"description": "进入时跳过子节点及本节点离开。"
+						},
+						{
+							"name": "移除节点",
+							"type": "整数型",
+							"value": "3",
+							"description": "移除此节点和子树，不能用于本次遍历根。"
+						},
+						{
+							"name": "停止",
+							"type": "整数型",
+							"value": "4",
+							"description": "立即停止，遍历返回假。"
+						}
+					],
+					"functions": [
+						{
+							"name": "访问",
+							"description": "处理节点，返回本接口的指令常量；离开阶段的两种跳过指令等同继续。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "node",
+									"type": "simple.library.wsd.jsoup.HTML节点",
+									"description": "当前节点视图。"
+								},
+								{
+									"name": "depth",
+									"type": "整数型",
+									"description": "相对遍历根的深度，从零开始。"
+								},
+								{
+									"name": "leaving",
+									"type": "逻辑型",
+									"description": "真表示离开，假表示进入。"
+								}
+							]
 						}
 					]
 				}

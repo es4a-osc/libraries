@@ -23,9 +23,9 @@ public final class CV日历工具 {
 	/**
 	 * 按公历年月日创建包含农历信息的快照；不合法日期抛出错误。
 	 *
-	 * @param year 年。
+	 * @param year  年。
 	 * @param month 月。
-	 * @param day 日。
+	 * @param day   日。
 	 * @return 本次计算结果。
 	 */
 	@SimpleFunction
@@ -34,8 +34,11 @@ public final class CV日历工具 {
 		CalendarAccess.initialize(MainActivity.getContext());
 		LunarCalendar.setupLunarCalendar(value);
 		java.util.Calendar today = java.util.Calendar.getInstance();
-		value.setCurrentDay(year == today.get(java.util.Calendar.YEAR) && month == today.get(java.util.Calendar.MONTH) + 1 && day == today.get(java.util.Calendar.DAY_OF_MONTH));
-		value.setCurrentMonth(year == today.get(java.util.Calendar.YEAR) && month == today.get(java.util.Calendar.MONTH) + 1);
+		value.setCurrentDay(
+				year == today.get(java.util.Calendar.YEAR) && month == today.get(java.util.Calendar.MONTH) + 1
+						&& day == today.get(java.util.Calendar.DAY_OF_MONTH));
+		value.setCurrentMonth(
+				year == today.get(java.util.Calendar.YEAR) && month == today.get(java.util.Calendar.MONTH) + 1);
 		return CV日历日期.from(value);
 	}
 
@@ -47,7 +50,8 @@ public final class CV日历工具 {
 	@SimpleFunction
 	public static CV日历日期 取今天() {
 		java.util.Calendar value = java.util.Calendar.getInstance();
-		return 创建日期(value.get(java.util.Calendar.YEAR), value.get(java.util.Calendar.MONTH) + 1, value.get(java.util.Calendar.DAY_OF_MONTH));
+		return 创建日期(value.get(java.util.Calendar.YEAR), value.get(java.util.Calendar.MONTH) + 1,
+				value.get(java.util.Calendar.DAY_OF_MONTH));
 	}
 
 	/**
@@ -66,7 +70,7 @@ public final class CV日历工具 {
 	/**
 	 * 返回第一日期减第二日期的公历天数，不受夏令时影响。
 	 *
-	 * @param first 第一日期。
+	 * @param first  第一日期。
 	 * @param second 第二日期。
 	 * @return 本次计算结果。
 	 */
@@ -78,7 +82,7 @@ public final class CV日历工具 {
 	/**
 	 * 比较公历日期，早于返回 -1，相同返回 0，晚于返回 1。
 	 *
-	 * @param first 第一日期。
+	 * @param first  第一日期。
 	 * @param second 第二日期。
 	 * @return 本次计算结果。
 	 */
@@ -90,7 +94,7 @@ public final class CV日历工具 {
 	/**
 	 * 读取两个公历日期是否属于同年同月。
 	 *
-	 * @param first 第一日期。
+	 * @param first  第一日期。
 	 * @param second 第二日期。
 	 * @return 本次计算结果。
 	 */
@@ -104,7 +108,7 @@ public final class CV日历工具 {
 	/**
 	 * 取得指定公历月份的天数。
 	 *
-	 * @param year 年。
+	 * @param year  年。
 	 * @param month 月。
 	 * @return 本次计算结果。
 	 */
@@ -141,10 +145,10 @@ public final class CV日历工具 {
 	/**
 	 * 转换真实农历日期，并通过反向转换校验闰月及日号；结果超出公历支持范围时拒绝。
 	 *
-	 * @param year 农历年。
+	 * @param year  农历年。
 	 * @param month 农历月。
-	 * @param day 农历日。
-	 * @param leap 是否闰月。
+	 * @param day   农历日。
+	 * @param leap  是否闰月。
 	 * @return 本次计算结果。
 	 */
 	@SimpleFunction
@@ -194,10 +198,10 @@ public final class CV日历工具 {
 	/**
 	 * 读取月视图行数；周起始为 1、2、7，填充方式为 0 固定六行、1 仅本月或 2 自适应。
 	 *
-	 * @param year 年。
-	 * @param month 月。
+	 * @param year      年。
+	 * @param month     月。
 	 * @param weekStart 周起始。
-	 * @param mode 填充方式。
+	 * @param mode      填充方式。
 	 * @return 本次计算结果。
 	 */
 	@SimpleFunction
@@ -212,7 +216,7 @@ public final class CV日历工具 {
 	/**
 	 * 复制日期并附加独立标记数组，原日期及调用方数组保持不变；附加数据中的对象仍按引用保留。
 	 *
-	 * @param date 日期。
+	 * @param date    日期。
 	 * @param schemes 标记数组。
 	 * @return 带标记的新日期快照。
 	 */
@@ -238,11 +242,11 @@ public final class CV日历工具 {
 	/**
 	 * 按月份行数计算高度，输入及返回使用相同单位；不含星期栏与分隔线。
 	 *
-	 * @param year 年。
-	 * @param month 月。
+	 * @param year       年。
+	 * @param month      月。
 	 * @param itemHeight 日项高度。
-	 * @param weekStart 周起始。
-	 * @param mode 月份填充。
+	 * @param weekStart  周起始。
+	 * @param mode       月份填充。
 	 * @return 日项高度乘以有效行数。
 	 */
 	@SimpleFunction
@@ -256,7 +260,7 @@ public final class CV日历工具 {
 	/**
 	 * 计算日期在本月排列中的周序号，1 为第一行。
 	 *
-	 * @param date 日期。
+	 * @param date      日期。
 	 * @param weekStart 周起始。
 	 * @return 从 1 开始的周序号。
 	 */
@@ -270,7 +274,7 @@ public final class CV日历工具 {
 	/**
 	 * 计算日期前面距本周起始日的天数；周起始为 1 周日、2 周一、7 周六。
 	 *
-	 * @param date 日期。
+	 * @param date      日期。
 	 * @param weekStart 周起始。
 	 * @return 0 至 6 天。
 	 */
@@ -282,7 +286,7 @@ public final class CV日历工具 {
 	/**
 	 * 计算日期后面距本周末日的天数；周起始为 1、2 或 7。
 	 *
-	 * @param date 日期。
+	 * @param date      日期。
 	 * @param weekStart 周起始。
 	 * @return 0 至 6 天。
 	 */
@@ -294,8 +298,8 @@ public final class CV日历工具 {
 	/**
 	 * 计算包含两个端点的范围跨越几周；终点不能早于起点。
 	 *
-	 * @param minimum 起点。
-	 * @param maximum 终点。
+	 * @param minimum   起点。
+	 * @param maximum   终点。
 	 * @param weekStart 周起始。
 	 * @return 至少一周。
 	 */
@@ -312,8 +316,8 @@ public final class CV日历工具 {
 	/**
 	 * 计算日期所在周相对范围起点的序号；日期不能早于范围起点。
 	 *
-	 * @param date 日期。
-	 * @param minimum 范围起点。
+	 * @param date      日期。
+	 * @param minimum   范围起点。
 	 * @param weekStart 周起始。
 	 * @return 从 1 开始的周序号。
 	 */
@@ -325,8 +329,8 @@ public final class CV日历工具 {
 	/**
 	 * 取得范围中指定周的起始日期；周序号从 1 开始，结果超出公历支持范围时抛错。
 	 *
-	 * @param minimum 范围起点。
-	 * @param week 周序号。
+	 * @param minimum   范围起点。
+	 * @param week      周序号。
 	 * @param weekStart 周起始。
 	 * @return 包含农历信息的周首日。
 	 */
@@ -343,9 +347,9 @@ public final class CV日历工具 {
 	/**
 	 * 取得农历 1899 至 2099 年普通月或实际闰月的天数；不存在的闰月抛错。
 	 *
-	 * @param year 农历年。
+	 * @param year  农历年。
 	 * @param month 农历月。
-	 * @param leap 是否闰月。
+	 * @param leap  是否闰月。
 	 * @return 29 或 30 天。
 	 */
 	@SimpleFunction

@@ -1,13 +1,10 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import android.view.View;
+import android.widget.Checkable;
+import android.widget.CompoundButton;
+
+import simple.runtime.components.组件容器;
 import simple.runtime.events.EventDispatcher;
 
 /**
@@ -24,14 +21,12 @@ public final class 字体图标复选框Impl extends WidgetBase implements 字�
 	public 字体图标复选框Impl(组件容器 container) {
 		super(container);
 		if (getView() instanceof CompoundButton) {
-			((CompoundButton) getView())
-					.setOnCheckedChangeListener(
-							new CompoundButton.OnCheckedChangeListener() {
-								@Override
-								public void onCheckedChanged(CompoundButton v, boolean checked) {
-									选中改变(checked);
-								}
-							});
+			((CompoundButton) getView()).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton v, boolean checked) {
+					选中改变(checked);
+				}
+			});
 		}
 	}
 
@@ -62,8 +57,7 @@ public final class 字体图标复选框Impl extends WidgetBase implements 字�
 		if (unchecked != null) {
 			unchecked.check();
 		}
-		com.mikepenz.iconics.view.IconicsCheckBox v =
-				(com.mikepenz.iconics.view.IconicsCheckBox) getView();
+		com.mikepenz.iconics.view.IconicsCheckBox v = (com.mikepenz.iconics.view.IconicsCheckBox) getView();
 		v.setCheckedIcon(checked == null ? null : Support.copy(checked.value));
 		v.setUncheckedIcon(unchecked == null ? null : Support.copy(unchecked.value));
 	}
@@ -90,7 +84,6 @@ public final class 字体图标复选框Impl extends WidgetBase implements 字�
 	@Override
 	public 图标图像 取未选中图标() {
 		check();
-		return 图标图像.wrap(
-				((com.mikepenz.iconics.view.IconicsCheckBox) getView()).getUncheckedIcon());
+		return 图标图像.wrap(((com.mikepenz.iconics.view.IconicsCheckBox) getView()).getUncheckedIcon());
 	}
 }

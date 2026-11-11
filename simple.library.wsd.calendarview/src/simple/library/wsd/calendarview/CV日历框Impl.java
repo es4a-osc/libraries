@@ -60,7 +60,7 @@ public final class CV日历框Impl extends 视图组件 implements CV日历框, 
 
 			@Override
 			public void onCalendarSelect(Calendar date, boolean click) {
-				int mode = view().configuration().选择模式();
+				int mode = view().selectionMode();
 				if (!changingRange && (mode == 0 || mode == 1)) {
 					日期选中(CV日历日期.from(date), click);
 				}
@@ -156,7 +156,8 @@ public final class CV日历框Impl extends 视图组件 implements CV日历框, 
 			}
 
 			@Override
-			public boolean draw(CV日历绘图 drawing, CV日历日期 date, int stage, boolean selected, boolean previous, boolean next) {
+			public boolean draw(CV日历绘图 drawing, CV日历日期 date, int stage, boolean selected, boolean previous,
+					boolean next) {
 				BooleanReferenceParameter useDefault = new BooleanReferenceParameter(true);
 				绘制日项(drawing, date, stage, selected, previous, next, useDefault);
 				return useDefault.get();
@@ -202,7 +203,7 @@ public final class CV日历框Impl extends 视图组件 implements CV日历框, 
 			public void onCalendarLongClick(Calendar date) {
 				日期长按(CV日历日期.from(date));
 			}
-		}, view().configuration().长按阻止选择());
+		}, view().preventLongPressSelection());
 	}
 
 	/**
@@ -212,7 +213,7 @@ public final class CV日历框Impl extends 视图组件 implements CV日历框, 
 	 * @return 该日期禁止选择时为真。
 	 */
 	private boolean blocked(Calendar date) {
-		if (destroyed || view().configuration().选择模式() == 0) {
+		if (destroyed || view().selectionMode() == 0) {
 			return false;
 		}
 		if (disabled.containsKey(date.toString())) {
@@ -332,7 +333,7 @@ public final class CV日历框Impl extends 视图组件 implements CV日历框, 
 	 * @param mode 所需模式。
 	 */
 	private void mode(int mode) {
-		if (view().configuration().选择模式() != mode) {
+		if (view().selectionMode() != mode) {
 			throw new simple.library.wsd.calendarview.CV日历错误(mode == 2 ? "此操作要求范围选择模式" : "此操作要求多选模式");
 		}
 	}
@@ -370,7 +371,7 @@ public final class CV日历框Impl extends 视图组件 implements CV日历框, 
 	@Override
 	public void 应用配置(CV日历配置 options) {
 		write();
-		int oldMode = view().configuration().选择模式();
+		int oldMode = view().selectionMode();
 		view().configure(options);
 		if (oldMode != options.选择模式()) {
 			rangeStart = null;
@@ -731,217 +732,124 @@ public final class CV日历框Impl extends 视图组件 implements CV日历框, 
 		view().repaint();
 	}
 
-	@Override
-	public void 日期选中(final CV日历日期 date, final boolean isClick) {
+	/**
+	 * 将普通通知排到当前原生调用栈之后；销毁时统一取消未分发通知。
+	 *
+	 * @param name 事件名。
+	 * @param args 本次通知的参数，日期及集合由调用处提供独立快照。
+	 */
+	private void postEvent(final String name, final Object... args) {
 		handler.post(new Runnable() {
 			@Override
 			public void run() {
 				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "日期选中" , date, isClick);
+					EventDispatcher.dispatchEvent(CV日历框Impl.this, name, args);
 				}
 			}
 		});
+	}
+
+	@Override
+	public void 日期选中(final CV日历日期 date, final boolean isClick) {
+		postEvent("日期选中", date, isClick);
 	}
 
 	@Override
 	public void 日期越界(final CV日历日期 date) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "日期越界" , date);
-				}
-			}
-		});
+		postEvent("日期越界", date);
 	}
 
 	@Override
 	public void 范围选择(final CV日历日期 date, final boolean isEnd) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "范围选择" , date, isEnd);
-				}
-			}
-		});
+		postEvent("范围选择", date, isEnd);
 	}
 
 	@Override
 	public void 跨度越界(final CV日历日期 date, final boolean tooShort) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "跨度越界" , date, tooShort);
-				}
-			}
-		});
+		postEvent("跨度越界", date, tooShort);
 	}
 
 	@Override
 	public void 多选改变(final CV日历日期 date, final int count, final int maximum, final boolean selected) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "多选改变" , date, count, maximum, selected);
-				}
-			}
-		});
+		postEvent("多选改变", date, count, maximum, selected);
 	}
 
 	@Override
 	public void 多选数量超限(final CV日历日期 date, final int maximum) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "多选数量超限" , date, maximum);
-				}
-			}
-		});
+		postEvent("多选数量超限", date, maximum);
 	}
 
 	@Override
 	public void 日期长按(final CV日历日期 date) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "日期长按" , date);
-				}
-			}
-		});
+		postEvent("日期长按", date);
 	}
 
 	@Override
 	public void 长按越界(final CV日历日期 date) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "长按越界" , date);
-				}
-			}
-		});
+		postEvent("长按越界", date);
 	}
 
 	@Override
 	public void 日期拦截(CV日历日期 date, BooleanReferenceParameter blocked) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(CV日历框Impl.this, "日期拦截" , date, blocked);
+			EventDispatcher.dispatchEvent(CV日历框Impl.this, "日期拦截", date, blocked);
 		}
 	}
 
 	@Override
 	public void 日期被拦截(final CV日历日期 date, final boolean isClick) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "日期被拦截" , date, isClick);
-				}
-			}
-		});
+		postEvent("日期被拦截", date, isClick);
 	}
 
 	@Override
 	public void 年份改变(final int year) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "年份改变" , year);
-				}
-			}
-		});
+		postEvent("年份改变", year);
 	}
 
 	@Override
 	public void 月份改变(final int year, final int month) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "月份改变" , year, month);
-				}
-			}
-		});
+		postEvent("月份改变", year, month);
 	}
 
 	@Override
 	public void 周改变(final CV日历日期[] dates) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "周改变" , (Object) dates);
-				}
-			}
-		});
+		postEvent("周改变", (Object) dates);
 	}
 
 	@Override
 	public void 视图改变(final boolean monthView) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "视图改变" , monthView);
-				}
-			}
-		});
+		postEvent("视图改变", monthView);
 	}
 
 	@Override
 	public void 年视图改变(final boolean opened) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "年视图改变" , opened);
-				}
-			}
-		});
+		postEvent("年视图改变", opened);
 	}
 
 	@Override
 	public void 边距被点击(final float x, final float y, final boolean monthView, final CV日历日期 adjacent) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "边距被点击" , x, y, monthView, adjacent);
-				}
-			}
-		});
+		postEvent("边距被点击", x, y, monthView, adjacent);
 	}
 
 	@Override
-	public void 绘制日项(CV日历绘图 drawing, CV日历日期 date, int stage, boolean selected, boolean previous, boolean next, BooleanReferenceParameter useDefault) {
+	public void 绘制日项(CV日历绘图 drawing, CV日历日期 date, int stage, boolean selected, boolean previous, boolean next,
+			BooleanReferenceParameter useDefault) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(CV日历框Impl.this, "绘制日项" , drawing, date, stage, selected, previous, next, useDefault);
+			EventDispatcher.dispatchEvent(CV日历框Impl.this, "绘制日项", drawing, date, stage, selected, previous, next,
+					useDefault);
 		}
 	}
 
 	@Override
 	public void 绘制标题(CV日历绘图 drawing, int year, int month, int stage, int week, BooleanReferenceParameter useDefault) {
 		if (!destroyed) {
-			EventDispatcher.dispatchEvent(CV日历框Impl.this, "绘制标题" , drawing, year, month, stage, week, useDefault);
+			EventDispatcher.dispatchEvent(CV日历框Impl.this, "绘制标题", drawing, year, month, stage, week, useDefault);
 		}
 	}
 
 	@Override
 	public void 绘制失败(final String reason) {
-		handler.post(new Runnable() {
-			@Override
-			public void run() {
-				if (!destroyed) {
-					EventDispatcher.dispatchEvent(CV日历框Impl.this, "绘制失败" , reason);
-				}
-			}
-		});
+		postEvent("绘制失败", reason);
 	}
 
 	@Override

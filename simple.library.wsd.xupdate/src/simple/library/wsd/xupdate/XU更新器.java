@@ -10,23 +10,23 @@ import simple.runtime.annotations.UsesPermissions;
 import simple.runtime.components.组件;
 
 /**
- * 独立的应用版本检查、更新提示、APK 下载校验与系统安装请求。
- * 组件调用和事件均在界面线程；默认离开窗口取消，显式转入后台的文件任务由服务继续。
+ * 独立的应用版本检查、更新提示、APK 下载校验与系统安装请求。 组件调用和事件均在界面线程；默认离开窗口取消，显式转入后台的文件任务由服务继续。
  * 可通过下载器接口接入其它传输实现，默认使用普通流式下载。
  *
  * @author 树先生 xhwsd@qq.com
  */
 @SimpleComponent
 @SimpleObject
-@UsesPermissions(permissionNames =
-	// 允许检查版本和下载更新 APK。
-	"android.permission.INTERNET," +
-	// 允许核对“仅 Wi-Fi”配置所需的当前网络状态。
-	"android.permission.ACCESS_NETWORK_STATE," +
-	// 允许向系统请求安装更新，仍需用户授权和确认。
-	"android.permission.REQUEST_INSTALL_PACKAGES," +
-	// 允许用户选择后台下载后维持带通知的前台服务。
-	"android.permission.FOREGROUND_SERVICE"
+@UsesPermissions(
+	permissionNames =
+// 允许检查版本和下载更新 APK。
+"android.permission.INTERNET," +
+// 允许核对“仅 Wi-Fi”配置所需的当前网络状态。
+		"android.permission.ACCESS_NETWORK_STATE," +
+		// 允许向系统请求安装更新，仍需用户授权和确认。
+		"android.permission.REQUEST_INSTALL_PACKAGES," +
+		// 允许用户选择后台下载后维持带通知的前台服务。
+		"android.permission.FOREGROUND_SERVICE"
 )
 public interface XU更新器 extends 组件 {
 
@@ -143,22 +143,19 @@ public interface XU更新器 extends 组件 {
 	void 取消();
 
 	/**
-	 * 暂停已接入可暂停下载器的任务，保留当前文件及请求配置；停止后触发已暂停。
-	 * 尚未下载或下载器不支持暂停时拒绝调用。
+	 * 暂停已接入可暂停下载器的任务，保留当前文件及请求配置；停止后触发已暂停。 尚未下载或下载器不支持暂停时拒绝调用。
 	 */
 	@SimpleFunction
 	void 暂停下载();
 
 	/**
-	 * 恢复已暂停或网络失败的续传任务；沿用开始下载时的地址、请求头和安装配置。
-	 * 须等待已暂停事件或可恢复的失败事件，不得在停止尚未完成时调用。
+	 * 恢复已暂停或网络失败的续传任务；沿用开始下载时的地址、请求头和安装配置。 须等待已暂停事件或可恢复的失败事件，不得在停止尚未完成时调用。
 	 */
 	@SimpleFunction
 	void 继续下载();
 
 	/**
-	 * 移除本更新器的已下载文件和续传记录，不影响其它实例。
-	 * 下载或安装进行中拒绝调用，请先暂停或取消。
+	 * 移除本更新器的已下载文件和续传记录，不影响其它实例。 下载或安装进行中拒绝调用，请先暂停或取消。
 	 */
 	@SimpleFunction
 	void 清理缓存();
@@ -166,7 +163,7 @@ public interface XU更新器 extends 组件 {
 	/**
 	 * 新增或替换版本检查参数；GET 使用查询串，POST 使用表单。
 	 *
-	 * @param name 非空参数名。
+	 * @param name  非空参数名。
 	 * @param value 参数文本，使用 UTF-8 编码。
 	 */
 	@SimpleFunction
@@ -175,7 +172,7 @@ public interface XU更新器 extends 组件 {
 	/**
 	 * 新增或替换检查与下载请求头；配置在任务开始时固定。
 	 *
-	 * @param name 合法 HTTP 请求头名称。
+	 * @param name  合法 HTTP 请求头名称。
 	 * @param value 不含换行的请求头值。
 	 */
 	@SimpleFunction
@@ -190,10 +187,10 @@ public interface XU更新器 extends 组件 {
 	/**
 	 * 设置下次更新框的颜色、顶部图片及尺寸。
 	 *
-	 * @param themeColor ARGB 颜色；-1 使用上游默认。
-	 * @param textColor 按钮文字颜色；0 使用上游默认。
-	 * @param topImage drawable 资源标识；空文本使用上游默认。
-	 * @param widthRatio 屏幕宽度比例，0 至 1；0 使用默认。
+	 * @param themeColor  ARGB 颜色；-1 使用上游默认。
+	 * @param textColor   按钮文字颜色；0 使用上游默认。
+	 * @param topImage    drawable 资源标识；空文本使用上游默认。
+	 * @param widthRatio  屏幕宽度比例，0 至 1；0 使用默认。
 	 * @param heightRatio 屏幕高度比例，0 至 1；0 适应内容。
 	 */
 	@SimpleFunction
@@ -280,11 +277,16 @@ public interface XU更新器 extends 组件 {
 	)
 	void 自动下载(boolean value);
 
-	/** 检查请求已经结束；之后仍可能解析、提示或下载，不代表更新完成。 */
+	/**
+	 * 检查请求已经结束；之后仍可能解析、提示或下载，不代表更新完成。
+	 */
 	@SimpleEvent
 	void 检查结束();
 
-	/** 下载中关闭提示并转入后台通知；不表示允许静默安装。 */
+	/**
+	 * 下载中关闭提示并转入后台通知，不静默安装。
+	 * 离开窗口后由服务继续，返回同一窗口实例时重新接回状态与事件，并可继续取消任务。
+	 */
 	@SimpleFunction
 	void 转入后台();
 
@@ -320,7 +322,10 @@ public interface XU更新器 extends 组件 {
 	 *
 	 * @param value 是否使用 JSON 请求体。
 	 */
-	@SimpleProperty(type = SimpleProperty.PROPERTY_TYPE_BOOLEAN, initializer = "False")
+	@SimpleProperty(
+		type = SimpleProperty.PROPERTY_TYPE_BOOLEAN,
+		initializer = "False"
+	)
 	void POST使用JSON(boolean value);
 
 	/**
@@ -444,7 +449,7 @@ public interface XU更新器 extends 组件 {
 	 * 启用自定义解析后触发；默认有更新为假，必须明确填写有效信息。
 	 *
 	 * @param response 原始响应内容。
-	 * @param info 在本事件内填写；事件返回后读取其快照。
+	 * @param info     在本事件内填写；事件返回后读取其快照。
 	 */
 	@SimpleEvent
 	void 解析响应(String response, XU更新信息 info);
@@ -473,8 +478,8 @@ public interface XU更新器 extends 组件 {
 	 * 下载期间的进度；只有写入完成且校验通过后才报告 100%。
 	 *
 	 * @param received 已接收的字节数。
-	 * @param total 预期字节数；未知时为零。
-	 * @param percent 0 至 100；总大小未知时为 -1。
+	 * @param total    预期字节数；未知时为零。
+	 * @param percent  0 至 100；总大小未知时为 -1。
 	 */
 	@SimpleEvent
 	void 下载进度(long received, long total, int percent);
@@ -518,7 +523,7 @@ public interface XU更新器 extends 组件 {
 	/**
 	 * 请求、解析、下载、校验或安装请求失败。
 	 *
-	 * @param stage 阶段_检查、阶段_下载或阶段_安装。
+	 * @param stage   阶段_检查、阶段_下载或阶段_安装。
 	 * @param message 失败原因，任务已停止；可修正配置后重试。
 	 */
 	@SimpleEvent

@@ -1,14 +1,23 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.mikepenz.iconics.IconicsDrawable;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
 import simple.runtime.android.MainActivity;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import simple.runtime.components.可视组件;
+import simple.runtime.components.组件容器;
 import simple.runtime.events.EventDispatcher;
 
 /**
@@ -17,14 +26,10 @@ import simple.runtime.events.EventDispatcher;
  * @author 树先生 xhwsd@qq.com
  */
 public final class 图标动画Impl extends simple.runtime.components.impl.组件Impl
-		implements 图标动画,
-				MainActivity.OnDestroyListener,
-				MainActivity.OnStopListener,
-				MainActivity.OnResumeListener,
-				View.OnAttachStateChangeListener {
+		implements 图标动画, MainActivity.OnDestroyListener, MainActivity.OnStopListener, MainActivity.OnResumeListener,
+		View.OnAttachStateChangeListener {
 
-	private final Map<Integer, android.animation.ValueAnimator> animations =
-			new LinkedHashMap<Integer, android.animation.ValueAnimator>();
+	private final Map<Integer, android.animation.ValueAnimator> animations = new LinkedHashMap<Integer, android.animation.ValueAnimator>();
 	private final Map<Integer, 图标动画配置> configurations = new LinkedHashMap<Integer, 图标动画配置>();
 	private int nextId;
 	private int boundPosition;
@@ -33,8 +38,8 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 	private MotionDrawable drawable;
 	private boolean destroyed;
 	private int generation;
-	private final Set<android.animation.ValueAnimator> autoPaused =
-			new HashSet<android.animation.ValueAnimator>();
+	private final Set<android.animation.ValueAnimator> autoPaused = new HashSet<android.animation.ValueAnimator>();
+
 	/**
 	 * 创建并监听宿主生命周期。
 	 *
@@ -47,6 +52,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		m.addOnStopListener(this);
 		m.addOnResumeListener(this);
 	}
+
 	/**
 	 * 拒绝销毁后调用。
 	 */
@@ -65,8 +71,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		}
 		image.check();
 		View v = Support.view(component);
-		if (position == -1 && !(v instanceof ImageView)
-				|| position >= 0 && !(v instanceof TextView)) {
+		if (position == -1 && !(v instanceof ImageView) || position >= 0 && !(v instanceof TextView)) {
 			throw new 图标错误("目标不支持此图标位置");
 		}
 		清空();
@@ -87,8 +92,8 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 			((ImageView) target).setImageDrawable(drawable);
 		} else {
 			TextView t = (TextView) target;
-			android.graphics.drawable.Drawable[] a =
-					position >= 4 ? t.getCompoundDrawablesRelative() : t.getCompoundDrawables();
+			android.graphics.drawable.Drawable[] a = position >= 4 ? t.getCompoundDrawablesRelative()
+					: t.getCompoundDrawables();
 			drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 			a[position == 4 ? 0 : position == 5 ? 2 : position] = drawable;
 			if (position >= 4) {
@@ -105,15 +110,8 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		if (drawable == null || c == null) {
 			throw new 图标错误("请先绑定图标并提供配置");
 		}
-		if (c.类型() < 0
-				|| c.类型() > 2
-				|| c.时长() <= 0
-				|| c.延时() < 0
-				|| c.重复次数() < -1
-				|| c.插值() < 0
-				|| c.插值() > 4
-				|| !Float.isFinite(c.起值())
-				|| !Float.isFinite(c.止值())
+		if (c.类型() < 0 || c.类型() > 2 || c.时长() <= 0 || c.延时() < 0 || c.重复次数() < -1 || c.插值() < 0 || c.插值() > 4
+				|| !Float.isFinite(c.起值()) || !Float.isFinite(c.止值())
 				|| c.类型() == 1 && (c.起值() < 0 || c.止值() < 0 || c.起值() > 255 || c.止值() > 255)
 				|| c.类型() == 2 && (c.起值() < 0 || c.止值() < 0)) {
 			throw new 图标错误("动画参数越界");
@@ -130,65 +128,57 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		a.setDuration(c.时长());
 		a.setStartDelay(c.延时());
 		a.setRepeatCount(c.重复次数());
-		a.setRepeatMode(
-				c.往返()
-						? android.animation.ValueAnimator.REVERSE
-						: android.animation.ValueAnimator.RESTART);
-		android.animation.TimeInterpolator[] interpolators = {
-			new android.view.animation.LinearInterpolator(),
-			new android.view.animation.AccelerateInterpolator(),
-			new android.view.animation.DecelerateInterpolator(),
-			new android.view.animation.AccelerateDecelerateInterpolator(),
-			new android.view.animation.BounceInterpolator()
-		};
+		a.setRepeatMode(c.往返() ? android.animation.ValueAnimator.REVERSE : android.animation.ValueAnimator.RESTART);
+		android.animation.TimeInterpolator[] interpolators = { new android.view.animation.LinearInterpolator(),
+				new android.view.animation.AccelerateInterpolator(),
+				new android.view.animation.DecelerateInterpolator(),
+				new android.view.animation.AccelerateDecelerateInterpolator(),
+				new android.view.animation.BounceInterpolator() };
 		a.setInterpolator(interpolators[c.插值()]);
-		a.addUpdateListener(
-				new android.animation.ValueAnimator.AnimatorUpdateListener() {
-					@Override
-					public void onAnimationUpdate(android.animation.ValueAnimator animation) {
-						if (!ownsTarget()) {
-							autoPaused.remove(animation);
-							animation.cancel();
-							return;
-						}
-						bound.values.put(index, (Float) animation.getAnimatedValue());
-						bound.invalidateSelf();
-					}
-				});
-		a.addListener(
-				new android.animation.AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationStart(android.animation.Animator a) {
-						动画开始(index);
-					}
+		a.addUpdateListener(new android.animation.ValueAnimator.AnimatorUpdateListener() {
+			@Override
+			public void onAnimationUpdate(android.animation.ValueAnimator animation) {
+				if (!ownsTarget()) {
+					autoPaused.remove(animation);
+					animation.cancel();
+					return;
+				}
+				bound.values.put(index, (Float) animation.getAnimatedValue());
+				bound.invalidateSelf();
+			}
+		});
+		a.addListener(new android.animation.AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationStart(android.animation.Animator a) {
+				动画开始(index);
+			}
 
-					@Override
-					public void onAnimationEnd(android.animation.Animator a) {
-						动画结束(index);
-					}
+			@Override
+			public void onAnimationEnd(android.animation.Animator a) {
+				动画结束(index);
+			}
 
-					@Override
-					public void onAnimationRepeat(android.animation.Animator a) {
-						动画重复(index);
-					}
+			@Override
+			public void onAnimationRepeat(android.animation.Animator a) {
+				动画重复(index);
+			}
 
-					@Override
-					public void onAnimationCancel(android.animation.Animator a) {
-						动画取消(index);
-					}
-				});
-		a.addPauseListener(
-				new android.animation.AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationPause(android.animation.Animator a) {
-						动画暂停(index);
-					}
+			@Override
+			public void onAnimationCancel(android.animation.Animator a) {
+				动画取消(index);
+			}
+		});
+		a.addPauseListener(new android.animation.AnimatorListenerAdapter() {
+			@Override
+			public void onAnimationPause(android.animation.Animator a) {
+				动画暂停(index);
+			}
 
-					@Override
-					public void onAnimationResume(android.animation.Animator a) {
-						动画继续(index);
-					}
-				});
+			@Override
+			public void onAnimationResume(android.animation.Animator a) {
+				动画继续(index);
+			}
+		});
 		animations.put(index, a);
 		configurations.put(index, c.复制());
 		return index;
@@ -197,12 +187,9 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 	@Override
 	public void 开始() {
 		check();
-		if (hostStopped || !ownsTarget() || !target.isShown() || !target.isAttachedToWindow()) {
-			throw new 图标错误("请在目标显示后开始动画");
-		}
+		visible();
 		autoPaused.clear();
-		for (android.animation.ValueAnimator a :
-				new ArrayList<android.animation.ValueAnimator>(animations.values())) {
+		for (android.animation.ValueAnimator a : new ArrayList<android.animation.ValueAnimator>(animations.values())) {
 			a.start();
 		}
 	}
@@ -219,9 +206,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 	@Override
 	public void 继续() {
 		check();
-		if (hostStopped || !ownsTarget() || !target.isShown() || !target.isAttachedToWindow()) {
-			throw new 图标错误("目标不可见");
-		}
+		visible();
 		autoPaused.clear();
 		for (android.animation.ValueAnimator a : animations.values()) {
 			a.resume();
@@ -232,8 +217,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 	public void 取消() {
 		check();
 		autoPaused.clear();
-		for (android.animation.ValueAnimator a :
-				new ArrayList<android.animation.ValueAnimator>(animations.values())) {
+		for (android.animation.ValueAnimator a : new ArrayList<android.animation.ValueAnimator>(animations.values())) {
 			a.cancel();
 		}
 	}
@@ -242,8 +226,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 	public void 结束() {
 		check();
 		autoPaused.clear();
-		for (android.animation.ValueAnimator a :
-				new ArrayList<android.animation.ValueAnimator>(animations.values())) {
+		for (android.animation.ValueAnimator a : new ArrayList<android.animation.ValueAnimator>(animations.values())) {
 			a.end();
 		}
 	}
@@ -251,9 +234,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 	@Override
 	public void 反向() {
 		check();
-		if (hostStopped || !ownsTarget() || !target.isShown() || !target.isAttachedToWindow()) {
-			throw new 图标错误("目标不可见");
-		}
+		visible();
 		for (android.animation.ValueAnimator a : animations.values()) {
 			a.reverse();
 		}
@@ -294,6 +275,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		hostStopped = true;
 		pauseAutomatic();
 	}
+
 	/**
 	 * 暂停当前运行项，记住需要自动恢复的集合。
 	 */
@@ -311,6 +293,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		hostStopped = false;
 		resumeAutomatic();
 	}
+
 	/**
 	 * 只恢复此前自动暂停且仍绑定的项。
 	 */
@@ -363,6 +346,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		m.removeOnDestroyListener(this);
 		super.销毁();
 	}
+
 	/**
 	 * 合成旋转、缩放和透明度；浮点插值保留透明度下限。
 	 */
@@ -370,6 +354,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		private final IconicsDrawable source;
 		final Map<Integer, Integer> types = new LinkedHashMap<Integer, Integer>();
 		final Map<Integer, Float> values = new LinkedHashMap<Integer, Float>();
+
 		/**
 		 * 包装独立图标。
 		 *
@@ -387,17 +372,17 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 			for (int i : types.keySet()) {
 				float v = values.get(i);
 				switch (types.get(i)) {
-					case 0:
-						canvas.rotate(v, b.exactCenterX(), b.exactCenterY());
-						break;
-					case 1:
-						alpha *= v / 255f;
-						break;
-					case 2:
-						canvas.scale(v, v, b.exactCenterX(), b.exactCenterY());
-						break;
-					default:
-						break;
+				case 0:
+					canvas.rotate(v, b.exactCenterX(), b.exactCenterY());
+					break;
+				case 1:
+					alpha *= v / 255f;
+					break;
+				case 2:
+					canvas.scale(v, v, b.exactCenterX(), b.exactCenterY());
+					break;
+				default:
+					break;
 				}
 			}
 			int old = source.getAlpha();
@@ -441,7 +426,9 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		}
 
 		@Override
+		@SuppressWarnings("deprecation")
 		public int getOpacity() {
+			// Drawable 的抽象契约仍要求提供透明度类型。
 			return android.graphics.PixelFormat.TRANSLUCENT;
 		}
 
@@ -501,26 +488,23 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 			emit("动画继续", index);
 		}
 	}
+
 	/**
 	 * 在当前动画操作完成后通知；重绑、清空和销毁丢弃旧通知。
 	 *
-	 * @param name 事件名。
+	 * @param name  事件名。
 	 * @param index 动画序号。
 	 */
 	private void emit(final String name, final int index) {
 		final int expected = generation;
-		new android.os.Handler(android.os.Looper.getMainLooper())
-				.post(
-						new Runnable() {
-							@Override
-							public void run() {
-								if (!destroyed
-										&& generation == expected
-										&& animations.containsKey(index)) {
-									EventDispatcher.dispatchEvent(图标动画Impl.this, name, index);
-								}
-							}
-						});
+		new android.os.Handler(android.os.Looper.getMainLooper()).post(new Runnable() {
+			@Override
+			public void run() {
+				if (!destroyed && generation == expected && animations.containsKey(index)) {
+					EventDispatcher.dispatchEvent(图标动画Impl.this, name, index);
+				}
+			}
+		});
 	}
 
 	/**
@@ -538,12 +522,11 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 		if (boundPosition == -1) {
 			return ((ImageView) target).getDrawable() == drawable;
 		}
-		android.graphics.drawable.Drawable[] a =
-				boundPosition >= 4
-						? ((TextView) target).getCompoundDrawablesRelative()
-						: ((TextView) target).getCompoundDrawables();
+		android.graphics.drawable.Drawable[] a = boundPosition >= 4 ? ((TextView) target).getCompoundDrawablesRelative()
+				: ((TextView) target).getCompoundDrawables();
 		return a[boundPosition == 4 ? 0 : boundPosition == 5 ? 2 : boundPosition] == drawable;
 	}
+
 	/**
 	 * 要求目标可见并且绑定仍有效。
 	 */
@@ -552,6 +535,7 @@ public final class 图标动画Impl extends simple.runtime.components.impl.组�
 			throw new 图标错误("目标不可见或图像已替换，请重新绑定");
 		}
 	}
+
 	/**
 	 * 校验稳定动画编号。
 	 *

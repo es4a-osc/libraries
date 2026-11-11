@@ -19,9 +19,9 @@ final class ThemeValues {
 	/**
 	 * 解析主题颜色；未定义属性时采用明确的后备颜色。
 	 *
-	 * @param context 当前主题上下文。
+	 * @param context   当前主题上下文。
 	 * @param attribute 颜色属性编号。
-	 * @param fallback 后备 ARGB 颜色。
+	 * @param fallback  后备 ARGB 颜色。
 	 * @return 解析后的 ARGB 颜色。
 	 */
 	static int color(Context context, int attribute, int fallback) {
@@ -35,9 +35,9 @@ final class ThemeValues {
 	/**
 	 * 解析主题尺寸，不额外乘以屏幕密度。
 	 *
-	 * @param context 当前主题上下文。
+	 * @param context   当前主题上下文。
 	 * @param attribute 尺寸属性编号。
-	 * @param fallback 未定义时的像素值。
+	 * @param fallback  未定义时的像素值。
 	 * @return 像素尺寸。
 	 */
 	static int dimension(Context context, int attribute, int fallback) {

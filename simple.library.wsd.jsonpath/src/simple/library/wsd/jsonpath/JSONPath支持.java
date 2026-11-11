@@ -1,7 +1,9 @@
 package simple.library.wsd.jsonpath;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -15,6 +17,9 @@ import org.json.JSONObject;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.JsonPathException;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.cache.Cache;
+import com.jayway.jsonpath.spi.cache.CacheProvider;
 import com.jayway.jsonpath.spi.json.JsonSmartJsonProvider;
 import com.jayway.jsonpath.spi.mapper.JsonSmartMappingProvider;
 
@@ -25,7 +30,9 @@ import net.minidev.json.parser.ParseException;
 /**
  * 本库的参数检查、JSON 模型复制及原生 JSON 互通边界，不向 Simple 导出。
  *
- * <p>只接受 JSON 标准值；配置固定在本库内，不改变 JsonPath 全局默认配置。</p>
+ * <p>
+ * 只接受 JSON 标准值；配置固定在本库内，不改变 JsonPath 全局默认配置。
+ * </p>
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -36,10 +43,8 @@ final class JSONPath支持 {
 	/**
 	 * 本库独立配置；不使用 Android 不兼容的 JsonOrgJsonProvider。
 	 */
-	static final Configuration CONFIG = Configuration.builder()
-			.jsonProvider(new JsonSmartJsonProvider())
-			.mappingProvider(new JsonSmartMappingProvider())
-			.build();
+	static final Configuration CONFIG = Configuration.builder().jsonProvider(new JsonSmartJsonProvider())
+			.mappingProvider(new JsonSmartMappingProvider()).build();
 
 	/**
 	 * 静态辅助类。
@@ -79,10 +84,51 @@ final class JSONPath支持 {
 		}
 
 		try {
-			return JsonPath.compile(path);
+			// 函数参数可能参与计算，含括号的表达式不复用可变参数实例。
+			if (path.indexOf('(') >= 0) {
+				return JsonPath.compile(path);
+			}
+			Cache cache = CacheProvider.getCache();
+			JsonPath compiled = cache.get(path);
+			if (compiled == null) {
+				compiled = JsonPath.compile(path);
+				cache.put(path, compiled);
+			}
+			return compiled;
 		} catch (JsonPathException error) {
 			throw failure("路径表达式无效", error);
 		}
+	}
+
+	/**
+	 * 将本库位标志转换为独立读取配置，不改动全局默认值。
+	 *
+	 * @param flags 本库读取选项的组合。
+	 * @return 当前调用使用的配置。
+	 * @throws IllegalArgumentException 包含未知位标志。
+	 */
+	static Configuration options(int flags) {
+		if (flags < 0 || (flags & ~31) != 0) {
+			throw new IllegalArgumentException("读取选项包含未知标志。");
+		}
+		List<Option> options = new ArrayList<Option>();
+		for (Option option : Option.values()) {
+			if ((flags & (1 << option.ordinal())) != 0) {
+				options.add(option);
+			}
+		}
+		return CONFIG.addOptions(options.toArray(new Option[0]));
+	}
+
+	/**
+	 * 为可能包含函数的表达式提供独立计算模型，避免 append 等函数改写文档。
+	 *
+	 * @param model      当前文档。
+	 * @param expression 已校验表达式。
+	 * @return 普通路径直接读取模型；可能执行函数时返回独立副本。
+	 */
+	static Object queryModel(Object model, String expression) {
+		return expression.indexOf('(') < 0 ? model : copy(model);
 	}
 
 	/* JSON 文本处理：解析与序列化均保留标准 JSON 类型。 */
@@ -106,7 +152,7 @@ final class JSONPath支持 {
 	 * 将普通错误转换为 Simple 可处理的非法参数错误。
 	 *
 	 * @param message 操作说明。
-	 * @param error 原始原因。
+	 * @param error   原始原因。
 	 * @return 包含原因链的错误。
 	 */
 	static IllegalArgumentException failure(String message, Exception error) {
@@ -139,7 +185,7 @@ final class JSONPath支持 {
 	/**
 	 * 复制一层模型；检测当前递归链中的循环引用。
 	 *
-	 * @param value 当前值。
+	 * @param value  当前值。
 	 * @param active 正在复制的容器。
 	 * @return 独立模型；同一容器在不同分支出现时分别复制。
 	 * @throws IllegalArgumentException 数据不是受支持的 JSON 模型，或原生 JSON 读取失败。
@@ -154,10 +200,17 @@ final class JSONPath支持 {
 		}
 		if (value instanceof Number) {
 			double number = ((Number) value).doubleValue();
-			if ((value instanceof Double || value instanceof Float) && (Double.isNaN(number) || Double.isInfinite(number))) {
+			if ((value instanceof Double || value instanceof Float)
+					&& (Double.isNaN(number) || Double.isInfinite(number))) {
 				throw new IllegalArgumentException("JSON数值不得为 NaN 或无穷大。");
 			}
-			return value;
+			if (value instanceof Byte || value instanceof Short || value instanceof Integer || value instanceof Long
+					|| value instanceof Float || value instanceof Double || value instanceof BigInteger
+					|| value instanceof BigDecimal) {
+				return value;
+			}
+			// 自定义 Number 可能可变，捕获为不共享状态的十进制值。
+			return number(value);
 		}
 
 		// 只检查当前祖先链，允许同一容器由不同分支引用。
@@ -197,9 +250,10 @@ final class JSONPath支持 {
 				}
 				return result;
 			}
-			if (value instanceof List) {
+			if (value instanceof Collection) {
 				List<Object> result = new ArrayList<Object>();
-				for (Object item : (List<?>) value) {
+				// keys() 返回集合；统一为可序列化和逐项读取的数组。
+				for (Object item : (Collection<?>) value) {
 					result.add(copy(item, active));
 				}
 				return result;

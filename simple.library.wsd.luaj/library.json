@@ -210,6 +210,80 @@
 						{
 							"name": "清除错误",
 							"description": "清除本实例保存的最近失败说明。"
+						},
+						{
+							"name": "加载字节集",
+							"description": "从独立字节快照加载代码，接受 UTF-8 BOM；只编译，不执行。不保证与其他 Lua 实现的字节码兼容。",
+							"return": "simple.library.wsd.luaj.LuaJ函数",
+							"params": [
+								{
+									"name": "data",
+									"type": "字节型[]",
+									"description": "Lua 源码原始字节，或本版本 LuaJ 生成的字节码。"
+								},
+								{
+									"name": "source",
+									"type": "文本型",
+									"description": "错误定位使用的来源名称。"
+								}
+							]
+						},
+						{
+							"name": "执行字节集",
+							"description": "加载并执行原始字节，保留全部返回值。只运行可信内容。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "data",
+									"type": "字节型[]",
+									"description": "源码或本版本字节码。"
+								}
+							]
+						},
+						{
+							"name": "加载资产",
+							"description": "读取并加载 APK 资产，不执行；文件操作应在后台完成。",
+							"return": "simple.library.wsd.luaj.LuaJ函数",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "APK 资产相对路径；源码应为 UTF-8，也接受本版本字节码。"
+								}
+							]
+						},
+						{
+							"name": "执行资产",
+							"description": "读取并执行资产，保留全部返回值；应在后台线程调用。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "APK 资产中的 UTF-8 源码或本版本字节码路径。"
+								}
+							]
+						},
+						{
+							"name": "创建回调函数",
+							"description": "创建不占用全局名称的宿主函数，可传给 Lua 或用作表成员。",
+							"return": "simple.library.wsd.luaj.LuaJ函数",
+							"params": [
+								{
+									"name": "callback",
+									"type": "simple.library.wsd.luaj.LuaJ回调",
+									"description": "继承 LuaJ回调并覆写处理调用的非空对象。"
+								}
+							]
+						},
+						{
+							"name": "取全局表",
+							"description": "取得当前实例实际的全局环境表；修改会影响后续执行。",
+							"return": "simple.library.wsd.luaj.LuaJ表"
+						},
+						{
+							"name": "启用调试库",
+							"description": "装载 Lua debug 标准库，供脚本读取栈、闭包信息和设置钩子。重复调用会替换 debug 表；不是安全隔离或强制中断机制。"
 						}
 					]
 				},
@@ -555,6 +629,81 @@
 									"description": "同一实例的另一操作数。"
 								}
 							]
+						},
+						{
+							"name": "调用",
+							"description": "不传参数调用函数，保留全部结果。 也适用于具有 __call 元方法的值。",
+							"return": "simple.library.wsd.luaj.LuaJ参数"
+						},
+						{
+							"name": "带参调用",
+							"description": "传入 Simple 参数并调用，保留全部结果及 nil 位置。 也适用于具有 __call 元方法的值。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "参数",
+									"type": "变体型()",
+									"description": "按顺序传入的参数；空引用或空数组表示没有参数，空元素保留为 nil。"
+								}
+							]
+						},
+						{
+							"name": "使用参数调用",
+							"description": "使用同一实例的参数列表调用，保留全部结果。 也适用于具有 __call 元方法的值。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "参数",
+									"type": "simple.library.wsd.luaj.LuaJ参数",
+									"description": "同一实例的参数列表；空引用表示无参数。"
+								}
+							]
+						},
+						{
+							"name": "调用方法",
+							"description": "按 Lua 冒号调用规则调用成员函数，自动把当前值作为首个 self 实参。",
+							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"params": [
+								{
+									"name": "name",
+									"type": "文本型",
+									"description": "单个成员名称。"
+								},
+								{
+									"name": "arguments",
+									"type": "变体型[]",
+									"description": "额外实参；空引用表示无额外实参。"
+								}
+							]
+						},
+						{
+							"name": "逻辑非",
+							"description": "按 Lua 真值规则取反，只有 nil 和 false 为假。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "逻辑与",
+							"description": "按 Lua 真值规则选择两个值之一，返回值不强制转成逻辑。两参数在传入前已计算，不延迟执行右侧表达式。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "other",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同实例的另一个值；空引用视为 nil。"
+								}
+							]
+						},
+						{
+							"name": "逻辑或",
+							"description": "按 Lua 真值规则选择两个值之一，返回值不强制转成逻辑。两参数在传入前已计算，不延迟执行右侧表达式。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
+							"params": [
+								{
+									"name": "other",
+									"type": "simple.library.wsd.luaj.LuaJ值",
+									"description": "同实例的另一个值；空引用视为 nil。"
+								}
+							]
 						}
 					]
 				},
@@ -635,7 +784,7 @@
 						},
 						{
 							"name": "连接文本",
-							"description": "把指定顺序范围内的文本或数值连接为字符串。",
+							"description": "把指定顺序范围内的文本或数值连接为字符串。 空范围返回空文本。",
 							"return": "文本型",
 							"params": [
 								{
@@ -668,31 +817,59 @@
 					],
 					"functions": [
 						{
-							"name": "调用",
-							"description": "不传参数调用函数，保留全部结果。",
-							"return": "simple.library.wsd.luaj.LuaJ参数"
-						},
-						{
-							"name": "带参调用",
-							"description": "传入 Simple 参数并调用，保留全部结果及 nil 位置。",
-							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"name": "导出字节码",
+							"description": "导出 Lua 代码的本版本字节码；宿主 Java 函数不能导出。不保存闭包捕获值或全局环境，重新加载使用目标实例环境。",
+							"return": "字节型[]",
 							"params": [
 								{
-									"name": "参数",
-									"type": "变体型()",
-									"description": "按顺序传入的参数；空引用或空数组表示没有参数，空元素保留为 nil。"
+									"name": "stripDebug",
+									"type": "逻辑型",
+									"description": "是否移除源码行号等调试信息。"
 								}
 							]
 						},
 						{
-							"name": "使用参数调用",
-							"description": "使用同一实例的参数列表调用，保留全部结果。",
-							"return": "simple.library.wsd.luaj.LuaJ参数",
+							"name": "取捕获值数",
+							"description": "取得 Lua 闭包捕获值的数量；宿主 Java 函数不支持。",
+							"return": "整数型"
+						},
+						{
+							"name": "取捕获值",
+							"description": "取得当前捕获值的同实例视图；重新加载的字节码初始捕获值为 nil。",
+							"return": "simple.library.wsd.luaj.LuaJ值",
 							"params": [
 								{
-									"name": "参数",
-									"type": "simple.library.wsd.luaj.LuaJ参数",
-									"description": "同一实例的参数列表；空引用表示无参数。"
+									"name": "index",
+									"type": "整数型",
+									"description": "从 1 开始的捕获值位置。"
+								}
+							]
+						},
+						{
+							"name": "取捕获值名称",
+							"description": "取得捕获变量的调试名称；导出时移除调试信息后名称可能为空。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "index",
+									"type": "整数型",
+									"description": "从 1 开始的捕获值位置。"
+								}
+							]
+						},
+						{
+							"name": "置捕获值",
+							"description": "设置现有捕获值，可能影响共享同一捕获变量的其它闭包；可用于恢复字节码不保存的捕获值。",
+							"params": [
+								{
+									"name": "index",
+									"type": "整数型",
+									"description": "从 1 开始的捕获值位置。"
+								},
+								{
+									"name": "replacement",
+									"type": "变体型",
+									"description": "新值；空值表示 nil，引用必须属于同一实例。"
 								}
 							]
 						}

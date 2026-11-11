@@ -15,10 +15,7 @@ import simple.runtime.annotations.UsesPermissions;
  * @author 树先生 xhwsd@qq.com
  */
 @SimpleObject
-@UsesPermissions(permissionNames =
-	// 允许工作线程发起域名解析及查询本机网络接口地址。
-	"android.permission.INTERNET"
-)
+@UsesPermissions(permissionNames = "android.permission.INTERNET")
 public final class XU域名 {
 
 	/**

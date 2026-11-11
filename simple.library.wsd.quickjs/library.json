@@ -14,13 +14,13 @@
 			"name": "扩展对象",
 			"definitions": [
 				{
-					"name": "QuickJS承诺",
+					"name": "QJS承诺",
 					"description": "真实 Promise；处理器及 async/await 由运行时任务队列推进。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS承诺",
+					"type": "simple.library.wsd.quickjs.QJS承诺",
 					"icon": "icons/text-caption.svg",
 					"inherits": [
-						"simple.library.wsd.quickjs.QuickJS对象"
+						"simple.library.wsd.quickjs.QJS对象"
 					],
 					"functions": [
 						{
@@ -31,7 +31,7 @@
 						{
 							"name": "取结果",
 							"description": "取得兑现值或拒绝原因；等待状态返回 undefined。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "接续",
@@ -39,16 +39,16 @@
 							"params": [
 								{
 									"name": "成功处理器",
-									"type": "simple.library.wsd.quickjs.QuickJS函数",
+									"type": "simple.library.wsd.quickjs.QJS函数",
 									"description": "成功处理器，空表示忽略。"
 								},
 								{
 									"name": "失败处理器",
-									"type": "simple.library.wsd.quickjs.QuickJS函数",
+									"type": "simple.library.wsd.quickjs.QJS函数",
 									"description": "失败处理器，空表示忽略。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS承诺"
+							"return": "simple.library.wsd.quickjs.QJS承诺"
 						},
 						{
 							"name": "捕获拒绝",
@@ -56,11 +56,11 @@
 							"params": [
 								{
 									"name": "处理器",
-									"type": "simple.library.wsd.quickjs.QuickJS函数",
+									"type": "simple.library.wsd.quickjs.QJS函数",
 									"description": "拒绝处理器；空表示继续传递原拒绝。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS承诺"
+							"return": "simple.library.wsd.quickjs.QJS承诺"
 						},
 						{
 							"name": "最终处理",
@@ -68,24 +68,24 @@
 							"params": [
 								{
 									"name": "处理器",
-									"type": "simple.library.wsd.quickjs.QuickJS函数",
+									"type": "simple.library.wsd.quickjs.QJS函数",
 									"description": "finally 处理器；空表示忽略。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS承诺"
+							"return": "simple.library.wsd.quickjs.QJS承诺"
 						}
 					]
 				},
 				{
-					"name": "QuickJS值",
+					"name": "QJS值",
 					"description": "保留实际类型的 JS 值；显式释放引用或销毁实例后不可继续使用。值形参的空引用表示 undefined，JS null 须显式创建。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS值",
+					"type": "simple.library.wsd.quickjs.QJS值",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
 							"name": "取类型",
-							"description": "取得 QuickJS常量中的类型编号。",
+							"description": "取得 QJS常量中的类型编号。",
 							"return": "整数型"
 						},
 						{
@@ -186,27 +186,27 @@
 						{
 							"name": "到对象",
 							"description": "检查类型并返回当前包装，不增加引用计数。",
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "到数组",
 							"description": "检查类型并返回当前包装，不增加引用计数。",
-							"return": "simple.library.wsd.quickjs.QuickJS数组"
+							"return": "simple.library.wsd.quickjs.QJS数组"
 						},
 						{
 							"name": "到函数",
 							"description": "检查类型并返回当前包装，不增加引用计数。",
-							"return": "simple.library.wsd.quickjs.QuickJS函数"
+							"return": "simple.library.wsd.quickjs.QJS函数"
 						},
 						{
 							"name": "到承诺",
 							"description": "检查类型并返回当前包装，不增加引用计数。",
-							"return": "simple.library.wsd.quickjs.QuickJS承诺"
+							"return": "simple.library.wsd.quickjs.QJS承诺"
 						},
 						{
 							"name": "保留",
 							"description": "取得独立拥有引用，可用于保留回调中的借用值。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "复制到",
@@ -214,11 +214,11 @@
 							"params": [
 								{
 									"name": "目标",
-									"type": "simple.library.wsd.quickjs.QuickJS实例",
+									"type": "simple.library.wsd.quickjs.QJS实例",
 									"description": "同一运行时的目标实例。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "计算",
@@ -231,11 +231,11 @@
 								},
 								{
 									"name": "另一值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的右操作数。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "一元计算",
@@ -247,7 +247,7 @@
 									"description": "支持 +、-、~、!、typeof、void。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "是否相同",
@@ -255,7 +255,7 @@
 							"params": [
 								{
 									"name": "另一值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的值。"
 								}
 							],
@@ -264,7 +264,7 @@
 						{
 							"name": "转JSON",
 							"description": "按 JSON.stringify 返回字符串值或 undefined。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "到字节集",
@@ -274,7 +274,7 @@
 						{
 							"name": "取符号注册键",
 							"description": "读取 Symbol.for 注册键，独立 Symbol 返回 undefined。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "释放",
@@ -283,10 +283,10 @@
 					]
 				},
 				{
-					"name": "QuickJS内存",
+					"name": "QJS内存",
 					"description": "原生运行时内存统计快照，不随后续引擎操作改变；不包含 Java 内存。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS内存",
+					"type": "simple.library.wsd.quickjs.QJS内存",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -422,13 +422,13 @@
 					]
 				},
 				{
-					"name": "QuickJS函数",
+					"name": "QJS函数",
 					"description": "JS 函数，支持接收者、参数、返回值和构造调用。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS函数",
+					"type": "simple.library.wsd.quickjs.QJS函数",
 					"icon": "icons/text-caption.svg",
 					"inherits": [
-						"simple.library.wsd.quickjs.QuickJS对象"
+						"simple.library.wsd.quickjs.QJS对象"
 					],
 					"functions": [
 						{
@@ -441,7 +441,7 @@
 									"description": "Simple 参数数组，空表示无参数。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "带接收者调用",
@@ -449,7 +449,7 @@
 							"params": [
 								{
 									"name": "接收者",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "this 值。"
 								},
 								{
@@ -458,7 +458,7 @@
 									"description": "Simple 参数数组。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "构造",
@@ -470,15 +470,15 @@
 									"description": "构造参数。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						}
 					]
 				},
 				{
-					"name": "QuickJS参数",
+					"name": "QJS参数",
 					"description": "同步宿主回调的参数视图；值为借用引用，仅在当前回调内有效。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS参数",
+					"type": "simple.library.wsd.quickjs.QJS参数",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -496,46 +496,46 @@
 									"description": "从 0 开始的索引。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "取全部",
 							"description": "复制参数引用数组，数组中的值仍为本次回调借用值。",
-							"return": "simple.library.wsd.quickjs.QuickJS值()"
+							"return": "simple.library.wsd.quickjs.QJS值()"
 						}
 					]
 				},
 				{
-					"name": "QuickJS回调",
+					"name": "QJS回调",
 					"description": "同步宿主函数适配器；覆写处理调用。this 和参数仅在当前回调有效，需要长期持有时调用保留。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS回调",
+					"type": "simple.library.wsd.quickjs.QJS回调",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
 							"name": "处理调用",
-							"description": "处理 JS 对宿主函数的同步调用，空返回值表示 undefined。",
+							"description": "处理 JS 对宿主函数的同步调用，空返回值表示 undefined。 返回值须属于同一实例，封装复制其值，不转移或释放拥有引用。",
 							"params": [
 								{
 									"name": "接收者",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "JS this 值，借用引用。"
 								},
 								{
 									"name": "参数",
-									"type": "simple.library.wsd.quickjs.QuickJS参数",
+									"type": "simple.library.wsd.quickjs.QJS参数",
 									"description": "JS 参数，借用引用。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						}
 					]
 				},
 				{
-					"name": "QuickJS实例",
+					"name": "QJS实例",
 					"description": "独立全局环境；默认自带运行时，也可在同一运行时中创建多个实例。所有值保留 JS 类型，显式释放引用或销毁实例后不可继续使用。JS 值形参的空引用表示 undefined；JS null 须通过创建空值传递。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS实例",
+					"type": "simple.library.wsd.quickjs.QJS实例",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -548,7 +548,7 @@
 									"description": "完整 JS 代码。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "执行代码",
@@ -565,7 +565,7 @@
 									"description": "错误定位使用的来源名称。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "执行模块",
@@ -582,32 +582,32 @@
 									"description": "唯一模块标识。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "取全局对象",
 							"description": "取得当前全局对象的独立引用。",
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建未定义",
 							"description": "创建 JS undefined 值。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "创建空值",
 							"description": "创建 JS null 值。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "创建对象",
 							"description": "创建普通 JS 对象。",
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建数组",
 							"description": "创建空 JS 数组。",
-							"return": "simple.library.wsd.quickjs.QuickJS数组"
+							"return": "simple.library.wsd.quickjs.QJS数组"
 						},
 						{
 							"name": "创建逻辑",
@@ -619,7 +619,7 @@
 									"description": "逻辑值。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "创建小数",
@@ -631,7 +631,7 @@
 									"description": "数值，允许 NaN 和无穷大。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "创建文本",
@@ -643,7 +643,7 @@
 									"description": "文本，可含零字符及表情。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "创建大整数",
@@ -655,7 +655,7 @@
 									"description": "十进制整数文本。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "创建缓冲区",
@@ -667,7 +667,7 @@
 									"description": "复制输入字节，不共享 Java 数组。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "生成值",
@@ -679,7 +679,7 @@
 									"description": "Simple 基本值、数组、字节集或同一实例 JS 值；空转为 null。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "解析JSON",
@@ -691,7 +691,7 @@
 									"description": "完整 JSON 文本。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "生成JSON",
@@ -699,21 +699,21 @@
 							"params": [
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "待序列化值。"
 								},
 								{
 									"name": "替换器",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "替换函数或项目数组；空引用表示省略。"
 								},
 								{
 									"name": "缩进",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "缩进值；空引用表示省略。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "取全局值",
@@ -725,7 +725,7 @@
 									"description": "全局属性名。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "置全局值",
@@ -738,7 +738,7 @@
 								},
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的值。"
 								}
 							]
@@ -759,11 +759,11 @@
 								},
 								{
 									"name": "回调",
-									"type": "simple.library.wsd.quickjs.QuickJS回调",
+									"type": "simple.library.wsd.quickjs.QJS回调",
 									"description": "同步宿主回调对象。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS函数"
+							"return": "simple.library.wsd.quickjs.QJS函数"
 						},
 						{
 							"name": "注册函数",
@@ -776,7 +776,7 @@
 								},
 								{
 									"name": "回调",
-									"type": "simple.library.wsd.quickjs.QuickJS回调",
+									"type": "simple.library.wsd.quickjs.QJS回调",
 									"description": "同步宿主回调。"
 								}
 							]
@@ -787,7 +787,7 @@
 							"params": [
 								{
 									"name": "接收器",
-									"type": "simple.library.wsd.quickjs.QuickJS日志",
+									"type": "simple.library.wsd.quickjs.QJS日志",
 									"description": "日志接收器；空表示不接收。"
 								}
 							]
@@ -798,7 +798,7 @@
 							"params": [
 								{
 									"name": "接收器",
-									"type": "simple.library.wsd.quickjs.QuickJS监听",
+									"type": "simple.library.wsd.quickjs.QJS监听",
 									"description": "监听器；空表示不接收。"
 								}
 							]
@@ -841,7 +841,7 @@
 							"params": [
 								{
 									"name": "加载器",
-									"type": "simple.library.wsd.quickjs.QuickJS加载器",
+									"type": "simple.library.wsd.quickjs.QJS加载器",
 									"description": "动态加载器；空恢复仅使用注册模块。"
 								}
 							]
@@ -856,7 +856,7 @@
 									"description": "通过执行模块或执行字节码初始化的入口标识。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "编译代码",
@@ -902,7 +902,7 @@
 									"description": "同版本本库生成、来源可信的字节码。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "序列化值",
@@ -910,7 +910,7 @@
 							"params": [
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "可序列化的 JS 数据；函数等不受支持的值会报错。"
 								}
 							],
@@ -926,7 +926,7 @@
 									"description": "本库同版本生成的可信数据。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "执行文件",
@@ -938,7 +938,7 @@
 									"description": "绝对文件路径或相对应用私有 files 目录的路径。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "执行资产",
@@ -950,12 +950,12 @@
 									"description": "应用资产名称。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "创建控制器",
 							"description": "创建由宿主兑现或拒绝的 Promise 及控制函数。",
-							"return": "simple.library.wsd.quickjs.QuickJS控制器"
+							"return": "simple.library.wsd.quickjs.QJS控制器"
 						},
 						{
 							"name": "创建符号",
@@ -967,7 +967,7 @@
 									"description": "符号说明。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "取全局符号",
@@ -979,11 +979,11 @@
 									"description": "注册键。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "创建类型数组",
-							"description": "创建类型化数组；类型顺序见 QuickJS常量。",
+							"description": "创建类型化数组；类型顺序见 QJS常量。",
 							"params": [
 								{
 									"name": "类型",
@@ -996,7 +996,7 @@
 									"description": "元素数量，非负。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "从缓冲区创建类型数组",
@@ -1009,7 +1009,7 @@
 								},
 								{
 									"name": "缓冲区",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "ArrayBuffer。"
 								},
 								{
@@ -1023,7 +1023,7 @@
 									"description": "元素数量；负一表示剩余全部。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建数据视图",
@@ -1031,7 +1031,7 @@
 							"params": [
 								{
 									"name": "缓冲区",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "ArrayBuffer。"
 								},
 								{
@@ -1045,7 +1045,7 @@
 									"description": "字节数；负一表示剩余全部。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建日期",
@@ -1057,7 +1057,7 @@
 									"description": "Unix 毫秒时间。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建正则",
@@ -1074,27 +1074,27 @@
 									"description": "JS 标志，例如 gi。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建Map",
 							"description": "创建 JS Map。",
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建Set",
 							"description": "创建 JS Set。",
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建WeakMap",
 							"description": "创建 JS WeakMap。",
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建WeakSet",
 							"description": "创建 JS WeakSet。",
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建代理",
@@ -1102,16 +1102,16 @@
 							"params": [
 								{
 									"name": "目标",
-									"type": "simple.library.wsd.quickjs.QuickJS对象",
+									"type": "simple.library.wsd.quickjs.QJS对象",
 									"description": "目标对象。"
 								},
 								{
 									"name": "处理器",
-									"type": "simple.library.wsd.quickjs.QuickJS对象",
+									"type": "simple.library.wsd.quickjs.QJS对象",
 									"description": "代理处理器。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "启用扩展数值",
@@ -1123,7 +1123,7 @@
 							"params": [
 								{
 									"name": "异常值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的异常值；空引用表示 undefined。"
 								}
 							]
@@ -1131,7 +1131,7 @@
 						{
 							"name": "取运行时",
 							"description": "取得所属运行时，可用于执行任务及配置资源限制。",
-							"return": "simple.library.wsd.quickjs.QuickJS运行时"
+							"return": "simple.library.wsd.quickjs.QJS运行时"
 						},
 						{
 							"name": "取最近错误",
@@ -1141,7 +1141,7 @@
 						{
 							"name": "取最近异常",
 							"description": "读取最近一次原生错误的详细信息，便于在 Simple 错误分支中检查堆栈及中断原因。",
-							"return": "simple.library.wsd.quickjs.QuickJS错误"
+							"return": "simple.library.wsd.quickjs.QJS错误"
 						},
 						{
 							"name": "清除最近错误",
@@ -1166,7 +1166,7 @@
 									"description": "非空宿主对象。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "创建宿主对象",
@@ -1183,7 +1183,7 @@
 									"description": "成员名列表；空引用使用 Simple 注解。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "绑定对象",
@@ -1238,11 +1238,11 @@
 								},
 								{
 									"name": "回调",
-									"type": "simple.library.wsd.quickjs.QuickJS构造回调",
+									"type": "simple.library.wsd.quickjs.QJS构造回调",
 									"description": "构造回调。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS函数"
+							"return": "simple.library.wsd.quickjs.QJS函数"
 						},
 						{
 							"name": "执行代码",
@@ -1260,16 +1260,16 @@
 								},
 								{
 									"name": "接收者",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "this；空引用使用全局对象。"
 								},
 								{
 									"name": "选项",
-									"type": "simple.library.wsd.quickjs.QuickJS执行选项",
+									"type": "simple.library.wsd.quickjs.QJS执行选项",
 									"description": "执行选项；空使用默认值。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "执行模块",
@@ -1287,11 +1287,11 @@
 								},
 								{
 									"name": "选项",
-									"type": "simple.library.wsd.quickjs.QuickJS执行选项",
+									"type": "simple.library.wsd.quickjs.QJS执行选项",
 									"description": "执行选项；模块本身允许顶层 await。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "编译代码",
@@ -1309,7 +1309,7 @@
 								},
 								{
 									"name": "选项",
-									"type": "simple.library.wsd.quickjs.QuickJS执行选项",
+									"type": "simple.library.wsd.quickjs.QJS执行选项",
 									"description": "编译选项；空使用默认值。"
 								}
 							],
@@ -1331,7 +1331,7 @@
 								},
 								{
 									"name": "选项",
-									"type": "simple.library.wsd.quickjs.QuickJS执行选项",
+									"type": "simple.library.wsd.quickjs.QJS执行选项",
 									"description": "编译选项；空使用默认值，模块地址和入口选项不写入字节码。"
 								}
 							],
@@ -1348,7 +1348,7 @@
 								},
 								{
 									"name": "导出对象",
-									"type": "simple.library.wsd.quickjs.QuickJS对象",
+									"type": "simple.library.wsd.quickjs.QJS对象",
 									"description": "导出对象。"
 								}
 							]
@@ -1368,7 +1368,7 @@
 									"description": "导入者标识。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS承诺"
+							"return": "simple.library.wsd.quickjs.QJS承诺"
 						},
 						{
 							"name": "分离缓冲区",
@@ -1376,7 +1376,7 @@
 							"params": [
 								{
 									"name": "缓冲区",
-									"type": "simple.library.wsd.quickjs.QuickJS对象",
+									"type": "simple.library.wsd.quickjs.QJS对象",
 									"description": "当前实例的 ArrayBuffer。"
 								}
 							]
@@ -1396,11 +1396,11 @@
 								},
 								{
 									"name": "回调",
-									"type": "simple.library.wsd.quickjs.QuickJS线程回调",
+									"type": "simple.library.wsd.quickjs.QJS线程回调",
 									"description": "消息、错误及结束回调，可为空。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS线程"
+							"return": "simple.library.wsd.quickjs.QJS线程"
 						},
 						{
 							"name": "创建模块线程",
@@ -1418,11 +1418,11 @@
 								},
 								{
 									"name": "回调",
-									"type": "simple.library.wsd.quickjs.QuickJS线程回调",
+									"type": "simple.library.wsd.quickjs.QJS线程回调",
 									"description": "消息回调，可为空。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS线程"
+							"return": "simple.library.wsd.quickjs.QJS线程"
 						},
 						{
 							"name": "启用工作线程",
@@ -1431,13 +1431,13 @@
 					]
 				},
 				{
-					"name": "QuickJS对象",
+					"name": "QJS对象",
 					"description": "真实 JS 对象，支持字符串与 Symbol 键、描述符、原型和集合成员。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS对象",
+					"type": "simple.library.wsd.quickjs.QJS对象",
 					"icon": "icons/text-caption.svg",
 					"inherits": [
-						"simple.library.wsd.quickjs.QuickJS值"
+						"simple.library.wsd.quickjs.QJS值"
 					],
 					"functions": [
 						{
@@ -1450,7 +1450,7 @@
 									"description": "属性名。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "取键值",
@@ -1458,11 +1458,11 @@
 							"params": [
 								{
 									"name": "键",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "字符串、Symbol 或可转换的属性键。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "置成员",
@@ -1475,7 +1475,7 @@
 								},
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的值。"
 								}
 							]
@@ -1486,12 +1486,12 @@
 							"params": [
 								{
 									"name": "键",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "JS 属性键。"
 								},
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的值。"
 								}
 							]
@@ -1539,27 +1539,27 @@
 						{
 							"name": "取自有键",
 							"description": "列出自有字符串和 Symbol 键，包含不可枚举属性。",
-							"return": "simple.library.wsd.quickjs.QuickJS数组"
+							"return": "simple.library.wsd.quickjs.QJS数组"
 						},
 						{
 							"name": "取可枚举键",
 							"description": "列出自有可枚举字符串键。",
-							"return": "simple.library.wsd.quickjs.QuickJS数组"
+							"return": "simple.library.wsd.quickjs.QJS数组"
 						},
 						{
 							"name": "取原型",
 							"description": "读取对象原型；根原型可以为 null。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "取对象种类",
 							"description": "读取 Object.prototype.toString 结果，遵循 Symbol.toStringTag。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "取迭代器",
 							"description": "取得同步迭代器；不能迭代时报告错误。",
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						},
 						{
 							"name": "是否自有键",
@@ -1567,7 +1567,7 @@
 							"params": [
 								{
 									"name": "键",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "字符串或 Symbol 键。"
 								}
 							],
@@ -1579,11 +1579,11 @@
 							"params": [
 								{
 									"name": "键",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "属性键。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "定义属性",
@@ -1591,12 +1591,12 @@
 							"params": [
 								{
 									"name": "键",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "属性键。"
 								},
 								{
 									"name": "属性描述",
-									"type": "simple.library.wsd.quickjs.QuickJS对象",
+									"type": "simple.library.wsd.quickjs.QJS对象",
 									"description": "含 value、get、set、writable 等字段的描述。"
 								}
 							],
@@ -1608,7 +1608,7 @@
 							"params": [
 								{
 									"name": "原型",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的对象值或 JS null 值；不能传空引用。"
 								}
 							]
@@ -1655,7 +1655,7 @@
 									"description": "Simple 参数数组。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "下一项",
@@ -1663,19 +1663,19 @@
 							"params": [
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "传给 next 的值；空引用表示 undefined。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS对象"
+							"return": "simple.library.wsd.quickjs.QJS对象"
 						}
 					]
 				},
 				{
-					"name": "QuickJS常量",
+					"name": "QJS常量",
 					"description": "QuickJS 值类型、Promise 状态和类型数组编号。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS常量",
+					"type": "simple.library.wsd.quickjs.QJS常量",
 					"icon": "icons/text-caption.svg",
 					"constants": [
 						{
@@ -1856,16 +1856,16 @@
 					"functions": []
 				},
 				{
-					"name": "QuickJS控制器",
+					"name": "QJS控制器",
 					"description": "宿主创建的 Promise 及兑现/拒绝控制函数；重复结算遵循 JS Promise 规则。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS控制器",
+					"type": "simple.library.wsd.quickjs.QJS控制器",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
 							"name": "取承诺",
 							"description": "取得 Promise 的独立拥有引用。",
-							"return": "simple.library.wsd.quickjs.QuickJS承诺"
+							"return": "simple.library.wsd.quickjs.QJS承诺"
 						},
 						{
 							"name": "兑现",
@@ -1873,7 +1873,7 @@
 							"params": [
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的兑现值。"
 								}
 							]
@@ -1884,7 +1884,7 @@
 							"params": [
 								{
 									"name": "原因",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的拒绝原因。"
 								}
 							]
@@ -1896,10 +1896,10 @@
 					]
 				},
 				{
-					"name": "QuickJS监听",
+					"name": "QJS监听",
 					"description": "Promise 拒绝与后续处理通知；传入值仅本次回调有效，可调用保留延长持有。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS监听",
+					"type": "simple.library.wsd.quickjs.QJS监听",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -1908,12 +1908,12 @@
 							"params": [
 								{
 									"name": "承诺",
-									"type": "simple.library.wsd.quickjs.QuickJS承诺",
+									"type": "simple.library.wsd.quickjs.QJS承诺",
 									"description": "发生状态变化的 Promise。"
 								},
 								{
 									"name": "原因",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "拒绝原因。"
 								},
 								{
@@ -1926,13 +1926,13 @@
 					]
 				},
 				{
-					"name": "QuickJS数组",
+					"name": "QJS数组",
 					"description": "保留空洞、undefined 和元素真实类型的数组，索引从 0 开始。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS数组",
+					"type": "simple.library.wsd.quickjs.QJS数组",
 					"icon": "icons/text-caption.svg",
 					"inherits": [
-						"simple.library.wsd.quickjs.QuickJS对象"
+						"simple.library.wsd.quickjs.QJS对象"
 					],
 					"functions": [
 						{
@@ -1961,7 +1961,7 @@
 									"description": "0 至 4294967294。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "置项目",
@@ -1974,7 +1974,7 @@
 								},
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "同一实例的值。"
 								}
 							]
@@ -2013,7 +2013,7 @@
 							"params": [
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "待追加值。"
 								}
 							]
@@ -2029,7 +2029,7 @@
 								},
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "待插入值。"
 								}
 							]
@@ -2049,7 +2049,7 @@
 									"description": "删除数量，按 splice 规则处理。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS数组"
+							"return": "simple.library.wsd.quickjs.QJS数组"
 						},
 						{
 							"name": "连接文本",
@@ -2066,15 +2066,15 @@
 						{
 							"name": "取全部项目",
 							"description": "取得全部项目的独立引用；空洞返回 undefined，最多 100000 项。",
-							"return": "simple.library.wsd.quickjs.QuickJS值()"
+							"return": "simple.library.wsd.quickjs.QJS值()"
 						}
 					]
 				},
 				{
-					"name": "QuickJS日志",
+					"name": "QJS日志",
 					"description": "console 同步日志接收器，默认写入 Android Logcat，可继承并覆写输出。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS日志",
+					"type": "simple.library.wsd.quickjs.QJS日志",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -2096,10 +2096,10 @@
 					]
 				},
 				{
-					"name": "QuickJS模块",
+					"name": "QJS模块",
 					"description": "模块源码、可信字节码或宿主导出快照；宿主导出持有 JS 引用，使用后释放或销毁所属实例。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS模块",
+					"type": "simple.library.wsd.quickjs.QJS模块",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -2145,7 +2145,7 @@
 							"params": [
 								{
 									"name": "导出对象",
-									"type": "simple.library.wsd.quickjs.QuickJS对象",
+									"type": "simple.library.wsd.quickjs.QJS对象",
 									"description": "导出对象，来自同一运行时；不可在成员名中使用零字符。"
 								}
 							]
@@ -2162,10 +2162,10 @@
 					]
 				},
 				{
-					"name": "QuickJS加载器",
+					"name": "QJS加载器",
 					"description": "可继承的模块名称规范化和动态源码/字节码加载适配器。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS加载器",
+					"type": "simple.library.wsd.quickjs.QJS加载器",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -2195,7 +2195,7 @@
 									"description": "规范化后的模块标识。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS模块"
+							"return": "simple.library.wsd.quickjs.QJS模块"
 						},
 						{
 							"name": "初始化元信息",
@@ -2208,7 +2208,7 @@
 								},
 								{
 									"name": "元信息",
-									"type": "simple.library.wsd.quickjs.QuickJS对象",
+									"type": "simple.library.wsd.quickjs.QJS对象",
 									"description": "本次回调的借用元信息对象，长期保存时须保留。"
 								}
 							]
@@ -2216,16 +2216,16 @@
 					]
 				},
 				{
-					"name": "QuickJS运行时",
+					"name": "QJS运行时",
 					"description": "独立 JavaScript 堆、作业队列和资源限制；同一运行时的调用串行执行。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS运行时",
+					"type": "simple.library.wsd.quickjs.QJS运行时",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
 							"name": "创建实例",
 							"description": "创建共享当前堆和作业队列、具有独立全局对象的实例。",
-							"return": "simple.library.wsd.quickjs.QuickJS实例"
+							"return": "simple.library.wsd.quickjs.QJS实例"
 						},
 						{
 							"name": "置执行时限",
@@ -2316,7 +2316,7 @@
 						{
 							"name": "取内存统计",
 							"description": "取得独立的原生内存统计快照。",
-							"return": "simple.library.wsd.quickjs.QuickJS内存"
+							"return": "simple.library.wsd.quickjs.QJS内存"
 						},
 						{
 							"name": "是否已销毁",
@@ -2350,7 +2350,7 @@
 						{
 							"name": "取任务错误",
 							"description": "读取最近后台任务失败，Promise 拒绝通知仍由实例监听处理。",
-							"return": "simple.library.wsd.quickjs.QuickJS错误"
+							"return": "simple.library.wsd.quickjs.QJS错误"
 						},
 						{
 							"name": "清除任务错误",
@@ -2359,10 +2359,10 @@
 					]
 				},
 				{
-					"name": "QuickJS错误",
+					"name": "QJS错误",
 					"description": "QuickJS 执行、类型转换、资源状态及宿主回调错误。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS错误",
+					"type": "simple.library.wsd.quickjs.QJS错误",
 					"icon": "icons/text-caption.svg",
 					"inherits": [
 						"simple.runtime.errors.运行错误"
@@ -2386,7 +2386,7 @@
 						{
 							"name": "取异常值",
 							"description": "取得 JS 抛出值的独立引用。",
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						},
 						{
 							"name": "释放异常值",
@@ -2395,10 +2395,10 @@
 					]
 				},
 				{
-					"name": "QuickJS执行选项",
+					"name": "QJS执行选项",
 					"description": "脚本及模块执行选项；调用时读取快照，不随后续修改改变已经开始的执行。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS执行选项",
+					"type": "simple.library.wsd.quickjs.QJS执行选项",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -2459,41 +2459,41 @@
 					]
 				},
 				{
-					"name": "QuickJS构造回调",
+					"name": "QJS构造回调",
 					"description": "可继承的宿主构造回调，接收新实例、new.target 和借用参数。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS构造回调",
+					"type": "simple.library.wsd.quickjs.QJS构造回调",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
 							"name": "处理构造",
-							"description": "初始化新实例；返回对象可替换新实例，空或基本值保留默认新实例。",
+							"description": "初始化新实例；返回对象可替换新实例，空或基本值保留默认新实例。 返回值须属于同一实例，封装复制其值，不转移或释放拥有引用。",
 							"params": [
 								{
 									"name": "接收者",
-									"type": "simple.library.wsd.quickjs.QuickJS对象",
+									"type": "simple.library.wsd.quickjs.QJS对象",
 									"description": "新实例，借用引用。"
 								},
 								{
 									"name": "新目标",
-									"type": "simple.library.wsd.quickjs.QuickJS函数",
+									"type": "simple.library.wsd.quickjs.QJS函数",
 									"description": "实际构造目标，借用引用。"
 								},
 								{
 									"name": "参数",
-									"type": "simple.library.wsd.quickjs.QuickJS参数",
+									"type": "simple.library.wsd.quickjs.QJS参数",
 									"description": "构造参数，借用引用。"
 								}
 							],
-							"return": "simple.library.wsd.quickjs.QuickJS值"
+							"return": "simple.library.wsd.quickjs.QJS值"
 						}
 					]
 				},
 				{
-					"name": "QuickJS线程",
+					"name": "QJS线程",
 					"description": "独立运行时工作线程，按 FIFO 传递引擎可序列化数据的副本；不共享 JS 值引用。不支持转移列表或 SharedArrayBuffer；进程内同时最多 16 个工作线程。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS线程",
+					"type": "simple.library.wsd.quickjs.QJS线程",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -2502,7 +2502,7 @@
 							"params": [
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "当前接收实例的值；空引用表示 undefined。"
 								}
 							]
@@ -2524,10 +2524,10 @@
 					]
 				},
 				{
-					"name": "QuickJS线程回调",
+					"name": "QJS线程回调",
 					"description": "工作线程消息和生命周期回调，在接收实例的调度线程执行，消息值为借用引用。",
 					"kind": "object",
-					"type": "simple.library.wsd.quickjs.QuickJS线程回调",
+					"type": "simple.library.wsd.quickjs.QJS线程回调",
 					"icon": "icons/text-caption.svg",
 					"functions": [
 						{
@@ -2536,7 +2536,7 @@
 							"params": [
 								{
 									"name": "值",
-									"type": "simple.library.wsd.quickjs.QuickJS值",
+									"type": "simple.library.wsd.quickjs.QJS值",
 									"description": "本次回调有效的消息值。"
 								}
 							]

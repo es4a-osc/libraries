@@ -23,7 +23,7 @@ public final class XU正则 {
 	 * 判断整段文本是否匹配表达式。
 	 *
 	 * @param pattern Java 正则表达式，格式错误时抛出异常。
-	 * @param text 文本。
+	 * @param text    文本。
 	 * @return 判断或操作的结果。
 	 */
 	@SimpleFunction
@@ -35,7 +35,7 @@ public final class XU正则 {
 	 * 按出现顺序提取全部匹配文本。
 	 *
 	 * @param pattern Java 正则表达式，格式错误时抛出异常。
-	 * @param text 文本。
+	 * @param text    文本。
 	 * @return 返回的文本数组。
 	 */
 	@SimpleFunction
@@ -46,7 +46,7 @@ public final class XU正则 {
 	/**
 	 * 按表达式分割文本，末尾空项按 Java 分割规则处理。
 	 *
-	 * @param text 文本。
+	 * @param text    文本。
 	 * @param pattern Java 正则表达式，格式错误时抛出异常。
 	 * @return 返回的文本数组。
 	 */
@@ -58,8 +58,8 @@ public final class XU正则 {
 	/**
 	 * 替换匹配内容；替换文本支持 $1 等捕获组引用。
 	 *
-	 * @param text 文本。
-	 * @param pattern Java 正则表达式，格式错误时抛出异常。
+	 * @param text        文本。
+	 * @param pattern     Java 正则表达式，格式错误时抛出异常。
 	 * @param replacement 替换文本。
 	 * @return 返回的文本。
 	 */
@@ -71,8 +71,8 @@ public final class XU正则 {
 	/**
 	 * 替换匹配内容；替换文本支持 $1 等捕获组引用。
 	 *
-	 * @param text 文本。
-	 * @param pattern Java 正则表达式，格式错误时抛出异常。
+	 * @param text        文本。
+	 * @param pattern     Java 正则表达式，格式错误时抛出异常。
 	 * @param replacement 替换文本。
 	 * @return 返回的文本。
 	 */

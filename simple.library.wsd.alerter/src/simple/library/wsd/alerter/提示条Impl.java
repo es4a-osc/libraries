@@ -7,6 +7,11 @@ import java.util.Map;
 
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
+import android.graphics.ColorFilter;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.PorterDuff;
+import android.media.RingtoneManager;
+import android.media.Ringtone;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Handler;
@@ -15,6 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.tapadoo.alerter.Alert;
 import com.tapadoo.alerter.Alerter;
@@ -30,8 +37,8 @@ import simple.runtime.events.EventDispatcher;
 /**
  * 将 Alerter 的构建、动画和回调接入 Simple 非可视组件生命周期。
  *
- * <p>每次显示重建第三方对象，防止已移除的视图被再次加入。跨实例的显示请求
- * 按界面线程顺序替换；清理只处理自身视图，不使用会隐藏其他实例的全局关闭。
+ * <p>
+ * 每次显示重建第三方对象，防止已移除的视图被再次加入。跨实例的显示请求 按界面线程顺序替换；清理只处理自身视图，不使用会隐藏其他实例的全局关闭。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -41,6 +48,11 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 
 	private static WeakReference<Session> activeSession = new WeakReference<Session>(null);
 	private static long displayRevision;
+	private static final PorterDuff.Mode[] BLEND_MODES = { PorterDuff.Mode.CLEAR, PorterDuff.Mode.SRC,
+			PorterDuff.Mode.DST, PorterDuff.Mode.SRC_OVER, PorterDuff.Mode.DST_OVER, PorterDuff.Mode.SRC_IN,
+			PorterDuff.Mode.DST_IN, PorterDuff.Mode.SRC_OUT, PorterDuff.Mode.DST_OUT, PorterDuff.Mode.SRC_ATOP,
+			PorterDuff.Mode.DST_ATOP, PorterDuff.Mode.XOR, PorterDuff.Mode.ADD, PorterDuff.Mode.MULTIPLY,
+			PorterDuff.Mode.SCREEN, PorterDuff.Mode.OVERLAY, PorterDuff.Mode.DARKEN, PorterDuff.Mode.LIGHTEN };
 
 	/* 宿主及下次显示采用的配置；不在属性设置时创建或替换第三方视图。 */
 
@@ -78,6 +90,13 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	private String sound = "";
 	private int iconPixels = -1;
 	private int rightIconPixels = -1;
+	private int titleAppearance = 0;
+	private int textAppearance = 0;
+	private int layoutResource = 0;
+	private int iconMode = 5;
+	private int rightIconMode = 5;
+	private ColorFilter iconFilter;
+	private ColorFilter rightIconFilter;
 	private Typeface titleTypeface;
 	private Typeface textTypeface;
 	private Typeface buttonTypeface;
@@ -164,7 +183,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 显示时间(long value) {
 		check();
 		if (value < 0) {
-			throw new IllegalArgumentException("显示时间不符合约定范围。");
+			throw new 提示条错误("显示时间不符合约定范围。");
 		}
 
 		duration = value;
@@ -226,6 +245,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 图标颜色(int value) {
 		check();
 		iconColor = value;
+		iconFilter = null;
 	}
 
 	@Override
@@ -237,6 +257,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 右侧图标颜色(int value) {
 		check();
 		rightIconColor = value;
+		rightIconFilter = null;
 	}
 
 	@Override
@@ -248,7 +269,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 图标尺寸(int value) {
 		check();
 		if (value < -1) {
-			throw new IllegalArgumentException("图标尺寸不符合约定范围。");
+			throw new 提示条错误("图标尺寸不符合约定范围。");
 		}
 
 		iconSize = value;
@@ -264,7 +285,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 右侧图标尺寸(int value) {
 		check();
 		if (value < -1) {
-			throw new IllegalArgumentException("右侧图标尺寸不符合约定范围。");
+			throw new 提示条错误("右侧图标尺寸不符合约定范围。");
 		}
 
 		rightIconSize = value;
@@ -445,9 +466,12 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 进入动画资源(int value) {
 		check();
 		if (value < 0) {
-			throw new IllegalArgumentException("进入动画资源不符合约定范围。");
+			throw new 提示条错误("进入动画资源不符合约定范围。");
 		}
 
+		if (value != 0) {
+			requireResourceType(value, "anim");
+		}
 		enterAnimation = value;
 	}
 
@@ -460,9 +484,12 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 退出动画资源(int value) {
 		check();
 		if (value < 0) {
-			throw new IllegalArgumentException("退出动画资源不符合约定范围。");
+			throw new 提示条错误("退出动画资源不符合约定范围。");
 		}
 
+		if (value != 0) {
+			requireResourceType(value, "anim");
+		}
 		exitAnimation = value;
 	}
 
@@ -475,7 +502,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 阴影高度(float value) {
 		check();
 		if (!Float.isFinite(value) || value < -1) {
-			throw new IllegalArgumentException("阴影高度不符合约定范围。");
+			throw new 提示条错误("阴影高度不符合约定范围。");
 		}
 
 		elevation = value;
@@ -498,13 +525,84 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 		return session != null && !session.ended;
 	}
 
+	@Override
+	public int 标题样式资源() {
+		return titleAppearance;
+	}
+
+	@Override
+	public void 标题样式资源(int value) {
+		check();
+		requireResource(value);
+		if (value != 0) {
+			requireResourceType(value, "style");
+		}
+		titleAppearance = value;
+	}
+
+	@Override
+	public int 内容样式资源() {
+		return textAppearance;
+	}
+
+	@Override
+	public void 内容样式资源(int value) {
+		check();
+		requireResource(value);
+		if (value != 0) {
+			requireResourceType(value, "style");
+		}
+		textAppearance = value;
+	}
+
+	@Override
+	public int 内容布局资源() {
+		return layoutResource;
+	}
+
+	@Override
+	public void 内容布局资源(int value) {
+		check();
+		requireResource(value);
+		if (value != 0) {
+			requireResourceType(value, "layout");
+		}
+		layoutResource = value;
+	}
+
+	@Override
+	public int 图标混合模式() {
+		return iconMode;
+	}
+
+	@Override
+	public void 图标混合模式(int value) {
+		check();
+		requireMode(value);
+		iconMode = value;
+		iconFilter = null;
+	}
+
+	@Override
+	public int 右侧图标混合模式() {
+		return rightIconMode;
+	}
+
+	@Override
+	public void 右侧图标混合模式(int value) {
+		check();
+		requireMode(value);
+		rightIconMode = value;
+		rightIconFilter = null;
+	}
+
 	/* 显示与交互 */
 
 	@Override
 	public void 显示() {
 		check();
 		if (activity.isFinishing() || activity.isDestroyed()) {
-			throw new IllegalStateException("当前窗口不能显示提示条。");
+			throw new 提示条错误("当前窗口不能显示提示条。");
 		}
 
 		// 隐藏事件允许重入；若回调又显示了更新的提示条，不覆盖该次请求。
@@ -522,11 +620,11 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 		session = next;
 		activeSession = new WeakReference<Session>(next);
 		try {
-			Alerter builder = Alerter.create(activity);
+			Alerter builder = layoutResource == 0 ? Alerter.create(activity) : Alerter.create(activity, layoutResource);
 			configure(builder, next);
 			next.alert = builder.show();
 			if (next.alert == null) {
-				throw new IllegalStateException("提示条未能创建视图。");
+				throw new 提示条错误("提示条未能创建视图。");
 			}
 
 			// Alerter 7.2.4 只给 progressDrawable 着色，旋转进度环使用 indeterminateDrawable。
@@ -561,7 +659,10 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 		} catch (RuntimeException | LinkageError error) {
 			// 资源或依赖缺失必须保留真实异常，不伪造显示成功。
 			end(next, false);
-			throw error;
+			if (error instanceof 提示条错误) {
+				throw (提示条错误) error;
+			}
+			throw new 提示条错误("无法显示提示条：" + error.getMessage(), error);
 		}
 	}
 
@@ -600,7 +701,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 		check();
 		requireText(caption, "按钮标题");
 		if (style < -1) {
-			throw new IllegalArgumentException("按钮样式必须为 -1、0 或有效资源编号。");
+			throw new 提示条错误("按钮样式必须为 -1、0 或有效资源编号。");
 		}
 
 		buttons.put(id, new ButtonSpec(id, caption, style));
@@ -616,7 +717,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 更新标题(String value) {
 		标题(value);
 		if (session != null && session.alert != null) {
-			session.alert.setTitle(value);
+			updateText(session.alert, com.tapadoo.alerter.R.id.tvTitle, value);
 		}
 	}
 
@@ -624,31 +725,35 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	public void 更新内容(String value) {
 		内容(value);
 		if (session != null && session.alert != null) {
-			session.alert.setText(value);
+			updateText(session.alert, com.tapadoo.alerter.R.id.tvText, value);
 		}
 	}
 
 	@Override
 	public void 置标题资源(int resourceId) {
 		check();
+		requireResourceType(resourceId, "string");
 		标题(activity.getString(resourceId));
 	}
 
 	@Override
 	public void 置内容资源(int resourceId) {
 		check();
+		requireResourceType(resourceId, "string");
 		内容(activity.getString(resourceId));
 	}
 
 	@Override
 	public void 置背景颜色资源(int resourceId) {
 		check();
+		requireResourceType(resourceId, "color");
 		背景颜色(activity.getResources().getColor(resourceId, activity.getTheme()));
 	}
 
 	@Override
 	public void 置进度颜色资源(int resourceId) {
 		check();
+		requireResourceType(resourceId, "color");
 		进度颜色(activity.getResources().getColor(resourceId, activity.getTheme()));
 	}
 
@@ -700,7 +805,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	/**
 	 * 移除本实例视图、取消事件并注销宿主监听；可以重复调用。
 	 *
-	 * @throws IllegalStateException 未销毁的组件在非界面线程调用。
+	 * @throws 提示条错误 未销毁的组件在非界面线程调用。
 	 */
 	@Override
 	public void 销毁() {
@@ -710,6 +815,244 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 
 		check();
 		dispose(true);
+	}
+
+	@Override
+	public void 布局控件被单击(int resourceId) {
+		EventDispatcher.dispatchEvent(this, "布局控件被单击", resourceId);
+	}
+
+	@Override
+	public void 置布局文本(int resourceId, String value) {
+		requireText(value, "布局文本");
+		textControl(resourceId).setText(value);
+	}
+
+	@Override
+	public String 取布局文本(int resourceId) {
+		return textControl(resourceId).getText().toString();
+	}
+
+	@Override
+	public void 监听布局单击(final int resourceId, boolean enabled) {
+		View view = layoutControl(resourceId);
+		final Session current = session;
+		view.setOnClickListener(enabled ? new View.OnClickListener() {
+			@Override
+			public void onClick(View source) {
+				if (isCurrent(current) && !current.closing) {
+					布局控件被单击(resourceId);
+				}
+			}
+		} : null);
+		view.setClickable(enabled);
+	}
+
+	@Override
+	public void 置图标颜色矩阵(float[] values) {
+		check();
+		iconFilter = colorMatrix(values);
+	}
+
+	@Override
+	public void 置右侧图标颜色矩阵(float[] values) {
+		check();
+		rightIconFilter = colorMatrix(values);
+	}
+
+	@Override
+	public void 使用默认提示声音() {
+		提示声音(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION).toString());
+	}
+
+	/**
+	 * 查找本次显示的内容区域控件，禁止通过编号穿透到外层提示条或窗口。
+	 *
+	 * @param id 内容控件的正资源编号。
+	 * @return 当前内容控件。
+	 * @throws 提示条错误 编号或目标控件无效； 当前没有可操作的显示会话。
+	 */
+	private View layoutControl(int id) {
+		check();
+		if (session == null || session.ended || session.closing || session.alert == null) {
+			throw new 提示条错误("请先显示提示条，再操作内容布局。");
+		}
+		View content = session.alert.getLayoutContainer();
+		View view = id > 0 && content != null ? content.findViewById(id) : null;
+		if (view == null) {
+			throw new 提示条错误("提示条内容布局中不存在控件：" + id);
+		}
+		return view;
+	}
+
+	/**
+	 * 查找内容布局中的文本控件。
+	 *
+	 * @param id 文本控件编号。
+	 * @return 文本控件。
+	 * @throws 提示条错误 控件不是文本控件或不存在； 当前没有可操作的显示会话。
+	 */
+	private TextView textControl(int id) {
+		View view = layoutControl(id);
+		if (!(view instanceof TextView)) {
+			throw new 提示条错误("指定的内容控件不是文本控件：" + id);
+		}
+		return (TextView) view;
+	}
+
+	/**
+	 * 更新默认标题或正文，并在空文本时真正清空、隐藏原控件。
+	 *
+	 * @param alert 当前显示视图。
+	 * @param id    标题或正文的资源编号。
+	 * @param value 新文本。
+	 */
+	private static void updateText(Alert alert, int id, String value) {
+		View view = alert.findViewById(id);
+		if (view instanceof TextView) {
+			((TextView) view).setText(value);
+			view.setVisibility(value.length() == 0 ? View.GONE : View.VISIBLE);
+		}
+	}
+
+	/**
+	 * 校验下次显示的可选资源编号。
+	 *
+	 * @param value 资源编号或零。
+	 * @throws 提示条错误 编号小于零。
+	 */
+	private static void requireResource(int value) {
+		if (value < 0) {
+			throw new 提示条错误("资源编号不能小于零。");
+		}
+	}
+
+	/**
+	 * 校验公开混合模式常量，不依赖平台枚举的声明顺序。
+	 *
+	 * @param value 模式常量。
+	 * @throws 提示条错误 不是混合常量。
+	 */
+	private static void requireMode(int value) {
+		if (value < -1 || value > 17) {
+			throw new 提示条错误("图标混合模式必须使用提示条的混合常量。");
+		}
+	}
+
+	/**
+	 * 复制有效颜色矩阵，防止后续数组修改改变已配置的图标。
+	 *
+	 * @param values 空数组或按行排列的 20 项有限数值。
+	 * @return 颜色滤镜；空数组返回空引用以恢复颜色及混合模式。
+	 * @throws 提示条错误 数组为空引用、长度不正确或包含非有限数值。
+	 */
+	private static ColorFilter colorMatrix(float[] values) {
+		if (values == null || (values.length != 0 && values.length != 20)) {
+			throw new 提示条错误("颜色矩阵必须为空数组或含 20 个数值。");
+		}
+		if (values.length == 0) {
+			return null;
+		}
+		float[] copy = values.clone();
+		for (float value : copy) {
+			if (Float.isNaN(value) || Float.isInfinite(value)) {
+				throw new 提示条错误("颜色矩阵必须全部为有限数值。");
+			}
+		}
+		return new ColorMatrixColorFilter(copy);
+	}
+
+	/**
+	 * 应用图片滤镜；原色明确清除资源自身的着色，不把透明色当成原色。
+	 *
+	 * @param builder 本次显示构建器。
+	 * @param right   是否为右侧图标。
+	 * @param color   着色颜色。
+	 * @param mode    混合常量。
+	 * @param filter  可选颜色矩阵，非空时优先。
+	 */
+	private static void applyIconFilter(Alerter builder, boolean right, int color, int mode, ColorFilter filter) {
+		// AppCompat 图片资源可能自带 tint，它与 ColorFilter 独立。
+		View content = builder.getLayoutContainer();
+		ImageView image = content == null ? null
+				: content.findViewById(right ? com.tapadoo.alerter.R.id.ivRightIcon : com.tapadoo.alerter.R.id.ivIcon);
+		if (image != null) {
+			image.setImageTintList(null);
+		}
+		// Kotlin 的 ColorFilter 参数不接受空引用，原色直接清除 ImageView 滤镜。
+		if (mode == 混合_原色 && filter == null) {
+			if (image != null) {
+				image.clearColorFilter();
+			}
+		} else if (filter != null) {
+			if (right) {
+				builder.setRightIconColorFilter(filter);
+			} else {
+				builder.setIconColorFilter(filter);
+			}
+		} else {
+			PorterDuff.Mode blend = BLEND_MODES[mode];
+			if (right) {
+				builder.setRightIconColorFilter(color, blend);
+			} else {
+				builder.setIconColorFilter(color, blend);
+			}
+		}
+	}
+
+	/**
+	 * 在读取前确认资源存在且类型正确，保留可供 Simple 捕获的失败原因。
+	 *
+	 * @param id   正资源编号。
+	 * @param type Android 资源类型。
+	 * @throws 提示条错误 资源不存在或类型不正确。
+	 */
+	private void requireResourceType(int id, String type) {
+		try {
+			if (id <= 0 || !type.equals(activity.getResources().getResourceTypeName(id))) {
+				throw new 提示条错误("需要 " + type + " 类型资源：" + id);
+			}
+		} catch (android.content.res.Resources.NotFoundException error) {
+			throw new 提示条错误("资源不存在：" + id, error);
+		}
+	}
+
+	/**
+	 * 将 DIP 或显式像素尺寸应用到实际存在的图标；自定义布局可省略图标。
+	 *
+	 * @param builder 当前构建器。
+	 * @param right   是否为右侧图标。
+	 * @param dip     DIP 尺寸，负值沿用布局。
+	 * @param pixels  显式像素尺寸，非负时优先。
+	 */
+	private void applyIconSize(Alerter builder, boolean right, int dip, int pixels) {
+		if (dip < 0 && pixels < 0) {
+			return;
+		}
+		View content = builder.getLayoutContainer();
+		View image = content == null ? null
+				: content.findViewById(right ? com.tapadoo.alerter.R.id.ivRightIcon : com.tapadoo.alerter.R.id.ivIcon);
+		if (image != null) {
+			int size = pixels >= 0 ? pixels : Math.round(dip * activity.getResources().getDisplayMetrics().density);
+			ViewGroup.LayoutParams params = image.getLayoutParams();
+			params.width = size;
+			params.height = size;
+			image.setLayoutParams(params);
+		}
+	}
+
+	@Override
+	public void 置图标尺寸资源(int resourceId) {
+		check();
+		requireResourceType(resourceId, "dimen");
+		置图标像素尺寸(activity.getResources().getDimensionPixelSize(resourceId));
+	}
+
+	@Override
+	public void 置右侧图标尺寸资源(int resourceId) {
+		check();
+		requireResourceType(resourceId, "dimen");
+		置右侧图标像素尺寸(activity.getResources().getDimensionPixelSize(resourceId));
 	}
 
 	/* 第三方构建与会话边界 */
@@ -730,8 +1073,16 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 		builder.enableProgress(progress).setProgressColorInt(progressColor);
 		builder.setLayoutGravity(layoutGravity).setContentGravity(contentGravity);
 		builder.setRightIconPosition(rightIconGravity);
-		builder.setIconColorFilter(iconColor).setRightIconColorFilter(rightIconColor);
-		builder.setSound(sound.length() == 0 ? null : Uri.parse(sound));
+		Uri soundUri = sound.length() == 0 ? null : Uri.parse(sound);
+		if (soundUri != null) {
+			Ringtone probe = RingtoneManager.getRingtone(activity, soundUri);
+			if (probe == null) {
+				throw new 提示条错误("无法读取提示声音：" + sound);
+			}
+			// 校验只读取声音资源；释放预加载播放器，实际播放仍由本次提示条负责。
+			probe.stop();
+		}
+		builder.setSound(soundUri);
 
 		// 图片沿用运行库的资源、资产和文件标识，不暴露 Android Drawable 类型。
 		if (backgroundImage.length() > 0) {
@@ -744,16 +1095,11 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 			builder.setRightIcon(image(rightIcon));
 		}
 
-		if (iconPixels >= 0) {
-			builder.setIconPixelSize(iconPixels);
-		} else if (iconSize >= 0) {
-			builder.setIconSize(iconSize);
-		}
-		if (rightIconPixels >= 0) {
-			builder.setRightIconPixelSize(rightIconPixels);
-		} else if (rightIconSize >= 0) {
-			builder.setRightIconSize(rightIconSize);
-		}
+		applyIconFilter(builder, false, iconColor, iconMode, iconFilter);
+		applyIconFilter(builder, true, rightIconColor, rightIconMode, rightIconFilter);
+
+		applyIconSize(builder, false, iconSize, iconPixels);
+		applyIconSize(builder, true, rightIconSize, rightIconPixels);
 
 		// 所有支持系统均高于 API 21，可直接设置背景抬升高度；这不是布局高度。
 		if (elevation >= 0) {
@@ -772,6 +1118,13 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 			builder.setExitAnimation(exitAnimation);
 		}
 
+		// 样式先应用，显式字体随后覆盖样式中的字体项。
+		if (titleAppearance != 0) {
+			builder.setTitleAppearance(titleAppearance);
+		}
+		if (textAppearance != 0) {
+			builder.setTextAppearance(textAppearance);
+		}
 		if (titleTypeface != null) {
 			builder.setTitleTypeface(titleTypeface);
 		}
@@ -817,7 +1170,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 				// 使用最终应用资源包中的默认样式；缺失时明确报告资源未完整交付。
 				style = activity.getResources().getIdentifier("AlertButton", "style", activity.getPackageName());
 				if (style == 0) {
-					throw new IllegalStateException("提示条缺少 AlertButton 样式资源。");
+					throw new 提示条错误("提示条缺少 AlertButton 样式资源。");
 				}
 			}
 
@@ -846,7 +1199,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	 * 结束一次显示，先完成状态和视图清理，再允许用户事件重入。
 	 *
 	 * @param current 待结束的会话，空引用时不处理。
-	 * @param notify 是否派发被隐藏事件。
+	 * @param notify  是否派发被隐藏事件。
 	 */
 	private void end(Session current, boolean notify) {
 		if (current == null || current.ended) {
@@ -930,14 +1283,14 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	/**
 	 * 检查需要读写界面或配置的调用是否有效。
 	 *
-	 * @throws IllegalStateException 不在界面线程调用或组件已经销毁。
+	 * @throws 提示条错误 不在界面线程调用或组件已经销毁。
 	 */
 	private void check() {
 		if (Looper.myLooper() != Looper.getMainLooper()) {
-			throw new IllegalStateException("提示条只能在界面线程调用。");
+			throw new 提示条错误("提示条只能在界面线程调用。");
 		}
 		if (destroyed) {
-			throw new IllegalStateException("提示条已经销毁。");
+			throw new 提示条错误("提示条已经销毁。");
 		}
 	}
 
@@ -945,12 +1298,12 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	 * 验证公开文本参数，不将空引用静默转换为空文本。
 	 *
 	 * @param value 待验证的文本。
-	 * @param name 用于诊断的参数名称。
-	 * @throws IllegalArgumentException 文本为空引用。
+	 * @param name  用于诊断的参数名称。
+	 * @throws 提示条错误 文本为空引用。
 	 */
 	private static void requireText(String value, String name) {
 		if (value == null) {
-			throw new IllegalArgumentException(name + "不能是空引用。");
+			throw new 提示条错误(name + "不能是空引用。");
 		}
 	}
 
@@ -959,11 +1312,11 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	 *
 	 * @param pixels 像素尺寸。
 	 * @return 验证后的尺寸。
-	 * @throws IllegalArgumentException 尺寸小于零。
+	 * @throws 提示条错误 尺寸小于零。
 	 */
 	private static int requireSize(int pixels) {
 		if (pixels < 0) {
-			throw new IllegalArgumentException("图标像素尺寸不能小于零。");
+			throw new 提示条错误("图标像素尺寸不能小于零。");
 		}
 		return pixels;
 	}
@@ -973,13 +1326,13 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	 *
 	 * @param value 运行库支持的图片标识。
 	 * @return 图片可绘制对象。
-	 * @throws IllegalArgumentException 图片不可读取。
+	 * @throws 提示条错误 图片不可读取。
 	 */
 	private static Drawable image(String value) {
 		try {
 			return ImageUtil.getDrawable(value);
-		} catch (IOException error) {
-			throw new IllegalArgumentException("无法读取提示条图片：" + value, error);
+		} catch (IOException | RuntimeException error) {
+			throw new 提示条错误("无法读取提示条图片：" + value, error);
 		}
 	}
 
@@ -988,11 +1341,11 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	 *
 	 * @param resourceId 图片资源编号。
 	 * @return 非零编号对应的十进制文本，零返回空文本。
-	 * @throws IllegalArgumentException 资源编号小于零。
+	 * @throws 提示条错误 资源编号小于零。
 	 */
 	private static String resourceImage(int resourceId) {
 		if (resourceId < 0) {
-			throw new IllegalArgumentException("图片资源编号不能小于零。");
+			throw new 提示条错误("图片资源编号不能小于零。");
 		}
 		return resourceId == 0 ? "" : Integer.toString(resourceId);
 	}
@@ -1001,24 +1354,28 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 	 * 按系统字体族、资产或外部文件及字形创建字体。
 	 *
 	 * @param family 字体族、@assets/字体文件名或绝对路径；空文本使用默认字体。
-	 * @param style 普通、粗体、斜体或粗斜体，对应 0 至 3。
+	 * @param style  普通、粗体、斜体或粗斜体，对应 0 至 3。
 	 * @return 可供标题、正文或按钮使用的字体。
-	 * @throws IllegalArgumentException 字体族为空引用或样式不在 0 至 3。
+	 * @throws 提示条错误 字体族为空引用或样式不在 0 至 3。
 	 */
 	private static Typeface typeface(String family, int style) {
 		requireText(family, "字体名称");
 		if (style < 0 || style > 3) {
-			throw new IllegalArgumentException("字体样式必须在 0 至 3 之间。");
+			throw new 提示条错误("字体样式必须在 0 至 3 之间。");
 		}
-		Typeface base;
-		if (family.startsWith("@assets/")) {
-			base = Typeface.createFromAsset(MainActivity.getContext().getAssets(), family.substring(8));
-		} else if (family.startsWith("/")) {
-			base = Typeface.createFromFile(family);
-		} else {
-			base = Typeface.create(family.length() == 0 ? null : family, Typeface.NORMAL);
+		try {
+			Typeface base;
+			if (family.startsWith("@assets/")) {
+				base = Typeface.createFromAsset(MainActivity.getContext().getAssets(), family.substring(8));
+			} else if (family.startsWith("/")) {
+				base = Typeface.createFromFile(family);
+			} else {
+				base = Typeface.create(family.length() == 0 ? null : family, Typeface.NORMAL);
+			}
+			return Typeface.create(base, style);
+		} catch (RuntimeException error) {
+			throw new 提示条错误("无法读取提示条字体：" + family, error);
 		}
-		return Typeface.create(base, style);
 	}
 
 	/**
@@ -1037,7 +1394,7 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 		/**
 		 * 记录本次显示的拥有者和点击关闭设置。
 		 *
-		 * @param owner 拥有此次显示的组件。
+		 * @param owner          拥有此次显示的组件。
 		 * @param dismissOnClick 点击主体后是否关闭。
 		 */
 		private Session(提示条Impl owner, boolean dismissOnClick) {
@@ -1060,9 +1417,9 @@ public final class 提示条Impl extends 组件Impl implements 提示条 {
 		/**
 		 * 保存按钮标记、标题和样式，不提前创建界面控件。
 		 *
-		 * @param id 用户指定的按钮标记。
+		 * @param id      用户指定的按钮标记。
 		 * @param caption 按钮标题。
-		 * @param style 样式编号，-1 表示默认样式。
+		 * @param style   样式编号，-1 表示默认样式。
 		 */
 		private ButtonSpec(int id, String caption, int style) {
 			this.id = id;

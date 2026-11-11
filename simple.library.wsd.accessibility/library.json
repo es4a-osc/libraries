@@ -155,6 +155,28 @@
 							"name": "取字幕样式",
 							"description": "取得系统字幕首选样式快照。",
 							"return": "simple.library.wsd.accessibility.无障碍字幕样式"
+						},
+						{
+							"name": "取系统动作",
+							"return": "simple.library.wsd.accessibility.无障碍动作[]",
+							"description": "取得当前可用的系统全局动作，需要 API 30 及以上。服务未连接时返回空数组；通过执行全局动作使用其中的编号。"
+						},
+						{
+							"name": "取建议显示时长",
+							"return": "整数型",
+							"description": "按用户辅助设置计算内容应至少保留的时间，单位为毫秒；系统未提供额外建议时返回原时长。",
+							"params": [
+								{
+									"name": "原时长",
+									"type": "整数型",
+									"description": "非负毫秒数。"
+								},
+								{
+									"name": "内容掩码",
+									"type": "整数型",
+									"description": "显示内容常量，可组合。"
+								}
+							]
 						}
 					],
 					"properties": [
@@ -206,6 +228,12 @@
 							"description": "系统字幕首选语言的 BCP 47 标签，未指定时为空文本。",
 							"type": "文本型",
 							"writable": false
+						},
+						{
+							"name": "辅助按钮受支持",
+							"type": "逻辑型",
+							"writable": false,
+							"description": "设备是否支持系统导航区的辅助按钮，需要 API 27 及以上；不表示当前按钮可用。"
 						}
 					],
 					"events": [
@@ -395,6 +423,10 @@
 						{
 							"name": "字幕设置改变",
 							"description": "系统字幕启用、语言、字号或样式改变后触发，通过属性重新读取。"
+						},
+						{
+							"name": "系统动作改变",
+							"description": "系统当前可用的全局动作列表发生变化，需要 API 30 及以上。"
 						}
 					]
 				}
@@ -569,7 +601,7 @@
 				},
 				{
 					"name": "无障碍动作",
-					"description": "节点的动作只读描述；仅表达元数据，不修改真实界面。",
+					"description": "节点动作或系统全局动作的只读描述；仅表达元数据，不修改真实界面。",
 					"kind": "object",
 					"type": "simple.library.wsd.accessibility.无障碍动作",
 					"properties": [
@@ -1617,7 +1649,7 @@
 				},
 				{
 					"name": "无障碍服务信息",
-					"description": "无障碍服务信息快照。仅事件类型、反馈类型、标志、通知间隔及监听包名可动态修改；修改后由服务的应用配置方法提交。",
+					"description": "无障碍服务信息快照。仅事件类型、反馈类型、标志、通知间隔、监听包名及显示时长可动态修改；修改后由服务的应用配置方法提交。",
 					"kind": "object",
 					"type": "simple.library.wsd.accessibility.无障碍服务信息",
 					"properties": [
@@ -1662,6 +1694,18 @@
 							"description": "能力，属于服务的静态描述。",
 							"type": "整数型",
 							"writable": false
+						},
+						{
+							"name": "交互显示时长",
+							"type": "整数型",
+							"writable": false,
+							"description": "服务建议的交互显示时长，单位为毫秒，需要 API 29 及以上。"
+						},
+						{
+							"name": "非交互显示时长",
+							"type": "整数型",
+							"writable": false,
+							"description": "服务建议的非交互显示时长，单位为毫秒，需要 API 29 及以上。"
 						}
 					],
 					"functions": [
@@ -1732,6 +1776,28 @@
 									"name": "包名",
 									"type": "文本型[]",
 									"description": "包名数组；不得含空项"
+								}
+							]
+						},
+						{
+							"name": "设置交互显示时长",
+							"description": "修改快照的交互显示时长，提交配置后生效，需要 API 29 及以上。",
+							"params": [
+								{
+									"name": "时长",
+									"type": "整数型",
+									"description": "非负毫秒数。"
+								}
+							]
+						},
+						{
+							"name": "设置非交互显示时长",
+							"description": "修改快照的非交互显示时长，提交配置后生效，需要 API 29 及以上。",
+							"params": [
+								{
+									"name": "时长",
+									"type": "整数型",
+									"description": "非负毫秒数。"
 								}
 							]
 						}
@@ -3213,6 +3279,27 @@
 							"value": "-1",
 							"description": "未指定。",
 							"static": true
+						},
+						{
+							"name": "显示内容_图标",
+							"type": "整数型",
+							"value": "1",
+							"static": true,
+							"description": "界面中包含图标，供建议显示时长查询使用。"
+						},
+						{
+							"name": "显示内容_文本",
+							"type": "整数型",
+							"value": "2",
+							"static": true,
+							"description": "界面中包含文本，供建议显示时长查询使用。"
+						},
+						{
+							"name": "显示内容_控件",
+							"type": "整数型",
+							"value": "4",
+							"static": true,
+							"description": "界面中包含控件，供建议显示时长查询使用。"
 						}
 					]
 				}

@@ -5,7 +5,7 @@ package simple.library.wsd.quickjs;
  *
  * @author 树先生 xhwsd@qq.com
  */
-abstract class ManagedCallback extends QuickJS回调 {
+abstract class ManagedCallback extends QJS回调 {
 	/**
 	 * 创建内部回调。
 	 */

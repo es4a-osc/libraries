@@ -66,7 +66,7 @@ public final class CV日历配置 implements Cloneable {
 	private int yearWeekColor = 0xff78909c;
 	private boolean fillHeight;
 	private String defaultScheme = "记";
-	private String[] weekTitles = {"日", "一", "二", "三", "四", "五", "六"};
+	private String[] weekTitles = { "日", "一", "二", "三", "四", "五", "六" };
 
 	/**
 	 * 创建具有声明默认值的独立配置。

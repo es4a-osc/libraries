@@ -1,6 +1,6 @@
 {
 	"name": "JSONPath库",
-	"description": "基于 Jayway JsonPath https://github.com/json-path/JsonPath 封装，提供 JSON 路径查询和节点新增、修改、删除及重命名。",
+	"description": "基于 Jayway JsonPath https://github.com/json-path/JsonPath 封装，提供 JSON 路径查询、读取选项、匹配访问及事务式节点新增、映射、修改、删除和重命名。",
 	"version": "0.1.0",
 	"authors": [
 		{
@@ -58,19 +58,83 @@
 									"description": "完整 JSON 字面量，例如 10、true、null、引号包围的文本或对象数组。"
 								}
 							]
+						},
+						{
+							"name": "路径是否有效",
+							"description": "检查表达式能否由当前 JsonPath 编译；不检查文档内容。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								}
+							],
+							"static": true
+						},
+						{
+							"name": "是否确定路径",
+							"description": "判断表达式是否为确定路径；无效表达式报告错误。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								}
+							],
+							"static": true
+						}
+					],
+					"constants": [
+						{
+							"name": "选项_默认",
+							"type": "整数型",
+							"value": "0",
+							"description": "使用上游默认读取行为。"
+						},
+						{
+							"name": "选项_缺失叶子为空",
+							"type": "整数型",
+							"value": "1",
+							"description": "缺失的末级属性返回 JSON null，不创建父对象。"
+						},
+						{
+							"name": "选项_总是数组",
+							"type": "整数型",
+							"value": "2",
+							"description": "将确定路径结果也包装为数组，不与聚合函数一起使用。"
+						},
+						{
+							"name": "选项_返回路径",
+							"type": "整数型",
+							"value": "4",
+							"description": "返回可复用具体路径数组，不与聚合函数一起使用。"
+						},
+						{
+							"name": "选项_抑制求值错误",
+							"type": "整数型",
+							"value": "8",
+							"description": "求值错误返回默认 null 或空数组；不抑制无效表达式。"
+						},
+						{
+							"name": "选项_要求属性",
+							"type": "整数型",
+							"value": "16",
+							"description": "要求不确定路径选择的各个对象具有指定属性。"
 						}
 					]
 				},
 				{
 					"name": "JSONPath文档",
-					"description": "同步执行 JSONPath 查询、新增、修改、删除和重命名；同一文档在同一线程串行使用。修改失败不留下部分结果，不自动创建路径中缺失的父对象。",
+					"description": "同步查询和事务式修改内存 JSON；同一文档串行使用。结果为独立快照，重复选中的节点只写一次。回调可查询或复制，但不能重入修改或访问当前文档。不自动创建缺失的父对象。",
 					"kind": "object",
 					"type": "simple.library.wsd.jsonpath.JSONPath文档",
 					"icon": "icons/json.svg",
 					"functions": [
 						{
 							"name": "查询",
-							"description": "按路径查询，结果为独立快照。",
+							"description": "取得独立结果快照；函数计算不会改变文档。缺失时是否存在为假，语法错误报告错误。",
 							"return": "simple.library.wsd.jsonpath.JSONPath结果",
 							"params": [
 								{
@@ -94,7 +158,7 @@
 						},
 						{
 							"name": "查询路径",
-							"description": "取得匹配节点的具体路径，便于定位或逐项处理。",
+							"description": "按匹配顺序返回可复用、已转义的具体路径；保留重复匹配，不支持聚合函数结果。",
 							"return": "文本型[]",
 							"params": [
 								{
@@ -121,7 +185,7 @@
 						},
 						{
 							"name": "修改",
-							"description": "用指定 JSON 值替换匹配节点，支持通配符和过滤器批量选择。",
+							"description": "用指定 JSON 值替换匹配节点，支持通配符和过滤器批量选择。 同一实际节点重复选中只处理和计数一次。",
 							"return": "整数型",
 							"params": [
 								{
@@ -138,7 +202,7 @@
 						},
 						{
 							"name": "修改JSON值",
-							"description": "用运行库 JSON值 的副本替换匹配节点。",
+							"description": "用运行库 JSON值 的副本替换匹配节点。 同一实际节点重复选中只处理和计数一次。",
 							"return": "整数型",
 							"params": [
 								{
@@ -155,7 +219,7 @@
 						},
 						{
 							"name": "修改文本",
-							"description": "用文本替换所有匹配节点。",
+							"description": "用文本替换所有匹配节点。 同一实际节点重复选中只处理和计数一次。",
 							"return": "整数型",
 							"params": [
 								{
@@ -172,7 +236,7 @@
 						},
 						{
 							"name": "修改整数",
-							"description": "用长整数替换所有匹配节点。",
+							"description": "用长整数替换所有匹配节点。 同一实际节点重复选中只处理和计数一次。",
 							"return": "整数型",
 							"params": [
 								{
@@ -189,7 +253,7 @@
 						},
 						{
 							"name": "修改小数",
-							"description": "用双精度小数替换所有匹配节点。",
+							"description": "用双精度小数替换所有匹配节点。 同一实际节点重复选中只处理和计数一次。",
 							"return": "整数型",
 							"params": [
 								{
@@ -206,7 +270,7 @@
 						},
 						{
 							"name": "修改逻辑",
-							"description": "用逻辑替换所有匹配节点。",
+							"description": "用逻辑替换所有匹配节点。 同一实际节点重复选中只处理和计数一次。",
 							"return": "整数型",
 							"params": [
 								{
@@ -223,7 +287,7 @@
 						},
 						{
 							"name": "修改空",
-							"description": "将匹配节点设为 JSON null；不会删除节点。",
+							"description": "将匹配节点设为 JSON null；不会删除节点。 同一实际节点重复选中只处理和计数一次。",
 							"return": "整数型",
 							"params": [
 								{
@@ -246,7 +310,7 @@
 								{
 									"name": "属性名",
 									"type": "文本型",
-									"description": "不得为空引用或全为空白的属性名。"
+									"description": "属性名称，不得为空引用；允许空文本和空白。"
 								},
 								{
 									"name": "新值",
@@ -274,7 +338,7 @@
 						},
 						{
 							"name": "删除",
-							"description": "删除匹配的属性或数组成员；数组后续索引会前移。",
+							"description": "删除匹配的属性或数组成员；数组后续索引会前移。 同一实际节点重复选中只处理和计数一次。",
 							"return": "整数型",
 							"params": [
 								{
@@ -297,12 +361,80 @@
 								{
 									"name": "原属性名",
 									"type": "文本型",
-									"description": "已有属性名称，不得为空引用或全为空白。"
+									"description": "属性名称，不得为空引用；允许空文本和空白。"
 								},
 								{
 									"name": "新属性名",
 									"type": "文本型",
-									"description": "新属性名称，不得为空引用或全为空白。"
+									"description": "属性名称，不得为空引用；允许空文本和空白。"
+								}
+							]
+						},
+						{
+							"name": "按选项查询",
+							"description": "按选项组合读取；成功返回的默认 null 和空数组也是存在结果。检测原始节点请调用文档的是否存在。",
+							"return": "simple.library.wsd.jsonpath.JSONPath结果",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								},
+								{
+									"name": "选项",
+									"type": "整数型",
+									"description": "JSONPath操作 中选项常量的位组合。"
+								}
+							]
+						},
+						{
+							"name": "查询前几项",
+							"description": "限制节点匹配数；确定路径选中的整个数组算一次匹配，不支持聚合函数。",
+							"return": "simple.library.wsd.jsonpath.JSONPath结果",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								},
+								{
+									"name": "最多匹配数",
+									"type": "整数型",
+									"description": "必须大于零。"
+								}
+							]
+						},
+						{
+							"name": "访问",
+							"description": "按匹配顺序回调；返回假停止。返回实际回调次数，包含最后一次。多属性联合选择作为一个对象回调。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								},
+								{
+									"name": "访问器",
+									"type": "simple.library.wsd.jsonpath.JSONPath访问器",
+									"description": "不得为空；不能重入修改或访问当前文档。"
+								}
+							]
+						},
+						{
+							"name": "映射",
+							"description": "按当前值转换不同节点，全部成功才提交；每个节点只回调一次，返回实际转换数量。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								},
+								{
+									"name": "映射器",
+									"type": "simple.library.wsd.jsonpath.JSONPath映射器",
+									"description": "不得为空；必须返回存在结果，写 null 请解析 null 字面量。"
 								}
 							]
 						}
@@ -317,7 +449,7 @@
 					"functions": [
 						{
 							"name": "是否存在",
-							"description": "查询是否实际匹配；确定路径中的空数组仍算匹配。",
+							"description": "默认查询表示实际匹配；按选项查询生成的默认值和空数组同样是可读取的存在结果。",
 							"return": "逻辑型"
 						},
 						{
@@ -415,6 +547,61 @@
 							"type": "整数型",
 							"value": "5",
 							"description": "结果类型：逻辑"
+						}
+					]
+				},
+				{
+					"name": "JSONPath映射器",
+					"description": "逐节点转换当前值；返回存在结果，全部转换成功才提交。回调内不能重入修改或访问当前文档。",
+					"kind": "interface",
+					"type": "simple.library.wsd.jsonpath.JSONPath映射器",
+					"functions": [
+						{
+							"name": "转换",
+							"description": "返回当前节点的新值；可显式解析 null，不能返回空引用或未匹配结果。",
+							"return": "simple.library.wsd.jsonpath.JSONPath结果",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								},
+								{
+									"name": "当前值",
+									"type": "simple.library.wsd.jsonpath.JSONPath结果",
+									"description": "当前节点的独立快照。"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "JSONPath访问器",
+					"description": "按查询顺序访问匹配快照，返回假停止；不能重入修改或访问当前文档。",
+					"kind": "interface",
+					"type": "simple.library.wsd.jsonpath.JSONPath访问器",
+					"functions": [
+						{
+							"name": "访问",
+							"description": "处理一次匹配；返回真继续，返回假停止。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的回调次序。"
+								},
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "JSONPath 表达式，根节点为 $。"
+								},
+								{
+									"name": "值",
+									"type": "simple.library.wsd.jsonpath.JSONPath结果",
+									"description": "本次匹配的独立快照。"
+								}
+							]
 						}
 					]
 				}

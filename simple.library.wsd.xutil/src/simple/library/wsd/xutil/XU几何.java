@@ -53,10 +53,10 @@ public final class XU几何 {
 	/**
 	 * 返回包含 X、Y 的两个元素数组。
 	 *
-	 * @param x1 起点X。
-	 * @param y1 起点Y。
-	 * @param x2 终点X。
-	 * @param y2 终点Y。
+	 * @param x1       起点X。
+	 * @param y1       起点Y。
+	 * @param x2       终点X。
+	 * @param y2       终点Y。
 	 * @param fraction 0 为起点，1 为终点，范围外表示延长线。
 	 * @return 按 X、Y 顺序保存的坐标。
 	 */

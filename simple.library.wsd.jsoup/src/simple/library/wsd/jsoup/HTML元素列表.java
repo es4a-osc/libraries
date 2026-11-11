@@ -1,26 +1,25 @@
 package simple.library.wsd.jsoup;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
+import org.jsoup.select.Selector.SelectorParseException;
 import simple.runtime.annotations.SimpleFunction;
 import simple.runtime.annotations.SimpleObject;
 
 /**
  * HTML 查询结果的有序成员快照，索引从 0 开始。
  *
- * <p>列表固定保存元素引用，文档树增删不会自动改变列表数量；通过成员修改元素
- * 仍会反映到其所属文档。每次查询可取得新的列表，不提供跨线程同步。</p>
+ * <p>
+ * 列表固定保存元素引用，文档树增删不会自动改变列表数量；通过成员修改元素 仍会反映到其所属文档。每次查询可取得新的列表，不提供跨线程同步。
+ * </p>
  *
  * @author 树先生 xhwsd@qq.com
  */
 @SimpleObject
 public final class HTML元素列表 {
 
-	private final List<Element> elements;
+	private final Elements elements;
 
 	/**
 	 * 复制结果的成员引用，不复制底层元素。
@@ -28,7 +27,7 @@ public final class HTML元素列表 {
 	 * @param elements 已有查询结果。
 	 */
 	HTML元素列表(List<Element> elements) {
-		this.elements = new ArrayList<Element>(elements);
+		this.elements = new Elements(elements);
 	}
 
 	/* 成员访问与数组转换。 */
@@ -86,7 +85,7 @@ public final class HTML元素列表 {
 	 */
 	@SimpleFunction
 	public String 取所有文本() {
-		return new Elements(elements).text();
+		return elements.text();
 	}
 
 	/**
@@ -113,7 +112,7 @@ public final class HTML元素列表 {
 	 */
 	@SimpleFunction
 	public String 取属性值(String name) {
-		return new Elements(elements).attr(HTML解析器.requireName(name, "属性名"));
+		return elements.attr(HTML解析器.requireName(name, "属性名"));
 	}
 
 	/**
@@ -139,13 +138,13 @@ public final class HTML元素列表 {
 	/**
 	 * 为所有成员新增或覆盖属性。
 	 *
-	 * @param name 属性名称，不得为空引用或空文本。
+	 * @param name  属性名称，不得为空引用或空文本。
 	 * @param value 新的属性值，允许空文本。
 	 * @throws IllegalArgumentException 参数无效。
 	 */
 	@SimpleFunction
 	public void 置属性值(String name, String value) {
-		new Elements(elements).attr(HTML解析器.requireName(name, "属性名"), HTML解析器.requireText(value, "属性值"));
+		elements.attr(HTML解析器.requireName(name, "属性名"), HTML解析器.requireText(value, "属性值"));
 	}
 
 	/**
@@ -160,4 +159,182 @@ public final class HTML元素列表 {
 			}
 		}
 	}
+
+	/**
+	 * 在每个成员范围内查询 CSS 并合并去重，返回新成员快照。
+	 *
+	 * @param selector CSS 选择器。
+	 * @return 按查询顺序排列的成员快照。
+	 * @throws IllegalArgumentException 选择器无效。
+	 */
+	@SimpleFunction
+	public HTML元素列表 查询元素(String selector) {
+		try {
+			return new HTML元素列表(elements.select(HTML解析器.requireName(selector, "选择器")));
+		} catch (SelectorParseException error) {
+			throw new IllegalArgumentException("选择器无效。", error);
+		}
+	}
+
+	/**
+	 * 从当前成员中排除符合 CSS 的元素，返回新快照。
+	 *
+	 * @param selector CSS 选择器。
+	 * @return 按查询顺序排列的成员快照。
+	 * @throws IllegalArgumentException 选择器无效。
+	 */
+	@SimpleFunction
+	public HTML元素列表 排除匹配(String selector) {
+		try {
+			return new HTML元素列表(elements.not(HTML解析器.requireName(selector, "选择器")));
+		} catch (SelectorParseException error) {
+			throw new IllegalArgumentException("选择器无效。", error);
+		}
+	}
+
+	/**
+	 * 判断至少一个成员是否符合 CSS 选择器。
+	 *
+	 * @param selector CSS 选择器。
+	 * @return 符合上述条件时为真。
+	 * @throws IllegalArgumentException 选择器无效。
+	 */
+	@SimpleFunction
+	public boolean 是否有匹配(String selector) {
+		try {
+			return elements.is(HTML解析器.requireName(selector, "选择器"));
+		} catch (SelectorParseException error) {
+			throw new IllegalArgumentException("选择器无效。", error);
+		}
+	}
+
+	/**
+	 * 分别深复制所有成员；副本列表的修改不影响原成员文档。
+	 *
+	 * @return 按查询顺序排列的成员快照。
+	 */
+	@SimpleFunction
+	public HTML元素列表 复制() {
+		return new HTML元素列表(elements.clone());
+	}
+
+	/**
+	 * 合并各成员内部 HTML。
+	 *
+	 * @return 各成员内部 HTML 的合并文本。
+	 */
+	@SimpleFunction
+	public String 取内部HTML() {
+		return elements.html();
+	}
+
+	/**
+	 * 合并各成员完整 HTML。
+	 *
+	 * @return 各成员完整 HTML 的合并文本。
+	 */
+	@SimpleFunction
+	public String 取HTML文本() {
+		return elements.outerHtml();
+	}
+
+	/**
+	 * 批量修改固定列表中的成员；同时选择祖先和后代时按成员顺序增量执行。
+	 *
+	 * @param value 纯文本内容。
+	 * @throws IllegalArgumentException 内容为空引用。
+	 */
+	@SimpleFunction
+	public void 置文本(String value) {
+		HTML解析器.requireText(value, "内容");
+		for (Element element : elements) {
+			element.text(value);
+		}
+	}
+
+	/**
+	 * 批量修改固定列表中的成员；同时选择祖先和后代时按成员顺序增量执行。
+	 *
+	 * @param value HTML 片段。
+	 * @throws IllegalArgumentException 内容为空引用。
+	 */
+	@SimpleFunction
+	public void 置内部HTML(String value) {
+		elements.html(HTML解析器.requireText(value, "内容"));
+	}
+
+	/**
+	 * 批量修改固定列表中的成员；同时选择祖先和后代时按成员顺序增量执行。
+	 *
+	 * @param value HTML 片段。
+	 * @throws IllegalArgumentException 内容为空引用。
+	 */
+	@SimpleFunction
+	public void 追加HTML(String value) {
+		elements.append(HTML解析器.requireText(value, "内容"));
+	}
+
+	/**
+	 * 批量修改固定列表中的成员；同时选择祖先和后代时按成员顺序增量执行。
+	 *
+	 * @param value HTML 片段。
+	 * @throws IllegalArgumentException 内容为空引用。
+	 */
+	@SimpleFunction
+	public void 首部插入HTML(String value) {
+		elements.prepend(HTML解析器.requireText(value, "内容"));
+	}
+
+	/**
+	 * 从所有成员移除指定属性。
+	 *
+	 * @param name 属性名。
+	 * @throws IllegalArgumentException 属性名无效。
+	 */
+	@SimpleFunction
+	public void 移除属性(String name) {
+		elements.removeAttr(HTML解析器.requireName(name, "属性名"));
+	}
+
+	/**
+	 * 批量修改成员的单个 CSS 类名。
+	 *
+	 * @param value 单个类名。
+	 * @throws IllegalArgumentException 类名无效。
+	 */
+	@SimpleFunction
+	public void 添加类名(String value) {
+		elements.addClass(HTML解析器.requireClass(value));
+	}
+
+	/**
+	 * 批量修改成员的单个 CSS 类名。
+	 *
+	 * @param value 单个类名。
+	 * @throws IllegalArgumentException 类名无效。
+	 */
+	@SimpleFunction
+	public void 移除类名(String value) {
+		elements.removeClass(HTML解析器.requireClass(value));
+	}
+
+	/**
+	 * 批量修改成员的单个 CSS 类名。
+	 *
+	 * @param value 单个类名。
+	 * @throws IllegalArgumentException 类名无效。
+	 */
+	@SimpleFunction
+	public void 切换类名(String value) {
+		elements.toggleClass(HTML解析器.requireClass(value));
+	}
+
+	/**
+	 * 移除每个成员的子节点，保留成员和属性。
+	 */
+	@SimpleFunction
+	public void 清空子节点() {
+		elements.empty();
+	}
+
 }

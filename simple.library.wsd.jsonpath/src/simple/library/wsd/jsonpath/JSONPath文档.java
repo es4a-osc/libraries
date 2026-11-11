@@ -1,10 +1,12 @@
 package simple.library.wsd.jsonpath;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.JsonPathException;
 import com.jayway.jsonpath.Option;
@@ -17,9 +19,10 @@ import simple.runtime.collections.JSON值;
 /**
  * 同步执行 JSONPath 查询及事务式内存修改的文档对象。
  *
- * <p>通过 JSONPath操作 创建。一个文档及其调用应在同一线程串行使用。
- * 每次修改在独立副本上完成，成功后替换当前文档；失败不会留下部分修改。
- * 不自动创建路径中缺失的父对象，不执行脚本或访问网络。</p>
+ * <p>
+ * 通过 JSONPath操作 创建。一个文档及其调用应在同一线程串行使用。 每次修改在独立副本上完成，成功后替换当前文档；失败不会留下部分修改。
+ * 同一节点被重复选择时只写一次，查询仍保留匹配顺序。回调内可查询或复制，不能重入修改当前文档。 不自动创建路径中缺失的父对象，不执行脚本或访问网络。
+ * </p>
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -30,6 +33,11 @@ public final class JSONPath文档 {
 	 * 当前文档模型，只在成功修改后替换。
 	 */
 	private Object root;
+
+	/**
+	 * 写事务或访问回调正在执行；不支持回调内重入修改同一文档。
+	 */
+	private boolean busy;
 
 	/**
 	 * 保存标准 JSON 模型。
@@ -59,7 +67,7 @@ public final class JSONPath文档 {
 		}
 
 		try {
-			Object value = compiled.read(root, JSONPath支持.CONFIG);
+			Object value = compiled.read(JSONPath支持.queryModel(root, path), JSONPath支持.CONFIG);
 			boolean present = compiled.isDefinite() || !(value instanceof List) || !((List<?>) value).isEmpty();
 			return new JSONPath结果(present, value);
 		} catch (PathNotFoundException error) {
@@ -125,12 +133,126 @@ public final class JSONPath文档 {
 		return new JSONPath结果(true, root).到JSON值();
 	}
 
+	/**
+	 * 按上游读取选项查询；成功返回的默认 null 和空数组仍是可读取结果。
+	 *
+	 * @param path    JSONPath 表达式。
+	 * @param options JSONPath操作 中选项常量的位组合。
+	 * @return 配置后的存在结果；检测原始节点应使用是否存在。
+	 * @throws IllegalArgumentException 选项、表达式无效或求值失败且未抑制。
+	 */
+	@SimpleFunction
+	public JSONPath结果 按选项查询(String path, int options) {
+		JsonPath compiled = JSONPath支持.path(path);
+		Configuration configuration = JSONPath支持.options(options);
+		boolean paths = configuration.containsOption(Option.AS_PATH_LIST);
+		if (root == null) {
+			if ("$".equals(path.trim())) {
+				List<Object> wrapped = new ArrayList<Object>();
+				wrapped.add(paths ? "$" : null);
+				return new JSONPath结果(true,
+						paths || configuration.containsOption(Option.ALWAYS_RETURN_LIST) ? wrapped : null);
+			}
+			if (configuration.containsOption(Option.SUPPRESS_EXCEPTIONS)) {
+				return new JSONPath结果(true,
+						configuration.containsOption(Option.ALWAYS_RETURN_LIST) || paths ? new ArrayList<Object>()
+								: null);
+			}
+			throw new IllegalArgumentException("JSON null 根只有 $ 本身可匹配。");
+		}
+		try {
+			Object model = JSONPath支持.queryModel(root, path);
+			Object value = compiled.read(model, configuration);
+			if (paths && value instanceof List && !((List<?>) value).isEmpty()) {
+				value = JSONPath选择.select(model, path, configuration, null).paths;
+			}
+			return new JSONPath结果(true, value);
+		} catch (JsonPathException error) {
+			throw JSONPath支持.failure("按选项查询失败", error);
+		}
+	}
+
+	/**
+	 * 限制节点查询的命中数；确定路径选中的整个数组仍算一次命中。
+	 *
+	 * @param path    节点选择表达式，不支持聚合函数结果。
+	 * @param maximum 大于零的最多匹配数。
+	 * @return 已捕获匹配的独立结果，没有匹配时是否存在为假。
+	 * @throws IllegalArgumentException 上限或表达式无效。
+	 */
+	@SimpleFunction
+	public JSONPath结果 查询前几项(String path, int maximum) {
+		if (maximum <= 0) {
+			throw new IllegalArgumentException("最多匹配数必须大于零。");
+		}
+		JsonPath compiled = JSONPath支持.path(path);
+		if (((com.jayway.jsonpath.internal.path.CompiledPath) com.jayway.jsonpath.internal.path.PathCompiler
+				.compile(path)).isFunctionPath()) {
+			throw new IllegalArgumentException("数量限制只用于节点选择，不支持聚合函数结果。");
+		}
+		if (root == null) {
+			return new JSONPath结果("$".equals(path.trim()), null);
+		}
+		try {
+			Object value = JsonPath.using(JSONPath支持.CONFIG).parse(JSONPath支持.queryModel(root, path)).limit(maximum)
+					.read(compiled);
+			boolean present = compiled.isDefinite() || !(value instanceof List) || !((List<?>) value).isEmpty();
+			return new JSONPath结果(present, value);
+		} catch (PathNotFoundException missing) {
+			return new JSONPath结果(false, null);
+		} catch (JsonPathException error) {
+			throw JSONPath支持.failure("限量查询失败", error);
+		}
+	}
+
+	/**
+	 * 按匹配顺序访问独立结果，可由访问器返回假停止后续匹配。
+	 *
+	 * @param path    节点选择表达式，不支持聚合函数结果。
+	 * @param visitor 逐项访问器，不得为空引用。
+	 * @return 实际回调次数，包含返回假的最后一次回调。
+	 * @throws IllegalArgumentException 参数无效或回调中重入当前文档。
+	 */
+	@SimpleFunction
+	public int 访问(String path, JSONPath访问器 visitor) {
+		if (visitor == null) {
+			throw new IllegalArgumentException("访问器不得为空引用。");
+		}
+		requireIdle();
+		busy = true;
+		try {
+			return JSONPath选择.select(root, path, JSONPath支持.CONFIG, visitor).visits();
+		} catch (PathNotFoundException missing) {
+			return 0;
+		} catch (JsonPathException error) {
+			throw JSONPath支持.failure("访问匹配节点失败", error);
+		} finally {
+			busy = false;
+		}
+	}
+
+	/**
+	 * 根据当前值转换匹配节点；同一节点只处理一次，全部转换成功后提交。
+	 *
+	 * @param path   节点选择表达式。
+	 * @param mapper 转换回调，不得为空引用；返回值必须是存在结果。
+	 * @return 实际转换的不同节点数。
+	 * @throws IllegalArgumentException 参数无效、返回值无效或回调中重入当前文档修改。
+	 */
+	@SimpleFunction
+	public int 映射(String path, JSONPath映射器 mapper) {
+		if (mapper == null) {
+			throw new IllegalArgumentException("映射器不得为空引用。");
+		}
+		return change(5, path, null, null, null, mapper);
+	}
+
 	/* 按路径修改；新增属性使用独立入口，不隐式生成中间层。 */
 
 	/**
 	 * 用指定 JSON 值替换匹配节点，支持通配符和过滤器批量选择。
 	 *
-	 * @param path 节点选择表达式。
+	 * @param path  节点选择表达式。
 	 * @param value 本库解析值或查询取得的存在结果；按值深复制。
 	 * @return 实际匹配并处理的节点数，无匹配为 0。
 	 * @throws IllegalArgumentException 参数、表达式或目标类型无效。
@@ -143,7 +265,7 @@ public final class JSONPath文档 {
 	/**
 	 * 用运行库 JSON值 的副本替换匹配节点。
 	 *
-	 * @param path 节点选择表达式。
+	 * @param path  节点选择表达式。
 	 * @param value 运行库 JSON 值，不得为空引用。
 	 * @return 实际匹配并处理的节点数。
 	 * @throws IllegalArgumentException 参数或表达式无效。
@@ -159,7 +281,7 @@ public final class JSONPath文档 {
 	/**
 	 * 用文本替换所有匹配节点。
 	 *
-	 * @param path 节点选择表达式。
+	 * @param path  节点选择表达式。
 	 * @param value 新文本值。
 	 * @return 实际匹配并处理的节点数。
 	 * @throws IllegalArgumentException 参数或表达式无效。
@@ -172,7 +294,7 @@ public final class JSONPath文档 {
 	/**
 	 * 用长整数替换所有匹配节点。
 	 *
-	 * @param path 节点选择表达式。
+	 * @param path  节点选择表达式。
 	 * @param value 新长整数值。
 	 * @return 实际匹配并处理的节点数。
 	 * @throws IllegalArgumentException 参数或表达式无效。
@@ -185,7 +307,7 @@ public final class JSONPath文档 {
 	/**
 	 * 用双精度小数替换所有匹配节点。
 	 *
-	 * @param path 节点选择表达式。
+	 * @param path  节点选择表达式。
 	 * @param value 有限的双精度小数值，不接受 NaN 或无穷大。
 	 * @return 实际匹配并处理的节点数。
 	 * @throws IllegalArgumentException 参数或表达式无效。
@@ -198,7 +320,7 @@ public final class JSONPath文档 {
 	/**
 	 * 用逻辑替换所有匹配节点。
 	 *
-	 * @param path 节点选择表达式。
+	 * @param path  节点选择表达式。
 	 * @param value 新逻辑值。
 	 * @return 实际匹配并处理的节点数。
 	 * @throws IllegalArgumentException 参数或表达式无效。
@@ -223,8 +345,8 @@ public final class JSONPath文档 {
 	/**
 	 * 在匹配对象内新增或覆盖属性，不自动生成父对象。
 	 *
-	 * @param path 选择一个或多个对象的表达式。
-	 * @param key 不得为空引用或全为空白的属性名。
+	 * @param path  选择一个或多个对象的表达式。
+	 * @param key   属性名，允许空文本和空白，不得为空引用。
 	 * @param value 存在的结果值，按值复制。
 	 * @return 处理的对象数量。
 	 * @throws IllegalArgumentException 参数无效或任何目标不是对象。
@@ -237,7 +359,7 @@ public final class JSONPath文档 {
 	/**
 	 * 在每个匹配数组末尾添加一个值；数组参数作为单个成员添加。
 	 *
-	 * @param path 选择一个或多个数组的表达式。
+	 * @param path  选择一个或多个数组的表达式。
 	 * @param value 存在的结果值，按值复制。
 	 * @return 处理的数组数量。
 	 * @throws IllegalArgumentException 参数无效或任何目标不是数组。
@@ -262,9 +384,9 @@ public final class JSONPath文档 {
 	/**
 	 * 在匹配对象内重命名已有属性，不覆盖另一个已存在属性。
 	 *
-	 * @param path 对象选择表达式。
-	 * @param oldKey 已有属性名称，不得为空引用或全为空白。
-	 * @param newKey 新属性名称，不得为空引用或全为空白。
+	 * @param path   对象选择表达式。
+	 * @param oldKey 已有属性名称，不得为空引用，允许空文本和空白。
+	 * @param newKey 新属性名称，不得为空引用，允许空文本和空白。
 	 * @return 实际处理的对象数；旧名不存在或新名冲突时整体失败。
 	 * @throws IllegalArgumentException 参数、对象类型或名称冲突检查失败。
 	 */
@@ -279,43 +401,59 @@ public final class JSONPath文档 {
 	 * 统一执行写操作，禁止一部分目标成功、一部分失败。
 	 *
 	 * @param operation 0 替换、1 属性、2 数组、3 删除、4 重命名。
-	 * @param path 节点表达式。
-	 * @param value 已校验的新值。
-	 * @param key 属性名或原名称。
-	 * @param newKey 新名称。
+	 * @param path      节点表达式。
+	 * @param value     已校验的新值。
+	 * @param key       属性名或原名称。
+	 * @param newKey    新名称。
 	 * @return 匹配并处理的节点数量，无匹配时为 0。
 	 * @throws IllegalArgumentException 表达式、目标类型、名称检查或上游写操作失败；当前文档保持不变。
 	 */
+
 	private int change(int operation, String path, Object value, String key, String newKey) {
-		// 定位并处理禁止删除根、无匹配及整个根值替换的情况。
-		List<String> matches = paths(root, path);
-		if (operation == 3 && matches.contains("$")) {
-			throw new IllegalArgumentException("不允许删除文档根节点。");
-		}
-		if (matches.isEmpty()) {
-			return 0;
-		}
-		if (matches.size() == 1 && "$".equals(matches.get(0)) && operation == 0) {
-			root = JSONPath支持.copy(value);
-			return 1;
-		}
+		return change(operation, path, value, key, newKey, null);
+	}
 
-		// 所有后续检查和修改只操作副本，成功之前不替换当前根。
-		Object copy = JSONPath支持.copy(root);
+	/**
+	 * 在独立候选模型上定位、校验并提交一次修改，失败时释放重入保护。
+	 *
+	 * @param operation 0 替换、1 属性、2 数组、3 删除、4 重命名、5 映射。
+	 * @param path      节点选择表达式。
+	 * @param value     待写入值。
+	 * @param key       属性名或原名称。
+	 * @param newKey    新名称。
+	 * @param mapper    映射操作的转换器。
+	 * @return 实际处理的不同节点数。
+	 * @throws IllegalArgumentException 参数无效、目标类型不符或在回调中重入修改。
+	 */
+	private int change(int operation, String path, Object value, String key, String newKey, JSONPath映射器 mapper) {
+		requireIdle();
+		busy = true;
 		try {
-			DocumentContext context = JsonPath.using(JSONPath支持.CONFIG).parse(copy);
+			Object candidate = JSONPath支持.copy(root);
+			JSONPath选择 selection;
+			try {
+				selection = JSONPath选择.select(candidate, path, JSONPath支持.CONFIG, null);
+			} catch (PathNotFoundException missing) {
+				return 0;
+			}
+			List<JSONPath选择.Node> targets = new ArrayList<JSONPath选择.Node>(selection.nodes.values());
+			if (targets.isEmpty()) {
+				return 0;
+			}
 
-			// 先检查全部目标，避免混合目标在中途才发生类型或名称冲突。
-			for (String match : matches) {
-				Object target = context.read(match);
-				if ((operation == 1 || operation == 4) && !(target instanceof Map)) {
+			// 在执行任何写入或用户转换之前，先检查全部目标。
+			for (JSONPath选择.Node node : targets) {
+				if (operation == 3 && node.root) {
+					throw new IllegalArgumentException("不允许删除文档根节点。");
+				}
+				if ((operation == 1 || operation == 4) && !(node.value instanceof Map)) {
 					throw new IllegalArgumentException("目标必须是JSON对象。");
 				}
-				if (operation == 2 && !(target instanceof List)) {
+				if (operation == 2 && !(node.value instanceof List)) {
 					throw new IllegalArgumentException("目标必须是JSON数组。");
 				}
 				if (operation == 4) {
-					Map<?, ?> object = (Map<?, ?>) target;
+					Map<?, ?> object = (Map<?, ?>) node.value;
 					if (!object.containsKey(key)) {
 						throw new IllegalArgumentException("原属性不存在：" + key);
 					}
@@ -324,33 +462,89 @@ public final class JSONPath文档 {
 					}
 				}
 			}
+			if (operation == 3) {
+				orderDeletion(targets);
+			}
 
-			// 沿用上游对批量选择和数组删除顺序的处理。
-			switch (operation) {
+			for (JSONPath选择.Node node : targets) {
+				Object replacement = value;
+				if (operation == 5) {
+					replacement = resultValue(mapper.转换(node.path, new JSONPath结果(true, node.value)));
+				}
+				switch (operation) {
 				case 0:
-					context.set(path, JSONPath支持.copy(value));
+				case 5:
+					if (node.root) {
+						candidate = JSONPath支持.copy(replacement);
+					} else {
+						node.reference.set(JSONPath支持.copy(replacement), JSONPath支持.CONFIG);
+					}
 					break;
 				case 1:
-					context.put(path, key, JSONPath支持.copy(value));
+					node.reference.put(key, JSONPath支持.copy(value), JSONPath支持.CONFIG);
 					break;
 				case 2:
-					context.add(path, JSONPath支持.copy(value));
+					node.reference.add(JSONPath支持.copy(value), JSONPath支持.CONFIG);
 					break;
 				case 3:
-					context.delete(path);
+					node.reference.delete(JSONPath支持.CONFIG);
 					break;
 				default:
 					if (!key.equals(newKey)) {
-						context.renameKey(path, key, newKey);
+						node.reference.renameKey(key, newKey, JSONPath支持.CONFIG);
 					}
 					break;
+				}
 			}
-
-			// 断开上游批量写入可能产生的共享容器引用后再提交。
-			root = JSONPath支持.copy(context.json());
-			return matches.size();
+			// 输入和每次写入均已独立复制，候选模型无需再复制整个文档。
+			root = candidate;
+			return targets.size();
 		} catch (JsonPathException error) {
 			throw JSONPath支持.failure("JSONPath修改失败", error);
+		} finally {
+			busy = false;
+		}
+	}
+
+	/**
+	 * 子节点先删除，同一数组索引从大到小处理，避免索引前移。
+	 *
+	 * @param targets 本次不同目标节点。
+	 */
+	private static void orderDeletion(List<JSONPath选择.Node> targets) {
+		final IdentityHashMap<Object, Integer> parents = new IdentityHashMap<Object, Integer>();
+		for (JSONPath选择.Node node : targets) {
+			if (!parents.containsKey(node.parent)) {
+				parents.put(node.parent, parents.size());
+			}
+		}
+		targets.sort(new Comparator<JSONPath选择.Node>() {
+			@Override
+			public int compare(JSONPath选择.Node left, JSONPath选择.Node right) {
+				int depth = Integer.compare(right.depth, left.depth);
+				if (depth != 0) {
+					return depth;
+				}
+				int parent = Integer.compare(parents.get(left.parent), parents.get(right.parent));
+				if (parent != 0) {
+					return parent;
+				}
+				if (left.key instanceof Number && right.key instanceof Number) {
+					return Integer.compare(((Number) right.key).intValue(), ((Number) left.key).intValue());
+				}
+				return 0;
+			}
+		});
+	}
+
+	/**
+	 * 拒绝在当前文档的转换或访问回调中再次开始修改。
+	 *
+	 * @throws IllegalArgumentException 当前文档正在执行事务或访问回调。
+	 */
+	private void requireIdle() {
+		if (busy) {
+			throw new IllegalArgumentException("不能在当前文档的回调中重入修改或访问。");
 		}
 	}
 
@@ -358,29 +552,15 @@ public final class JSONPath文档 {
 	 * 按路径模式读取具体节点路径。
 	 *
 	 * @param model 待查询模型。
-	 * @param path 表达式。
+	 * @param path  表达式。
 	 * @return 按上游查询顺序返回的具体路径；无匹配时为空列表。
 	 * @throws IllegalArgumentException 表达式无效或不适用于节点路径模式。
 	 */
-	private static List<String> paths(Object model, String path) {
-		JsonPath compiled = JSONPath支持.path(path);
 
-		// AS_PATH_LIST 同样不能直接接收 Java 空根，单独保留 JSON null 根路径。
-		if (model == null) {
-			List<String> result = new ArrayList<String>();
-			if ("$".equals(path.trim())) {
-				result.add("$");
-			}
-			return result;
-		}
+	private static List<String> paths(Object model, String path) {
 		try {
-			List<?> values = compiled.read(model, JSONPath支持.CONFIG.addOptions(Option.AS_PATH_LIST));
-			List<String> result = new ArrayList<String>();
-			for (Object value : values) {
-				result.add((String) value);
-			}
-			return result;
-		} catch (PathNotFoundException error) {
+			return JSONPath选择.select(model, path, JSONPath支持.CONFIG, null).paths;
+		} catch (PathNotFoundException missing) {
 			return new ArrayList<String>();
 		} catch (JsonPathException error) {
 			throw JSONPath支持.failure("无法取得节点路径", error);
@@ -388,17 +568,14 @@ public final class JSONPath文档 {
 	}
 
 	/**
-	 * 检查上游写入接口要求的非空属性名。
+	 * 检查 JSON 属性名不为空引用，保留合法的空文本和空白。
 	 *
 	 * @param key 属性名称。
 	 * @return 原属性名，不改变合法名称的内容。
-	 * @throws IllegalArgumentException 属性名为空引用或全为空白。
+	 * @throws IllegalArgumentException 属性名为空引用。
 	 */
 	private static String requireKey(String key) {
 		JSONPath支持.text(key, "属性名");
-		if (key.trim().length() == 0) {
-			throw new IllegalArgumentException("写入属性名不得为空白。");
-		}
 		return key;
 	}
 

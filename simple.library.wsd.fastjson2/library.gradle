@@ -1,0 +1,6 @@
+/*
+ * ES4A 扩展库 Gradle 配置。
+ */
+android {
+	namespace = 'simple.library.wsd.fastjson2'
+}

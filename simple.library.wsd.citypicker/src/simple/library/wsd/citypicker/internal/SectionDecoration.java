@@ -42,8 +42,8 @@ final class SectionDecoration extends RecyclerView.ItemDecoration {
 	}
 
 	@Override
-	public void getItemOffsets(@NonNull Rect output, @NonNull View view,
-			@NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+	public void getItemOffsets(@NonNull Rect output, @NonNull View view, @NonNull RecyclerView parent,
+			@NonNull RecyclerView.State state) {
 		int position = parent.getChildAdapterPosition(view);
 		if (valid(position) && startsSection(position)) {
 			output.top = height;
@@ -51,8 +51,7 @@ final class SectionDecoration extends RecyclerView.ItemDecoration {
 	}
 
 	@Override
-	public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent,
-			@NonNull RecyclerView.State state) {
+	public void onDraw(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
 		for (int i = 0; i < parent.getChildCount(); i++) {
 			View view = parent.getChildAt(i);
 			int position = parent.getChildAdapterPosition(view);
@@ -63,8 +62,7 @@ final class SectionDecoration extends RecyclerView.ItemDecoration {
 	}
 
 	@Override
-	public void onDrawOver(@NonNull Canvas canvas, @NonNull RecyclerView parent,
-			@NonNull RecyclerView.State state) {
+	public void onDrawOver(@NonNull Canvas canvas, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
 		LinearLayoutManager manager = (LinearLayoutManager) parent.getLayoutManager();
 		if (manager == null) {
 			return;
@@ -110,14 +108,14 @@ final class SectionDecoration extends RecyclerView.ItemDecoration {
 	/**
 	 * 统一绘制普通组头和悬浮组头。
 	 *
-	 * @param canvas 目标画布。
-	 * @param parent 城市列表。
+	 * @param canvas  目标画布。
+	 * @param parent  城市列表。
 	 * @param section 分组文本。
-	 * @param top 组头顶部像素位置。
+	 * @param top     组头顶部像素位置。
 	 */
 	private void draw(Canvas canvas, RecyclerView parent, String section, int top) {
-		canvas.drawRect(parent.getPaddingLeft(), top,
-				parent.getWidth() - parent.getPaddingRight(), top + height, background);
+		canvas.drawRect(parent.getPaddingLeft(), top, parent.getWidth() - parent.getPaddingRight(), top + height,
+				background);
 		Paint.FontMetrics metrics = text.getFontMetrics();
 		canvas.drawText(section, parent.getPaddingLeft() + padding,
 				top + height / 2f - (metrics.ascent + metrics.descent) / 2, text);

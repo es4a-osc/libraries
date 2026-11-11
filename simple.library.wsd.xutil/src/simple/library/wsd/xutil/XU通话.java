@@ -16,10 +16,7 @@ import simple.runtime.annotations.UsesPermissions;
  * @author 树先生 xhwsd@qq.com
  */
 @SimpleObject
-@UsesPermissions(permissionNames =
-	// 直接请求拨出电话；仍须先获得系统运行时授权。
-	"android.permission.CALL_PHONE"
-)
+@UsesPermissions(permissionNames = "android.permission.CALL_PHONE")
 public final class XU通话 {
 
 	/**
@@ -35,7 +32,8 @@ public final class XU通话 {
 	 */
 	@SimpleFunction
 	public static boolean 是否已授权() {
-		return XUtilSupport.context().checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED;
+		return XUtilSupport.context()
+				.checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED;
 	}
 
 	/**
@@ -48,7 +46,7 @@ public final class XU通话 {
 	public static boolean 拨打(String number) {
 		XUtilSupport.requireMainThread();
 		if (!是否已授权()) {
-			throw new SecurityException("尚未取得 CALL_PHONE 权限，请先通过权限请求组件申请");
+			throw XUtilSupport.failure("尚未取得 CALL_PHONE 权限，请先通过权限请求组件申请", null);
 		}
 		try {
 			PhoneUtils.call(XUtilSupport.phoneNumber(number));
@@ -56,6 +54,8 @@ public final class XU通话 {
 		} catch (ActivityNotFoundException unavailable) {
 			// 平板和模拟器可能没有通话应用；按返回契约明确报告未发起。
 			return false;
+		} catch (SecurityException denied) {
+			throw XUtilSupport.failure("未获准拨打电话", denied);
 		}
 	}
 }

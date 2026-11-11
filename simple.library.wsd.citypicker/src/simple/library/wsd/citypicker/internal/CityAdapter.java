@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import simple.library.wsd.citypicker.R;
 
 /**
- * 沿用 CityPicker 的定位、热门和字母分组布局；搜索结果使用独立数据视图。
- * 定位回填只更新定位行，不能改写当前搜索结果的首项。
+ * 沿用 CityPicker 的定位、热门和字母分组布局；搜索结果使用独立数据视图。 定位回填只更新定位行，不能改写当前搜索结果的首项。
  *
  * @author xuexiang
  * @author 树先生 xhwsd@qq.com
@@ -30,9 +29,10 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 		/**
 		 * 用户选中一条城市记录。
 		 *
-		 * @param city 被选中的城市。
+		 * @param position 数据集位置，不含分组标题。
+		 * @param city     被选中的城市。
 		 */
-		void pick(City city);
+		void pick(int position, City city);
 
 		/**
 		 * 用户要求重新定位。
@@ -50,9 +50,9 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 	/**
 	 * 创建由单个 Dialog 拥有的列表适配器。
 	 *
-	 * @param cities 当前城市数据。
-	 * @param hot 热门城市快照，允许为空。
-	 * @param located 初始定位城市，允许为空。
+	 * @param cities   当前城市数据。
+	 * @param hot      热门城市快照，允许为空。
+	 * @param located  初始定位城市，允许为空。
 	 * @param listener 用户操作监听器。
 	 */
 	CityAdapter(List<City> cities, List<City> hot, City located, Listener listener) {
@@ -66,7 +66,7 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 	/**
 	 * 替换搜索快照；保留独立的定位结果和热门城市。
 	 *
-	 * @param cities 新的列表数据。
+	 * @param cities    新的列表数据。
 	 * @param searching 是否仅展示匹配城市。
 	 */
 	void update(List<City> cities, boolean searching) {
@@ -78,7 +78,7 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 	/**
 	 * 更新定位状态，搜索期间也保留结果供清除搜索后使用。
 	 *
-	 * @param city 定位成功的城市，失败或等待时允许为空。
+	 * @param city  定位成功的城市，失败或等待时允许为空。
 	 * @param state 0 等待，1 成功，2 失败。
 	 */
 	void location(City city, int state) {
@@ -126,8 +126,9 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 		int type = getItemViewType(position);
 		if (type == 0) {
 			TextView label = view.findViewById(R.id.cp_list_item_location);
-			label.setText(locationState == 1 ? located.name : view.getContext().getString(
-					locationState == 2 ? R.string.cp_locate_failed : R.string.cp_locating));
+			label.setText(locationState == 1 ? located.name
+					: view.getContext()
+							.getString(locationState == 2 ? R.string.cp_locate_failed : R.string.cp_locating));
 			View target = view.findViewById(R.id.cp_list_item_location_layout);
 			Context context = view.getContext();
 			int spacing = ThemeValues.dimension(context, R.attr.cpGridItemSpace, 8);
@@ -141,8 +142,11 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 			target.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View clicked) {
+					if (searching || holder.getBindingAdapterPosition() != 0) {
+						return;
+					}
 					if (locationState == 1 && located != null) {
-						listener.pick(located);
+						listener.pick(0, located);
 					} else if (locationState == 2) {
 						listener.locate();
 					}
@@ -152,7 +156,7 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 			RecyclerView grid = view.findViewById(R.id.cp_hot_list);
 			grid.setLayoutManager(new GridLayoutManager(view.getContext(), 3));
 			grid.setNestedScrollingEnabled(false);
-			grid.setAdapter(new HotAdapter(hot, listener));
+			grid.setAdapter(new HotAdapter(hot, listener, holder));
 		} else {
 			final City city = cities.get(position - (searching ? 0 : 2));
 			TextView label = view.findViewById(R.id.cp_list_item_name);
@@ -160,7 +164,11 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 			view.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View clicked) {
-					listener.pick(city);
+					int current = holder.getBindingAdapterPosition();
+					if (current >= 0 && current < getItemCount() && getItemViewType(current) == 2) {
+						int row = current - (searching ? 0 : 2);
+						listener.pick(row, cities.get(row));
+					}
 				}
 			});
 		}
@@ -176,7 +184,7 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 		/**
 		 * 保存当前行视图。
 		 *
-		 * @param view 已创建的行布局。
+		 * @param view   已创建的行布局。
 		 * @param parent 所属列表，用于布局前的可用宽度计算。
 		 */
 		Holder(View view, ViewGroup parent) {
@@ -192,16 +200,19 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 
 		private final List<City> cities;
 		private final Listener listener;
+		private final Holder header;
 
 		/**
 		 * 绑定当前 Dialog 的热门城市列表。
 		 *
-		 * @param cities 热门城市快照。
+		 * @param cities   热门城市快照。
 		 * @param listener 城市选择监听器。
+		 * @param header   热门分组所属行，用于拒绝列表切换后的旧点击。
 		 */
-		HotAdapter(List<City> cities, Listener listener) {
+		HotAdapter(List<City> cities, Listener listener, Holder header) {
 			this.cities = cities;
 			this.listener = listener;
+			this.header = header;
 		}
 
 		@NonNull
@@ -210,8 +221,8 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 			Context context = parent.getContext();
 			View view = LayoutInflater.from(context).inflate(R.layout.cp_grid_item_layout, parent, false);
 			int spacing = ThemeValues.dimension(context, R.attr.cpGridItemSpace, 8);
-			RecyclerView.LayoutParams parameters = new RecyclerView.LayoutParams(
-					ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+			RecyclerView.LayoutParams parameters = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT);
 			parameters.setMargins(spacing / 2, spacing / 2, spacing / 2, spacing / 2);
 			view.setLayoutParams(parameters);
 			return new Holder(view, parent);
@@ -225,7 +236,10 @@ final class CityAdapter extends RecyclerView.Adapter<CityAdapter.Holder> {
 			holder.itemView.findViewById(R.id.cp_grid_item_layout).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					listener.pick(city);
+					int current = holder.getBindingAdapterPosition();
+					if (header.getBindingAdapterPosition() == 1 && current >= 0 && current < cities.size()) {
+						listener.pick(current, cities.get(current));
+					}
 				}
 			});
 		}

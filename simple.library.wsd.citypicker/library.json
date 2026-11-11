@@ -1,6 +1,6 @@
 {
 	"name": "CP城市选择库",
-	"description": "基于 CityPicker https://github.com/xuexiangjys/CityPicker 封装，提供城市搜索、字母索引、热门城市、样式设置及定位结果回填。",
+	"description": "基于 CityPicker https://github.com/xuexiangjys/CityPicker 封装，提供城市搜索、字母索引、热门城市、主题与动画、定位回填和自定义异步搜索。",
 	"version": "0.1.0",
 	"kind": "library",
 	"authors": [
@@ -18,17 +18,77 @@
 					"kind": "component",
 					"type": "simple.library.wsd.citypicker.CP城市选择器",
 					"icon": "icons/map-search.svg",
-					"description": "整页弹出城市选择界面，界面线程调用，切换所属窗口时自动关闭；定位由应用提供，不包含定位 SDK。",
+					"description": "整页城市选择器，界面线程调用，所属窗口离开时自动关闭；定位和自定义搜索由应用回填。参数、资源或状态错误抛出 CP城市错误。",
 					"inherits": [
 						"simple.runtime.components.组件"
 					],
 					"functions": [
 						{
+							"name": "启用自定义搜索",
+							"description": "设置下次显示时是否由应用提供搜索结果，默认关闭；不影响全部城市、定位和热门数据。",
+							"params": [
+								{
+									"name": "是否启用",
+									"type": "逻辑型",
+									"description": "真表示通过搜索已请求事件提供结果，假表示使用名称子串或拼音前缀的本地搜索。"
+								}
+							]
+						},
+						{
+							"name": "回填搜索",
+							"description": "提交当前自定义搜索的结果，保留传入顺序；四个数组不得为 null 且长度相同，空数组表示没有匹配城市。返回是否接受；旧关键字、重复、已清空搜索、已关闭或已销毁的请求返回假。",
+							"params": [
+								{
+									"name": "请求标记",
+									"type": "长整数型",
+									"description": "搜索已请求事件提供的标记。"
+								},
+								{
+									"name": "名称数组",
+									"type": "文本型[]",
+									"description": "非空的城市名称。"
+								},
+								{
+									"name": "省份数组",
+									"type": "文本型[]",
+									"description": "省份。"
+								},
+								{
+									"name": "拼音数组",
+									"type": "文本型[]",
+									"description": "城市拼音。"
+								},
+								{
+									"name": "代码数组",
+									"type": "文本型[]",
+									"description": "保留数据源含义的城市代码。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
+							"name": "搜索失败",
+							"description": "提交当前搜索的失败原因，清除旧结果；用户点击失败区域可重试相同关键字。返回是否接受；已失效或已完成的请求返回假。",
+							"params": [
+								{
+									"name": "请求标记",
+									"type": "长整数型",
+									"description": "当前搜索请求标记。"
+								},
+								{
+									"name": "失败原因",
+									"type": "文本型",
+									"description": "失败原因；空文本使用默认说明，不允许为 null。"
+								}
+							],
+							"return": "逻辑型"
+						},
+						{
 							"name": "置主题",
 							"description": "设置整页界面主题，保留上游全部 cp* 样式属性。",
 							"params": [
 								{
-									"name": "style",
+									"name": "样式",
 									"type": "文本型",
 									"description": "继承 CityPickerDialogTheme 的资源标识，如 @style/MyCityTheme；空文本恢复默认。"
 								}
@@ -39,7 +99,7 @@
 							"description": "设置窗口动画。",
 							"params": [
 								{
-									"name": "style",
+									"name": "样式",
 									"type": "文本型",
 									"description": "动画样式资源标识，如 @style/CityPickerAnimation；空文本关闭动画。"
 								}
@@ -50,22 +110,22 @@
 							"description": "替换全部城市数据，允许空数组；名称、省份、拼音和代码数组长度必须相等。",
 							"params": [
 								{
-									"name": "names",
+									"name": "名称数组",
 									"type": "文本型[]",
 									"description": "非空的城市名称。"
 								},
 								{
-									"name": "provinces",
+									"name": "省份数组",
 									"type": "文本型[]",
 									"description": "省份。"
 								},
 								{
-									"name": "pinyins",
+									"name": "拼音数组",
 									"type": "文本型[]",
 									"description": "用于搜索及字母分组的完整拼音。"
 								},
 								{
-									"name": "codes",
+									"name": "代码数组",
 									"type": "文本型[]",
 									"description": "城市代码，保留调用方定义。"
 								}
@@ -81,17 +141,17 @@
 							"description": "替换热门城市，允许空数组；三个数组长度必须相等，顺序保持不变。",
 							"params": [
 								{
-									"name": "names",
+									"name": "名称数组",
 									"type": "文本型[]",
 									"description": "非空的城市名称。"
 								},
 								{
-									"name": "provinces",
+									"name": "省份数组",
 									"type": "文本型[]",
 									"description": "省份。"
 								},
 								{
-									"name": "codes",
+									"name": "代码数组",
 									"type": "文本型[]",
 									"description": "城市代码。"
 								}
@@ -107,17 +167,17 @@
 							"description": "设置预先获得的定位城市；下次显示时直接提供该城市，不自动发起定位请求。",
 							"params": [
 								{
-									"name": "name",
+									"name": "名称",
 									"type": "文本型",
 									"description": "非空城市名称。"
 								},
 								{
-									"name": "province",
+									"name": "省份",
 									"type": "文本型",
 									"description": "省份。"
 								},
 								{
-									"name": "code",
+									"name": "代码",
 									"type": "文本型",
 									"description": "城市代码。"
 								}
@@ -130,25 +190,25 @@
 						},
 						{
 							"name": "回填定位",
-							"description": "回填当前定位请求的成功结果；必须在界面线程调用。",
+							"description": "回填当前定位请求的成功结果；必须在界面线程调用。返回是否接受；过期、重复或已关闭请求返回假。",
 							"params": [
 								{
-									"name": "request",
+									"name": "请求标记",
 									"type": "长整数型",
 									"description": "定位已请求事件提供的标记。"
 								},
 								{
-									"name": "name",
+									"name": "名称",
 									"type": "文本型",
 									"description": "非空城市名称。"
 								},
 								{
-									"name": "province",
+									"name": "省份",
 									"type": "文本型",
 									"description": "省份。"
 								},
 								{
-									"name": "code",
+									"name": "代码",
 									"type": "文本型",
 									"description": "城市代码。"
 								}
@@ -157,10 +217,10 @@
 						},
 						{
 							"name": "定位失败",
-							"description": "结束一次定位请求并显示失败状态；用户可点击定位区域重试。",
+							"description": "结束一次定位请求并显示失败状态；用户可点击定位区域重试。返回是否接受；过期、重复或已关闭请求返回假。",
 							"params": [
 								{
-									"name": "request",
+									"name": "请求标记",
 									"type": "长整数型",
 									"description": "当前定位请求标记。"
 								}
@@ -174,12 +234,12 @@
 						},
 						{
 							"name": "关闭",
-							"description": "关闭当前界面并使未完成的定位请求失效；重复关闭不重复触发事件。",
+							"description": "关闭当前界面并使未完成的定位和搜索请求失效；重复关闭不重复触发事件，销毁后可安全调用。",
 							"params": []
 						},
 						{
 							"name": "是否显示",
-							"description": "查询当前选择界面的显示状态。",
+							"description": "查询当前选择界面的显示状态。返回是否正在显示。",
 							"params": [],
 							"return": "逻辑型"
 						}
@@ -187,25 +247,30 @@
 					"events": [
 						{
 							"name": "城市已选择",
-							"description": "用户选择城市；界面已关闭，代码原样取自当前数据源，不保证为行政区划代码。",
+							"description": "用户选择城市；在已关闭事件之后触发，可在此重新打开选择器。 代码原样取自当前数据源，不保证为行政区划代码。",
 							"params": [
 								{
-									"name": "name",
+									"name": "位置",
+									"type": "整数型",
+									"description": "当前城市列表、搜索结果或热门数组中的位置，从零开始；定位为零，不计入分组标题。"
+								},
+								{
+									"name": "名称",
 									"type": "文本型",
 									"description": "城市名称。"
 								},
 								{
-									"name": "province",
+									"name": "省份",
 									"type": "文本型",
 									"description": "所属省份。"
 								},
 								{
-									"name": "pinyin",
+									"name": "拼音",
 									"type": "文本型",
 									"description": "城市拼音。"
 								},
 								{
-									"name": "code",
+									"name": "代码",
 									"type": "文本型",
 									"description": "数据源中的城市代码。"
 								}
@@ -213,12 +278,12 @@
 						},
 						{
 							"name": "选择已取消",
-							"description": "用户通过取消按钮或系统返回取消选择；程序关闭和窗口切换不触发此事件。",
+							"description": "用户通过取消按钮或系统返回取消选择，在已关闭事件之后触发；程序关闭和窗口切换不触发此事件。",
 							"params": []
 						},
 						{
 							"name": "已关闭",
-							"description": "本次选择界面已关闭，包括选择、取消、程序关闭及所属窗口离开。",
+							"description": "本次选择界面已关闭，包括选择、取消、程序关闭及所属窗口离开。 本次未完成请求已失效；选择或取消时先触发此事件，再触发对应结果事件。",
 							"params": []
 						},
 						{
@@ -226,11 +291,48 @@
 							"description": "请求应用提供定位结果；本库不申请权限，也不包含定位 SDK。",
 							"params": [
 								{
-									"name": "request",
+									"name": "请求标记",
 									"type": "长整数型",
 									"description": "当前请求标记；回填时传回此值，已关闭或旧请求的结果会被拒绝。"
 								}
 							]
+						},
+						{
+							"name": "搜索已请求",
+							"description": "自定义搜索开启后，非空搜索文本变化或点击失败区域重试时触发；空文本恢复全部城市，不发出请求。",
+							"params": [
+								{
+									"name": "请求标记",
+									"type": "长整数型",
+									"description": "本次搜索标记；仅最新且尚未完成的请求可以回填。"
+								},
+								{
+									"name": "关键字",
+									"type": "文本型",
+									"description": "去除首尾空白后的搜索文本，保留大小写。"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "CP城市错误",
+					"kind": "object",
+					"type": "simple.library.wsd.citypicker.CP城市错误",
+					"description": "城市数据、资源或选择器状态错误，可在错误分支中捕获并读取原因。",
+					"inherits": [
+						"simple.runtime.errors.运行错误"
+					],
+					"functions": [
+						{
+							"name": "取说明",
+							"description": "取得失败原因。",
+							"return": "文本型"
 						}
 					]
 				}

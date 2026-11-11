@@ -74,7 +74,7 @@ final class XUtilSupport {
 	static Activity activity() {
 		Activity activity = MainActivity.getContext();
 		if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
-			throw new IllegalStateException("当前没有有效的 Simple 窗口");
+			throw XUtilSupport.failure("当前没有有效的 Simple 窗口", null);
 		}
 		return activity;
 	}
@@ -94,7 +94,7 @@ final class XUtilSupport {
 	 */
 	static void requireMainThread() {
 		if (Looper.myLooper() != Looper.getMainLooper()) {
-			throw new IllegalStateException("此操作必须在界面线程调用");
+			throw XUtilSupport.failure("此操作必须在界面线程调用", null);
 		}
 	}
 
@@ -103,7 +103,7 @@ final class XUtilSupport {
 	 */
 	static void requireWorkerThread() {
 		if (Looper.myLooper() == Looper.getMainLooper()) {
-			throw new IllegalStateException("此操作必须在工作线程调用");
+			throw XUtilSupport.failure("此操作必须在工作线程调用", null);
 		}
 	}
 
@@ -136,8 +136,8 @@ final class XUtilSupport {
 	 * @return 经过校验的名称。
 	 */
 	private static String storageName(String name) {
-		if (name == null || name.trim().isEmpty() || name.equals(".") || name.equals("..")
-				|| name.indexOf('/') >= 0 || name.indexOf('\\') >= 0 || name.indexOf('\0') >= 0) {
+		if (name == null || name.trim().isEmpty() || name.equals(".") || name.equals("..") || name.indexOf('/') >= 0
+				|| name.indexOf('\\') >= 0 || name.indexOf('\0') >= 0) {
 			throw new IllegalArgumentException("名称不能为空或包含路径分隔符");
 		}
 		return "xutil_" + name;
@@ -179,7 +179,7 @@ final class XUtilSupport {
 	 * 建立每次调用独立的日期格式器，避免共享可变格式器的线程竞争。
 	 *
 	 * @param pattern 日期格式。
-	 * @param zone 时区标识。
+	 * @param zone    时区标识。
 	 * @return 严格日期格式器。
 	 */
 	static SimpleDateFormat dateFormat(String pattern, String zone) {
@@ -202,9 +202,9 @@ final class XUtilSupport {
 	/**
 	 * 严格消费完整日期文本，不把解析失败与 Unix 起点混淆。
 	 *
-	 * @param text 日期文本。
+	 * @param text    日期文本。
 	 * @param pattern 格式。
-	 * @param zone 时区。
+	 * @param zone    时区。
 	 * @return 毫秒时间戳。
 	 */
 	static long parseDate(String text, String pattern, String zone) {
@@ -225,7 +225,7 @@ final class XUtilSupport {
 	static ConnectivityManager connectivity() {
 		ConnectivityManager manager = context().getSystemService(ConnectivityManager.class);
 		if (manager == null) {
-			throw new IllegalStateException("设备不提供网络服务");
+			throw XUtilSupport.failure("设备不提供网络服务", null);
 		}
 		return manager;
 	}
@@ -274,19 +274,31 @@ final class XUtilSupport {
 	/**
 	 * 将库内可报告的失败交给 Simple 错误处理，保持消息与原始原因。
 	 *
-	 * <p>Simple 的转换器不接受 IllegalStateException；继承运行错误使“位于错误”
-	 * 能先处理失败，避免未处理异常继续进入线程的反射调用层。不修改全局异常映射。
+	 * <p>
+	 * Simple 的转换器不接受 IllegalStateException；继承运行错误使“位于错误” 能先处理失败，避免未处理异常继续进入线程的反射调用层。不修改全局异常映射。
+	 *
+	 * @param message 错误说明。
+	 * @param cause   原始原因，可为空。
+	 * @return 可由 Simple 错误处理捕获的失败。
 	 */
 	static 运行错误 failure(String message, Throwable cause) {
 		return new XUtilError(message, cause);
 	}
 
 	/**
-	 * 仅供本库 I/O 和计算边界使用的 Simple 错误，不改变解压等操作原有的保护条件。
+	 * 本库可恢复的调用错误，保留原始原因供诊断。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	private static final class XUtilError extends 运行错误 {
 		private static final long serialVersionUID = 1L;
 
+		/**
+		 * 保留错误说明及可用的原始原因。
+		 *
+		 * @param message 错误说明。
+		 * @param cause   原始原因，可为空。
+		 */
 		XUtilError(String message, Throwable cause) {
 			super(message);
 			initCause(cause);
@@ -315,7 +327,7 @@ final class XUtilSupport {
 	/**
 	 * 防止压缩过程把正在生成的 ZIP 再加入自身。
 	 *
-	 * @param source 源文件或目录。
+	 * @param source      源文件或目录。
 	 * @param destination ZIP 输出路径。
 	 * @throws IOException 路径解析失败或输出位于输入中。
 	 */
@@ -359,9 +371,9 @@ final class XUtilSupport {
 	/**
 	 * 在实际写入边界逐条校验 ZIP 路径；不调用缺少路径校验的上游解压实现。
 	 *
-	 * @param source ZIP 文件。
+	 * @param source      ZIP 文件。
 	 * @param destination 目标目录。
-	 * @param limit 累计解压字节上限。
+	 * @param limit       累计解压字节上限。
 	 * @return 已解压的文件路径。
 	 */
 	static String[] unzip(String source, String destination, long limit) {

@@ -16,8 +16,7 @@ import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 
 /**
- * 由系统绑定的实际无障碍服务。仅存储连接，不缓存窗口或节点。
- * 控制器监听随连接注册和撤销，窗口组件通过订阅接收主线程事件。
+ * 由系统绑定的实际无障碍服务。仅存储连接，不缓存窗口或节点。 控制器监听随连接注册和撤销，窗口组件通过订阅接收主线程事件。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -43,40 +42,38 @@ public final class AccessibilityListener extends AccessibilityService {
 	/**
 	 * 本连接的放大状态监听。
 	 */
-	private final MagnificationController.OnMagnificationChangedListener magnification =
-		new MagnificationController.OnMagnificationChangedListener() {
-			/**
-			 * 把放大区域复制为边界快照后通知组件。
-			 *
-			 * @param controller 触发回调的放大控制器
-			 * @param region 本次系统区域，不接管或保存
-			 * @param scale 当前倍率
-			 * @param centerX 未缩放屏幕像素横坐标
-			 * @param centerY 未缩放屏幕像素纵坐标
-			 */
-			@Override
-			public void onMagnificationChanged(MagnificationController controller, Region region,
-					float scale, float centerX, float centerY) {
-				signal("放大状态改变", new 无障碍边界(region.getBounds()), scale, centerX, centerY);
-			}
-		};
+	private final MagnificationController.OnMagnificationChangedListener magnification = new MagnificationController.OnMagnificationChangedListener() {
+		/**
+		 * 把放大区域复制为边界快照后通知组件。
+		 *
+		 * @param controller 触发回调的放大控制器
+		 * @param region     本次系统区域，不接管或保存
+		 * @param scale      当前倍率
+		 * @param centerX    未缩放屏幕像素横坐标
+		 * @param centerY    未缩放屏幕像素纵坐标
+		 */
+		@Override
+		public void onMagnificationChanged(MagnificationController controller, Region region, float scale,
+				float centerX, float centerY) {
+			signal("放大状态改变", new 无障碍边界(region.getBounds()), scale, centerX, centerY);
+		}
+	};
 
 	/**
 	 * 本连接的软键盘策略监听。
 	 */
-	private final SoftKeyboardController.OnShowModeChangedListener keyboard =
-		new SoftKeyboardController.OnShowModeChangedListener() {
-			/**
-			 * 转发软键盘显示策略改变。
-			 *
-			 * @param controller 触发回调的控制器
-			 * @param mode 当前显示策略
-			 */
-			@Override
-			public void onShowModeChanged(SoftKeyboardController controller, int mode) {
-				signal("软键盘模式改变", mode);
-			}
-		};
+	private final SoftKeyboardController.OnShowModeChangedListener keyboard = new SoftKeyboardController.OnShowModeChangedListener() {
+		/**
+		 * 转发软键盘显示策略改变。
+		 *
+		 * @param controller 触发回调的控制器
+		 * @param mode       当前显示策略
+		 */
+		@Override
+		public void onShowModeChanged(SoftKeyboardController controller, int mode) {
+			signal("软键盘模式改变", mode);
+		}
+	};
 
 	/* 构造与内部方法 */
 
@@ -246,6 +243,14 @@ public final class AccessibilityListener extends AccessibilityService {
 		return forwardGesture(event.getGestureId());
 	}
 
+	/**
+	 * 系统动作列表变化后通知组件重新查询，不保存过期动作列表。
+	 */
+	@Override
+	public void onSystemActionsChanged() {
+		signal("系统动作改变");
+	}
+
 	/* 内部类型 */
 
 	/**
@@ -303,55 +308,53 @@ public final class AccessibilityListener extends AccessibilityService {
 		/**
 		 * 辅助按钮的点击和可用性回调。
 		 */
-		private final AccessibilityButtonController.AccessibilityButtonCallback buttonCallback =
-			new AccessibilityButtonController.AccessibilityButtonCallback() {
-				/**
-				 * 转发系统辅助按钮的点击。
-				 *
-				 * @param controller 触发回调的控制器
-				 */
-				@Override
-				public void onClicked(AccessibilityButtonController controller) {
-					signal("辅助按钮被单击");
-				}
+		private final AccessibilityButtonController.AccessibilityButtonCallback buttonCallback = new AccessibilityButtonController.AccessibilityButtonCallback() {
+			/**
+			 * 转发系统辅助按钮的点击。
+			 *
+			 * @param controller 触发回调的控制器
+			 */
+			@Override
+			public void onClicked(AccessibilityButtonController controller) {
+				signal("辅助按钮被单击");
+			}
 
-				/**
-				 * 转发系统辅助按钮的可用性改变。
-				 *
-				 * @param controller 触发回调的控制器
-				 * @param available 当前是否可用
-				 */
-				@Override
-				public void onAvailabilityChanged(AccessibilityButtonController controller, boolean available) {
-					signal("辅助按钮可用性改变", available);
-				}
-			};
+			/**
+			 * 转发系统辅助按钮的可用性改变。
+			 *
+			 * @param controller 触发回调的控制器
+			 * @param available  当前是否可用
+			 */
+			@Override
+			public void onAvailabilityChanged(AccessibilityButtonController controller, boolean available) {
+				signal("辅助按钮可用性改变", available);
+			}
+		};
 
 		/**
 		 * 指纹手势及检测可用性的回调。
 		 */
-		private final FingerprintGestureController.FingerprintGestureCallback fingerprintCallback =
-			new FingerprintGestureController.FingerprintGestureCallback() {
-				/**
-				 * 转发指纹传感器报告的手势编号。
-				 *
-				 * @param gesture 系统指纹手势编号
-				 */
-				@Override
-				public void onGestureDetected(int gesture) {
-					signal("收到指纹手势", gesture);
-				}
+		private final FingerprintGestureController.FingerprintGestureCallback fingerprintCallback = new FingerprintGestureController.FingerprintGestureCallback() {
+			/**
+			 * 转发指纹传感器报告的手势编号。
+			 *
+			 * @param gesture 系统指纹手势编号
+			 */
+			@Override
+			public void onGestureDetected(int gesture) {
+				signal("收到指纹手势", gesture);
+			}
 
-				/**
-				 * 转发指纹手势检测的可用性改变。
-				 *
-				 * @param available 当前是否可用
-				 */
-				@Override
-				public void onGestureDetectionAvailabilityChanged(boolean available) {
-					signal("指纹手势可用性改变", available);
-				}
-			};
+			/**
+			 * 转发指纹手势检测的可用性改变。
+			 *
+			 * @param available 当前是否可用
+			 */
+			@Override
+			public void onGestureDetectionAvailabilityChanged(boolean available) {
+				signal("指纹手势可用性改变", available);
+			}
+		};
 
 		/**
 		 * 注册系统控制器回调，服务清单须声明对应能力及指纹权限。
@@ -365,6 +368,9 @@ public final class AccessibilityListener extends AccessibilityService {
 			fingerprint.registerFingerprintGestureCallback(fingerprintCallback, null);
 		}
 
+		/**
+		 * 撤销本连接注册的按钮和指纹监听。
+		 */
 		void close() {
 			button.unregisterAccessibilityButtonCallback(buttonCallback);
 			fingerprint.unregisterFingerprintGestureCallback(fingerprintCallback);

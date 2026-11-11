@@ -34,6 +34,7 @@ public final class XU快捷更新器Impl extends UpdateController implements XU�
 
 	@Override
 	public boolean 断点续传() {
+		checkThread();
 		return resumable;
 	}
 

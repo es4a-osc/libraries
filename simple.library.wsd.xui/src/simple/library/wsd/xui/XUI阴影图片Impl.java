@@ -1,7 +1,6 @@
 package simple.library.wsd.xui;
 
 import android.view.View;
-import android.widget.ImageView;
 
 import com.xuexiang.xui.widget.button.shadowbutton.ShadowImageView;
 
@@ -41,17 +40,6 @@ public final class XUI阴影图片Impl extends XUI视图组件基类 implements 
 	@Override
 	public void 置按下颜色(int pressedColor) {
 		view.setPressedColor(pressedColor);
-	}
-
-	@Override
-	public void 置图片(String image) {
-		view.setImageDrawable(ComponentSupport.getDrawable(image));
-	}
-
-	@Override
-	public void 置图片缩放模式(int mode) {
-		ComponentSupport.validateIndex(mode, ImageView.ScaleType.values().length);
-		view.setScaleType(ImageView.ScaleType.values()[mode]);
 	}
 
 }

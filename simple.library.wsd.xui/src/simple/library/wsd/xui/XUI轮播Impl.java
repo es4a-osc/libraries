@@ -6,7 +6,6 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.xuexiang.xui.widget.banner.recycler.BannerLayout;
 import com.xuexiang.xui.widget.banner.recycler.layout.BannerLayoutManager;
 
@@ -136,7 +135,7 @@ public final class XUI轮播Impl extends XUI视图组件基类 implements XUI轮
 
 			@Override
 			public void onViewRecycled(RecyclerView.ViewHolder holder) {
-				Glide.with(holder.itemView).clear((ImageView) holder.itemView);
+				ComponentSupport.clearImage((ImageView) holder.itemView);
 			}
 
 			@Override
@@ -162,7 +161,8 @@ public final class XUI轮播Impl extends XUI视图组件基类 implements XUI轮
 	public int 取当前页() {
 		RecyclerView pages = getPages();
 		return pages.getAdapter() == null || pages.getAdapter().getItemCount() == 0 ? -1
-			: ((BannerLayoutManager) pages.getLayoutManager()).getCurrentPosition() % pages.getAdapter().getItemCount();
+				: ((BannerLayoutManager) pages.getLayoutManager()).getCurrentPosition()
+						% pages.getAdapter().getItemCount();
 	}
 
 	@Override

@@ -1,13 +1,10 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import android.view.View;
+import android.widget.Checkable;
+import android.widget.CompoundButton;
+
+import simple.runtime.components.组件容器;
 import simple.runtime.events.EventDispatcher;
 
 /**
@@ -24,14 +21,12 @@ public final class 字体图标切换按钮Impl extends WidgetBase implements �
 	public 字体图标切换按钮Impl(组件容器 container) {
 		super(container);
 		if (getView() instanceof CompoundButton) {
-			((CompoundButton) getView())
-					.setOnCheckedChangeListener(
-							new CompoundButton.OnCheckedChangeListener() {
-								@Override
-								public void onCheckedChanged(CompoundButton v, boolean checked) {
-									选中改变(checked);
-								}
-							});
+			((CompoundButton) getView()).setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton v, boolean checked) {
+					选中改变(checked);
+				}
+			});
 		}
 	}
 
@@ -62,8 +57,7 @@ public final class 字体图标切换按钮Impl extends WidgetBase implements �
 		if (unchecked != null) {
 			unchecked.check();
 		}
-		com.mikepenz.iconics.view.IconicsCompoundButton v =
-				(com.mikepenz.iconics.view.IconicsCompoundButton) getView();
+		com.mikepenz.iconics.view.IconicsCompoundButton v = (com.mikepenz.iconics.view.IconicsCompoundButton) getView();
 		v.setCheckedIcon(checked == null ? null : Support.copy(checked.value));
 		v.setUncheckedIcon(unchecked == null ? null : Support.copy(unchecked.value));
 	}
@@ -84,14 +78,12 @@ public final class 字体图标切换按钮Impl extends WidgetBase implements �
 	@Override
 	public 图标图像 取选中图标() {
 		check();
-		return 图标图像.wrap(
-				((com.mikepenz.iconics.view.IconicsCompoundButton) getView()).getCheckedIcon());
+		return 图标图像.wrap(((com.mikepenz.iconics.view.IconicsCompoundButton) getView()).getCheckedIcon());
 	}
 
 	@Override
 	public 图标图像 取未选中图标() {
 		check();
-		return 图标图像.wrap(
-				((com.mikepenz.iconics.view.IconicsCompoundButton) getView()).getUncheckedIcon());
+		return 图标图像.wrap(((com.mikepenz.iconics.view.IconicsCompoundButton) getView()).getUncheckedIcon());
 	}
 }

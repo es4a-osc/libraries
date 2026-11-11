@@ -869,6 +869,24 @@ public final class 无障碍常量 {
 	@SimpleDataElement
 	public static final int 范围_百分比 = 2;
 
+	/**
+	 * 界面中包含图标，供建议显示时长查询使用。
+	 */
+	@SimpleDataElement
+	public static final int 显示内容_图标 = 1;
+
+	/**
+	 * 界面中包含文本，供建议显示时长查询使用。
+	 */
+	@SimpleDataElement
+	public static final int 显示内容_文本 = 2;
+
+	/**
+	 * 界面中包含控件，供建议显示时长查询使用。
+	 */
+	@SimpleDataElement
+	public static final int 显示内容_控件 = 4;
+
 	/* 字幕边缘样式 */
 
 	/**

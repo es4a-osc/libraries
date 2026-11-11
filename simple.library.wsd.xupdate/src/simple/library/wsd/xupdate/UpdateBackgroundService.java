@@ -21,8 +21,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 /**
- * 只承接文件任务和通知，不持有窗口或更新器；进程被结束后不承诺自动恢复。
- * 后台完成只提供用户点击安装的通知，不在后台强行启动系统安装界面。
+ * 只承接文件任务和通知，不持有窗口或更新器；进程被结束后不承诺自动恢复。 后台完成只提供用户点击安装的通知，不在后台强行启动系统安装界面。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -34,7 +33,12 @@ public final class UpdateBackgroundService extends Service {
 	private static int nextId = 7400;
 	private static UpdateBackgroundService instance;
 
-	/** 用应用上下文移交任务；服务启动失败不得悄悄丢失前台任务。 */
+	/**
+	 * 用应用上下文移交任务；服务启动失败不得悄悄丢失前台任务。
+	 *
+	 * @param context 应用上下文，用于启动前台服务。
+	 * @param task    需要后台托管的文件任务。
+	 */
 	static void attach(Context context, UpdateFileTask task) {
 		if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) {
 			throw new IllegalArgumentException("请先在系统设置中允许本应用显示通知，再转入后台下载。");
@@ -50,14 +54,24 @@ public final class UpdateBackgroundService extends Service {
 		}
 	}
 
-	/** 任务进度或暂停状态变化时刷新低打扰通知。 */
+	/**
+	 * 任务进度或暂停状态变化时刷新低打扰通知。
+	 *
+	 * @param task 状态或进度已变化的文件任务。
+	 */
 	static void changed(UpdateFileTask task) {
 		if (instance != null && TASKS.containsKey(task)) {
 			instance.refresh();
 		}
 	}
 
-	/** 结束任务；只有校验完成的实际文件才能生成安装入口。 */
+	/**
+	 * 结束任务；只有校验完成的实际文件才能生成安装入口。
+	 *
+	 * @param task  已结束的文件任务。
+	 * @param file  成功时的已校验文件；失败时可为空。
+	 * @param error 失败说明；成功时可为空。
+	 */
 	static void finished(UpdateFileTask task, File file, String error) {
 		Integer id = TASKS.remove(task);
 		if (instance != null && id != null) {
@@ -65,10 +79,10 @@ public final class UpdateBackgroundService extends Service {
 			if (file != null || error != null) {
 				NotificationCompat.Builder builder = instance.builder()
 						.setContentTitle(file == null ? "更新下载失败" : "更新下载完成")
-						.setContentText(file == null ? error : "点击安装已校验的更新包")
-						.setOngoing(false).setAutoCancel(true);
+						.setContentText(file == null ? error : "点击安装已校验的更新包").setOngoing(false).setAutoCancel(true);
 				if (file != null) {
-					Uri uri = FileProvider.getUriForFile(instance, instance.getPackageName() + ".updateFileProvider", file);
+					Uri uri = FileProvider.getUriForFile(instance, instance.getPackageName() + ".updateFileProvider",
+							file);
 					Intent intent = new Intent(Intent.ACTION_VIEW)
 							.setDataAndType(uri, "application/vnd.android.package-archive")
 							.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -90,7 +104,8 @@ public final class UpdateBackgroundService extends Service {
 		instance = this;
 		if (Build.VERSION.SDK_INT >= 26) {
 			NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-			manager.createNotificationChannel(new NotificationChannel(CHANNEL, "应用更新下载", NotificationManager.IMPORTANCE_LOW));
+			manager.createNotificationChannel(
+					new NotificationChannel(CHANNEL, "应用更新下载", NotificationManager.IMPORTANCE_LOW));
 		}
 		// 启动后立即进入前台，满足 Android 对前台服务的时限要求。
 		startForeground(FOREGROUND, builder().setContentTitle("正在下载更新").build());
@@ -135,7 +150,9 @@ public final class UpdateBackgroundService extends Service {
 		super.onDestroy();
 	}
 
-	/** 多实例共用一个前台服务，最后一个任务结束才退出。 */
+	/**
+	 * 多实例共用一个前台服务，最后一个任务结束才退出。
+	 */
 	private void refresh() {
 		if (TASKS.isEmpty()) {
 			stopForeground(true);
@@ -146,8 +163,8 @@ public final class UpdateBackgroundService extends Service {
 		long total = task.total();
 		int percent = total > 0 ? (int) Math.min(100, task.received() * 100.0 / total) : 0;
 		NotificationCompat.Builder progress = builder().setContentTitle("正在下载更新")
-				.setContentText(task.state() == XU更新器.状态_暂停 ? "下载已暂停" : "后台任务：" + TASKS.size())
-				.setOngoing(true).setProgress(100, percent, total <= 0);
+				.setContentText(task.state() == XU更新器.状态_暂停 ? "下载已暂停" : "后台任务：" + TASKS.size()).setOngoing(true)
+				.setProgress(100, percent, total <= 0);
 		int id = TASKS.get(task);
 		progress.addAction(0, "取消", action(id, "cancel"));
 		if (task.state() == XU更新器.状态_暂停) {
@@ -156,7 +173,13 @@ public final class UpdateBackgroundService extends Service {
 		((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(FOREGROUND, progress.build());
 	}
 
-	/** 通知操作只引用内部任务编号，不把窗口或第三方对象放入 Intent。 */
+	/**
+	 * 通知操作只引用内部任务编号，不把窗口或第三方对象放入 Intent。
+	 *
+	 * @param id      本任务的通知与操作标识。
+	 * @param command 后台服务需要处理的操作名称。
+	 * @return 仅供本应用使用的不可变操作意图。
+	 */
 	private PendingIntent action(int id, String command) {
 		Intent intent = new Intent(this, UpdateBackgroundService.class).setAction(command).putExtra("task", id);
 		int flags = PendingIntent.FLAG_UPDATE_CURRENT;
@@ -166,10 +189,13 @@ public final class UpdateBackgroundService extends Service {
 		return PendingIntent.getService(this, id, intent, flags);
 	}
 
-	/** 统一使用库内现有更新图标和低打扰通道。 */
+	/**
+	 * 统一使用库内现有更新图标和低打扰通道。
+	 *
+	 * @return 已设置通知通道和本任务基本信息的构建器。
+	 */
 	private NotificationCompat.Builder builder() {
 		return new NotificationCompat.Builder(this, CHANNEL)
-				.setSmallIcon(com.xuexiang.xupdate.R.drawable.xupdate_icon_app_update)
-				.setOnlyAlertOnce(true);
+				.setSmallIcon(com.xuexiang.xupdate.R.drawable.xupdate_icon_app_update).setOnlyAlertOnce(true);
 	}
 }

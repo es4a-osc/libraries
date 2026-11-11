@@ -24,9 +24,9 @@ final class NativeFailure extends RuntimeException {
 	 * 保存 JNI 返回的诊断数据。
 	 *
 	 * @param message 错误说明。
-	 * @param trace JavaScript 堆栈。
-	 * @param reason 0 普通错误，1 主动取消，2 超时。
-	 * @param value 原生异常值的拥有引用。
+	 * @param trace   JavaScript 堆栈。
+	 * @param reason  0 普通错误，1 主动取消，2 超时。
+	 * @param value   原生异常值的拥有引用。
 	 */
 	NativeFailure(String message, String trace, int reason, long value) {
 		super(message);

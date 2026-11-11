@@ -88,7 +88,7 @@ public final class XU编码 {
 	}
 
 	/**
-	 * 使用上游规则进行HTML编码；URL 文本使用 UTF-8。
+	 * 将文本中的 HTML 特殊字符编码为实体。
 	 *
 	 * @param text 文本。
 	 * @return 返回的文本。

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="ExampleAlertTitle" parent="TextAppearance.AppCompat.Title">
+		<item name="android:textColor">#FFFFC107</item>
+		<item name="android:textSize">22sp</item>
+	</style>
+	<style name="ExampleAlertBody" parent="TextAppearance.AppCompat.Body1">
+		<item name="android:textColor">#FF80DEEA</item>
+		<item name="android:textSize">16sp</item>
+	</style>
+</resources>

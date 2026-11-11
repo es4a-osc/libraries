@@ -24,8 +24,7 @@ import org.json.JSONObject;
 import com.xuexiang.xupdate.proxy.IUpdateHttpService;
 
 /**
- * 提供不依赖第三方网络库的版本请求和流式 APK 下载。
- * 每次任务使用独立取消句柄，后台线程不得直接触发 Simple 事件。
+ * 提供不依赖第三方网络库的版本请求和流式 APK 下载。 每次任务使用独立取消句柄，后台线程不得直接触发 Simple 事件。
  *
  * @author 树先生 xhwsd@qq.com
  */
@@ -41,15 +40,15 @@ final class UpdateTransport implements IUpdateHttpService {
 	/**
 	 * 固定一次请求的取消句柄与配置，不读写上游全局 HTTP 客户端。
 	 *
-	 * @param main 界面线程处理器。
+	 * @param main     界面线程处理器。
 	 * @param executor 实例后台执行器。
-	 * @param task 本次请求取消句柄。
-	 * @param headers 独立请求头快照。
-	 * @param timeout 请求超时毫秒数。
+	 * @param task     本次请求取消句柄。
+	 * @param headers  独立请求头快照。
+	 * @param timeout  请求超时毫秒数。
 	 * @param postJson POST 是否使用 JSON。
 	 */
-	UpdateTransport(Handler main, ExecutorService executor, Task task, Map<String, String> headers,
-			int timeout, boolean postJson) {
+	UpdateTransport(Handler main, ExecutorService executor, Task task, Map<String, String> headers, int timeout,
+			boolean postJson) {
 		this.main = main;
 		this.executor = executor;
 		this.task = task;
@@ -71,9 +70,9 @@ final class UpdateTransport implements IUpdateHttpService {
 	/**
 	 * 将 EasyUpdate 的请求协议接到实例后台任务，回调统一切回界面线程。
 	 *
-	 * @param url 请求地址。
-	 * @param params 参数快照。
-	 * @param post 是否使用 POST。
+	 * @param url      请求地址。
+	 * @param params   参数快照。
+	 * @param post     是否使用 POST。
 	 * @param callback 上游请求回调。
 	 */
 	private void send(final String url, Map<String, Object> params, final boolean post, final Callback callback) {
@@ -81,25 +80,16 @@ final class UpdateTransport implements IUpdateHttpService {
 		for (Map.Entry<String, Object> entry : params.entrySet()) {
 			values.put(entry.getKey(), String.valueOf(entry.getValue()));
 		}
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					final String result = request(task, url, post, values, headers, timeout, postJson);
-					main.post(new Runnable() {
-						@Override
-						public void run() {
-							callback.onSuccess(result);
-						}
-					});
-				} catch (final Exception exception) {
-					main.post(new Runnable() {
-						@Override
-						public void run() {
-							callback.onError(exception);
-						}
-					});
-				}
+		executor.execute(() -> {
+			try {
+				final String result = request(task, url, post, values, headers, timeout, postJson);
+				main.post(() -> {
+					callback.onSuccess(result);
+				});
+			} catch (final Exception exception) {
+				main.post(() -> {
+					callback.onError(exception);
+				});
 			}
 		});
 	}
@@ -107,42 +97,30 @@ final class UpdateTransport implements IUpdateHttpService {
 	@Override
 	public void download(final String url, final String path, final String fileName, final DownloadCallback callback) {
 		callback.onStart();
-		executor.execute(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					XU更新信息 info = new XU更新信息();
-					info.下载地址(url);
-					File directory = new File(path);
-					if (!directory.isDirectory() && !directory.mkdirs()) {
-						throw new IOException("无法创建下载目录。");
-					}
-					final File result = UpdateTransport.download(task, info, new File(directory, fileName),
-							headers, timeout, new Progress() {
-						@Override
-						public void received(final long received, final long total) {
-							main.post(new Runnable() {
-								@Override
-								public void run() {
-									callback.onProgress(total > 0 ? (float) received / total : 0, total);
-								}
-							});
-						}
-					});
-					main.post(new Runnable() {
-						@Override
-						public void run() {
-							callback.onSuccess(result);
-						}
-					});
-				} catch (final Exception exception) {
-					main.post(new Runnable() {
-						@Override
-						public void run() {
-							callback.onError(exception);
-						}
-					});
+		executor.execute(() -> {
+			try {
+				XU更新信息 info = new XU更新信息();
+				info.下载地址(url);
+				File directory = new File(path);
+				if (!directory.isDirectory() && !directory.mkdirs()) {
+					throw new IOException("无法创建下载目录。");
 				}
+				final File result = UpdateTransport.download(task, info, new File(directory, fileName), headers,
+						timeout, new Progress() {
+							@Override
+							public void received(final long received, final long total) {
+								main.post(() -> {
+									callback.onProgress(total > 0 ? (float) received / total : 0, total);
+								});
+							}
+						});
+				main.post(() -> {
+					callback.onSuccess(result);
+				});
+			} catch (final Exception exception) {
+				main.post(() -> {
+					callback.onError(exception);
+				});
 			}
 		});
 	}
@@ -212,7 +190,7 @@ final class UpdateTransport implements IUpdateHttpService {
 		 * 接收已经写入临时文件的数据量；此时尚未完成摘要校验。
 		 *
 		 * @param received 已下载字节数。
-		 * @param total 预期字节数，未知为零。
+		 * @param total    预期字节数，未知为零。
 		 */
 		void received(long received, long total);
 	}
@@ -226,8 +204,8 @@ final class UpdateTransport implements IUpdateHttpService {
 	 */
 	static URL url(String address) throws IOException {
 		URL url = new URL(address);
-		if ((!"http".equals(url.getProtocol()) && !"https".equals(url.getProtocol()))
-				|| url.getHost().isEmpty() || url.getUserInfo() != null) {
+		if ((!"http".equals(url.getProtocol()) && !"https".equals(url.getProtocol())) || url.getHost().isEmpty()
+				|| url.getUserInfo() != null) {
 			throw new IOException("地址必须为不含用户凭据的 HTTP 或 HTTPS 地址。");
 		}
 		return url;
@@ -236,13 +214,13 @@ final class UpdateTransport implements IUpdateHttpService {
 	/**
 	 * 发出有限大小的 UTF-8 版本检查请求。
 	 *
-	 * @param task 本次取消句柄。
-	 * @param address 完整版本接口地址。
-	 * @param post 是否发送表单 POST。
+	 * @param task       本次取消句柄。
+	 * @param address    完整版本接口地址。
+	 * @param post       是否发送表单 POST。
 	 * @param parameters 本次请求参数快照。
-	 * @param headers 本次请求头快照。
-	 * @param timeout 连接和读取超时毫秒数。
-	 * @param postJson POST 是否使用 JSON 对象。
+	 * @param headers    本次请求头快照。
+	 * @param timeout    连接和读取超时毫秒数。
+	 * @param postJson   POST 是否使用 JSON 对象。
 	 * @return 完整响应文本，最多 2 MiB。
 	 * @throws IOException 请求失败、取消或响应过大。
 	 */
@@ -299,17 +277,17 @@ final class UpdateTransport implements IUpdateHttpService {
 	/**
 	 * 下载至临时文件，完整性校验通过后原子改名为可安装文件。
 	 *
-	 * @param task 本次取消句柄。
-	 * @param info 不再修改的版本快照。
-	 * @param target 最终 APK 文件，每次任务使用唯一名称。
-	 * @param headers 本次下载请求头。
-	 * @param timeout 连接和连续读取超时毫秒数。
+	 * @param task     本次取消句柄。
+	 * @param info     不再修改的版本快照。
+	 * @param target   最终 APK 文件，每次任务使用唯一名称。
+	 * @param headers  本次下载请求头。
+	 * @param timeout  连接和连续读取超时毫秒数。
 	 * @param progress 后台进度接收器。
 	 * @return 已完成校验的文件。
 	 * @throws IOException 下载、大小校验或 MD5 校验失败。
 	 */
-	static File download(Task task, XU更新信息 info, File target, Map<String, String> headers,
-			int timeout, Progress progress) throws IOException {
+	static File download(Task task, XU更新信息 info, File target, Map<String, String> headers, int timeout,
+			Progress progress) throws IOException {
 		File temporary = new File(target.getPath() + ".part");
 		HttpURLConnection connection = open(task, url(info.下载地址()), headers, timeout);
 		try {
@@ -395,15 +373,15 @@ final class UpdateTransport implements IUpdateHttpService {
 	/**
 	 * 创建具有一致超时、请求头和取消约束的连接。
 	 *
-	 * @param task 本次取消句柄。
-	 * @param url 已校验的地址。
+	 * @param task    本次取消句柄。
+	 * @param url     已校验的地址。
 	 * @param headers 请求头快照。
 	 * @param timeout 超时毫秒数。
 	 * @return 尚未发出请求的连接。
 	 * @throws IOException 连接创建失败或任务已取消。
 	 */
-	private static HttpURLConnection open(Task task, URL url, Map<String, String> headers,
-			int timeout) throws IOException {
+	private static HttpURLConnection open(Task task, URL url, Map<String, String> headers, int timeout)
+			throws IOException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setConnectTimeout(timeout);
 		connection.setReadTimeout(timeout);

@@ -48,14 +48,12 @@ import simple.runtime.events.EventDispatcher;
 import simple.runtime.parameters.BooleanReferenceParameter;
 
 /**
- * AgentWeb 可视组件及 Simple 事件、下载所有权和窗口生命周期适配。
- * 不替换 AgentWeb 的内部客户端，所有增强回调通过其委托链接入。
+ * AgentWeb 可视组件及 Simple 事件、下载所有权和窗口生命周期适配。 不替换 AgentWeb 的内部客户端，所有增强回调通过其委托链接入。
  *
  * @author 树先生 xhwsd@qq.com
  */
-public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
-		MainActivity.OnPauseListener, MainActivity.OnResumeListener, MainActivity.OnDestroyListener,
-		MainActivity.OnActivityResultListener, View.OnAttachStateChangeListener {
+public final class AW浏览器Impl extends 视图组件 implements AW浏览器, MainActivity.OnPauseListener, MainActivity.OnResumeListener,
+		MainActivity.OnDestroyListener, MainActivity.OnActivityResultListener, View.OnAttachStateChangeListener {
 
 	// 宿主是普通 Activity；独立请求区间与运行库现有组件区分，每次选择使用新编号。
 	private static final AtomicInteger NEXT_FILE_REQUEST = new AtomicInteger(0x41570000);
@@ -99,27 +97,22 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 		fullscreen = new BrowserFullscreen(activity);
 
 		// 构建期间只装配客户端，页面由显式加载操作决定。
-		agent = AgentWeb.with(activity)
-				.setAgentWebParent(root, new LinearLayout.LayoutParams(-1, -1))
-				.useDefaultIndicator(0xff1976d2)
-				.setSecurityType(AgentWeb.SecurityType.STRICT_CHECK)
-				.setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.DISALLOW)
-				.isInterceptUnkownUrl(true)
+		agent = AgentWeb.with(activity).setAgentWebParent(root, new LinearLayout.LayoutParams(-1, -1))
+				.useDefaultIndicator(0xff1976d2).setSecurityType(AgentWeb.SecurityType.STRICT_CHECK)
+				.setOpenOtherPageWays(DefaultWebClient.OpenOtherPageWays.DISALLOW).isInterceptUnkownUrl(true)
 				.setAgentWebWebSettings(new AgentWebSettingsImpl() {
 					@Override
 					public WebListenerManager setDownloader(WebView view, DownloadListener ignored) {
 						return super.setDownloader(view, new DownloadListener() {
 							@Override
-							public void onDownloadStart(String url, String userAgent, String disposition,
-									String mime, long length) {
+							public void onDownloadStart(String url, String userAgent, String disposition, String mime,
+									long length) {
 								下载已请求(url, safe(userAgent), safe(disposition), safe(mime), length);
 							}
 						});
 					}
-				})
-				.setWebViewClient(new BrowserClient())
-				.setWebChromeClient(new BrowserChrome())
-				.createAgentWeb().ready().get();
+				}).setWebViewClient(new BrowserClient()).setWebChromeClient(new BrowserChrome()).createAgentWeb()
+				.ready().get();
 		browser = agent.getWebCreator().getWebView();
 		browser.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
 		CookieManager.getInstance().setAcceptThirdPartyCookies(browser, false);
@@ -152,14 +145,16 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 		if (!isPageUrl(url)) {
 			throw new IllegalArgumentException("请提供完整网页地址或可访问的本地地址。");
 		}
-		agent.getUrlLoader().loadUrl(url);
+		if (url.regionMatches(true, 0, "http:", 0, 5) || url.regionMatches(true, 0, "https:", 0, 6)) {
+			agent.getUrlLoader().loadUrl(url, headers(url, false));
+		} else {
+			agent.getUrlLoader().loadUrl(url);
+		}
 	}
 
 	@Override
 	public void 加载HTML(String html, String baseUrl) {
-		requireLive();
-		browser.loadDataWithBaseURL(baseUrl == null || baseUrl.isEmpty() ? "about:blank" : baseUrl,
-				html, "text/html", "UTF-8", null);
+		加载带基准数据(html, "text/html", baseUrl, "");
 	}
 
 	@Override
@@ -339,6 +334,23 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 	@Override
 	public void 下载文件(String url, String path) {
 		requireLive();
+		startDownload(url, path, java.util.Collections.<String, String>emptyMap());
+	}
+
+	@Override
+	public void 下载文件带请求头(String url, String path, String[] names, String[] values) {
+		requireLive();
+		startDownload(url, path, BrowserInput.merge(java.util.Collections.<String, String>emptyMap(), names, values));
+	}
+
+	/**
+	 * 校验下载目标并交给本组件的任务管理器。
+	 *
+	 * @param url     下载网址。
+	 * @param path    调用方指定的目标路径。
+	 * @param headers 已校验的本次请求头。
+	 */
+	private void startDownload(String url, String path, Map<String, String> headers) {
 		http(url);
 		if (path == null || path.isEmpty()) {
 			throw new IllegalArgumentException("下载目标路径不能为空。");
@@ -347,7 +359,7 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 		if (!target.isAbsolute()) {
 			target = new File(activity.getFilesDir(), path);
 		}
-		downloads.start(url, target);
+		downloads.start(url, target, headers);
 	}
 
 	@Override
@@ -382,8 +394,120 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 		return destroyed;
 	}
 
+	@Override
+	public void 加载带请求头(String url, String[] names, String[] values) {
+		requireLive();
+		http(url);
+		agent.getUrlLoader().loadUrl(url, BrowserInput.merge(headers(url, false), names, values));
+	}
+
+	@Override
+	public void 提交表单(String url, byte[] data) {
+		requireLive();
+		http(url);
+		if (data == null) {
+			throw new IllegalArgumentException("表单数据不能是空引用。");
+		}
+		agent.getUrlLoader().postUrl(url, data.clone());
+	}
+
+	@Override
+	public void 加载数据(String data, String mime) {
+		requireLive();
+		content(data, mime);
+		String encoded = android.util.Base64.encodeToString(data.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+				android.util.Base64.NO_WRAP);
+		agent.getUrlLoader().loadData(encoded, mime + ";charset=utf-8", "base64");
+	}
+
+	@Override
+	public void 加载带基准数据(String data, String mime, String baseUrl, String historyUrl) {
+		requireLive();
+		content(data, mime);
+		String base = baseUrl == null || baseUrl.isEmpty() ? "about:blank" : baseUrl;
+		if (!isPageUrl(base) || (historyUrl != null && !historyUrl.isEmpty() && !isPageUrl(historyUrl))) {
+			throw new IllegalArgumentException("基准网址或历史网址格式无效。");
+		}
+		// data 基准按原生数据文档处理；自行编码原文，保留非 ASCII 及 URL 保留字符。
+		if ("data".equalsIgnoreCase(Uri.parse(base).getScheme())) {
+			if (historyUrl != null && !historyUrl.isEmpty()) {
+				throw new IllegalArgumentException("data 基准不支持自定义历史地址。");
+			}
+			加载数据(data, mime);
+			return;
+		}
+		agent.getUrlLoader().loadDataWithBaseURL(base, data, mime, "UTF-8",
+				historyUrl == null || historyUrl.isEmpty() ? null : historyUrl);
+	}
+
+	@Override
+	public void 置请求头(String url, String name, String value) {
+		requireLive();
+		BrowserInput.headerName(name);
+		BrowserInput.headerValue(value);
+		Map<String, String> values = headers(url, true);
+		values.put(BrowserInput.key(values, name), value);
+	}
+
+	@Override
+	public String 取请求头(String url, String name) {
+		requireLive();
+		BrowserInput.headerName(name);
+		Map<String, String> values = headers(url, false);
+		return safe(values.get(BrowserInput.key(values, name)));
+	}
+
+	@Override
+	public String[] 取请求头名称(String url) {
+		requireLive();
+		return headers(url, false).keySet().toArray(new String[0]);
+	}
+
+	@Override
+	public String[] 取请求头来源() {
+		requireLive();
+		List<String> origins = new ArrayList<String>();
+		for (Map.Entry<String, Map<String, String>> entry : agent.getUrlLoader().getHttpHeaders().getHeaders()
+				.entrySet()) {
+			if (!entry.getValue().isEmpty()) {
+				origins.add(entry.getKey());
+			}
+		}
+		return origins.toArray(new String[0]);
+	}
+
+	@Override
+	public boolean 移除请求头(String url, String name) {
+		requireLive();
+		BrowserInput.headerName(name);
+		Map<String, String> values = headers(url, false);
+		String key = BrowserInput.key(values, name);
+		if (!values.containsKey(key)) {
+			return false;
+		}
+		values.remove(key);
+		if (values.isEmpty()) {
+			agent.getUrlLoader().getHttpHeaders().getHeaders().remove(BrowserInput.origin(url));
+		}
+		return true;
+	}
+
+	@Override
+	public void 清除请求头(String url) {
+		requireLive();
+		agent.getUrlLoader().getHttpHeaders().getHeaders().remove(BrowserInput.origin(url));
+	}
+
+	@Override
+	public void 清除全部请求头() {
+		requireLive();
+		agent.getUrlLoader().getHttpHeaders().getHeaders().clear();
+	}
+
 	/**
 	 * 网页导航、主框架错误和证书回调；保留 AgentWeb 内部错误页委托。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	private final class BrowserClient extends WebViewClient {
 
@@ -438,6 +562,8 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 
 	/**
 	 * 页面标题、进度、文件选择和视频全屏回调，不覆盖 AgentWeb 其它 Chrome 逻辑。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	private final class BrowserChrome extends WebChromeClient {
 
@@ -467,19 +593,11 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			intent.setType("*/*");
 			intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, params.getMode() == FileChooserParams.MODE_OPEN_MULTIPLE);
-			List<String> types = new ArrayList<String>();
-			String[] accepted = params.getAcceptTypes();
-			if (accepted != null) {
-				for (String type : accepted) {
-					if (type != null && type.contains("/")) {
-						types.add(type);
-					}
-				}
-			}
-			if (types.size() == 1) {
-				intent.setType(types.get(0));
-			} else if (!types.isEmpty()) {
-				intent.putExtra(Intent.EXTRA_MIME_TYPES, types.toArray(new String[0]));
+			String[] types = BrowserInput.mimeTypes(params.getAcceptTypes());
+			if (types.length == 1) {
+				intent.setType(types[0]);
+			} else if (types.length > 1) {
+				intent.putExtra(Intent.EXTRA_MIME_TYPES, types);
 			}
 			try {
 				fileRequest = NEXT_FILE_REQUEST.getAndIncrement();
@@ -520,6 +638,8 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 
 	/**
 	 * 一次文件选择的完成门，阻止取消、切窗与迟到的活动结果重复提交同一回调。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	private final class PendingFile implements ValueCallback<Uri[]> {
 
@@ -561,6 +681,8 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 
 	/**
 	 * 固定字符串消息桥，不把任意 Java 对象或反射入口暴露给网页。
+	 *
+	 * @author 树先生 xhwsd@qq.com
 	 */
 	public final class MessageBridge {
 
@@ -699,16 +821,42 @@ public final class AW浏览器Impl extends 视图组件 implements AW浏览器,
 	 * @param url HTTP 或 HTTPS 网址。
 	 */
 	private static void http(String url) {
-		String scheme = url == null ? "" : Uri.parse(url).getScheme();
-		if (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme)) {
-			throw new IllegalArgumentException("此操作仅接受 HTTP 或 HTTPS 网址。");
+		BrowserInput.origin(url);
+	}
+
+	/**
+	 * 取得当前浏览框保存的同源请求头，读取不存在的源时不建立空配置。
+	 *
+	 * @param url    完整网络网址。
+	 * @param create 是否需要创建可写配置。
+	 * @return 现有配置或只读空映射。
+	 */
+	private Map<String, String> headers(String url, boolean create) {
+		String origin = BrowserInput.origin(url);
+		Map<String, String> values = agent.getUrlLoader().getHttpHeaders().getHeaders().get(origin);
+		if (values == null) {
+			return create ? agent.getUrlLoader().getHttpHeaders().getHeaders(origin)
+					: java.util.Collections.<String, String>emptyMap();
+		}
+		return values;
+	}
+
+	/**
+	 * 拒绝空内容及无效 MIME 参数，加载行为统一采用 UTF-8。
+	 *
+	 * @param data 原始文本内容。
+	 * @param mime 内容 MIME 类型。
+	 */
+	private static void content(String data, String mime) {
+		if (data == null || mime == null || !mime.matches("[A-Za-z0-9!#$&^_.+-]+/[A-Za-z0-9!#$&^_.+-]+")) {
+			throw new IllegalArgumentException("内容不能是空引用，MIME 类型必须为有效的 类型/子类型。");
 		}
 	}
 
 	/**
 	 * 统一事件派发边界，隐藏窗口和销毁实例不再接收旧的异步结果。
 	 *
-	 * @param name 事件名称。
+	 * @param name   事件名称。
 	 * @param values 事件参数。
 	 */
 	private void emit(String name, Object... values) {

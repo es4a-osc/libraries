@@ -18,20 +18,13 @@ import simple.runtime.parameters.BooleanReferenceParameter;
 @SimpleObject
 @SimpleComponent
 @UsesPermissions(permissionNames = "android.permission.USE_FINGERPRINT")
-@ManifestNodes(applicationXml =
-	"<service" +
-	" android:name=\"simple.library.wsd.accessibility.AccessibilityListener\"" +
-	" android:enabled=\"true\"" +
-	" android:exported=\"true\"" +
-	" android:label=\"@string/app_name\"" +
-	" android:permission=\"android.permission.BIND_ACCESSIBILITY_SERVICE\">" +
-	"<intent-filter>" +
-	"<action android:name=\"android.accessibilityservice.AccessibilityService\" />" +
-	"</intent-filter>" +
-	"<meta-data" +
-	" android:name=\"android.accessibilityservice\"" +
-	" android:resource=\"@xml/es4a_accessibility_service\" />" +
-	"</service>"
+@ManifestNodes(
+	applicationXml = "<service" + " android:name=\"simple.library.wsd.accessibility.AccessibilityListener\""
+		+ " android:enabled=\"true\"" + " android:exported=\"true\"" + " android:label=\"@string/app_name\""
+		+ " android:permission=\"android.permission.BIND_ACCESSIBILITY_SERVICE\">" + "<intent-filter>"
+		+ "<action android:name=\"android.accessibilityservice.AccessibilityService\" />" + "</intent-filter>"
+		+ "<meta-data" + " android:name=\"android.accessibilityservice\""
+		+ " android:resource=\"@xml/es4a_accessibility_service\" />" + "</service>"
 )
 public interface 无障碍服务 extends 组件 {
 
@@ -111,6 +104,14 @@ public interface 无障碍服务 extends 组件 {
 	 */
 	@SimpleProperty
 	String 字幕语言();
+
+	/**
+	 * 设备是否支持系统导航区的辅助按钮，需要 API 27 及以上；不表示当前按钮可用。
+	 *
+	 * @return 系统报告的辅助按钮支持状态。
+	 */
+	@SimpleProperty
+	boolean 辅助按钮受支持();
 
 	/* 方法 */
 
@@ -254,7 +255,7 @@ public interface 无障碍服务 extends 组件 {
 	/**
 	 * 向屏幕提交手势。提交成功后由手势完成或手势取消事件报告结果；新手势可能取消正在执行的手势。
 	 *
-	 * @param gesture 至少含一笔的手势描述
+	 * @param gesture   至少含一笔的手势描述
 	 * @param requestId 由调用者指定，用于关联完成或取消事件
 	 * @return 系统接受提交时为真，未连接或系统拒绝时为假；不代表执行完成
 	 */
@@ -268,6 +269,24 @@ public interface 无障碍服务 extends 组件 {
 	 */
 	@SimpleFunction
 	无障碍字幕样式 取字幕样式();
+
+	/**
+	 * 取得当前可用的系统全局动作，需要 API 30 及以上。
+	 *
+	 * @return 动作描述数组；服务未连接时为空数组，通过执行全局动作使用其中的编号。
+	 */
+	@SimpleFunction
+	无障碍动作[] 取系统动作();
+
+	/**
+	 * 按用户的辅助功能设置计算界面内容应至少保留的时间。
+	 *
+	 * @param original     非负的原显示时长，单位为毫秒。
+	 * @param contentFlags 显示内容掩码，使用无障碍常量中的显示内容常量，可组合。
+	 * @return 建议显示时长，单位为毫秒；系统未提供额外建议时返回原时长。
+	 */
+	@SimpleFunction
+	int 取建议显示时长(int original, int contentFlags);
 
 	/* 事件 */
 
@@ -296,8 +315,8 @@ public interface 无障碍服务 extends 组件 {
 	/**
 	 * 系统允许过滤按键时触发。默认不拦截，不影响音量等原始行为。
 	 *
-	 * @param code Android 按键代码
-	 * @param action 按下为 0，抬起为 1
+	 * @param code    Android 按键代码
+	 * @param action  按下为 0，抬起为 1
 	 * @param handled 设为真表示拦截本次按键，默认假
 	 */
 	@SimpleEvent
@@ -340,9 +359,9 @@ public interface 无障碍服务 extends 组件 {
 	 * 系统放大区域、比例或中心改变；区域参数是外接矩形。
 	 *
 	 * @param bounds 可放大区域的屏幕像素外接矩形
-	 * @param scale 当前倍率
-	 * @param x 未缩放屏幕像素横坐标
-	 * @param y 未缩放屏幕像素纵坐标
+	 * @param scale  当前倍率
+	 * @param x      未缩放屏幕像素横坐标
+	 * @param y      未缩放屏幕像素纵坐标
 	 */
 	@SimpleEvent
 	void 放大状态改变(无障碍边界 bounds, float scale, float x, float y);
@@ -392,6 +411,12 @@ public interface 无障碍服务 extends 组件 {
 	 */
 	@SimpleEvent
 	void 触摸探索状态改变(boolean enabled);
+
+	/**
+	 * 系统当前可用的全局动作列表发生变化，需要 API 30 及以上。
+	 */
+	@SimpleEvent
+	void 系统动作改变();
 
 	/**
 	 * 系统字幕启用、语言、字号或样式改变后触发，通过属性重新读取。

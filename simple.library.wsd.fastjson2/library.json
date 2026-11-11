@@ -1,0 +1,2252 @@
+{
+	"name": "Fastjson2库",
+	"description": "基于 Fastjson2 https://github.com/alibaba/fastjson2 封装，提供 JSON 和 JSONB 类型化数据操作、顺序读写、基础路径、配置、属性过滤和自定义对象编解码；Android 版不含 JSON Schema 和高级 JSONPath。",
+	"version": "0.1.0",
+	"authors": [
+		{
+			"name": "树先生",
+			"email": "xhwsd@qq.com"
+		}
+	],
+	"kind": "library",
+	"categories": [
+		{
+			"name": "扩展对象",
+			"definitions": [
+				{
+					"name": "FJ2读配置",
+					"description": "独立的读取配置，特性名称与所附 Android JAR 一致；仅影响使用该配置的调用，不修改全局设置。",
+					"kind": "object",
+					"type": "simple.library.wsd.fastjson2.FJ2读配置",
+					"functions": [
+						{
+							"name": "取支持特性",
+							"description": "返回当前 JAR 的全部可选特性名称。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "设置特性",
+							"description": "启用或关闭单项特性；未知名称直接报错。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "由取支持特性返回的英文名称。"
+								},
+								{
+									"name": "启用",
+									"type": "逻辑型",
+									"description": "是否启用。"
+								}
+							]
+						},
+						{
+							"name": "是否启用",
+							"description": "判断单项特性是否启用。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "特性名称。"
+								}
+							]
+						},
+						{
+							"name": "清空特性",
+							"description": "关闭本配置中显式启用的全部特性。"
+						},
+						{
+							"name": "设置类型转换器",
+							"description": "设置本配置内的普通对象编解码规则，不修改全局注册表；回调不得重入相同类型的转换。",
+							"params": [
+								{
+									"name": "类型样本",
+									"type": "变体型",
+									"description": "已创建的普通业务对象，仅取实际类型。"
+								},
+								{
+									"name": "转换器",
+									"type": "simple.library.wsd.fastjson2.FJ2类型转换器",
+									"description": "同步转换接口，空引用取消此类型的转换。"
+								}
+							]
+						},
+						{
+							"name": "设置日期格式",
+							"description": "设置日期格式。",
+							"params": [
+								{
+									"name": "新值",
+									"type": "文本型",
+									"description": "日期格式或空文本；支持 millis、unixtime、iso8601。"
+								}
+							]
+						},
+						{
+							"name": "取日期格式",
+							"description": "返回日期格式。",
+							"return": "文本型"
+						},
+						{
+							"name": "设置时区",
+							"description": "设置时区。",
+							"params": [
+								{
+									"name": "新值",
+									"type": "文本型",
+									"description": "有效时区 ID，例如 Asia/Shanghai、UTC。"
+								}
+							]
+						},
+						{
+							"name": "取时区",
+							"description": "返回时区。",
+							"return": "文本型"
+						},
+						{
+							"name": "设置最大层数",
+							"description": "限制解析嵌套层数，默认 512。",
+							"params": [
+								{
+									"name": "层数",
+									"type": "整数型",
+									"description": "1 至 2048。"
+								}
+							]
+						},
+						{
+							"name": "取最大层数",
+							"description": "返回解析最大嵌套层数。",
+							"return": "整数型"
+						},
+						{
+							"name": "复制",
+							"description": "返回可独立修改的配置副本；回调接口保持同一实例。",
+							"return": "simple.library.wsd.fastjson2.FJ2读配置"
+						}
+					],
+					"constants": [
+						{
+							"name": "特性_FieldBased",
+							"type": "文本型",
+							"value": "\"FieldBased\"",
+							"description": "按对象字段进行映射，包括符合上游规则的非公开字段。"
+						},
+						{
+							"name": "特性_IgnoreNoneSerializable",
+							"type": "文本型",
+							"value": "\"IgnoreNoneSerializable\"",
+							"description": "忽略未实现 Serializable 的目标类型或属性值。"
+						},
+						{
+							"name": "特性_ErrorOnNoneSerializable",
+							"type": "文本型",
+							"value": "\"ErrorOnNoneSerializable\"",
+							"description": "遇到未实现 Serializable 的目标类型或属性值时报错。"
+						},
+						{
+							"name": "特性_SupportArrayToBean",
+							"type": "文本型",
+							"value": "\"SupportArrayToBean\"",
+							"description": "允许按字段顺序将数组映射为普通对象。"
+						},
+						{
+							"name": "特性_InitStringFieldAsEmpty",
+							"type": "文本型",
+							"value": "\"InitStringFieldAsEmpty\"",
+							"description": "创建对象时将未赋值的文本字段初始化为空文本。"
+						},
+						{
+							"name": "特性_SupportAutoType",
+							"type": "文本型",
+							"value": "\"SupportAutoType\"",
+							"description": "允许根据输入中的类型声明识别对象类型。"
+						},
+						{
+							"name": "特性_SupportSmartMatch",
+							"type": "文本型",
+							"value": "\"SupportSmartMatch\"",
+							"description": "允许按上游规则匹配不同命名风格的属性名。"
+						},
+						{
+							"name": "特性_UseNativeObject",
+							"type": "文本型",
+							"value": "\"UseNativeObject\"",
+							"description": "读取通用对象和数组时使用 Java Map 和 List 容器。"
+						},
+						{
+							"name": "特性_SupportClassForName",
+							"type": "文本型",
+							"value": "\"SupportClassForName\"",
+							"description": "允许将类型名称转换为 Class 类型的字段值。"
+						},
+						{
+							"name": "特性_IgnoreSetNullValue",
+							"type": "文本型",
+							"value": "\"IgnoreSetNullValue\"",
+							"description": "对象映射时忽略输入中的 null，不覆盖目标字段。"
+						},
+						{
+							"name": "特性_UseDefaultConstructorAsPossible",
+							"type": "文本型",
+							"value": "\"UseDefaultConstructorAsPossible\"",
+							"description": "创建对象时优先使用默认构造方法。"
+						},
+						{
+							"name": "特性_UseBigDecimalForFloats",
+							"type": "文本型",
+							"value": "\"UseBigDecimalForFloats\"",
+							"description": "在适用的浮点读取分支使用 BigDecimal 保存数值。"
+						},
+						{
+							"name": "特性_UseBigDecimalForDoubles",
+							"type": "文本型",
+							"value": "\"UseBigDecimalForDoubles\"",
+							"description": "在适用的双精度读取分支使用 BigDecimal 保存数值。"
+						},
+						{
+							"name": "特性_ErrorOnEnumNotMatch",
+							"type": "文本型",
+							"value": "\"ErrorOnEnumNotMatch\"",
+							"description": "输入值不能匹配目标枚举成员时报错。"
+						},
+						{
+							"name": "特性_TrimString",
+							"type": "文本型",
+							"value": "\"TrimString\"",
+							"description": "读取文本值时去掉首尾空白。"
+						},
+						{
+							"name": "特性_ErrorOnNotSupportAutoType",
+							"type": "文本型",
+							"value": "\"ErrorOnNotSupportAutoType\"",
+							"description": "输入要求的自动类型不受支持时报错。"
+						},
+						{
+							"name": "特性_DuplicateKeyValueAsArray",
+							"type": "文本型",
+							"value": "\"DuplicateKeyValueAsArray\"",
+							"description": "将同名属性的多个值收集为数组。"
+						},
+						{
+							"name": "特性_AllowUnQuotedFieldNames",
+							"type": "文本型",
+							"value": "\"AllowUnQuotedFieldNames\"",
+							"description": "允许读取未使用引号包围的属性名。"
+						},
+						{
+							"name": "特性_NonStringKeyAsString",
+							"type": "文本型",
+							"value": "\"NonStringKeyAsString\"",
+							"description": "将非文本对象键按上游规则转换为文本键。"
+						},
+						{
+							"name": "特性_Base64StringAsByteArray",
+							"type": "文本型",
+							"value": "\"Base64StringAsByteArray\"",
+							"description": "允许将 Base64 文本读取为字节数组。"
+						},
+						{
+							"name": "特性_IgnoreCheckClose",
+							"type": "文本型",
+							"value": "\"IgnoreCheckClose\"",
+							"description": "请求上游忽略结束检查；本库完整解析入口仍检查尾随数据。"
+						},
+						{
+							"name": "特性_ErrorOnNullForPrimitives",
+							"type": "文本型",
+							"value": "\"ErrorOnNullForPrimitives\"",
+							"description": "将 null 赋给目标基本类型字段时报错。"
+						},
+						{
+							"name": "特性_NullOnError",
+							"type": "文本型",
+							"value": "\"NullOnError\"",
+							"description": "在上游支持的字段转换失败路径中使用 null。"
+						},
+						{
+							"name": "特性_IgnoreAutoTypeNotMatch",
+							"type": "文本型",
+							"value": "\"IgnoreAutoTypeNotMatch\"",
+							"description": "忽略上游自动类型与目标类型不匹配的情况。"
+						},
+						{
+							"name": "特性_NonZeroNumberCastToBooleanAsTrue",
+							"type": "文本型",
+							"value": "\"NonZeroNumberCastToBooleanAsTrue\"",
+							"description": "将非零数值转换为真，零转换为假。"
+						},
+						{
+							"name": "特性_IgnoreNullPropertyValue",
+							"type": "文本型",
+							"value": "\"IgnoreNullPropertyValue\"",
+							"description": "忽略输入中值为 null 的对象属性。"
+						},
+						{
+							"name": "特性_ErrorOnUnknownProperties",
+							"type": "文本型",
+							"value": "\"ErrorOnUnknownProperties\"",
+							"description": "输入属性在目标对象中没有对应字段或属性时报错。"
+						},
+						{
+							"name": "特性_EmptyStringAsNull",
+							"type": "文本型",
+							"value": "\"EmptyStringAsNull\"",
+							"description": "在上游支持的读取场景中将空文本转换为 null。"
+						},
+						{
+							"name": "特性_NonErrorOnNumberOverflow",
+							"type": "文本型",
+							"value": "\"NonErrorOnNumberOverflow\"",
+							"description": "采用上游的数值溢出宽松处理规则，可能发生精度损失。"
+						},
+						{
+							"name": "特性_UseBigIntegerForInts",
+							"type": "文本型",
+							"value": "\"UseBigIntegerForInts\"",
+							"description": "将通用整数值读取为 BigInteger。"
+						},
+						{
+							"name": "特性_UseLongForInts",
+							"type": "文本型",
+							"value": "\"UseLongForInts\"",
+							"description": "将通用整数值优先读取为 Long；BigInteger 选项优先。"
+						},
+						{
+							"name": "特性_DisableSingleQuote",
+							"type": "文本型",
+							"value": "DisableSingleQuote",
+							"description": "禁止使用单引号包围文本。"
+						},
+						{
+							"name": "特性_UseDoubleForDecimals",
+							"type": "文本型",
+							"value": "UseDoubleForDecimals",
+							"description": "将适用的小数读取为 Double，可能降低十进制精度。"
+						},
+						{
+							"name": "特性_DisableReferenceDetect",
+							"type": "文本型",
+							"value": "DisableReferenceDetect",
+							"description": "禁用输入中 $ref 的引用识别。"
+						},
+						{
+							"name": "特性_DisableStringArrayUnwrapping",
+							"type": "文本型",
+							"value": "DisableStringArrayUnwrapping",
+							"description": "文本数组读取为文本时保留数组表示，不解包单个文本元素。"
+						}
+					],
+					"icon": "icons/braces.svg"
+				},
+				{
+					"name": "FJ2写配置",
+					"description": "独立的写入配置，特性名称与所附 Android JAR 一致；仅影响使用该配置的调用，不修改全局设置。",
+					"kind": "object",
+					"type": "simple.library.wsd.fastjson2.FJ2写配置",
+					"functions": [
+						{
+							"name": "取支持特性",
+							"description": "返回当前 JAR 的全部可选特性名称。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "设置特性",
+							"description": "启用或关闭单项特性；未知名称直接报错。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "由取支持特性返回的英文名称。"
+								},
+								{
+									"name": "启用",
+									"type": "逻辑型",
+									"description": "是否启用。"
+								}
+							]
+						},
+						{
+							"name": "是否启用",
+							"description": "判断单项特性是否启用。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "特性名称。"
+								}
+							]
+						},
+						{
+							"name": "清空特性",
+							"description": "关闭本配置中显式启用的全部特性。"
+						},
+						{
+							"name": "设置类型转换器",
+							"description": "设置本配置内的普通对象编解码规则，不修改全局注册表；回调不得重入相同类型的转换。",
+							"params": [
+								{
+									"name": "类型样本",
+									"type": "变体型",
+									"description": "已创建的普通业务对象，仅取实际类型。"
+								},
+								{
+									"name": "转换器",
+									"type": "simple.library.wsd.fastjson2.FJ2类型转换器",
+									"description": "同步转换接口，空引用取消此类型的转换。"
+								}
+							]
+						},
+						{
+							"name": "设置日期格式",
+							"description": "设置日期格式。",
+							"params": [
+								{
+									"name": "新值",
+									"type": "文本型",
+									"description": "日期格式或空文本；支持 millis、unixtime、iso8601。"
+								}
+							]
+						},
+						{
+							"name": "取日期格式",
+							"description": "返回日期格式。",
+							"return": "文本型"
+						},
+						{
+							"name": "设置时区",
+							"description": "设置时区。",
+							"params": [
+								{
+									"name": "新值",
+									"type": "文本型",
+									"description": "有效时区 ID，例如 Asia/Shanghai、UTC。"
+								}
+							]
+						},
+						{
+							"name": "取时区",
+							"description": "返回时区。",
+							"return": "文本型"
+						},
+						{
+							"name": "设置过滤器",
+							"description": "设置属性保留、名称和值过滤器，回调同步执行；null 属性可先由过滤器补值，再应用空值输出规则；不得重入同一写入器。",
+							"params": [
+								{
+									"name": "过滤器",
+									"type": "simple.library.wsd.fastjson2.FJ2过滤器",
+									"description": "同步回调；空引用取消过滤。"
+								}
+							]
+						},
+						{
+							"name": "复制",
+							"description": "返回可独立修改的配置副本；回调接口保持同一实例。",
+							"return": "simple.library.wsd.fastjson2.FJ2写配置"
+						}
+					],
+					"constants": [
+						{
+							"name": "特性_FieldBased",
+							"type": "文本型",
+							"value": "\"FieldBased\"",
+							"description": "按对象字段进行映射，包括符合上游规则的非公开字段。"
+						},
+						{
+							"name": "特性_IgnoreNoneSerializable",
+							"type": "文本型",
+							"value": "\"IgnoreNoneSerializable\"",
+							"description": "忽略未实现 Serializable 的目标类型或属性值。"
+						},
+						{
+							"name": "特性_ErrorOnNoneSerializable",
+							"type": "文本型",
+							"value": "\"ErrorOnNoneSerializable\"",
+							"description": "遇到未实现 Serializable 的目标类型或属性值时报错。"
+						},
+						{
+							"name": "特性_BeanToArray",
+							"type": "文本型",
+							"value": "\"BeanToArray\"",
+							"description": "按字段顺序将普通对象编码为数组。"
+						},
+						{
+							"name": "特性_WriteNulls",
+							"type": "文本型",
+							"value": "\"WriteNulls\"",
+							"description": "输出对象中值为 null 的属性。"
+						},
+						{
+							"name": "特性_WriteMapNullValue",
+							"type": "文本型",
+							"value": "\"WriteMapNullValue\"",
+							"description": "输出对象中值为 null 的属性，与 WriteNulls 使用同一标记。"
+						},
+						{
+							"name": "特性_BrowserCompatible",
+							"type": "文本型",
+							"value": "\"BrowserCompatible\"",
+							"description": "按上游浏览器兼容规则输出超出 JavaScript 安全整数范围的数值。"
+						},
+						{
+							"name": "特性_NullAsDefaultValue",
+							"type": "文本型",
+							"value": "\"NullAsDefaultValue\"",
+							"description": "按声明类型将 null 输出为相应默认值。"
+						},
+						{
+							"name": "特性_WriteBooleanAsNumber",
+							"type": "文本型",
+							"value": "\"WriteBooleanAsNumber\"",
+							"description": "将逻辑值输出为 1 或 0。"
+						},
+						{
+							"name": "特性_WriteNonStringValueAsString",
+							"type": "文本型",
+							"value": "\"WriteNonStringValueAsString\"",
+							"description": "将适用的非文本标量输出为文本。"
+						},
+						{
+							"name": "特性_WriteClassName",
+							"type": "文本型",
+							"value": "\"WriteClassName\"",
+							"description": "在支持的输出格式中写入 Java 类型信息。"
+						},
+						{
+							"name": "特性_NotWriteRootClassName",
+							"type": "文本型",
+							"value": "\"NotWriteRootClassName\"",
+							"description": "写入类型信息时省略根对象的类型名称。"
+						},
+						{
+							"name": "特性_NotWriteHashMapArrayListClassName",
+							"type": "文本型",
+							"value": "\"NotWriteHashMapArrayListClassName\"",
+							"description": "写入类型信息时省略 HashMap 和 ArrayList 的类型名称。"
+						},
+						{
+							"name": "特性_NotWriteDefaultValue",
+							"type": "文本型",
+							"value": "\"NotWriteDefaultValue\"",
+							"description": "省略值等于类型默认值的对象属性。"
+						},
+						{
+							"name": "特性_WriteEnumsUsingName",
+							"type": "文本型",
+							"value": "\"WriteEnumsUsingName\"",
+							"description": "使用枚举成员名称输出枚举值。"
+						},
+						{
+							"name": "特性_WriteEnumUsingToString",
+							"type": "文本型",
+							"value": "\"WriteEnumUsingToString\"",
+							"description": "使用枚举对象的 toString 结果输出枚举值。"
+						},
+						{
+							"name": "特性_IgnoreErrorGetter",
+							"type": "文本型",
+							"value": "\"IgnoreErrorGetter\"",
+							"description": "忽略普通对象属性获取器抛出的异常。"
+						},
+						{
+							"name": "特性_PrettyFormat",
+							"type": "文本型",
+							"value": "\"PrettyFormat\"",
+							"description": "使用换行和缩进格式化文本输出。"
+						},
+						{
+							"name": "特性_ReferenceDetection",
+							"type": "文本型",
+							"value": "\"ReferenceDetection\"",
+							"description": "检测重复及循环引用，并按上游引用语法输出。"
+						},
+						{
+							"name": "特性_WriteNameAsSymbol",
+							"type": "文本型",
+							"value": "\"WriteNameAsSymbol\"",
+							"description": "在 JSONB 中将属性名作为符号写入。"
+						},
+						{
+							"name": "特性_WriteBigDecimalAsPlain",
+							"type": "文本型",
+							"value": "\"WriteBigDecimalAsPlain\"",
+							"description": "以不使用科学计数法的数字形式输出 BigDecimal。"
+						},
+						{
+							"name": "特性_UseSingleQuotes",
+							"type": "文本型",
+							"value": "\"UseSingleQuotes\"",
+							"description": "使用单引号包围文本和属性名。"
+						},
+						{
+							"name": "特性_MapSortField",
+							"type": "文本型",
+							"value": "\"MapSortField\"",
+							"description": "按上游键排序规则输出 Map 条目。"
+						},
+						{
+							"name": "特性_WriteNullListAsEmpty",
+							"type": "文本型",
+							"value": "\"WriteNullListAsEmpty\"",
+							"description": "将值为 null 的集合属性输出为空数组。"
+						},
+						{
+							"name": "特性_WriteNullStringAsEmpty",
+							"type": "文本型",
+							"value": "\"WriteNullStringAsEmpty\"",
+							"description": "将值为 null 的文本属性输出为空文本。"
+						},
+						{
+							"name": "特性_WriteNullNumberAsZero",
+							"type": "文本型",
+							"value": "\"WriteNullNumberAsZero\"",
+							"description": "将值为 null 的数值属性输出为零。"
+						},
+						{
+							"name": "特性_WriteNullBooleanAsFalse",
+							"type": "文本型",
+							"value": "\"WriteNullBooleanAsFalse\"",
+							"description": "将值为 null 的逻辑属性输出为假。"
+						},
+						{
+							"name": "特性_NotWriteEmptyArray",
+							"type": "文本型",
+							"value": "\"NotWriteEmptyArray\"",
+							"description": "省略值为空数组或空集合的适用属性。"
+						},
+						{
+							"name": "特性_IgnoreEmpty",
+							"type": "文本型",
+							"value": "\"IgnoreEmpty\"",
+							"description": "省略空数组或空集合，与 NotWriteEmptyArray 使用同一标记。"
+						},
+						{
+							"name": "特性_WriteNonStringKeyAsString",
+							"type": "文本型",
+							"value": "\"WriteNonStringKeyAsString\"",
+							"description": "将非文本对象键作为带引号的文本输出。"
+						},
+						{
+							"name": "特性_WritePairAsJavaBean",
+							"type": "文本型",
+							"value": "\"WritePairAsJavaBean\"",
+							"description": "将上游支持的 Pair 类型按普通对象输出。"
+						},
+						{
+							"name": "特性_OptimizedForAscii",
+							"type": "文本型",
+							"value": "\"OptimizedForAscii\"",
+							"description": "启用以 ASCII 字符为主的文本写入优化。"
+						},
+						{
+							"name": "特性_EscapeNoneAscii",
+							"type": "文本型",
+							"value": "\"EscapeNoneAscii\"",
+							"description": "对非 ASCII 字符使用转义形式输出。"
+						},
+						{
+							"name": "特性_WriteByteArrayAsBase64",
+							"type": "文本型",
+							"value": "\"WriteByteArrayAsBase64\"",
+							"description": "将字节数组编码为 Base64 文本。"
+						},
+						{
+							"name": "特性_IgnoreNonFieldGetter",
+							"type": "文本型",
+							"value": "\"IgnoreNonFieldGetter\"",
+							"description": "忽略没有对应字段的属性获取器。"
+						},
+						{
+							"name": "特性_LargeObject",
+							"type": "文本型",
+							"value": "\"LargeObject\"",
+							"description": "允许上游写入器使用更大的输出缓冲区上限。"
+						},
+						{
+							"name": "特性_WriteLongAsString",
+							"type": "文本型",
+							"value": "\"WriteLongAsString\"",
+							"description": "将长整数输出为文本。"
+						},
+						{
+							"name": "特性_BrowserSecure",
+							"type": "文本型",
+							"value": "\"BrowserSecure\"",
+							"description": "对小于号、大于号和圆括号等字符使用安全转义形式。"
+						},
+						{
+							"name": "特性_WriteEnumUsingOrdinal",
+							"type": "文本型",
+							"value": "\"WriteEnumUsingOrdinal\"",
+							"description": "使用枚举成员的顺序号输出枚举值。"
+						},
+						{
+							"name": "特性_WriteThrowableClassName",
+							"type": "文本型",
+							"value": "\"WriteThrowableClassName\"",
+							"description": "输出异常对象时写入其类型信息。"
+						},
+						{
+							"name": "特性_UnquoteFieldName",
+							"type": "文本型",
+							"value": "\"UnquoteFieldName\"",
+							"description": "不使用引号包围文本格式中的属性名。"
+						},
+						{
+							"name": "特性_NotWriteSetClassName",
+							"type": "文本型",
+							"value": "\"NotWriteSetClassName\"",
+							"description": "写入类型信息时省略 Set 的类型名称。"
+						},
+						{
+							"name": "特性_NotWriteNumberClassName",
+							"type": "文本型",
+							"value": "\"NotWriteNumberClassName\"",
+							"description": "写入类型信息时省略数值类型名称或类型后缀。"
+						},
+						{
+							"name": "特性_SortMapEntriesByKeys",
+							"type": "文本型",
+							"value": "\"SortMapEntriesByKeys\"",
+							"description": "按键排序后输出 Map 条目，已排序 Map 遵循上游规则。"
+						},
+						{
+							"name": "特性_PrettyFormatWith2Space",
+							"type": "文本型",
+							"value": "\"PrettyFormatWith2Space\"",
+							"description": "格式化输出时每层缩进两个空格。"
+						},
+						{
+							"name": "特性_PrettyFormatWith4Space",
+							"type": "文本型",
+							"value": "\"PrettyFormatWith4Space\"",
+							"description": "格式化输出时每层缩进四个空格。"
+						},
+						{
+							"name": "特性_WriterUtilDateAsMillis",
+							"type": "文本型",
+							"value": "\"WriterUtilDateAsMillis\"",
+							"description": "将 java.util.Date 编码为 Unix 毫秒时间戳。"
+						}
+					],
+					"icon": "icons/braces.svg"
+				},
+				{
+					"name": "FJ2过滤器",
+					"description": "同步属性过滤接口，回调接收独立快照；不得重入同一过滤器。仅保留的属性参与重名判断。",
+					"kind": "interface",
+					"type": "simple.library.wsd.fastjson2.FJ2过滤器",
+					"functions": [
+						{
+							"name": "保留属性",
+							"description": "决定是否输出当前属性；数组元素不调用此回调。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "已完成名称转换的属性名。"
+								},
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "属性值的独立副本。"
+								}
+							]
+						},
+						{
+							"name": "转换名称",
+							"description": "将原属性名转换为输出名称；仅保留的属性参与重名判断。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "原属性名。"
+								}
+							]
+						},
+						{
+							"name": "转换值",
+							"description": "提供当前属性的输出值，不直接修改源文档。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "已完成名称转换的属性名。"
+								},
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "属性值的独立副本。"
+								}
+							]
+						}
+					],
+					"icon": "icons/braces.svg"
+				},
+				{
+					"name": "FJ2类型转换器",
+					"description": "普通业务对象的同步编解码接口，注册在独立读写配置中；不得在回调中重入相同类型的转换。",
+					"kind": "interface",
+					"type": "simple.library.wsd.fastjson2.FJ2类型转换器",
+					"functions": [
+						{
+							"name": "编码",
+							"description": "将注册类型的普通对象转换为自定义协议值树。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "源值",
+									"type": "变体型",
+									"description": "注册类型的普通对象，可赋给对应 Simple 类型。"
+								}
+							]
+						},
+						{
+							"name": "解码",
+							"description": "按自定义协议创建注册类型的新对象。",
+							"return": "变体型",
+							"params": [
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "当前对象对应的 JSON 或 JSONB 值快照。"
+								}
+							]
+						}
+					],
+					"icon": "icons/braces.svg"
+				},
+				{
+					"name": "FJ2值",
+					"description": "JSON、JSONB 的类型化值。子节点和传入值均复制；修改子节点后须显式写回父节点。索引从 0 开始，同一实例串行使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.fastjson2.FJ2值",
+					"functions": [
+						{
+							"name": "取类型",
+							"description": "返回值类型常量。",
+							"return": "整数型"
+						},
+						{
+							"name": "是否为空",
+							"description": "判断是否为 JSON null；缺失属性须另用包含属性判断。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "复制",
+							"description": "返回独立深副本。",
+							"return": "simple.library.wsd.fastjson2.FJ2值"
+						},
+						{
+							"name": "到JSON文本",
+							"description": "序列化为 JSON 文本。",
+							"return": "文本型"
+						},
+						{
+							"name": "到JSON文本",
+							"description": "按指定配置序列化为 JSON 文本。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2写配置",
+									"description": "写入配置，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "到UTF8字节",
+							"description": "编码为 UTF-8 JSON 字节。",
+							"return": "字节型[]"
+						},
+						{
+							"name": "到JSON字节",
+							"description": "按指定字符集编码 JSON 文本。",
+							"return": "字节型[]",
+							"params": [
+								{
+									"name": "字符集",
+									"type": "文本型",
+									"description": "有效字符集名称。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2写配置",
+									"description": "写入配置。"
+								}
+							]
+						},
+						{
+							"name": "到JSONB",
+							"description": "编码为 JSONB 二进制。",
+							"return": "字节型[]"
+						},
+						{
+							"name": "到JSONB",
+							"description": "按配置和可选外部符号表编码 JSONB。",
+							"return": "字节型[]",
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2写配置",
+									"description": "写入配置。"
+								},
+								{
+									"name": "符号表",
+									"type": "simple.library.wsd.fastjson2.FJ2符号表",
+									"description": "空引用表示不用外部符号表；解码须使用相同表。"
+								}
+							]
+						},
+						{
+							"name": "取文本",
+							"description": "读取文本标量，不隐式转换其他类型。",
+							"return": "文本型"
+						},
+						{
+							"name": "取逻辑",
+							"description": "读取逻辑标量，不隐式转换文本或数值。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "取整数",
+							"description": "精确读取 64 位整数，拒绝小数和溢出数值。",
+							"return": "长整数型"
+						},
+						{
+							"name": "取小数",
+							"description": "读取有限的双精度数值，精度以 IEEE 754 双精度为限。",
+							"return": "双精度小数型"
+						},
+						{
+							"name": "取精确数值",
+							"description": "以十进制文本读取数值，避免大整数或高精度小数降精度。",
+							"return": "文本型"
+						},
+						{
+							"name": "取字节",
+							"description": "读取字节数组的独立副本。",
+							"return": "字节型[]"
+						},
+						{
+							"name": "取时间戳",
+							"description": "读取日期值对应的 Unix 毫秒时间戳。",
+							"return": "长整数型"
+						},
+						{
+							"name": "取数量",
+							"description": "返回对象属性数或数组元素数；标量报错。",
+							"return": "整数型"
+						},
+						{
+							"name": "取属性名",
+							"description": "返回对象属性名，保持当前迭代顺序。",
+							"return": "文本型[]"
+						},
+						{
+							"name": "包含属性",
+							"description": "判断属性是否存在，值为 null 也返回真。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "属性名称。"
+								}
+							]
+						},
+						{
+							"name": "取属性",
+							"description": "返回对象属性的独立副本；属性不存在报错。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "属性名称。"
+								}
+							]
+						},
+						{
+							"name": "设置属性",
+							"description": "新增或替换对象属性，复制传入值。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "属性名称。"
+								},
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "空引用表示 JSON null。"
+								}
+							]
+						},
+						{
+							"name": "删除属性",
+							"description": "删除对象属性，返回删除前是否存在。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "属性名称。"
+								}
+							]
+						},
+						{
+							"name": "取项目",
+							"description": "返回数组元素的独立副本；越界报错。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从 0 开始的索引。"
+								}
+							]
+						},
+						{
+							"name": "设置项目",
+							"description": "设置项目，复制传入值；失败时不改变数组。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "已有项目的索引。"
+								},
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "空引用表示 JSON null。"
+								}
+							]
+						},
+						{
+							"name": "插入项目",
+							"description": "插入项目，复制传入值；失败时不改变数组。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "0 至当前数量之间。"
+								},
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "空引用表示 JSON null。"
+								}
+							]
+						},
+						{
+							"name": "追加项目",
+							"description": "追加项目，复制传入值；失败时不改变数组。",
+							"params": [
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "空引用表示 JSON null。"
+								}
+							]
+						},
+						{
+							"name": "删除项目",
+							"description": "删除数组元素并返回其独立值。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "已有项目的索引。"
+								}
+							]
+						},
+						{
+							"name": "清空",
+							"description": "清空对象属性或数组元素；标量报错。"
+						},
+						{
+							"name": "合并对象",
+							"description": "复制来源全部属性，覆盖同名属性；来源类型错误时不修改。",
+							"params": [
+								{
+									"name": "来源",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "对象值，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "查询",
+							"description": "通过官方基础 JSONPath 查询；未找到与匹配 null 均返回空值。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "支持根、属性和非负数组下标；不支持过滤、通配符和聚合。"
+								}
+							]
+						},
+						{
+							"name": "到运行库JSON",
+							"description": "将对象或数组复制为运行库 JSON值，转换后的数值能力遵循运行库约定。",
+							"return": "simple.runtime.collections.JSON值"
+						},
+						{
+							"name": "取全部项目",
+							"description": "返回数组全部元素的独立快照，索引从 0 开始。",
+							"return": "simple.library.wsd.fastjson2.FJ2值[]"
+						},
+						{
+							"name": "取默认属性",
+							"description": "取得属性快照；仅属性不存在时使用默认值，已存在的 null 不替换。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "对象属性名。"
+								},
+								{
+									"name": "默认值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "缺少属性时使用，空引用表示 JSON null。"
+								}
+							]
+						},
+						{
+							"name": "追加数组",
+							"description": "深复制来源数组全部元素后追加；支持追加自身，来源无效时不修改。",
+							"params": [
+								{
+									"name": "来源",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "数组值，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "重命名属性",
+							"description": "重命名对象属性并保留原属性位置；缺少原属性返回假，禁止覆盖时失败不修改。",
+							"return": "逻辑型",
+							"params": [
+								{
+									"name": "原名",
+									"type": "文本型",
+									"description": "要改名的属性。"
+								},
+								{
+									"name": "新名",
+									"type": "文本型",
+									"description": "非空引用的新名称。"
+								},
+								{
+									"name": "允许覆盖",
+									"type": "逻辑型",
+									"description": "重名时是否允许覆盖已有属性。"
+								}
+							]
+						},
+						{
+							"name": "替换为",
+							"description": "用新值的深副本替换当前值；复制失败不修改。",
+							"params": [
+								{
+									"name": "新值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "空引用表示 JSON null。"
+								}
+							]
+						},
+						{
+							"name": "过滤",
+							"description": "返回独立过滤值图，保留未修改的循环引用；仅保留的属性名不能重复，结果最多嵌套 512 层。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "过滤器",
+									"type": "simple.library.wsd.fastjson2.FJ2过滤器",
+									"description": "同步过滤接口，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "转换整数",
+							"description": "将数值、数字文本或逻辑转换为 64 位整数；逻辑为 1 或 0，拒绝溢出和非整数。",
+							"return": "长整数型"
+						},
+						{
+							"name": "转换小数",
+							"description": "将数值、数字文本或逻辑转换为有限双精度数，结果受双精度精度限制。",
+							"return": "双精度小数型"
+						},
+						{
+							"name": "转换逻辑",
+							"description": "按上游 JSONObject 规则转换逻辑、文本或数值；不能转换时直接报错，不把 null 当作假。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "转换文本",
+							"description": "文本返回原内容，对象和数组返回 JSON，数值和逻辑返回对应文本；null 返回 null 字面量。",
+							"return": "文本型"
+						},
+						{
+							"name": "到Simple数据",
+							"description": "复制为运行库数据，对象变为哈希表，数组变为集合，日期和字节保留类型；保留引用关系。整数超长或小数无法保持十进制文本往返精度时抛错。",
+							"return": "变体型"
+						}
+					],
+					"constants": [
+						{
+							"name": "类型_空",
+							"type": "整数型",
+							"value": "0",
+							"description": "空类型标识。"
+						},
+						{
+							"name": "类型_对象",
+							"type": "整数型",
+							"value": "1",
+							"description": "对象类型标识。"
+						},
+						{
+							"name": "类型_数组",
+							"type": "整数型",
+							"value": "2",
+							"description": "数组类型标识。"
+						},
+						{
+							"name": "类型_文本",
+							"type": "整数型",
+							"value": "3",
+							"description": "文本类型标识。"
+						},
+						{
+							"name": "类型_数值",
+							"type": "整数型",
+							"value": "4",
+							"description": "数值类型标识。"
+						},
+						{
+							"name": "类型_逻辑",
+							"type": "整数型",
+							"value": "5",
+							"description": "逻辑类型标识。"
+						},
+						{
+							"name": "类型_字节",
+							"type": "整数型",
+							"value": "6",
+							"description": "字节类型标识。"
+						},
+						{
+							"name": "类型_日期",
+							"type": "整数型",
+							"value": "7",
+							"description": "日期类型标识。"
+						}
+					],
+					"icon": "icons/braces.svg"
+				},
+				{
+					"name": "FJ2路径",
+					"description": "官方 Android 版基础 JSONPath 编译对象；支持根、属性和非负下标，不支持过滤、通配符、切片、递归和聚合。",
+					"kind": "object",
+					"type": "simple.library.wsd.fastjson2.FJ2路径",
+					"functions": [
+						{
+							"name": "编译",
+							"description": "编译并验证基础路径；不支持的语法报错。",
+							"return": "simple.library.wsd.fastjson2.FJ2路径",
+							"static": true,
+							"params": [
+								{
+									"name": "路径",
+									"type": "文本型",
+									"description": "以 $ 开头的路径。"
+								}
+							]
+						},
+						{
+							"name": "取表达式",
+							"description": "返回原路径表达式。",
+							"return": "文本型"
+						},
+						{
+							"name": "查询",
+							"description": "返回匹配值的独立副本；未找到与匹配 null 均为空值。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "根值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "文档根，空引用表示 JSON null。"
+								}
+							]
+						}
+					],
+					"icon": "icons/braces.svg"
+				},
+				{
+					"name": "FJ2符号表",
+					"description": "不可修改的 JSONB 外部符号表，名称去重后按文本自然顺序排列，最多 32768 项；编解码双方使用相同内容的表。",
+					"kind": "object",
+					"type": "simple.library.wsd.fastjson2.FJ2符号表",
+					"functions": [
+						{
+							"name": "创建",
+							"description": "复制名称集并创建外部符号表，去重后最多 32768 项；空引用、空引用名称或超限均报错。",
+							"return": "simple.library.wsd.fastjson2.FJ2符号表",
+							"static": true,
+							"params": [
+								{
+									"name": "名称集",
+									"type": "文本型[]",
+									"description": "不含空引用的属性名数组。"
+								}
+							]
+						},
+						{
+							"name": "取数量",
+							"description": "返回符号数量。",
+							"return": "整数型"
+						},
+						{
+							"name": "取名称",
+							"description": "返回指定符号名称，序号从 1 开始；名称去重后按文本自然顺序排列。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "序号",
+									"type": "整数型",
+									"description": "从 1 开始的符号序号。"
+								}
+							]
+						},
+						{
+							"name": "取序号",
+							"description": "返回名称对应的序号；不存在返回 -1。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "符号名称。"
+								}
+							]
+						},
+						{
+							"name": "取表哈希",
+							"description": "返回整个符号表的 64 位结构哈希，与名称输入顺序及重复项无关。",
+							"return": "长整数型"
+						},
+						{
+							"name": "取名称哈希",
+							"description": "返回指定符号名称的 64 位哈希；序号越界时报错。",
+							"return": "长整数型",
+							"params": [
+								{
+									"name": "序号",
+									"type": "整数型",
+									"description": "从 1 开始的符号序号。"
+								}
+							]
+						},
+						{
+							"name": "按哈希取名称",
+							"description": "根据名称的 64 位哈希查询名称；未找到时返回空文本，可通过按哈希取序号区分空名称与未找到。",
+							"return": "文本型",
+							"params": [
+								{
+									"name": "哈希",
+									"type": "长整数型",
+									"description": "名称的 64 位哈希。"
+								}
+							]
+						},
+						{
+							"name": "按哈希取序号",
+							"description": "根据名称的 64 位哈希查询从 1 开始的符号序号；未找到时返回 -1。",
+							"return": "整数型",
+							"params": [
+								{
+									"name": "哈希",
+									"type": "长整数型",
+									"description": "名称的 64 位哈希。"
+								}
+							]
+						}
+					],
+					"icon": "icons/braces.svg"
+				},
+				{
+					"name": "FJ2操作",
+					"description": "Fastjson2 Android 版入口：文本、字节、JSONB、类型化值和 Simple 对象互通；不访问网络或文件，复杂数据应在后台串行处理。 普通对象内的运行库数据字段不接受内部引用；编码同样检查，循环图使用数据转值与到Simple数据整体互转。",
+					"kind": "object",
+					"type": "simple.library.wsd.fastjson2.FJ2操作",
+					"functions": [
+						{
+							"name": "取依赖版本",
+							"description": "返回封装使用的官方 JAR 版本。",
+							"return": "文本型",
+							"static": true
+						},
+						{
+							"name": "解析文本",
+							"description": "解析完整 JSON 文本，包括标量根值。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "完整 JSON 文本；不得为空白。"
+								}
+							]
+						},
+						{
+							"name": "解析文本",
+							"description": "按读取配置解析完整 JSON 文本。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "完整 JSON 文本。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "独立读取配置。"
+								}
+							]
+						},
+						{
+							"name": "解析UTF8",
+							"description": "解析 UTF-8 JSON 字节。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "UTF-8 JSON 字节。"
+								}
+							]
+						},
+						{
+							"name": "解析字节",
+							"description": "按字符集和读取配置解析完整 JSON 字节。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "JSON 字节，不得为空。"
+								},
+								{
+									"name": "字符集",
+									"type": "文本型",
+									"description": "有效字符集名称。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "独立读取配置。"
+								}
+							]
+						},
+						{
+							"name": "解析JSONB",
+							"description": "解析完整 JSONB 数据。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "完整 JSONB 字节。"
+								}
+							]
+						},
+						{
+							"name": "解析JSONB",
+							"description": "按配置和外部符号表解析 JSONB。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "完整 JSONB 字节。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "独立读取配置。"
+								},
+								{
+									"name": "符号表",
+									"type": "simple.library.wsd.fastjson2.FJ2符号表",
+									"description": "编码时使用的同一外部符号表；未使用则为空。"
+								}
+							]
+						},
+						{
+							"name": "运行库JSON转值",
+							"description": "复制运行库 JSON值，之后双方修改互不影响。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "simple.runtime.collections.JSON值",
+									"description": "运行库对象或数组，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "是否有效JSON",
+							"description": "检查完整 JSON 语法；采用上游解析规则，不等同于 JSON Schema 验证。",
+							"return": "逻辑型",
+							"static": true,
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "待验证文本；空引用或空白返回假。"
+								}
+							]
+						},
+						{
+							"name": "是否JSON对象",
+							"description": "检查完整 JSON 语法；采用上游解析规则，不等同于 JSON Schema 验证。",
+							"return": "逻辑型",
+							"static": true,
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "待验证文本；空引用或空白返回假。"
+								}
+							]
+						},
+						{
+							"name": "是否JSON数组",
+							"description": "检查完整 JSON 语法；采用上游解析规则，不等同于 JSON Schema 验证。",
+							"return": "逻辑型",
+							"static": true,
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "待验证文本；空引用或空白返回假。"
+								}
+							]
+						},
+						{
+							"name": "创建空",
+							"description": "空类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true
+						},
+						{
+							"name": "创建对象",
+							"description": "对象类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true
+						},
+						{
+							"name": "创建数组",
+							"description": "数组类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true
+						},
+						{
+							"name": "创建文本",
+							"description": "文本类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "非空引用文本。"
+								}
+							]
+						},
+						{
+							"name": "创建整数",
+							"description": "整数类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "长整数型",
+									"description": "64 位整数。"
+								}
+							]
+						},
+						{
+							"name": "创建小数",
+							"description": "小数类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "双精度小数型",
+									"description": "有限双精度数；不接受 NaN 或无穷大。"
+								}
+							]
+						},
+						{
+							"name": "创建精确数值",
+							"description": "精确数值类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "十进制数值文本，可包含指数。"
+								}
+							]
+						},
+						{
+							"name": "创建大整数",
+							"description": "大整数类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "不含小数点的十进制整数文本。"
+								}
+							]
+						},
+						{
+							"name": "创建逻辑",
+							"description": "逻辑类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "逻辑型",
+									"description": "逻辑值。"
+								}
+							]
+						},
+						{
+							"name": "创建字节",
+							"description": "字节类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "字节型[]",
+									"description": "非空字节数组，内部会复制。"
+								}
+							]
+						},
+						{
+							"name": "创建日期",
+							"description": "日期类型化值；可变参数会复制。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "长整数型",
+									"description": "Unix 毫秒时间戳。"
+								}
+							]
+						},
+						{
+							"name": "对象转值",
+							"description": "将 Simple 值序列化后转换为独立 JSON 树；不接受窗口或组件作为业务数据。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "变体型",
+									"description": "Simple 标量、数组、集合、哈希表、普通对象或本库值。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2写配置",
+									"description": "对象映射和过滤配置；普通对象字段可用 FieldBased。"
+								}
+							]
+						},
+						{
+							"name": "值转对象",
+							"description": "映射为与样本同类型的新对象；返回变体可赋给对应 Simple 类型，不根据 JSON 中的类名加载类型。",
+							"return": "变体型",
+							"static": true,
+							"params": [
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "JSON 树。"
+								},
+								{
+									"name": "类型样本",
+									"type": "变体型",
+									"description": "已创建的目标普通对象，仅取实际类型，不改写此实例。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "读取配置；可通过 FieldBased 读写字段。"
+								}
+							]
+						},
+						{
+							"name": "对象转JSON文本",
+							"description": "直接将 Simple 数据编码为 JSON 文本，应用本配置中的类型转换器。",
+							"return": "文本型",
+							"static": true,
+							"params": [
+								{
+									"name": "源值",
+									"type": "变体型",
+									"description": "Simple 标量、数组、集合、哈希表或普通业务对象。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2写配置",
+									"description": "包含可选类型转换器和过滤器的配置。"
+								}
+							]
+						},
+						{
+							"name": "对象转JSONB",
+							"description": "直接编码 Simple 数据为 JSONB，保留日期和字节等二进制类型。",
+							"return": "字节型[]",
+							"static": true,
+							"params": [
+								{
+									"name": "源值",
+									"type": "变体型",
+									"description": "Simple 标量、数组、集合、哈希表或普通业务对象。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2写配置",
+									"description": "可含类型转换器和过滤器。"
+								},
+								{
+									"name": "符号表",
+									"type": "simple.library.wsd.fastjson2.FJ2符号表",
+									"description": "可选外部符号表。"
+								}
+							]
+						},
+						{
+							"name": "JSON文本转对象",
+							"description": "直接把 JSON 文本映射为与样本同类型的新对象。",
+							"return": "变体型",
+							"static": true,
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "完整 JSON 文本。"
+								},
+								{
+									"name": "类型样本",
+									"type": "变体型",
+									"description": "已创建的普通业务对象，仅取类型。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "读取配置及可选类型转换器。"
+								}
+							]
+						},
+						{
+							"name": "JSONB转对象",
+							"description": "直接将 JSONB 映射为与样本同类型的新对象，并拒绝尾随内容。",
+							"return": "变体型",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "完整 JSONB 数据。"
+								},
+								{
+									"name": "类型样本",
+									"type": "变体型",
+									"description": "已创建的普通业务对象，仅取类型。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "读取配置及可选类型转换器。"
+								},
+								{
+									"name": "符号表",
+									"type": "simple.library.wsd.fastjson2.FJ2符号表",
+									"description": "编码时使用的同一外部符号表。"
+								}
+							]
+						},
+						{
+							"name": "取实现版本",
+							"description": "返回上游 JAR 内部声明的实现版本；可能与 Maven 发布标签不同。",
+							"return": "文本型",
+							"static": true
+						},
+						{
+							"name": "解析文本",
+							"description": "只解析指定文本范围，范围内必须恰好包含一个完整根值。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "来源文本。"
+								},
+								{
+									"name": "起点",
+									"type": "整数型",
+									"description": "从 0 开始的 UTF-16 代码单元位置。"
+								},
+								{
+									"name": "长度",
+									"type": "整数型",
+									"description": "要解析的代码单元数量。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "读取配置。"
+								}
+							]
+						},
+						{
+							"name": "解析字节",
+							"description": "只解析指定字节范围，不读取范围外的数据。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "来源字节集。"
+								},
+								{
+									"name": "起点",
+									"type": "整数型",
+									"description": "从 0 开始的字节位置。"
+								},
+								{
+									"name": "长度",
+									"type": "整数型",
+									"description": "要解析的字节数量。"
+								},
+								{
+									"name": "字符集",
+									"type": "文本型",
+									"description": "有效字符集名称。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "读取配置。"
+								}
+							]
+						},
+						{
+							"name": "是否有效字节",
+							"description": "检查指定字符集的完整 JSON 字节；数据格式错误返回假，配置参数错误报错。",
+							"return": "逻辑型",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "JSON 文本字节；空引用或空输入返回假。"
+								},
+								{
+									"name": "字符集",
+									"type": "文本型",
+									"description": "有效字符集名称。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "读取配置，不得为空。"
+								}
+							]
+						},
+						{
+							"name": "是否有效JSONB",
+							"description": "检查一个完整 JSONB 根值，包括尾随数据检查；不验证业务结构。",
+							"return": "逻辑型",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "JSONB 数据；空引用或空输入返回假。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "读取配置，不得为空。"
+								},
+								{
+									"name": "符号表",
+									"type": "simple.library.wsd.fastjson2.FJ2符号表",
+									"description": "编码时的同一外部符号表；未使用则为空。"
+								}
+							]
+						},
+						{
+							"name": "JSONB转调试文本",
+							"description": "返回便于观察 JSONB 的格式化文本；该输出用于检查，不作为持久化或对象映射输入。",
+							"return": "文本型",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "完整 JSONB 字节。"
+								},
+								{
+									"name": "符号表",
+									"type": "simple.library.wsd.fastjson2.FJ2符号表",
+									"description": "编码时的同一外部符号表；未使用则为空。"
+								}
+							]
+						},
+						{
+							"name": "数据转值",
+							"description": "直接载入运行库标量、数组、集合、哈希表或本库值，保留字节、日期及引用关系；返回独立副本。普通业务对象使用对象转值。",
+							"return": "simple.library.wsd.fastjson2.FJ2值",
+							"params": [
+								{
+									"name": "数据",
+									"type": "变体型",
+									"description": "运行库数据，不接受普通业务对象或组件。"
+								}
+							],
+							"static": true
+						},
+						{
+							"name": "数组转对象集",
+							"description": "将 JSON 数组逐项映射为与样本同类型的新对象，按原顺序返回集合；null 项保留，任一项失败时抛错。",
+							"return": "simple.runtime.collections.集合",
+							"params": [
+								{
+									"name": "数据",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "JSON 数组。"
+								},
+								{
+									"name": "类型样本",
+									"type": "变体型",
+									"description": "已创建的普通业务对象，仅取实际类型。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "读取配置及可选类型转换器。"
+								}
+							],
+							"static": true
+						}
+					],
+					"icon": "icons/braces.svg"
+				},
+				{
+					"name": "FJ2读取器",
+					"description": "文本或 JSONB 的顺序读取器，自动检查根值、名称和值、分隔符及容器闭合。输入在内存中保存，使用完必须关闭，同一实例串行使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.fastjson2.FJ2读取器",
+					"functions": [
+						{
+							"name": "打开文本",
+							"description": "打开 JSON 文本，逐项读取时检查结构，不预先构建完整值树。",
+							"return": "simple.library.wsd.fastjson2.FJ2读取器",
+							"static": true,
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "非空白 JSON 文本。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "打开时捕获配置。"
+								}
+							]
+						},
+						{
+							"name": "打开字节",
+							"description": "复制字节后按字符集打开文本读取器。",
+							"return": "simple.library.wsd.fastjson2.FJ2读取器",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "非空 JSON 文本字节。"
+								},
+								{
+									"name": "字符集",
+									"type": "文本型",
+									"description": "有效字符集名称。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "打开时捕获配置。"
+								}
+							]
+						},
+						{
+							"name": "打开JSONB",
+							"description": "复制输入后打开 JSONB 顺序读取器。",
+							"return": "simple.library.wsd.fastjson2.FJ2读取器",
+							"static": true,
+							"params": [
+								{
+									"name": "字节集",
+									"type": "字节型[]",
+									"description": "非空 JSONB 数据。"
+								},
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2读配置",
+									"description": "打开时捕获配置。"
+								},
+								{
+									"name": "符号表",
+									"type": "simple.library.wsd.fastjson2.FJ2符号表",
+									"description": "编码时的同一外部符号表；未使用则为空。"
+								}
+							]
+						},
+						{
+							"name": "是否JSONB",
+							"description": "判断当前输入是否为 JSONB。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否关闭",
+							"description": "判断读取器是否已关闭。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "取位置",
+							"description": "返回上游当前读取偏移；文本字符集不同，偏移单位遵循上游实现。",
+							"return": "整数型"
+						},
+						{
+							"name": "取当前数组长度",
+							"description": "返回当前手动打开的 JSONB 数组长度；文本数组长度未知返回 -1，当前不是数组时报错。",
+							"return": "整数型"
+						},
+						{
+							"name": "尝试对象开始",
+							"description": "当前位置为对象开始时打开一层并返回真，否则不消费输入。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "尝试数组开始",
+							"description": "当前位置为数组开始时打开一层并返回真；JSONB 数组长度可随后查询。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "尝试对象结束",
+							"description": "当前对象结束且没有待读取的属性值时关闭一层并返回真，否则返回假。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "尝试数组结束",
+							"description": "数组内容已读完时关闭一层并返回真；JSONB 按声明长度判断，文本按结束标记判断。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "读取名称",
+							"description": "读取当前对象的属性名及冒号；随后必须读取、跳过或打开对应值。",
+							"return": "文本型"
+						},
+						{
+							"name": "读取值",
+							"description": "读取当前位置的独立子值；引用只能指向该次读取的子树，不能跨读取调用。",
+							"return": "simple.library.wsd.fastjson2.FJ2值"
+						},
+						{
+							"name": "跳过值",
+							"description": "跳过当前位置的完整子值，检查根值及容器内的位置。"
+						},
+						{
+							"name": "是否结束",
+							"description": "判断一个根值是否已经完整读完且全部手动容器已闭合。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "要求结束",
+							"description": "要求恰好一个根值已读完，拒绝空输入、未闭合容器、尾随逗号及剩余数据。"
+						},
+						{
+							"name": "关闭",
+							"description": "释放读取器并清空结构状态，可重复关闭。"
+						}
+					]
+				},
+				{
+					"name": "FJ2写入器",
+					"description": "文本或 JSONB 的顺序写入器，自动处理分隔符并检查根值、对象名值及定长数组。输出保存在内存中，回调期间不得重入，同一实例串行使用。",
+					"kind": "object",
+					"type": "simple.library.wsd.fastjson2.FJ2写入器",
+					"functions": [
+						{
+							"name": "创建",
+							"description": "创建文本写入器；手动写名称不应用属性过滤，完整值中的属性仍使用过滤器。",
+							"return": "simple.library.wsd.fastjson2.FJ2写入器",
+							"static": true,
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2写配置",
+									"description": "打开时复制配置；回调实例共享。"
+								}
+							]
+						},
+						{
+							"name": "创建JSONB",
+							"description": "创建 JSONB 写入器；数组必须显式提供元素数量，完整值应用本库过滤规则。",
+							"return": "simple.library.wsd.fastjson2.FJ2写入器",
+							"static": true,
+							"params": [
+								{
+									"name": "配置",
+									"type": "simple.library.wsd.fastjson2.FJ2写配置",
+									"description": "打开时复制配置；回调实例共享。"
+								},
+								{
+									"name": "符号表",
+									"type": "simple.library.wsd.fastjson2.FJ2符号表",
+									"description": "可选外部符号表。"
+								}
+							]
+						},
+						{
+							"name": "是否JSONB",
+							"description": "判断当前输出是否为 JSONB。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "是否关闭",
+							"description": "判断写入器是否已关闭。",
+							"return": "逻辑型"
+						},
+						{
+							"name": "开始对象",
+							"description": "开始对象，必须以结束对象关闭。"
+						},
+						{
+							"name": "开始数组",
+							"description": "开始未知长度的文本数组；JSONB 请调用带数量参数的同名方法。"
+						},
+						{
+							"name": "开始数组",
+							"description": "开始指定长度的数组；结束时检查元素数量，嵌套容器算一个元素。",
+							"params": [
+								{
+									"name": "数量",
+									"type": "整数型",
+									"description": "JSONB 为非负元素数量；文本为非负定长或 -1 表示不限长度。"
+								}
+							]
+						},
+						{
+							"name": "结束对象",
+							"description": "关闭当前容器；拒绝类型不匹配、缺少属性值或定长数组数量不符。"
+						},
+						{
+							"name": "结束数组",
+							"description": "关闭当前容器；拒绝类型不匹配、缺少属性值或定长数组数量不符。"
+						},
+						{
+							"name": "写名称",
+							"description": "手动写对象属性名，下一步必须写值；名称按原样使用，不应用属性过滤器。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "非空引用的对象属性名。"
+								}
+							]
+						},
+						{
+							"name": "写值",
+							"description": "写完整值；过滤或上游写入失败会使此写入器关闭，避免输出半份数据。",
+							"params": [
+								{
+									"name": "值",
+									"type": "simple.library.wsd.fastjson2.FJ2值",
+									"description": "空引用表示 JSON null。"
+								}
+							]
+						},
+						{
+							"name": "写JSON文本",
+							"description": "解析并验证完整子值后再写入，失败不消费值位置。",
+							"params": [
+								{
+									"name": "文本",
+									"type": "文本型",
+									"description": "完整 JSON 子值。"
+								}
+							]
+						},
+						{
+							"name": "取文本",
+							"description": "返回完整文本输出；JSONB 模式请读取 JSONB 字节。",
+							"return": "文本型"
+						},
+						{
+							"name": "取UTF8字节",
+							"description": "返回完整文本的 UTF-8 字节；不适用于 JSONB 模式。",
+							"return": "字节型[]"
+						},
+						{
+							"name": "取JSONB字节",
+							"description": "返回完整 JSONB 的独立字节副本；不适用于文本模式。",
+							"return": "字节型[]"
+						},
+						{
+							"name": "关闭",
+							"description": "释放写入器，可重复关闭；回调期间不能关闭或读取同一个写入器。"
+						}
+					]
+				}
+			]
+		}
+	]
+}

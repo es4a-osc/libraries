@@ -14,64 +14,14 @@
 			"name": "扩展组件",
 			"definitions": [
 				{
-					"name": "XH客户端",
+					"name": "XH2客户端",
 					"kind": "component",
-					"type": "simple.library.wsd.xhttp2.XH客户端",
+					"type": "simple.library.wsd.xhttp2.XH2客户端",
 					"inherits": [
 						"simple.runtime.components.组件"
 					],
 					"description": "基于 XHttp2 的独立网络客户端；除同步发送外在界面线程使用，所有事件回到所属窗口。离开窗口取消请求，销毁后不可复用。",
 					"icon": "icons/arrows-transfer-up-down.svg",
-					"constants": [
-						{
-							"name": "缓存_不缓存",
-							"type": "整数型",
-							"value": "0",
-							"description": "不读写应用响应缓存。"
-						},
-						{
-							"name": "缓存_HTTP",
-							"type": "整数型",
-							"value": "1",
-							"description": "遵循 HTTP 缓存头；带凭据的请求不复用默认 HTTP 缓存。"
-						},
-						{
-							"name": "缓存_网络优先",
-							"type": "整数型",
-							"value": "2",
-							"description": "网络失败时读取有效缓存。"
-						},
-						{
-							"name": "缓存_缓存优先",
-							"type": "整数型",
-							"value": "3",
-							"description": "有效缓存命中时不请求网络。"
-						},
-						{
-							"name": "缓存_仅网络",
-							"type": "整数型",
-							"value": "4",
-							"description": "仅从网络获取，但保存成功的 HTTP 响应。"
-						},
-						{
-							"name": "缓存_仅缓存",
-							"type": "整数型",
-							"value": "5",
-							"description": "只读取有效缓存，未命中作为缓存错误。"
-						},
-						{
-							"name": "缓存_缓存及网络",
-							"type": "整数型",
-							"value": "6",
-							"description": "先返回缓存，再返回网络响应。"
-						},
-						{
-							"name": "缓存_缓存及网络去重",
-							"type": "整数型",
-							"value": "7",
-							"description": "先缓存再网络，完整响应内容相同则只返回一次。"
-						}
-					],
 					"properties": [
 						{
 							"name": "基础地址",
@@ -106,7 +56,7 @@
 						{
 							"name": "默认缓存策略",
 							"type": "整数型",
-							"description": "默认响应缓存策略，初始不缓存。",
+							"description": "默认响应缓存策略，使用 XH2缓存策略中的常量，初始不缓存。",
 							"writable": true
 						},
 						{
@@ -135,7 +85,7 @@
 							"params": [
 								{
 									"name": "请求",
-									"type": "simple.library.wsd.xhttp2.XH请求",
+									"type": "simple.library.wsd.xhttp2.XH2请求",
 									"description": "将复制保存的请求。"
 								}
 							],
@@ -147,11 +97,11 @@
 							"params": [
 								{
 									"name": "请求",
-									"type": "simple.library.wsd.xhttp2.XH请求",
+									"type": "simple.library.wsd.xhttp2.XH2请求",
 									"description": "请求配置。"
 								}
 							],
-							"return": "simple.library.wsd.xhttp2.XH响应"
+							"return": "simple.library.wsd.xhttp2.XH2响应"
 						},
 						{
 							"name": "批量发送",
@@ -159,7 +109,7 @@
 							"params": [
 								{
 									"name": "请求列表",
-									"type": "simple.library.wsd.xhttp2.XH请求[]",
+									"type": "simple.library.wsd.xhttp2.XH2请求[]",
 									"description": "非空请求数组。"
 								},
 								{
@@ -438,6 +388,171 @@
 									"description": "单次尝试的总超时毫秒数。"
 								}
 							]
+						},
+						{
+							"name": "置默认参数",
+							"description": "替换全部同名默认查询参数，不影响单次请求字段。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "字段值，可为空文本。"
+								}
+							]
+						},
+						{
+							"name": "删除默认参数",
+							"description": "删除全部同名默认查询参数。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								}
+							]
+						},
+						{
+							"name": "取默认参数",
+							"description": "取得首个同名默认查询参数；不存在时为空文本。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取全部默认参数",
+							"description": "按添加顺序取得全部同名默认查询参数。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								}
+							],
+							"return": "文本型[]"
+						},
+						{
+							"name": "取默认参数名称",
+							"description": "按首次出现顺序取得不重复的默认查询参数名称。",
+							"params": [],
+							"return": "文本型[]"
+						},
+						{
+							"name": "添加默认请求头",
+							"description": "追加默认请求头，保留同名字段；单次请求可以覆盖。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "不区分大小写的请求头名称。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "请求头值，遵循 HTTP 字段规则。"
+								}
+							]
+						},
+						{
+							"name": "取默认请求头",
+							"description": "取得首个同名默认请求头；不存在时为空文本。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "不区分大小写的请求头名称。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取全部默认请求头",
+							"description": "按添加顺序取得全部同名默认请求头。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "不区分大小写的请求头名称。"
+								}
+							],
+							"return": "文本型[]"
+						},
+						{
+							"name": "取默认请求头名称",
+							"description": "取得不重复的默认请求头名称，名称比较不区分大小写。",
+							"params": [],
+							"return": "文本型[]"
+						},
+						{
+							"name": "置缓存容量",
+							"description": "首次使用 Cookie、缓存或发送请求前设置容量；同名活动会话的容量须一致。",
+							"params": [
+								{
+									"name": "响应容量",
+									"type": "长整数型",
+									"description": "应用响应缓存容量字节数，必须大于零。"
+								},
+								{
+									"name": "HTTP容量",
+									"type": "长整数型",
+									"description": "HTTP 缓存容量字节数，必须大于零。"
+								}
+							]
+						},
+						{
+							"name": "取缓存目录",
+							"description": "取得本会话的应用私有缓存目录；目录下分别保存响应缓存和 HTTP 缓存。",
+							"params": [],
+							"return": "文本型"
+						},
+						{
+							"name": "取响应缓存大小",
+							"description": "取得当前应用响应缓存占用的字节数，不含日志文件。",
+							"params": [],
+							"return": "长整数型"
+						},
+						{
+							"name": "取HTTP缓存大小",
+							"description": "取得当前 HTTP 缓存占用的字节数，不含日志文件。",
+							"params": [],
+							"return": "长整数型"
+						},
+						{
+							"name": "取响应缓存容量",
+							"description": "取得应用响应缓存容量，默认 50 MiB。",
+							"params": [],
+							"return": "长整数型"
+						},
+						{
+							"name": "取HTTP缓存容量",
+							"description": "取得 HTTP 缓存容量，默认 20 MiB。",
+							"params": [],
+							"return": "长整数型"
+						},
+						{
+							"name": "置SOCKS代理",
+							"description": "设置当前客户端的无认证 SOCKS 代理；主机留空关闭代理，后续请求使用独立配置快照。",
+							"params": [
+								{
+									"name": "主机",
+									"type": "文本型",
+									"description": "SOCKS 代理主机或 IP，不包含协议前缀。"
+								},
+								{
+									"name": "端口",
+									"type": "整数型",
+									"description": "代理端口，主机非空时须为 1～65535。"
+								}
+							]
 						}
 					],
 					"events": [
@@ -447,7 +562,7 @@
 							"params": [
 								{
 									"name": "请求",
-									"type": "simple.library.wsd.xhttp2.XH请求",
+									"type": "simple.library.wsd.xhttp2.XH2请求",
 									"description": "可修改的本次请求副本；请求标识不可在此改变。"
 								}
 							]
@@ -474,7 +589,7 @@
 								},
 								{
 									"name": "响应",
-									"type": "simple.library.wsd.xhttp2.XH响应",
+									"type": "simple.library.wsd.xhttp2.XH2响应",
 									"description": "只读响应。"
 								}
 							]
@@ -490,7 +605,7 @@
 								},
 								{
 									"name": "响应",
-									"type": "simple.library.wsd.xhttp2.XH响应",
+									"type": "simple.library.wsd.xhttp2.XH2响应",
 									"description": "只读响应。"
 								}
 							]
@@ -506,7 +621,7 @@
 								},
 								{
 									"name": "响应",
-									"type": "simple.library.wsd.xhttp2.XH响应",
+									"type": "simple.library.wsd.xhttp2.XH2响应",
 									"description": "失败响应。"
 								}
 							]
@@ -570,12 +685,12 @@
 								},
 								{
 									"name": "响应",
-									"type": "simple.library.wsd.xhttp2.XH响应",
+									"type": "simple.library.wsd.xhttp2.XH2响应",
 									"description": "原始 HTTP 响应。"
 								},
 								{
 									"name": "结果",
-									"type": "simple.library.wsd.xhttp2.XH解析结果",
+									"type": "simple.library.wsd.xhttp2.XH2解析结果",
 									"description": "供事件填写的业务结果。"
 								}
 							]
@@ -586,7 +701,7 @@
 							"params": [
 								{
 									"name": "结果",
-									"type": "simple.library.wsd.xhttp2.XH批结果",
+									"type": "simple.library.wsd.xhttp2.XH2完成结果",
 									"description": "包含失败、取消及提前停止的结果。"
 								}
 							]
@@ -620,9 +735,9 @@
 			"name": "扩展对象",
 			"definitions": [
 				{
-					"name": "XH请求",
+					"name": "XH2请求",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XH请求",
+					"type": "simple.library.wsd.xhttp2.XH2请求",
 					"description": "可复用的请求配置；发送前复制独立快照，后续修改不影响已经发出的请求。",
 					"properties": [
 						{
@@ -670,7 +785,7 @@
 						{
 							"name": "缓存策略",
 							"type": "整数型",
-							"description": "客户端的缓存策略常量；-1 采用客户端配置。下载仅允许不缓存。",
+							"description": "本次请求采用的 XH2缓存策略；-1 沿用客户端默认策略。",
 							"writable": true
 						},
 						{
@@ -688,7 +803,7 @@
 						{
 							"name": "下载路径",
 							"type": "文本型",
-							"description": "下载目标的绝对文件路径；留空时读取响应。成功校验后原子替换，失败保留原文件。",
+							"description": "下载目标文件路径；相对路径以应用私有 files 目录为基准，绝对路径须可写。留空读取响应；校验后原子替换，失败保留原文件。",
 							"writable": true
 						},
 						{
@@ -884,7 +999,7 @@
 								{
 									"name": "来源",
 									"type": "文本型",
-									"description": "绝对文件路径或已获读取授权的 content URI。"
+									"description": "绝对文件路径、asset:// 资产路径或已获读取授权的 content URI。"
 								},
 								{
 									"name": "文件名",
@@ -939,7 +1054,7 @@
 						{
 							"name": "复制",
 							"description": "复制配置、请求字段和字节文件；文件路径仍引用同一来源。",
-							"return": "simple.library.wsd.xhttp2.XH请求"
+							"return": "simple.library.wsd.xhttp2.XH2请求"
 						},
 						{
 							"name": "删除查询参数",
@@ -962,6 +1077,179 @@
 									"description": "区分大小写的字段名。"
 								}
 							]
+						},
+						{
+							"name": "置查询参数",
+							"description": "替换全部同名查询参数，保留其它字段的顺序。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "字段值，可为空文本。"
+								}
+							]
+						},
+						{
+							"name": "取查询参数",
+							"description": "取得首个同名查询参数；不存在时返回空文本。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取全部查询参数",
+							"description": "按添加顺序取得全部同名查询参数，不存在时返回空数组。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								}
+							],
+							"return": "文本型[]"
+						},
+						{
+							"name": "取查询参数名称",
+							"description": "按首次出现顺序取得不重复的查询参数名称。",
+							"params": [],
+							"return": "文本型[]"
+						},
+						{
+							"name": "置表单参数",
+							"description": "替换全部同名表单参数，保留其它字段的顺序。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								},
+								{
+									"name": "值",
+									"type": "文本型",
+									"description": "字段值，可为空文本。"
+								}
+							]
+						},
+						{
+							"name": "取表单参数",
+							"description": "取得首个同名表单参数；不存在时返回空文本。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取全部表单参数",
+							"description": "按添加顺序取得全部同名表单参数，不存在时返回空数组。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								}
+							],
+							"return": "文本型[]"
+						},
+						{
+							"name": "取表单参数名称",
+							"description": "按首次出现顺序取得不重复的表单参数名称。",
+							"params": [],
+							"return": "文本型[]"
+						},
+						{
+							"name": "清空表单参数",
+							"description": "仅清空表单字段，保留上传项和原始请求体。",
+							"params": []
+						},
+						{
+							"name": "取全部请求头",
+							"description": "按添加顺序取得全部同名请求头。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "不区分大小写的请求头名称。"
+								}
+							],
+							"return": "文本型[]"
+						},
+						{
+							"name": "取请求头名称",
+							"description": "取得不重复的请求头名称，保留首个名称的大小写和顺序。",
+							"params": [],
+							"return": "文本型[]"
+						},
+						{
+							"name": "删除文件",
+							"description": "删除全部同名上传项，保留同名普通表单字段。",
+							"params": [
+								{
+									"name": "名称",
+									"type": "文本型",
+									"description": "区分大小写的字段名，不可为空。"
+								}
+							]
+						},
+						{
+							"name": "清空文件",
+							"description": "清空全部上传项，保留普通表单字段。",
+							"params": []
+						},
+						{
+							"name": "取文件数量",
+							"description": "取得当前上传项数量。",
+							"params": [],
+							"return": "整数型"
+						},
+						{
+							"name": "取文件字段名",
+							"description": "取得指定上传项的字段名。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的上传项索引，越界时抛出参数错误。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取文件名",
+							"description": "取得指定上传项的名。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的上传项索引，越界时抛出参数错误。"
+								}
+							],
+							"return": "文本型"
+						},
+						{
+							"name": "取文件媒体类型",
+							"description": "取得指定上传项的媒体类型。",
+							"params": [
+								{
+									"name": "索引",
+									"type": "整数型",
+									"description": "从零开始的上传项索引，越界时抛出参数错误。"
+								}
+							],
+							"return": "文本型"
 						}
 					],
 					"constants": [
@@ -970,54 +1258,6 @@
 							"type": "整数型",
 							"value": "-1",
 							"description": "使用客户端默认缓存策略。"
-						},
-						{
-							"name": "缓存_不缓存",
-							"type": "整数型",
-							"value": "0",
-							"description": "不读写应用响应缓存。"
-						},
-						{
-							"name": "缓存_HTTP",
-							"type": "整数型",
-							"value": "1",
-							"description": "遵循 HTTP 缓存头；带凭据的请求不复用默认 HTTP 缓存。"
-						},
-						{
-							"name": "缓存_网络优先",
-							"type": "整数型",
-							"value": "2",
-							"description": "网络失败时读取有效缓存。"
-						},
-						{
-							"name": "缓存_缓存优先",
-							"type": "整数型",
-							"value": "3",
-							"description": "有效缓存命中时不请求网络。"
-						},
-						{
-							"name": "缓存_仅网络",
-							"type": "整数型",
-							"value": "4",
-							"description": "仅从网络获取，但保存成功的 HTTP 响应。"
-						},
-						{
-							"name": "缓存_仅缓存",
-							"type": "整数型",
-							"value": "5",
-							"description": "只读取有效缓存，未命中作为缓存错误。"
-						},
-						{
-							"name": "缓存_缓存及网络",
-							"type": "整数型",
-							"value": "6",
-							"description": "先返回缓存，再返回网络响应。"
-						},
-						{
-							"name": "缓存_缓存及网络去重",
-							"type": "整数型",
-							"value": "7",
-							"description": "先缓存再网络，完整响应内容相同则只返回一次。"
 						},
 						{
 							"name": "解析_原始",
@@ -1082,9 +1322,9 @@
 					]
 				},
 				{
-					"name": "XH解析结果",
+					"name": "XH2解析结果",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XH解析结果",
+					"type": "simple.library.wsd.xhttp2.XH2解析结果",
 					"description": "自定义解析事件的结果；事件内明确设置成功状态，未处理不会被视为成功。",
 					"properties": [
 						{
@@ -1114,9 +1354,9 @@
 					]
 				},
 				{
-					"name": "XH响应",
+					"name": "XH2响应",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XH响应",
+					"type": "simple.library.wsd.xhttp2.XH2响应",
 					"description": "单次响应的只读快照；非成功 HTTP 状态仍保留响应头和响应体，网络错误的状态码为零。",
 					"properties": [
 						{
@@ -1226,6 +1466,12 @@
 							"type": "文本型",
 							"description": "业务消息或错误描述。",
 							"writable": false
+						},
+						{
+							"name": "SHA256",
+							"type": "文本型",
+							"description": "已读取响应体或已提交下载文件的 SHA-256；未读取内容时为空文本。",
+							"writable": false
 						}
 					],
 					"functions": [
@@ -1261,9 +1507,9 @@
 					]
 				},
 				{
-					"name": "XH批结果",
+					"name": "XH2完成结果",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XH批结果",
+					"type": "simple.library.wsd.xhttp2.XH2完成结果",
 					"description": "一组请求的只读完成结果，按输入顺序保存每个请求的最终响应；缓存双发时取该请求最后一份响应。",
 					"properties": [
 						{
@@ -1274,7 +1520,7 @@
 						},
 						{
 							"name": "响应列表",
-							"type": "simple.library.wsd.xhttp2.XH响应[]",
+							"type": "simple.library.wsd.xhttp2.XH2响应[]",
 							"description": "按输入顺序保存的响应快照，取消或提前停止的项目为取消响应。",
 							"writable": false
 						},
@@ -1299,9 +1545,9 @@
 					]
 				},
 				{
-					"name": "XH工具",
+					"name": "XH2工具",
 					"kind": "object",
-					"type": "simple.library.wsd.xhttp2.XH工具",
+					"type": "simple.library.wsd.xhttp2.XH2工具",
 					"description": "网络数据的编码、摘要、签名及 JSON 路径函数集，不访问网络。",
 					"functions": [
 						{
@@ -1458,6 +1704,62 @@
 							],
 							"return": "文本型",
 							"static": true
+						}
+					]
+				},
+				{
+					"name": "XH2缓存策略",
+					"kind": "object",
+					"type": "simple.library.wsd.xhttp2.XH2缓存策略",
+					"description": "客户端默认配置与单次请求共用的八种缓存策略常量。",
+					"constants": [
+						{
+							"name": "不缓存",
+							"type": "整数型",
+							"value": "0",
+							"description": "不读写应用响应缓存。"
+						},
+						{
+							"name": "HTTP",
+							"type": "整数型",
+							"value": "1",
+							"description": "遵循 HTTP 缓存头；带凭据的请求不复用默认 HTTP 缓存。"
+						},
+						{
+							"name": "网络优先",
+							"type": "整数型",
+							"value": "2",
+							"description": "网络失败时读取有效缓存。"
+						},
+						{
+							"name": "缓存优先",
+							"type": "整数型",
+							"value": "3",
+							"description": "有效缓存命中时不请求网络。"
+						},
+						{
+							"name": "仅网络",
+							"type": "整数型",
+							"value": "4",
+							"description": "仅从网络获取，但保存成功的 HTTP 响应。"
+						},
+						{
+							"name": "仅缓存",
+							"type": "整数型",
+							"value": "5",
+							"description": "只读取有效缓存，未命中作为缓存错误。"
+						},
+						{
+							"name": "缓存及网络",
+							"type": "整数型",
+							"value": "6",
+							"description": "先返回缓存，再返回网络响应。"
+						},
+						{
+							"name": "缓存及网络去重",
+							"type": "整数型",
+							"value": "7",
+							"description": "先缓存再网络，完整响应内容相同则只返回一次。"
 						}
 					]
 				}

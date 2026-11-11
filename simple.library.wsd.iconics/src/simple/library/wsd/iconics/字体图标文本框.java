@@ -1,13 +1,7 @@
 package simple.library.wsd.iconics;
 
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.mikepenz.iconics.*;
-import com.mikepenz.iconics.typeface.*;
-import java.util.*;
-import simple.runtime.annotations.*;
-import simple.runtime.components.*;
+import simple.runtime.annotations.SimpleComponent;
+import simple.runtime.annotations.SimpleObject;
 
 /**
  * 字体图标控件。
@@ -16,4 +10,5 @@ import simple.runtime.components.*;
  */
 @SimpleComponent
 @SimpleObject
-public interface 字体图标文本框 extends 字体图标视图 {}
+public interface 字体图标文本框 extends 字体图标视图 {
+}
